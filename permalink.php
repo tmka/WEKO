@@ -1,9 +1,9 @@
 <?php
 
 //You need to change the following variable when you use this code for other sites.
-$BASE_URL = "https://akebono-vlf.db.kanazawa-u.ac.jp/";
+$BASE_URL = "http://hogehoge.com/";
 $opensearch_URL = $BASE_URL . "index.php?action=repository_opensearch&format=atom&keyword=";
-$oaipmh_URL = $BASE_URL . "?action=repository_oaipmh&verb=GetRecord&medatadaPrefix=oai_dc&identifier=oai:akebono-vlf.db.kanazawa-u.ac.jp:";
+$oaipmh_URL = $BASE_URL . "?action=repository_oaipmh&verb=GetRecord&medatadaPrefix=oai_dc&identifier=oai:hogehoge.com:";
 $download_URL = $BASE_URL. "index.php?action=repository_action_common_download&item_id=";
 
 //return contents URL or thumbnail URL
