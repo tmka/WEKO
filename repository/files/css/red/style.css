@@ -1,0 +1,2512 @@
+@charset "utf-8";
+
+/**
+// --------------------------------------------------------------------
+//
+// $Id: style.css 24395 2013-07-29 02:24:19Z rei_matsuura $
+//
+// Copyright (c) 2007 - 2008, National Institute of Informatics,
+// Research and Development Center for Scientific Information Resources
+//
+// This program is licensed under a Creative Commons BSD Licence
+// http://creativecommons.org/licenses/BSD/
+//
+// --------------------------------------------------------------------
+ */
+
+
+/* Css定義ファイル                     */
+/* (/^moduledir_*./)の形式で記述すること */
+
+/****** どこで使ってるか等を書いておくと管理しやすい ******/
+
+/**********************************************************************
+モジュール内のデフォルト
+**********************************************************************/
+
+/* ====================================================
+	EXAMPLES FONT-SIZE
+	------------------
+	 77% = 10px
+	 85% = 11px
+	 93% = 12px
+	100% = 13px
+	108% = 14px
+	116% = 15px
+	124% = 16px
+	131% = 17px
+	139% = 18px
+	147% = 19px
+	154% = 20px
+	162% = 21px
+	170% = 22px
+	177% = 23px
+	185% = 24px
+	193% = 25px
+	200% = 26px
+	---------------
+====================================================*/
+input.keyword_text, input.keyword_text_eng {font-family:inherit;font-size:100%;font-style:inherit;font-weight:inherit;margin:0;padding:0;vertical-align:middle;}
+input.btn_blue {font-size:100%;font-style:inherit;font-weight:bold;;margin:0;padding:5px 10px;vertical-align:middle;}
+input.keyword_text, input.keyword_text_eng {padding-left:17px;font-style:normal;}
+input.keyword_text, input.keyword_text_eng, input.btn_blue  {font-family: "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "メイリオ", Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;line-height:1.5;}
+#_repository_keyword input.btn_blue {padding-left:0;margin:0;}
+#repo_main_content input.btn_blue {
+    /*font-family: inherit;*/
+    font-size: 100%;
+    font-style: inherit;
+	vertical-align: middle;
+}
+input.btn_back, input.btn_next
+{
+	vertical-align: middle;
+}
+
+.cursordef { cursor: default; }
+
+/* A.Jin Add 2013/05/20 */
+em {font-style:normal;}
+a:hover { color:#e26507 !important; }
+button, fieldset, form, input, label, legend, select, textarea {font-family:"ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","メイリオ",Meiryo,Osaka,"ＭＳ Ｐゴシック","MS PGothic",sans-serif;font-style:normal;font-weight:normal;}
+span, div, a {font-family:"ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","メイリオ",Meiryo,Osaka,"ＭＳ Ｐゴシック","MS PGothic"}
+label {
+    display: inline-block;
+    /*margin-right: 1.5em;*/
+    white-space: nowrap;
+}
+
+/* 文字揃え
+---------------------------------------------*/
+.ac { text-align: center !important; }
+
+.ar { text-align: right !important; }
+
+.al { text-align: left !important; }
+
+/* 縦方向の揃え位置
+---------------------------------------------*/
+.vt { vertical-align: top !important; }
+
+.vam { vertical-align: middle !important; }
+
+.vab { vertical-align: bottom !important; }
+
+.vabl { vertical-align: baseline !important; }
+
+/* フロート
+---------------------------------------------*/
+.fr { float: right !important; }
+
+.fl { float: left !important; }
+
+.fr li, .fl li { float:left; margin-left:5px; }
+
+.fl li { margin-right:5px; margin-left:0; }
+
+/* フロートのクリア */
+.clear { clear: both; }
+
+/* 改行操作
+---------------------------------------------*/
+.wsn { white-space:normal; !important; }
+
+.justifying { padding-left: 1.5em; text-indent: -1.5em; }
+
+/* 横幅
+---------------------------------------------*/
+/* ブロック要素を中央揃え */
+.box_center { margin:0 auto !important; }
+
+.auto { width:auto !important; }
+
+.full { width:100% !important; }
+
+.fulla { width:100% !important; }
+
+.wide { width:65% !important; }
+
+.half { width:50% !important; }
+
+.narrow { width:33% !important; }
+
+.quarter { width:25% !important; }
+
+
+/*
+具体的な数値を指定する場合→ボックスモデルに注意
+
+　パーセント(%)：wXXX：表組み、文字サイズなど
+　ピクセル(px)：wXXXpx：厳密に指定した時に
+　文字基準(em)：wXXXem：フォーム要素など
+
+　使用例）table class="w70 fl"…横幅70%で左寄せ
+
+下記のように必要に応じて増やしてください
+*/
+.w92 { width:92% !important; }
+
+.w90 { width:90% !important; }
+
+.w85 { width:85% !important; }
+
+.w80 { width:80% !important; }
+
+.w75 { width:75% !important; }
+
+.w70 { width:70% !important; }
+
+.w65 { width:65% !important; }
+
+.w60 { width:60% !important; }
+
+.w50 { width:50% !important; }
+
+.w45 { width:45% !important; }
+
+.w35 { width:35% !important; }
+
+.w30 { width:30% !important; }
+
+.w25 { width:25% !important; }
+
+.w20 { width:20% !important; }
+
+.w18 { width:18% !important; }
+
+.w15 { width:15% !important; }
+
+.w10 { width:10% !important; }
+
+.w10px { width:10px !important; }
+
+.w16px { width:16px !important; }
+
+.w20px { width:20px !important; }
+
+.w24px { width:24px !important; }
+
+.w30px { width:30px !important; }
+
+.w36px { width:36px !important; }
+
+.w40px { width:40px !important; }
+
+.w45px { width:45px !important; }
+
+.w50px { width:50px !important; }
+
+.w70px { width: 70px !important; }
+
+.w80px { width: 80px !important; }
+
+.w100px { width:100px !important; }
+
+.w120px { width:120px !important; }
+
+.w150px { width:150px !important; }
+
+.w175px { width:175px !important; }
+
+.w196px { width:196px !important; }
+
+.w200px { width:200px !important; }
+
+.w300px { width:300px !important; }
+
+.w350px { width:350px !important; }
+
+.w400px { width:400px !important; }
+
+.w500px { width:500px !important; }
+
+.w800px { width:800px !important; }
+
+.w850px { width:850px !important; }
+
+.w950px { width:950px !important; }
+
+.w700px { width:700px !important; }
+
+.w035em { width:3.5em !important; }
+
+.w04em { width:4em !important; }
+
+.w05em { width:5em !important; }
+
+.w10em { width:10em !important; }
+
+.w15em { width:15em !important; }
+
+/* 最小サイズ指定 */
+.min_w50px { min-width:50px; }
+
+.min-w630px { min-width:630px; }
+
+.min-w685px { min-width:685px; }
+
+.min-w1000px { min-width:1000px; }
+
+/* 最大サイズ */
+.max_w600px { max-width:600px; }
+
+.max_w800px { max-width:800px; }
+
+/* 高さ指定 ※ボックスモデルの扱いに注意※ */
+.h01em { height:1em; }
+
+.h02em { height: 2em !important; }
+
+.h05em { height:5em; }
+
+.h08em { height:8em; }
+
+.h10em { height:10em; }
+
+.h34px { height: 34px !important; }
+
+.h60px { height: 60px !important; }
+
+.h160px { height: 160px; }
+
+.fullh { height: 100% !important; }
+
+/* 行間 */
+.ws050 { word-spacing: .50em; }
+
+.lh15 { line-height: 1.5em; }
+
+.lh25 { line-height: 2.5em; }
+
+/* 表組み
+---------------------------------------------*/
+th {
+    background: none repeat scroll 0 0 #FFE8E8;
+    color: #000000;
+    font-weight: bold;
+}
+
+.th01 {
+    background: none repeat scroll 0 0 #FFE8E8 !important;
+    color: #000000;
+    font-weight: bold;
+}
+
+/* 罫線なし：レイアウトやネストさせる場合などに */
+.tb00, .tb00 th, .tb00 td { border:none; }
+
+/* 基本デザイン */
+.tb01 { border:1px solid #FF231E; }
+.tb01 th, .tb01 td { padding:.35em .5em .25em; border:1px solid #FF231E; }
+.tb01 th { margin:1px; background:#FFE8E8; }
+/*.tb01 td { background:#fff;white-space:nowrap; }*/
+.tb01 td { white-space:nowrap; }
+.tb01 th td, .tb01 td td { border:none; }
+
+#item_confirm_tbl td { white-space:normal !important; }
+
+/* タブナビゲーション
+---------------------------------------------*/
+
+
+#_repository_keyword .bt01,
+#repo_side_navi .bt01 {
+	width:59px;
+}
+#_repository_keyword .bt01 em,
+#repo_side_navi .bt01 em {
+	display:block;
+	text-align:center;
+}
+
+.keyword_text, .keyword_text_eng {
+	float:left;
+	padding-left:24px;
+	width:110px;
+	height:24px;
+	background:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/keyword_ui.gif") no-repeat;
+	border:1px solid #C60A00;
+	border-right:none;
+	width:105px;
+}
+
+.keyword_text_sp {
+    float:left;
+    padding-left:24px;
+    height:30px;
+    background:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/icon_keyword.gif") no-repeat;
+    border:1px solid #C60A00;
+    background-position: 2px center;
+    width:100%;
+}
+
+.keyword_btn_sp {
+    padding-top:6px !important;
+    padding-bottom:6px !important;
+}
+
+.snippet_header_selectbox_sp {
+    height:30px;
+}
+
+
+
+/* マージン
+---------------------------------------------*/
+/* 上 */
+.mt00 { margin-top:  0px !important; }
+
+.mt05 { margin-top:  5px !important; }
+
+.mt10 { margin-top: 10px !important; }
+
+.mt15 { margin-top: 15px !important; }
+
+.mt20 { margin-top: 20px !important; }
+
+.mt25 { margin-top: 25px !important; }
+
+.mt30 { margin-top: 30px !important; }
+
+.mt35 { margin-top: 35px !important; }
+
+.mt40 { margin-top: 40px !important; }
+
+
+/* 下 */
+.mb00 { margin-bottom:  0px !important; }
+
+.mb05 { margin-bottom:  5px !important; }
+
+.mb10 { margin-bottom: 10px !important; }
+
+.mb15 { margin-bottom: 15px !important; }
+
+.mb20 { margin-bottom: 20px !important; }
+
+.mb25 { margin-bottom: 25px !important; }
+
+.mb30 { margin-bottom: 30px !important; }
+
+.mb35 { margin-bottom: 35px !important; }
+
+.mb40 { margin-bottom: 40px !important; }
+
+
+/* 左 ▲IEのバグ→ダブルマージンに注意 */
+.ml00 { margin-left:  0px !important; }
+
+.ml05 { margin-left:  5px !important; }
+
+.ml10 { margin-left: 10px !important; }
+
+.ml15 { margin-left: 15px !important; }
+
+.ml20 { margin-left: 20px !important; }
+
+.ml25 { margin-left: 25px !important; }
+
+.ml30 { margin-left: 30px !important; }
+
+.ml35 { margin-left: 35px !important; }
+
+.ml40 { margin-left: 40px !important; }
+
+
+/* 右 ▲IEのバグ→ダブルマージンに注意 */
+.mr00 { margin-right:  0px !important; }
+
+.mr05 { margin-right:  5px !important; }
+
+.mr10 { margin-right: 10px !important; }
+
+.mr15 { margin-right: 15px !important; }
+
+.mr20 { margin-right: 20px !important; }
+
+.mr25 { margin-right: 25px !important; }
+
+.mr30 { margin-right: 30px !important; }
+
+.mr35 { margin-right: 35px !important; }
+
+.mr40 { margin-right: 40px !important; }
+
+.mtb10 { margin-top:10px; margin-bottom:10px; }
+
+.mg00 { margin:0 !important; }
+
+
+
+/* パディング
+---------------------------------------------*/
+/* 上 */
+.pt00 { padding-top:  0px !important; }
+
+.pt05 { padding-top:  5px !important; }
+
+.pt10 { padding-top: 10px !important; }
+
+.pt12 { padding-top: 12px !important; }
+
+.pt15 { padding-top: 15px !important; }
+
+.pt20 { padding-top: 20px !important; }
+
+.pt25 { padding-top: 25px !important; }
+
+.pt30 { padding-top: 30px !important; }
+
+.pt35 { padding-top: 35px !important; }
+
+.pt40 { padding-top: 40px !important; }
+
+/* 下 */
+.pb00 { padding-bottom:  0px !important; }
+
+.pb02 { padding-bottom:  2px !important; }
+
+.pb05 { padding-bottom:  5px !important; }
+
+.pb10 { padding-bottom: 10px !important; }
+
+.pb15 { padding-bottom: 15px !important; }
+
+.pb20 { padding-bottom: 20px !important; }
+
+.pb25 { padding-bottom: 25px !important; }
+
+.pb30 { padding-bottom: 30px !important; }
+
+.pb35 { padding-bottom: 35px !important; }
+
+.pb40 { padding-bottom: 40px !important; }
+
+
+/* 左 */
+.pl00 { padding-left:  0px !important; }
+
+.pl03 { padding-left:  3px !important }
+
+.pl05 { padding-left:  5px !important; }
+
+.pl06 { padding-left: 6px !important; }
+
+.pl08 { padding-left:  8px !important; }
+
+.pl10 { padding-left: 10px !important; }
+
+.pl15 { padding-left: 15px !important; }
+
+.pl20 { padding-left: 20px !important; }
+
+.pl25 { padding-left: 25px !important; }
+
+.pl30 { padding-left: 30px !important; }
+
+.pl35 { padding-left: 35px !important; }
+
+.pl40 { padding-left: 40px !important; }
+
+.pl55 { padding-left: 55px !important; }
+
+.pl01em {padding-left:1em !important; } /* 1文字分(1インデント) */
+
+.pl02em {padding-left:2em !important; } /* 2文字分(2インデント) */
+
+/* 右 */
+.pr00 { padding-right:  0px !important; }
+
+.pr05 { padding-right:  5px !important; }
+
+.pr10 { padding-right: 10px !important; }
+
+.pr15 { padding-right: 15px !important; }
+
+.pr20 { padding-right: 20px !important; }
+
+.pr25 { padding-right: 25px !important; }
+
+.pr30 { padding-right: 30px !important; }
+
+.pr35 { padding-right: 35px !important; }
+
+.pr40 { padding-right: 40px !important; }
+
+
+/* パディングのバリエーション */
+/* 上下左右*/
+.pd00 { padding:0; }
+
+.pd02 { padding:2px; }
+
+.pd05 { padding:5px; }
+
+.pd10 { padding:10px; }
+
+.pd20 { padding:20px; }
+
+/* 上下 */
+.ptb02 { padding-top: 2px; padding-bottom: 2px; }
+
+.ptb04 { padding-top:4px; padding-bottom:4px; }
+
+.ptb10 { padding-top:10px; padding-bottom:10px; }
+
+.ptb20 { padding-top:20px; padding-bottom:20px; }
+
+
+/* 左右 */
+.plr00 { padding-left:0; padding-right:0; }
+
+.plr02 { padding-left:2px; padding-right:2px; }
+
+.plr05 { padding-left:5px; padding-right:5px; }
+
+.plr08 { padding-left:8px; padding-right:8px; }
+
+.plr10 { padding-left:10px; padding-right:10px; }
+
+.plr20 { padding-left:20px; padding-right:20px; }
+
+.plr65 { padding-left:65px; padding-right:65px; }
+
+/* ボーダー
+---------------------------------------------*/
+.non_brd { border: 0px none !important; }
+
+.non_brd tr { border: 0px none; }
+
+.brd01 { border: solid 1px #CCCCCC !important; }
+
+.brdl01 { border-left: 1px solid #CCCCCC !important; }
+
+.brdr01 { border-right: 1px solid #CCCCCC !important; }
+
+.brdt01 { border-top: 1px solid #CCCCCC !important; }
+
+.brdb01 { border-bottom: 1px solid #CCCCCC !important; }
+
+.brdb02 { border-bottom: 1px solid #C60A00 !important; }
+
+.brdb03 { border-bottom: 3px solid #6C8A6C !important; }
+
+.brd02 { border: solid 1px #ffbf80; }
+
+.brdr02 { border-right: solid 1px #C4D9EC; !important; }
+
+.brd03 { border: solid 1px #000; }
+
+/* 文字
+---------------------------------------------*/
+/* サイズ */
+/* 小さめ */
+.small { font-size:85% !important; }
+
+/* 元のサイズ */
+.normal { font-size:100% !important; }
+
+/* 大きめ */
+.large { font-size:124% !important; color:#000; }
+
+/* 色 */
+/* エラー表示 */
+.red { color:#c00 !important; }
+
+/* グレーアウト */
+.gray { color:#808080 !important; }
+
+/** 鮮やかな赤 **/
+.bright_red {
+	color:#ff0000;
+}
+
+/* use by 'print all items in index' */
+body.text_color_in_print { color:#ffffff !important; }
+
+/* 白 */
+.white { color:#fff !important; }
+a.white { text-decoration:none; }
+a.white:hover { color:#fff !important; }
+
+/* ウェイト */
+.bold { font-weight:bold !important; }
+.normal { font-weight:normal !important; }
+.small { font-weight:normal !important; }
+
+/* 改行させない */
+.nobr { white-space:nowrap !important; }
+
+.ws { white-space: normal !important; }
+
+/* 背景 */
+.bg_eee { background-color:#eeeeee !important; }
+
+/* ime-mode
+---------------------------------------------*/
+/* 英数字入力モード */
+.ime_disabled { ime-mode:disabled; }
+
+
+/* ボタン
+---------------------------------------------*/
+.th_classic_repo_btn {
+	margin-right:5px;
+	background:#ccc;
+	border:1px solid #FF231E;
+	float:right;
+	display:block;
+	white-space:nowrap;
+}
+
+.th_classic_repo_btn em {
+	padding:1px 8px 0 10px;
+	background:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/red/btn_bk.gif") bottom repeat-x;
+	border-bottom:1px solid #fff;
+	border-right:1px solid #fff;
+	display:block;
+	font-size:77%;
+	font-weight:bold;
+}
+
+/* 基本デザイン：白 */
+.bt00, .bt01, .bt02, .bt03 {
+	margin:6px 2px;
+	padding:0;
+	height:23px;
+	display:inline-block;
+	zoom: 1;
+	*display: inline;
+	background:#f2f2f2 url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/bt00_bk.gif") bottom left repeat-x;
+	border:1px solid #afafaf;
+	vertical-align:middle;
+	white-space:nowrap;
+}
+
+.bt01, .bt02, .bt03 { height:24px; }
+
+/* 青いボタン：進む、戻る、アップロードなど */
+.bt01, .bt02, .bt03 {
+	background:#C60A00 url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/bt01_bk.gif") top left repeat-x;
+	border:1px solid #1d466b;
+}
+
+/* 赤いボタン：削除やエラー表示 */
+.bt02 {
+	background:#d55f5f url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/bt02_bk.gif") bottom left repeat-x;
+	border:1px solid #900;
+}
+
+/* オレンジボタン：警告表示 */
+.bt03 {
+	background:#f90 url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/bt03_bk.gif") bottom left repeat-x;
+	border:1px solid #b65701;
+}
+
+.bt00 em, .bt01 em, .bt02 em, .bt03 em {
+	padding:0 .5em;
+	height:22px;
+	line-height:22px;
+	border:1px solid #f5f5f5;
+	border-top:none;
+	display:inline-block;
+}
+
+.bt01 em, .bt02 em, .bt03 em { border:1px solid #C60A00; }
+
+.bt02 em {
+	height:22px;
+	line-height:18px;
+	border:1px solid #ffb3b3;
+}
+
+.bt03 em {
+	height:22px;
+	line-height:18px;
+	border:1px solid #ffdaa2;
+}
+
+.bt00 input[type="button"],
+.bt01 input[type="button"],
+.bt02 input[type="button"],
+.bt03 input[type="button"] {
+	margin:0;
+	padding:0;
+	height:24px;
+	color:#fff;
+	font-weight:bold;
+	background:none;
+	border:none;
+	vertical-align:baseline;
+	height:20px;
+	line-height:24px;
+	cursor:pointer;
+	overflow:visible;
+}
+
+.bt00 input[type="button"] { color:#333; }
+.bt01 input[type="button"] {}
+.bt02 input[type="button"],
+.bt03 input[type="button"] {}
+
+#_repository_keyword .bt01,
+#repo_side_navi .bt01 { margin:0; }
+
+/* ボタン角を丸く */
+.btn_round
+{
+    border-radius: 10px;        /* CSS3草案 */
+    -webkit-border-radius: 10px;    /* Safari,Google Chrome用 */
+    -moz-border-radius: 10px;   /* Firefox用 */
+}
+
+/* ボタンアイコン：戻る、次へ、アップロード、削除 */
+.icon_back,
+.icon_next,
+.icon_upload,
+.icon_delete {
+	padding-left:1.25em;
+	background:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/bt_back.png") 0 .25em no-repeat;
+}
+
+.icon_next {
+	background:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/bt_next.png") 0 .25em no-repeat;
+}
+
+.icon_upload {
+	background:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/bt_upload.png") 0 .4em no-repeat;
+}
+
+.icon_delete {
+	background:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/bt_delete.png") 0 .25em no-repeat;
+}
+
+.icon_back,
+.icon_next { padding-left:.9em; }
+
+
+/* input要素に最適化 */
+/* common */
+.btn_white,
+.btn_white:hover,
+.btn_blue,
+.btn_blue:hover,
+.btn_back,
+.btn_back:hover,
+.btn_next,
+.btn_next:hover,
+.btn_upload,
+.btn_upload:hover,
+.btn_delete,
+.btn_delete:hover {
+	margin:6px 3px !important;
+	padding:5px 10px 5px 25px;
+	/*background-color:#ff0000;*/
+	background-position:0 0 !important;
+	background-repeat:no-repeat;
+	border-color:#fc655a #C60A00 #C60A00 #fc655a;
+	border-style:solid;
+	border-width:1px;
+	color:#fff !important;
+	cursor:pointer;
+	font-weight:bold;
+	text-decoration: none;
+    line-height:1.5;
+}
+
+.btn_blue:hover,
+.btn_back:hover,
+.btn_next:hover,
+.btn_upload:hover {
+	background-color:#ff0000 !important;
+	border-color:#C60A00 #fc655a #fc655a #C60A00 !important;
+}
+
+
+/* A.Jin Add START*/
+.btn_blue{
+	margin:0px !important;
+	padding:5px 10px;
+	background-repeat:repeat;
+	border-color:#fc655a #C60A00 #C60A00 #fc655a !important;
+	border-style:solid;
+	border-width:1px;
+    background-image:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/red/btn_blue.gif") !important;
+    font-size:96%;
+}
+
+.btn_blue:hover {
+	margin:0px !important;
+	padding:5px 10px;
+	background-repeat:repeat;
+	border-color:#C60A00 #fc655a #fc655a #C60A00 !important;
+	border-style:solid;
+	border-width:1px;
+    background-image:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/red/btn_blue_hover.gif") !important;
+}
+/* A.Jin Add END*/
+
+.btn_white {
+	background-image:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/btn_white.gif") !important;
+	border-color:#dbdbdb #757575 #757575 #dbdbdb;
+	color:#000 !important;
+	margin:2px;
+	/* A.Jin Add */
+	padding:5px 10px;
+	background-repeat:repeat;
+	/* R.Matsuura Add */
+	font-size:96%;
+}
+
+.btn_white:hover {
+	background-image:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/btn_white_hover.gif") !important;
+	border-color:#1f1f1f #bebebe #bebebe #1f1f1f;
+	color:#000 !important;
+	margin:2px;
+	/* A.Jin Add */
+	padding:5px 10px;
+	background-repeat:repeat;
+}
+
+.btn_delete,
+.btn_delete:hover {
+	background-repeat:repeat-x;
+	background-color:#9d0606;
+	border-color:#e18e8e #660404 #660404 #e18e8e;
+	background-image:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/btn_delete.gif");
+}
+.btn_delete:hover {
+	background-color:#d55f5f;
+	background-image:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/btn_delete_hover.gif");
+	border-color:#660404 #e18e8e #e18e8e #660404;
+}
+
+.btn_back {
+	background-image:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/red/btn_back.gif") !important;
+	font-size:96%;
+}
+.btn_back:hover {
+	background-image:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/red/btn_back_hover.gif") !important;
+}
+
+.btn_next {
+	background-image:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/red/btn_next.gif") !important;
+	font-size:96%;
+}
+.btn_next:hover {
+	background-image:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/red/btn_next_hover.gif") !important;
+}
+
+.btn_upload {
+	background-image:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/red/btn_upload.gif") !important;
+	font-size:96%;
+}
+.btn_uploadt:hover {
+	background-image:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/red/btn_upload_hover.gif") !important;
+}
+
+.btn_blue[disabled], .btn_blue[disabled]:hover,
+.btn_white[disabled], .btn_white[disabled]:hover,
+.btn_delete[disabled], .btn_delete[disabled]:hover {
+	background-image:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/btn_white.gif") !important;
+	color:#ccc !important;
+	border-color:#f0f0f0 #d5d5d5 #d5d5d5 #f0f0f0 !important;
+	cursor:default !important;
+}
+
+#_repository_keyword .btn_blue {
+	margin:0;
+	padding:0;
+	height:26px;
+	width:66px;
+	text-align:center;
+}
+
+input#btn_log_move {
+	margin:5px !important;
+}
+
+/** Add sub index list view for smartphone Y.Nakao 2012/04/06 --start-- **/
+/* button for subIndex */
+#_repository_subIndexList .btn_white {
+	border-width:0px;
+	padding-left: 3px;
+	padding-right: 3px;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	margin: 0px;
+}
+
+#_repository_subIndexList .btn_white:hover{
+	border-width:1px;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+/** Add sub index list view for smartphone Y.Nakao 2012/04/06 --end-- **/
+
+/* clearfix */
+.c { zoom:1;/*for IE 5.5-7*/ }
+
+.c:after { content:""; display:block; clear:both; }
+
+	/* for IE6 */
+	* html .c { display:inline-block; }
+
+	/* for IE7 */
+	*+html .c { display:inline-block; }
+
+
+
+
+h2.header_repos {}
+
+#repo_main_content, .repository_right_header, #repo_side_navi {
+	overflow:hidden;
+}
+#repo_main_content {
+	margin-top:10px;
+	min-width: 900px;
+}
+.repository_left_frame_tree div {
+//	padding:2px;
+}
+
+/* 詳細毛検索の検索条件「一覧」表示用
+---------------------------------------------*/
+div.repositoryAdvancedSearchDiv
+{
+	max-height: 160px;
+	overflow-y: auto;
+}
+table.repositoryAdvancedSearchList
+{
+	table-layout: fixed;
+	width: 100%;
+	lineheight: 2em;
+}
+span.repositoryAdvancedSearchAddrowDisabled
+{
+	color: #ccc;
+}
+
+.keyword_bk {
+}
+input.search_keyword {
+	background:transparent;
+	border:none;
+}
+.repository_right_header {
+	/*float:right;
+	width:500px;*/
+}
+/* モジュール内<TABLE>タグのデフォルト */
+table.repository_right_header {
+	margin-left : 15px;
+}
+table.tb_repos {
+	border: 1px solid #C60A00;
+	background-color: #fff;
+}
+/* 1行帯用 */
+
+/* モジュール内<TH>タグのデフォルト */
+.th_repos {
+	clear:both;
+	padding:.25em .5em .15em;
+	background:#FFE8E8;
+	border-color:#C60A00 #C60A00 #C60A00;
+	border-style:solid;
+	border-width:3px 1px 1px;
+	font-size:116%;
+	font-weight:bold;
+	color:#000;
+	text-align:left;
+	word-spacing:.15em;
+}
+
+.icon_space {
+	padding: 0px 5px 0px 20px;
+}
+/* 検索結果数の表示など セクションに対する追加情報 */
+.info {
+	padding:6px;
+	font-size:12px;
+}
+th.th_col_repos {
+	padding:2px 4px;
+	/*background:#ec6d71 !important;*/
+	background:#FCD1D9 !important;
+
+	font-size:108%;
+	font-weight:bold;
+	border:1px solid #C60A00 !important;
+	/*color:#ffffff !important;*/
+	color:#000 !important;
+
+	white-space:nowrap;
+}
+
+
+/* モジュール内<TD>タグのデフォルト */
+td.td_repos {
+	padding:4px 8px;
+	background-color:#fff;
+	vertical-align:middle;
+}
+.pront_export .space_line, .view_line, .space_line {
+	/*padding:0 0 0 8px;
+	background:#f9fafb;*/
+}
+.view_sort, .view_num {
+	padding:0 6px;
+	height:2.5em;
+	line-height:2.5em;
+	background:#efefef;
+	display:inline-block;
+	text-align:center;
+}
+tr.tr_repos {
+	background-color: #D5E0ED;
+	height:18;
+	margin: 0px;
+}
+tr.tr_line_repos {
+	background-color: #D5E0ED;
+	height:18;
+	margin: 0px;
+}
+/** 隙間 **/
+.paging {
+	margin-top:14px;
+	margin-bottom:14px;
+}
+.paging_top
+{
+	margin-top:14px;
+}
+.paging_bottom
+{
+	margin-bottom:14px;
+}
+/** 隙間2 **/
+.paging2 {
+	margin-top:4px;
+	margin-bottom:4px;
+}
+/** インデックスリストのフォルダと名前の隙間 **/
+.folder_paging {
+	margin: 0px;
+	padding:0px 0px 0px 8px;
+}
+/** ツリー用の隙間 **/
+.tree_paging {
+	margin-left: 8px;
+	margin-top:14px;
+	margin-bottom:14px;
+}
+/** ランキング(インデント) **/
+.indent-paging {
+	margin-left: 14px;
+}
+/** 文字の色 **/
+.text_color {
+	color: #000000;
+}
+/** リストの隙間 **/
+.list_paging {
+	padding:8px;
+}
+/** パンくずの隙間 **/
+.pan_paging {
+	background-color: #cccccc;
+	padding: 4px 8px 4px 8px;
+	text-align: center;
+}
+/** パンくずのボタン(現在画面) **/
+.pan_sel_button {
+	border: 1px solid #183248;
+	/**background:#bec8d4 url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/button.png")  top repeat-x;**/
+	background-color: #1F4F76;
+	color: #ffffff;
+}
+/** パンくずのボタン(現在画面以外) **/
+.pan_button {
+	border: 1px solid #dddddd;
+	background-color: #cccccc;
+	color: #000000;
+}
+/** パンくずの矢印 **/
+.pan_arrow {
+	padding: 4px 8px 4px 8px;
+	text-align: center;
+}
+/** 表示ランキング同士の隙間 **/
+.ranking_padding {
+	padding: 20px 0px 20px 0px;
+}
+/** ランキング項目列 **/
+.ranking_paging {
+	padding: 2px 4px 2px 4px;
+}
+/** ランキングアイテム項目列 **/
+.ranking_list_paging {
+	padding: 8px 4px 10px 4px;
+}
+
+/** リスト表示ページ番号 **/
+a.page_move {
+	padding : .25em .25em;
+	background : #04419A !important;
+	text-align : center;
+	background-color: #FFE8E8 !important;
+    border: 1px solid #C60A00 !important;
+	margin: 0px 5px;
+	text-decoration: none;
+}
+a.page_move:hover {
+    text-decoration: none;
+}
+/** リストページ番号現在表示しているページ番号 **/
+a.page_view {
+	background-image:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/red/btn_blue.gif") !important;
+	color:#fff !important;
+	border:1px solid #fff !important;
+	padding : .25em .25em;
+	text-align:center;
+	margin: 0px 5px;
+	text-decoration: none;
+}
+
+a.page_view:hover {
+    color: #FFFFFF !important;
+    cursor: default;
+    text-decoration: none;
+}
+
+/* モジュール内<TD>タグのデフォルト */
+table.line_repos {
+	background-color: #eef;
+	height:18;
+	border-top: 1px solid #dde;
+	border-left: 1px solid #dde;
+	border-bottom: 1px solid #fff;
+	border-right: 1px solid #fff;
+	font-size: 12px;
+	padding-left: 5px;
+	padding-right: 5px;
+	margin: 0px;
+}
+table.line_repos:hover {
+	background-color: #f8f8ff;
+	border-top: 1px solid #eef;
+	border-left: 1px solid #eef;
+	border-bottom: 1px solid #fff;
+	border-right: 1px solid #fff;
+}
+td.td_graph_repos {
+	padding-left: 0px;
+	padding-right: 15px;
+	text-align: left;
+}
+span.graph_bar {
+	display: block;
+	background-color: #0f0;
+	border-top: 1px solid #8f8;
+	border-left: 1px solid #8f8;
+	border-bottom: 1px solid #080;
+	border-right: 1px solid #080;
+}
+/** チェックボックス<input type="chk"> **/
+input.chk_repos {
+	vertical-align:middle;
+}
+/** テキストボックス<input type="text"> **/
+input.txt_repos {
+	vertical-align:baseline;
+}
+/** 一覧表示の交互色 **/
+.list_line_repos1, .list_line_repos2 {
+	background:#FFE8E8 !important;
+	border-left:1px solid #C60A00 !important;
+	border-right:1px solid #C60A00 !important;
+}
+.list_line_repos2 {
+	background-color: #fff !important;
+}
+
+.list_line_comment1, .list_line_comment2 {
+	background:#FFE8E8 !important;
+	border-left:1px solid #C60A00 !important;
+	border-right:1px solid #C60A00 !important;
+	border-bottom:1px solid #C60A00 !important;
+}
+.list_line_comment2 {
+	background-color: #fff !important;
+}
+
+.list_table {
+	border-bottom:1px solid #C60A00 !important;
+}
+
+#item_links .list_line_repos1, #item_links .list_line_repos2 {
+	margin-bottom:0;
+	padding:0;
+	/*border:1px solid #fff;*/
+}
+
+#workflow .list_line_repos1, #workflow .list_line_repos2,
+#review .list_line_repos1, #review .list_line_repos2,
+#graph_area_repos .list_line_repos1, #graph_area_repos .list_line_repos2,
+#create .list_line_repos1, #create .list_line_repos2 {
+	float:none;
+}
+
+#create .list_line_repos1, #create .list_line_repos2 {
+	padding:8px;
+}
+
+#workflow .list_paging {
+	padding:8px;
+}
+
+/** 一覧表示の画面分割 **/
+.snippet_left {
+	float : left;
+}
+.riseze_border {
+	float : center;
+	background-color: #bec8d4;
+	width: 2px;
+	height: 300px;
+}
+.snippet_right {
+	float : right;
+}
+.list_title {
+	padding:6px;
+	background:#FFE8E8;
+	border:1px solid #fff;
+	overflow:hidden;
+}
+/** 一覧表示のチェックボックス **/
+.list_chk_repos, .list_title_line, .list_itemtype_icon {
+	float:left;
+	margin:0;
+	padding:0;
+	border:none;
+	overflow:hidden;
+}
+.list_chk_repos, .list_itemtype_icon {
+	padding:10px 0 10px 10px;
+}
+.print_area_icon {
+	padding:10px;
+}
+#search_items {
+	width:99.7%;
+}
+#search_items .list_line_repos1, #search_items .list_line_repos2 {
+	padding:0;
+	background:#fff;
+}
+/** 一覧表示のタイトル **/
+.list_title_line {
+	width:100%;
+	background:#FFE8E8 !important;
+	border-bottom:1px dotted #C60A00 !important;
+}
+.list_title_line a {
+	color:#387ad0;
+	font-weight:bold;
+}
+
+/** 一覧表示のアイテムアイコン **/
+.list_itemtype_icon {}
+/** 一覧表示の属性 **/
+.list_attr_repos, .list_mimetype_icon {
+	padding:10px 10px 5px 5px;
+	background:#fff;
+	clear:both;
+	margin:0;
+	color:#666;
+}
+.list_mimetype_icon {
+	margin-bottom:5px;
+	border-top:none;
+}
+/** 一覧表示のファイル **/
+.list_file_repos {
+	border-top: 0px;
+	border-left: 0px;
+	border-bottom: 0px;
+	border-right: 0px;
+	padding-top: 0px;
+	padding-bottom: 5px;
+	padding-left: 0px;
+	padding-right: 0px;
+	margin-top: 0px;
+	margin-bottom: 2px;
+	margin-right: 3px;
+	margin-left: 2px;
+}
+/** 一覧表示ダウンロードアイコン **/
+a.list_mimetype_icon {
+	padding:0;
+	background:#fff;
+	border:1px solid #afafaf;
+	color:#3879d0;
+	text-decoration:none;
+	display:inline-block;
+}
+a.list_mimetype_icon em {
+	padding:0 8px;
+	border-bottom:1px solid #efefef;
+	border-right:1px solid #efefef;
+	display:inline-block;
+}
+
+/* A.Jin Add 2013/05/20 */
+a.list_mimetype_icon:hover
+{
+ color:#E26507; !important;
+ text-decoration:none;
+}
+
+a.dead_link {
+	padding:0;
+	background:#cccccc;
+	border:1px solid #888;
+	color:#333333;
+	text-decoration:none;
+	display:inline-block;
+	cursor: default;
+}
+
+a.dead_link:hover {
+	color:#333333 !important;
+}
+
+#page_navi {
+	clear:both;
+	margin:20px auto 0 auto;
+	padding:10px 0;
+	border-top:4px solid #ebedf3;
+	text-align:center;
+}
+#page_navi a {
+	margin:5px 0;
+	padding:3px 6px;
+	text-align:center;
+	color:#387ad0;
+	font-weight:bold;
+}
+/* プレビュー */
+.prev {
+	background-color: #fff;
+	border-top: 1px solid #000;
+	border-left: 1px solid #000;
+	border-bottom: 1px solid #000;
+	border-right: 1px solid #000;
+	display: none;
+	position: absolute;
+	margin-top: -120px;
+	margin-bottom: 5px;
+	margin-right: 5px;
+	margin-left: 0px;
+}
+/* プレビュー */
+
+/* アイテム詳細表示用 */
+td.tb_detail_repos {
+	margin: 0px;
+	border: 0px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-left: 0px;
+	padding-right: 0px;
+}
+tr.tr_detail_line_repos {
+	border-top: 0px solid;
+	border-left: 0px solid;
+	border-bottom: 0px solid;
+	border-right: 0px solid;
+	vertical-align: middle;
+}
+th.th_detail_line_repos {
+	/*color:#5c6763;*/
+	font-weight:bold;
+	/*text-align:left;
+	vertical-align:top;*/
+	white-space:nowrap;
+}
+td.td_detail_line_repos {
+	color:#666;
+	white-space:normal;
+	/*line-height:1.5;
+	vertical-align:top;*/
+}
+th.th_detail_line_repos, td.td_detail_line_repos {
+	/*padding:8px 0;
+	line-height:1.5;
+	vertical-align:top;*/
+	/* A.Jin Add */
+	border:1px solid #FF231E !important;
+}
+#ft_detail_line_repos {
+	padding:10px 0;
+	border-top:4px solid #ebedf3;
+	text-align:center;
+}
+.error_msg {
+	margin-bottom:10px;
+	padding:10px;
+	color:#c00;
+	font-weight:bold;
+	background:#fee;
+	border:1px solid #ffbfbf;
+}
+.warning_msg {
+	margin-bottom:10px;
+	padding:10px;
+	color:#d56a00;
+	font-weight:bold;
+	background:#fffaf4;
+	border:1px solid #ffead5;
+}
+#doc_title {
+	margin-bottom:10px;
+	border-color:#bdd5bf;
+	border-style:solid none;
+	border-width:3px;
+	padding:15px 0;
+	font-size:185%;
+	color:#000;
+	line-height:1.2;
+	text-align:left;
+}
+#doc_info {
+	padding-top:10px;
+	border-top:4px solid #ebedf3;
+}
+#doc_info th, #doc_info td {
+	padding:6px 0;
+	text-align:left;
+	vertical-align:top;
+	white-space:nowrap;
+	color:#666;
+}
+.doc_summary {
+	margin-bottom:10px;
+	width:99.7%;
+	border:1px solid #C60A00;
+}
+.doc_summary th {
+	background:#FFE8E8;
+	border:1px solid #C60A00;
+	white-space:nowrap;
+}
+.doc_summary th em {
+	padding:8px;
+	font-weight:bold;
+	text-align:center;
+	color:#666;
+	display:block;
+}
+.file_name {
+	color:#000;
+	font-size:124%;
+	font-weight:bold;
+}
+.doc_summary td {
+	padding:8px;
+	border-top:1px dotted #C60A00;
+	border-right:1px solid #C60A00;
+}
+.doc_summary td em {
+	padding-left:10px;
+	color:#666;
+}
+.doc_summary td p {
+	text-align:center;
+}
+.doc_summary td p a {
+	display:block;
+}
+#doc_info th {
+	color:#4a597b;
+	font-weight:bold;
+}
+#etc_doc {
+	margin-bottom:10px;
+	overflow:hidden;
+}
+#etc_doc ul {
+	float:right;
+	overflow:hidden;
+}
+#etc_doc li {
+	float:left;
+	padding-left:10px;
+}
+#etc_doc a {
+	display:block;
+}
+/** ランキング **/
+.ranking_repos {
+	padding:4px;
+	/*background-color:#ccc;*/
+	background-color:#FFE8E8;
+	font-weight:bold;
+}
+
+/** 査読承認 **/
+.print_repos
+{
+	padding:4px;
+	background-color:#FCD1D9 !important;
+	font-weight:bold;
+	border:none !important;
+	color: #000000 !important;
+}
+td.print_item_edit_list
+{
+	padding: 4px 8px 4px 8px;
+	white-space:normal;
+	border:none !important;
+}
+
+/** アイテム登録、アイテムタイプのテーブル **/
+th.item_edit_list {
+/*background-color:#FFE8E8;*/
+	text-align:center;
+	padding: 4px 8px;
+	font-size:93%;
+	/* A.Jin Add */
+	white-space:nowrap;
+	border:1px solid #FF231E !important;
+}
+/** アイテム登録、アイテムタイプ、ログ表示のテーブル **/
+td.item_edit_list {
+	padding: 4px 8px 4px 8px;
+	/* A.Jin Add */
+	white-space:normal;
+	border:1px solid #FF231E !important;
+}
+
+.item_edit_list p {
+	padding-right:20px;
+	display:inline-block;
+}
+
+/***********************************************************************
+	overflow
+***********************************************************************/
+
+/** 横スクロール自動 **/
+.ofx_auto { overflow-x:auto; }
+/** 横スクロール非表示 **/
+.ofx_hidden { overflow-x:hidden; }
+/** 縦スクロール強制 **/
+.ofy_scroll { overflow-y:scroll; }
+/** 縦スクロール非表示 **/
+.ofy_hidden { overflow-y:hidden; }
+
+/***********************************************************************
+	ページ(1,2,3…)
+***********************************************************************/
+
+
+/***********************************************************************
+ツリー用
+***********************************************************************/
+/** ツリーブロック **/
+.tree_repos {
+	display: block;
+	overflow: auto;
+	position:relative;
+}
+/** ノードブロック **/
+.node_repos0 {
+	display: block;
+	margin-top: 0px;
+
+	white-space: nowrap;
+}
+.node_repos {
+	display: block;
+	border: 0px #8f8 solid;
+	margin-left: 16px;
+	margin-top: 2px;
+	margin-bottom: 3px;
+	/*	cursor: default ;*/
+	white-space: nowrap;
+}
+
+/** Add sub index list view for smartphone Y.Nakao 2012/04/06 --start-- **/
+#_repository_subIndexPanel .node_repos0:hover,
+#_repository_subIndexPanel .node_repos:hover {
+	background-color: #e0ffff;
+}
+/** Add sub index list view for smartphone Y.Nakao 2012/04/06 --end-- **/
+
+.drgimg_repos {
+	border: 1px #88f solid;
+	position:absolute;
+	white-space: nowrap;
+	font-size: 12px;
+	top:-30px;
+	left:-30px;
+	cursor: default;
+}
+div.nodeline_repos:hover {
+	cursor: pointer;
+}
+/** ノードの文字列部分 **/
+a.nodelabel_repos {
+	font-size: 12px;
+	color: #338;
+	border: 0px #f88 solid;
+	white-space: nowrap;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+}
+a.nodelabel_s_repos {
+//	padding:2px 4px;
+	font-size: 12px;
+	color: #338;
+//	color: /*#fff*/#000 !important;
+	/*border: 1px #aaf solid;*/
+	background-color:/*#00f*/#FFE8E8 !important;
+//	font-weight:bold;
+	white-space: nowrap;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+}
+
+img.branch_repos {
+	border:0;
+	vertical-align: bottom;
+	cursor: pointer;
+	margin-bottom:1px;
+}
+img.folder_repos {
+	border:0;
+	vertical-align: bottom;
+	cursor: pointer;
+	margin-right: 5px;
+}
+/** 番兵ノード(編集モード時のみ表示) **/
+div.sentry_repos {
+	display: block;
+	border-style: solid;
+	border-width: 1px 0px 3px;
+	border-color: #FFFFFF;
+	padding-bottom: 4px;
+	background-color:#FFD6D6 !important;
+	-moz-opacity:0.3;
+	opacity:1;
+}
+/** 番兵ノードマウスホバー(編集モード時のみ表示) **/
+div.sentryH_repos {
+	display: block;
+	border-style: solid;
+	border-width: 1px 0px 1px;
+	border-color: #FFFFFF;
+	padding-bottom: 6px;
+	background-color:#FAFA20;
+	-moz-opacity:1;
+	opacity:1;
+}
+/** 前番兵ノード(編集モード時のみ表示) **/
+div.sentryP_repos {
+	display: block;
+	border-style: solid;
+	border-width: 1px 0px 3px;
+	border-color: #FFFFFF;
+	padding-bottom: 4px;
+	background-color:#FFD6D6 !important;
+	-moz-opacity:0.3;
+	opacity:1;
+}
+/** 前番兵ノードマウスホバー(編集モード時のみ表示) **/
+div.sentryPH_repos {
+	display: block;
+	border-style: solid;
+	border-width: 1px 0px 1px;
+	border-color: #FFFFFF;
+	padding-bottom: 6px;
+	background-color:#FAFA20;
+	-moz-opacity:1;
+	opacity:1;
+}
+/** 枝部分の画像 **/
+.branch_repos {
+	border: 0px #88f solid;
+	vertical-align:text-top;
+}
+/** 枝部分の画像 **/
+.debug_repos {
+	border: 1px #88f solid;
+}
+/** ツリー編集の「新規・削除」部分 **/
+.line_edit_tree {
+	text-align: center;
+	padding: 2px 0px 2px 0px;
+}
+
+/***********************************************************************
+以下は2008/03/05現在使用しないこと
+***********************************************************************/
+/* 子にinput要素を持つ<TR>タグのデフォルト */
+tr.input_line_repos {
+	border: 1px solid #000000;
+	background-image:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/tree/td_background_.png");
+	height:24;
+	background-repeat: repeat-x;
+	background-position : center;
+	vertical-align: middle;
+	filter: alpha(opacity=70);
+	-moz-opacity:0.7;
+	opacity:0.7;
+	font-size: 12px;
+}
+/* 子にinput要素を持つ<TR>タグのhoverデフォルト */
+tr.input_line_repos:hover {
+	border: 0px solid #000000;
+	background-repeat: repeat-x;
+	background-position : center;
+	vertical-align: middle;
+	filter: alpha(opacity=100);
+	-moz-opacity:1;
+	opacity:1;
+	font-size: 12px;
+}
+/* 子にinput要素を持つ<TR>タグのデフォルト */
+.input_element_repos {
+	margin: 10px;
+	font-size: 12px;
+}
+
+#no_edit_icon img { vertical-align:middle; }
+
+/***********************************************************************
+2008/10/23追加
+***********************************************************************/
+/* 検索結果タイトルのコネクタ表示 */
+td.connecter {
+	background:transparent url("<{$smarty.const.CORE_BASE_URL}>/images/repository/connecter/connecter1.png") top left no-repeat;
+}
+div.actionsortbox {
+	clear:both;
+}
+div.listitem {
+	padding-top:12px;
+	padding-bottom:12px;
+	clear:both;
+	height:100%;
+}
+td.connecter2 {
+	background:transparent url("<{$smarty.const.CORE_BASE_URL}>/images/repository/connecter/connecter2.png") top no-repeat;
+}
+td.connecter3 {
+	background:transparent url("<{$smarty.const.CORE_BASE_URL}>/images/repository/connecter/connecter3.png") top no-repeat;
+}
+tr.list_line1 {
+	background:#D5E0ED;
+}
+.th_classic_content {
+	border:0 none !important;
+	padding:5px !important;
+}
+.th_classic_content2 {
+	border:0 none;
+	padding:0px 10px 10px;
+}
+.th_classic_content3 {
+	border:0 none;
+	padding:0px 10px;
+}
+/* 2008/11/18 A.Suzuki */
+td.item_edit_list2 {
+	text-align: center;
+	text-valign:center;
+	padding: 4px 0px 4px 0px;
+}
+td.item_edit_list3 {
+	padding: 4px 0px 4px 10px;
+}
+th.item_edit_list4,
+td.item_edit_list4
+{
+	border:1px solid #FF231E !important;
+}
+
+/* common settings */
+
+.text_color { color:#333; }
+
+
+
+/* frames */
+
+.th_classic_repo {
+	width:100%;
+	background-color:#fff;
+}
+
+
+
+/* titles */
+
+.th_classic_repo_header {
+	padding:6px;
+	font-size:124%;
+}
+
+.rightcolumn .th_classic_repo_header {
+	padding:0;
+	font-size:93%;
+	background:#FFE8E8;
+	border:1px solid #C60A00;
+	border-top:3px solid #6c8a6c;
+}
+
+.rightcolumn .th_classic_repo_header h2.nc_block_title {
+	color:#000;
+}
+.th_classic_repo_title {
+	color:#324684;
+	margin:0px;
+	padding:5px 0px 5px 5px;
+	display:block;
+}
+
+.th_repos table { width:100%; }
+
+.th_repos th {
+	padding:4px 0 4px 8px;
+	font-weight:bold;
+	color:#000;
+	display:block;
+	border:none;
+}
+
+/*
+#ranking_list,
+#download_ranking,
+#user_ranking,
+#keyword_ranking,
+#newitem_ranking {
+	margin:10px 0 20px;
+	padding:0 0 1px;
+	border:1px solid #C60A00;
+}*/
+
+#newitem_ranking {}
+
+#ranking_list table .list_line_repos1,
+#download_ranking table .list_line_repos1,
+#user_ranking table .list_line_repos1,
+#keyword_ranking table .list_line_repos1,
+#newitem_ranking table .list_line_repos1 {
+	background:#fdfcf0;
+	border:none;
+	border-bottom:1px solid #ecda91;
+	border-right:1px solid #ecda91;
+}
+
+#ranking_list table .list_line_repos1 a,
+#download_ranking table .list_line_repos1 a,
+#user_ranking table .list_line_repos1 a,
+#keyword_ranking table .list_line_repos1 a,
+#newitem_ranking table .list_line_repos1 a {
+	color:#e06506;
+	font-weight:bold;
+}
+
+#ranking_list table .list_line_repos2,
+#download_ranking table .list_line_repos2,
+#user_ranking table .list_line_repos2,
+#keyword_ranking table .list_line_repos2,
+#newitem_ranking table .list_line_repos2 {
+	background:#f7fafd;
+	/* border-top:1px dotted #C60A00; */
+	border-top:none;
+	border-bottom:1px solid #c4d9ec;
+	border-right:1px solid #c4d9ec;
+	border-left:none;
+}
+
+.rank_refer_num,
+.newitem_pubdate {
+	position:relative;
+	width:60px;
+	height:60px;
+}
+
+.newitem_pubdate {
+	width:auto;
+}
+
+.rank_refer_num em.rank_rank,
+.rank_refer_num em.rank_ref,
+.newitem_pubdate em.newitem {
+	position:absolute;
+	top:30px;
+	left:5px;
+	width:40px;
+	text-align:center;
+}
+
+.rank_refer_num em.rank_ref {
+	top:2px;
+}
+
+em.rank_rank {
+	color:#000;
+	font-weight:bold;
+}
+
+#ranking_list table .list_line_repos1 .rank_refer_num em,
+#download_ranking table .list_line_repos1 .rank_refer_num em,
+#keyword_ranking table .list_line_repos1 .rank_refer_num em,
+#user_ranking table .list_line_repos1 .rank_refer_num em {
+	color:#fff;
+}
+
+.newitem_pubdate em.newitem {
+	top:40px;
+	left:65px;
+	width:500px;
+	text-align:left;
+}
+
+.ranking_list_paging strong { font-weight:bold; }
+
+
+/* Side navi */
+
+#repo_side_navi {
+	float:left !important;
+	border-color:#C60A00 #C60A00 !important;
+	border-style:solid !important;
+	border-width:3px 1px 1px !important;
+	margin-right:5px !important;
+}
+
+#repo_side_navi h3 a {
+	text-decoration:none;
+	color:#000;
+}
+
+#repo_side_navi h3, #repo_side_navi h3.first_title {
+	padding-left:0;
+	background:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/red/panelbar_bk.gif") left -1px repeat-x !important;
+	border-left:none;
+	border-right:none;
+	border-bottom:1px solid #C60A00 !important;
+	border-top:1px solid #C60A00 !important;
+	font-weight:bold;
+	color:#000 !important;
+	height:20px;
+}
+#repo_side_navi h3 span, #repo_side_navi h3 a {
+	/*padding-left:5px;*/
+}
+
+#repo_side_navi h3.first_title {
+	background:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/red/panelbar_bk.gif") repeat-x;
+}
+
+.panelbar {
+	padding:.25em 1em .15em;
+	background:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/red/panelbar_bk.gif") repeat-x;
+	border-width:0px;
+	font-weight:bold;
+	color:#000;
+	text-align:left;
+	word-spacing:.15em;
+	background-color: #DDDDDD;
+}
+
+.doc_summary th {
+	float: right;
+	padding:0;
+	background:#FFE8E8 url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/th_bk.gif") right bottom no-repeat;
+}
+
+/* highlight */
+.th_classic_repo .highlight{
+	background-color:#e8f5f8;
+	color:#3ba6bd;
+}
+
+.th_classic_repo a.hover_highlight:hover {
+	background-color:#e8f5f8;
+	color:#3ba6bd;
+	text-decoration:none;
+}
+
+/* basic */
+#repo_main_content .repository_right_frame table { width:100%; }
+
+/* repository_item_detail.html */
+h2.item_detail_title {
+	/* A.Jin Add */
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+	padding:20px 0 20px 22px;
+	font-size:154%;
+	text-align:left;
+	text-indent:-22px;
+	/*border:3px solid #FF231E !important;*/
+	border-left:none;
+	border-right:none;
+	color:#000;
+	/* A.Jin Add */
+	border-color:#FF231E !important;
+    border-image: none;
+    border-style: solid none;
+    border-width: 3px medium;
+}
+
+.topic_path th, .topic_path td {
+	padding:.5em;
+	text-align:left;
+	font-size:85%;
+}
+.topic_path th {
+	background:#efefef;
+	color:#000;
+	font-weight:bold;
+}
+.topic_path td {
+	background:#f9fafb;
+}
+
+.topic_path td a {
+	margin-right:10px;
+	padding:.15em .5em;
+	background:#fff;
+	border:1px solid #afafaf;
+	display:inline-block;
+}
+.topic_path td a em {}
+
+/* repository_item_search_result.html */
+ol.topic_path {
+	float:left;
+	margin:10px 0 5px;
+}
+
+ol.topic_path li { float:left; }
+
+ol.topic_path li a,
+ol.topic_path li em {
+	padding-right:.75em;
+	display:inline-block;
+}
+
+ol.topic_path li em { font-weight:bold; }
+
+.export_print_disp {
+	clear:both;
+	padding:10px 0;
+}
+
+.disp_num {
+	padding:8px 0;
+}
+
+.item_block {
+	margin-bottom:10px;
+	border:1px solid #C60A00;
+}
+
+.item_title { padding:8px 0 3px; font-size:108%; }
+
+.item_title a { display:block; }
+
+.item_num { font-size:85%; font-weight:normal; font-style:normal; }
+
+.pager { margin:10px auto; text-align:center; }
+
+.pager ol { margin-letf:5px; }
+
+.pager li { display:-moz-inline-box; display:inline-block; /display:inline; /zoom:1; margin-right:5px; }
+
+.pager a { padding:.25em .5em; }
+
+
+/**
+ Add suggetst 2010/11/30 Y.Nakao --start--
+**/
+/***************************************
+ *
+ * suggest
+ *
+ ***************************************/
+.repositorySuggest {
+    position: absolute;
+    background-color: #FFFFFF;
+    border: 1px solid #CCCCFF;
+    width: 400px;
+    height:100px;
+    overflow: auto;
+}
+.repositorySuggest div {
+    display: absolute;
+    width: 400px;
+    overflow: auto;
+}
+.repositorySuggest div.select{ /* キー上下で選択した場合のスタイル */
+    color: #FFFFFF;
+    background-color: #3366FF;
+}
+.repositorySuggest div.over{ /* マウスオーバ時のスタイル */
+    background-color: #99CCFF;
+}
+
+/**
+ Add suggetst 2010/11/30 Y.Nakao --end--
+**/
+
+/**
+ Add wide suggest 2013/04/09 A.jin --start--
+**/
+/***************************************
+ *
+ * wide suggest
+ *
+ ***************************************/
+.repositoryWideSuggest {
+    position: absolute;
+    margin: -6px;
+    background-color: #FFFFFF;
+    border: 1px solid #CCCCFF;
+    width: 590px;
+    height:100px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.repositoryWideSuggest div {
+    display: absolute;
+    width: 590px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.repositoryWideSuggest div.select{ /* キー上下で選択した場合のスタイル */
+    color: #FFFFFF;
+    background-color: #3366FF;
+}
+.repositoryWideSuggest div.over{ /* マウスオーバ時のスタイル */
+    background-color: #99CCFF;
+}
+.repositoryWideLoadingSuggest {
+    position: absolute;
+    margin: -6px;
+    background-color: #FFFFFF;
+    border: 1px solid #CCCCFF;
+    width: 590px;
+    height:40px;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+.repositoryWideLoadingSuggest div {
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+.repositoryWideLoadingImg {
+    position:absolute;
+    top: 25%;
+    left: 50%;
+}
+
+/**
+ Add wide suggest 2013/04/09 A.jin --end--
+**/
+
+
+/* repository_ranking.html */
+
+#ranking_list,
+#download_ranking,
+#user_ranking,
+#keyword_ranking,
+#newitem_ranking {
+	margin:10px 0 20px;
+	padding:0px;
+	border:1px solid #C60A00;
+}
+
+#ranking_list table .list_line_repos1,
+#download_ranking table .list_line_repos1,
+#user_ranking table .list_line_repos1,
+#keyword_ranking table .list_line_repos1,
+#newitem_ranking table .list_line_repos1 {
+	background:#fdfcf0 !important;
+	border:none;
+	border-bottom:1px solid #ecda91 !important;
+	border-right:1px solid #ecda91 !important;
+}
+
+#ranking_list table .list_line_repos1 a,
+#download_ranking table .list_line_repos1 a,
+#user_ranking table .list_line_repos1 a,
+#keyword_ranking table .list_line_repos1 a,
+#newitem_ranking table .list_line_repos1 a {
+	color:#e06506;
+	font-weight:bold;
+}
+
+#ranking_list table .list_line_repos2,
+#download_ranking table .list_line_repos2,
+#user_ranking table .list_line_repos2,
+#keyword_ranking table .list_line_repos2,
+#newitem_ranking table .list_line_repos2 {
+	background:#f7fafd;
+	/* border-top:1px dotted #C60A00; */
+	border-top:none;
+	border-bottom:1px solid #c4d9ec;
+	border-right:1px solid #c4d9ec;
+	border-left:none;
+}
+
+#ranking_list table .list_line_repos1,
+#ranking_list table .list_line_repos2,
+#download_ranking table .list_line_repos1,
+#download_ranking table .list_line_repos2,
+#user_ranking table .list_line_repos1,
+#user_ranking table .list_line_repos2,
+#keyword_ranking table .list_line_repos1,
+#keyword_ranking table .list_line_repos2,
+#newitem_ranking table .list_line_repos1,
+#newitem_ranking table .list_line_repos2 {
+	margin:0;
+	padding:0;
+	width:100%;
+}
+
+.rank_refer_num,
+.newitem_pubdate {
+	position:relative;
+	width:60px;
+	height:60px;
+	background:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank_bk.gif") no-repeat;
+}
+
+.newitem_pubdate { height:37px; background:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank_bk.gif") left bottom no-repeat;}
+
+.rank_refer_num em.rank_rank,
+.rank_refer_num em.rank_ref,
+.newitem_pubdate em.newitem {
+	position:absolute;
+	top:30px;
+	left:5px;
+	width:40px;
+	text-align:center;
+}
+
+.rank_refer_num em.rank_ref {
+	top:2px;
+}
+
+#ranking_list table .list_line_repos1 .rank_refer_num em,
+#download_ranking table .list_line_repos1 .rank_refer_num em,
+#keyword_ranking table .list_line_repos1 .rank_refer_num em,
+#user_ranking table .list_line_repos1 .rank_refer_num em,
+#newitem_ranking table .list_line_repos1 .rank_refer_num em {
+	color:#fff;
+}
+
+.newitem_pubdate em.newitem {
+	top:0;
+	width:500px;
+	text-align:left;
+}
+
+.ranking_list_paging strong { font-weight:bold; }
+
+
+/* repository_item_type_edit.html */
+#item_edit_text [type="text"] { /*width:8em;*/ margin-right:.15em; }
+
+.th_repos_title_bar {
+	clear:both;
+	padding:.25em 10px .15em;
+	background:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/red/panelbar_bk.gif") repeat-x !important;
+	border-color:#C60A00 #C60A00 #C60A00 !important;
+	border-style:solid;
+	border-width:3px 1px 1px;
+	font-size:110%;
+	font-weight:bold;
+	color:#000 !important;
+	text-align:left;
+	word-spacing:.15em;
+	background-color: #FFE8E8 !important;
+}
+
+.tc {
+	margin-left: auto;
+	margin-right: auto;
+	width: auto;
+}
+
+.dil {
+	display: inline;
+}
+
+.lh100 {
+	line-height: 100%;
+}
+
+a[name="index_tree"],
+a[name="snipet_tree"],
+a[name="link_tree"],
+a[name="els_tree"],
+a[name="edit_tree"],
+a#tree_nodelabel0,
+a[name="root_private_tree"]
+{
+	text-decoration: none !important;
+}
+
+.non_decoration
+{
+	text-decoration: none !important;
+}
+
+span.strong {
+	font-weight: bold;
+}
+
+#snipetTreepanel div {
+    padding-bottom:  0px;
+}
+
+.disp_b { display:block !important; }
+
+
+/**
+ * add 2013/1/18 Y.nakao
+ * for scpj popup window
+ */
+div.policyColor
+{
+    color: #000000;
+    background-color: #FFFFFF;
+    border: 1px solid #000000;
+    position:relative;
+    border-radius: 10px;
+    top: -55px;
+    left: 220px;
+    width: 400px;
+    padding:6px;
+}
+
+/**
+ * scpj link string
+ */
+div.scpjLink
+{
+    font-size: 100%;
+    text-align: right;
+}
+/**
+ * poclicy select color
+ */
+div.policySelectColor
+{
+    background-color: #FFD700;
+    border: 1px solid #FF8C00;
+}
+/**
+ * poclicy not select color
+ */
+div.policyUnselectColor
+{
+    background-color: #FFFFFF;
+}
+
+/**
+ * policy pop up loading img
+ */
+.policyLoading
+{
+    position: absolute;
+    left: 200px;
+    top:150px;
+    vertical-align: middle;
+}
+.indexLine
+{
+	border:1px solid #FFFFFF;
+	padding:1px 0px 0px 0px;
+	height:18px;
+}
+.indexLineSelect
+{
+	background-color:#FFE3E3 !important;
+	border:1px solid #FFC1C1 !important;
+	border-radius: 3px;
+	padding:1px 0px 0px 0px;
+	cursor: default;
+	height:18px;
+}
+.indexLine:hover
+{
+	color:#e26507 !important;
+	border-radius: 3px;
+    background-color: #FFF5F5 !important;
+	border:1px solid #FFC1C1 !important;
+	cursor: default;
+}
+.indexLine_H
+{
+	color:#e26507 !important;
+    background-color: #FFF5F5 !important;
+	border:1px solid #FFC1C1 !important;
+	padding:1px 0px 0px 0px;
+	height:18px;
+	border-radius: 3px;
+	cursor: default;
+}
+img.draganddrop {
+	background-image:url("<{$smarty.const.CORE_BASE_URL}>/images/comp/draganddrop/move_bar.gif");
+	background-repeat:repeat-y;
+	cursor:move;
+	width:6px;
+	position:relative;
+	z-index:2;
+}
+.dragImage{
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+	-moz-opacity: 0.5;
+}
+.multiLanguageTable{
+	max-height:200px;
+	overflow-y:auto;
+	overflow-x:hidden;
+	padding:10px 15px 5px 10px;
+}
+/**
+ * link color setting for galleryView
+ */
+.galleryViewLink a:link{
+	color: #FFFFFF;
+}
+.galleryViewLink a:visited{
+	color: #FFFFFF;
+}
+.galleryViewLink a:hover{
+	color: #FFFFEE;
+}
+.galleryViewLink a:active{
+	color: #FFEEFF;
+}

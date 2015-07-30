@@ -1,0 +1,186 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_item_customsort.html 17777 2012-05-22 09:53:02Z tatsuya_koyasu $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+
+<{strip}>
+<div id="repository<{$id}>_customsortDiv">
+	<table class="full">	
+		<tr>
+			<th class="pd10 th01">
+				<div class="fl">
+					<{$lang.repository_item_sortorder_target_index}>
+				</div>
+				<{* HELP *}>
+				<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+					<div class="fr">
+						<a style="cursor: help;" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'item_customsort'); return false;" href="#">
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" alt="help">
+						</a>
+					</div>
+				<{/if}>
+			</th>
+		</tr>
+		<tr>
+			<td class="pd10">
+				<div id="select_sort_index" class="al">
+					<{if strlen($action.sortIndexName) > 0}>
+						<{$action.sortIndexName}>
+					<{else}>
+						<font style="color:#f00;"><{$lang.repository_item_embargo_select_index}></font>
+					<{/if}>
+				</div>
+				<input id="select_sort_index_id" type="hidden" value="<{$action.sortIndexId}>">
+			</td>
+		</tr>
+		<{if count($action.sortData) > 0}>
+			<tr>
+				<th class="pd10 al th01"><{$lang.repository_item_sortorder_target_attention}></th>
+			</tr>
+			<tr>
+			    <td class="pd10 al">
+			        <div id="select_sort_index">
+			            <{$lang.repository_item_sortorder_operation_explanation}>
+			        </div>
+			    </td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						<table id="repository_sort_item_list<{$id}>" class="full">
+							<{foreach from=$action.sortData item=itemData name="sortItemList"}>
+								<{assign var="cnt" value=$smarty.foreach.sortItemList.iteration-1}> 
+								<tr id="repository_custom_sort_order_<{$itemData.custom_sort_order}>" style="border: 1px solid #E0E0E0;">
+									
+									<{* td *}>
+									<td class="comp_draganddrop">
+									</td>
+									
+									<td style="padding: 2px; padding-left: 10px;" class="al" width="500">
+										<a href="#" onclick="javascript: repositoryCls['<{$id}>'].repositoryWorkflowItemDetail(event, <{$itemData.item_id}>,<{$itemData.item_no}>, true); return false;">
+										<{if $itemData.title!="" }>
+										  <{$itemData.title}>
+										<{else}>
+										  <{$itemData.title_english}>
+										<{/if}>
+										</a>
+									</td>
+									
+									<td width="30" align="center">
+										<input type="button" class="btn_white btn_round" value="&nbsp;&nbsp;&nbsp;↑&nbsp;&nbsp;&nbsp;" 
+										onclick="javascript: repositoryCls['<{$id}>'].repositoryCustomSortOrder(<{$action.sortIndexId}>,<{$itemData.custom_sort_order}>,<{$itemData.custom_sort_order-1}>); return false;"
+										<{if $cnt==0}>disabled="disabled"<{/if}> />
+									</td>
+									
+									<td width="30" align="center">
+										<input type="button" class="btn_white btn_round" value="&nbsp;&nbsp;&nbsp;↓&nbsp;&nbsp;&nbsp;" 
+										onclick="javascript: repositoryCls['<{$id}>'].repositoryCustomSortOrder(<{$action.sortIndexId}>,<{$itemData.custom_sort_order}>,<{$itemData.custom_sort_order+1}>); return false;" 
+										<{if ($cnt+1)==count($action.sortData)}>disabled="disabled"<{/if}> />
+									</td>
+								</tr>
+							<{/foreach}>
+						</table>
+					</div>
+				</td>
+			</tr>
+		<{/if}>
+	</table>
+</div>
+
+<{/strip}>
+
+<script class="nc_script" type="text/javascript">
+	<{* setting height *}>
+	var elm = $('repository<{$id}>_customsortDiv');
+	if(elm.offsetHeight > 500)
+	{
+		var hei = elm.offsetHeight + 20;
+		elm.style.height = hei + "px";
+	}
+	else
+	{
+		elm.style.height = "450px";
+	}
+</script>
+
+<script class="nc_script" type="text/javascript">
+	var repositoryCustomSortDropZone = Class.create();
+	repositoryCustomSortDropZone.prototype = Object.extend((new compDropzone), {
+		showHover: function(event) {
+			this.showChgSeqHover(event);
+		},
+		
+		hideHover: function(event) {
+			this.hideChgSeqHover(event);
+		},
+		
+		accept: function(draggableObjects) {
+			this.acceptChgSeq(draggableObjects);
+		},
+		
+		save: function(draggableObjects) {
+			if(this.ChgSeqPosition == null) {
+				return false;
+			}
+	    	var drag = draggableObjects[0].getHTMLElement();
+	    	var drop = this.getHTMLElement();
+			
+			var currentSortOrder = parseInt( drag.id.replace('repository_custom_sort_order_', '') );
+			var targetSortOrder  = parseInt( drop.id.replace('repository_custom_sort_order_', '') );
+			
+			// ドロップしたポジションを取得してdrop.idの判定をする
+			var position = this.ChgSeqPosition;
+			if(currentSortOrder<targetSortOrder && position == "top")
+			{
+				// 1, 2, 3 の1が2の上から1と2の間にドロップされた。
+				// drop.idが2になるので-1する。
+				targetSortOrder = targetSortOrder - 1;
+			}
+			else if(currentSortOrder>targetSortOrder && position == "bottom")
+			{
+				// 1, 2, 3 の3が1の下から1と2の間にドロップされた。
+				// drop.idが1になるので+1する。
+				targetSortOrder = targetSortOrder + 1;
+			}
+			
+			// currentSortOrderとtargetSortOrderが同じ場合、ドロップしない
+			if(currentSortOrder == targetSortOrder)
+			{
+				return false;
+			}
+			
+			var id = this.getParams();  // newした時の第二引き数
+			repositoryCls[id].repositoryCustomSortOrder(<{$action.sortIndexId}>, currentSortOrder, targetSortOrder);
+			
+			// return trueでドロップ確定／return falseでキャンセル
+			return true;
+		}
+	});
+	
+	var repositoryCustomSortDragArea;
+	if((repositoryCustomSortDragArea = $("repository_sort_item_list<{$id}>")) != null)
+	{
+		var repositoryCustomSortDragAndDrop = new compDragAndDrop();
+		repositoryCustomSortDragAndDrop.registerDraggableRange( repositoryCustomSortDragArea );
+		
+		var rows = repositoryCustomSortDragArea.getElementsByTagName("tr");
+		for (var ii = 0; ii < rows.length; ii++) {
+			repositoryCustomSortDragAndDrop.registerDraggable(new compDraggable(rows[ii], rows[ii].firstChild));
+			repositoryCustomSortDragAndDrop.registerDropZone(new repositoryCustomSortDropZone(rows[ii], "<{$id}>"));
+		}
+	}
+	
+	repositoryCustomSortDropZone = null;
+	repositoryCustomSortDragArea = null;
+	repositoryCustomSortDragAndDrop = null;
+	rows = null;
+	
+</script>
+

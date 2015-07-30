@@ -1,0 +1,315 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_item_type_mappingconfirm.html 36428 2014-05-29 04:01:44Z rei_matsuura $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<div class="mt10">
+
+	<table class="box_center">
+		<{*ヘルプ*}>
+		<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+			<tr>
+				<td align="right" class="ptb10">
+					<div>
+						<a href="#" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'itemtype_mapping_conf'); return false;" style="cursor: help;">
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" align="right" alt="help">
+						</a>
+					</div>
+				</td>
+			</tr>
+		<{/if}>
+		<tr>
+			<td>
+				 <{if $smarty.session._lang == "japanese"}>
+					<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_type_settings6.png" />
+				 <{else}>
+					<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_type_settings6_eng.png" />
+				 <{/if}>
+			</td>
+		</tr>
+	</table>
+
+<div class="paging text_color mr10 ml10 ac">
+ <table class="full">
+  <tr>
+   <td style="text-align: left;">
+     <center>
+
+      <table class="ac">
+       <tbody>
+        <tr>
+         <td class="nowrap pr05">
+          <b><{$lang.repository_itemtype}> : </b>
+         </td>
+         <td class="pr05 al">
+          <b><{$smarty.session.itemtype.item_type_name}></b>
+         </td>
+         <td>
+          <{$smarty.session.itemtype.mapping_info}>
+         </td>
+        </tr>
+       </tbody>
+      </table>
+     </center>
+   </td>
+  </tr>
+ </table>
+</div>
+
+<{*通常のアイテムタイプ確認と統合してしまった方がいいかも*}>
+<div class="paging text_color mr10 ml10" align="center">
+<{*input class="btn lined_btn" style="width:100px;" type="button" value="<{$lang.repository_cancel}>" onclick="if(!commonCls.confirm('<{$lang.repository_confirmation_cancel}>'))return false; repositoryCls['<{$id}>'].repositoryGoEdit(); return false;" *}>
+ <form name="FormItem" action="Confirm_ItemType.html" method="post">
+<{* セッション情報からアイテムタイプを取得し、表示 *}>
+ <table class="tb01 full">
+    <col align="left">
+    <col align="left">
+    <col align="left" width="100px">
+    <col align="left" width="120px">
+    <col align="left" width="200px">
+    <col align="left" width="100px">
+    <col align="left" width="50px">
+   <tr>
+    <th class="item_edit_list ac"><{$lang.repository_mapping_name}></th>
+    <th class="item_edit_list ac"><{$lang.repository_mapping_inputtype}></th>
+    <th class="item_edit_list ac"><{$lang.repository_mapping_dublincore}></th>
+    <th class="item_edit_list ac"><{$lang.repository_mapping_junii2}></th>
+    <th class="item_edit_list ac"><{$lang.repository_lom_LearningObjectMetadata}></th>
+    <th class="item_edit_list ac"><{$lang.repository_mapping_lido}></th>
+    <th class="item_edit_list ac"><{$lang.repository_mapping_spase}></th>
+	  <th class="item_edit_list ac"><{$lang.repository_mapping_language}></th>
+    
+   </tr>
+   <{*基本データ*}>
+   <{*タイトル*}>
+   <tr>
+    <td class="item_edit_list al"><{$lang.repository_title}></td>
+    <td class="item_edit_list al"><{$lang.repository_text}></td>
+    <td class="item_edit_list al"><{$lang.repository_dublin_core_title}></td>
+    <td class="item_edit_list al"><{$lang.repository_junii2_title}>/<{$lang.repository_junii2_alternative}></td>
+    <td class="item_edit_list al">generalTitle</td>
+    <td class="item_edit_list al"><{$lang.repository_lido_title_full}></td>
+    <td class="item_edit_list al"><{$lang.repository_spase_title}></td>
+    <td class="item_edit_list al"><{$lang.repository_language_ja}></td>
+   </tr>
+   <{*タイトル(英)*}>
+   <tr>
+    <td class="item_edit_list al"><{$lang.repository_title_english}></td>
+    <td class="item_edit_list al"><{$lang.repository_text}></td>
+    <td class="item_edit_list al"><{$lang.repository_dublin_core_title}></td>
+    <td class="item_edit_list al"><{$lang.repository_junii2_title}>/<{$lang.repository_junii2_alternative}></td>
+    <td class="item_edit_list al">generalTitle</td>
+    <td class="item_edit_list al"><{$lang.repository_lido_title_full}></td>
+    <td class="item_edit_list al"><{$lang.repository_spase_title}></td>
+    <td class="item_edit_list al"><{$lang.repository_language_en}></td>
+   </tr>
+   <{*言語*}>
+   <tr>
+    <td class="item_edit_list al"><{$lang.repository_language}></td>
+    <td class="item_edit_list al"><{$lang.repository_attribute_type_pulldown}></td>
+    <td class="item_edit_list al"><{$lang.repository_dublin_core_language}></td>
+    <td class="item_edit_list al"><{$lang.repository_junii2_language}></td>
+    <td class="item_edit_list al">generalLanguage</td>
+    <td class="item_edit_list al"><{$lang.repository_spase_language}></td>
+   </tr>
+   <{*公開日*}>
+   <tr>
+    <td class="item_edit_list al"><{$lang.repository_pub_date}></td>
+    <td class="item_edit_list al"><{$lang.repository_attribute_type_date}></td>
+    <td class="item_edit_list al"><{$lang.repository_dublin_core_date}></td>
+    <td class="item_edit_list al"><{$lang.repository_junii2_date}></td>
+    <td class="item_edit_list al">lifeCycleContribute</td>
+    <td class="item_edit_list al"><{$lang.repository_spase_catalog_resourceheader_releasedata}></td>
+   </tr>
+   <{*キーワード*}>
+   <tr>
+    <td class="item_edit_list al"><{$lang.repository_keyword}></td>
+    <td class="item_edit_list al"><{$lang.repository_text}></td>
+    <td class="item_edit_list al"><{$lang.repository_dublin_core_subject}></td>
+    <td class="item_edit_list al"><{$lang.repository_junii2_subject}></td>
+    <td class="item_edit_list al">generalKeyword</td>
+    <td class="item_edit_list al"><{$lang.repoistory_lido_keyword_full}></td>
+    <td class="item_edit_list al"><{$lang.repository_spase_no_setting}></td>
+    <td class="item_edit_list al"><{$lang.repository_language_ja}></td>
+   </tr>
+   <{*キーワード(英)*}>
+   <tr>
+    <td class="item_edit_list al"><{$lang.repository_keyword_english}></td>
+    <td class="item_edit_list al"><{$lang.repository_text}></td>
+    <td class="item_edit_list al"><{$lang.repository_dublin_core_subject}></td>
+    <td class="item_edit_list al"><{$lang.repository_junii2_subject}></td>
+    <td class="item_edit_list al">generalKeyword</td>
+    <td class="item_edit_list al"><{$lang.repoistory_lido_keyword_full}></td>
+    <td class="item_edit_list al"><{$lang.repository_spase_no_setting}></td>
+    <td class="item_edit_list al"><{$lang.repository_language_en}></td>
+   </tr>
+   
+   
+   <{* スクリプトでメタデータを回します。*}> 
+   <{foreach from=$smarty.session.metadata_table item=metadata name=metad}>
+   <{* 書誌情報追加 *}>
+    <{* 書誌情報の場合 *}>
+    <{if $metadata.input_type=="biblio_info"}>
+     <{* 雑誌名 *}>
+     <tr>
+      <td class="item_edit_list al" rowspan="8"><{$metadata.attribute_name}></td>
+      <td class="item_edit_list al"><{$lang.repository_item_biblio_name}></td>
+      <td class="item_edit_list al" rowspan="8"><{$metadata.dublin_core_mapping}></td>
+      <td class="item_edit_list al"><{$metadata.junii2_mapping[0]}></td>
+      <td class="item_edit_list al" rowspan="8"><{$metadata.lom_mapping}></td>
+      <td class="item_edit_list al" rowspan="8"><{$metadata.lido_mapping}></td>
+      <td class="item_edit_list al" rowspan="8"><{$metadata.spase_mapping}></td>
+      <td class="item_edit_list al">
+      <{if $maetadata.display_lang_type[0] != ""}>
+          <{if $metadata.display_lang_type[0] == "japanese"}><{$lang.repository_language_ja}><{elseif $metadata.display_lang_type[0] == "english"}><{$lang.repository_language_en}>
+          <{/if}>
+      <{else}>
+           <{$lang.repository_language_no_mapping}>
+      <{/if}>
+      </td>
+     </tr>
+	<{* 雑誌名(英) *}>
+	<tr>
+	 <td class="item_edit_list al"><{$lang.repository_item_biblio_name_english}></td>
+	 <td class="item_edit_list al"><{$metadata.junii2_mapping[1]}></td>
+	 <{* td class="item_edit_list al" *}>
+	     <{* $metadata.lom_mapping[1] *}>
+	 <{* /td *}>
+	 <td class="item_edit_list al">
+	 <{if $maetadata.display_lang_type[1] != ""}>
+	     <{if $metadata.display_lang_type[1] == "japanese"}><{$lang.repository_language_ja}><{elseif $metadata.display_lang_type[1] == "english"}><{$lang.repository_language_en}><{/if}>
+	 <{else}><{$lang.repository_language_no_mapping}><{/if}>
+	 </td>
+	</tr>
+     <{* 巻 *}>
+     <tr>
+      <td class="item_edit_list al"><{$lang.repository_item_biblio_volume}></td>
+      <td class="item_edit_list al"><{$metadata.junii2_mapping[2]}></td>
+      <{* td class="item_edit_list al" *}>
+          <{* $metadata.lom_mapping[2] *}>
+      <{* /td *}>
+      <td class="item_edit_list al">
+      <{if $maetadata.display_lang_type[2] != ""}>
+          <{if $metadata.display_lang_type[2] == "japanese"}><{$lang.repository_language_ja}><{elseif $metadata.display_lang_type[2] == "english"}><{$lang.repository_language_en}><{/if}>
+      <{else}><{$lang.repository_language_no_mapping}><{/if}>
+      </td>
+     </tr>
+     <{* 号 *}>
+     <tr>
+      <td class="item_edit_list al"><{$lang.repository_item_biblio_issue}></td>
+      <td class="item_edit_list al"><{$metadata.junii2_mapping[3]}></td>
+      <{* td class="item_edit_list al" *}>
+          <{* $metadata.lom_mapping[3] *}>
+      <{* /td *}>
+      <td class="item_edit_list al"><{if $metadata.display_lang_type[3] == "japanese"}>
+      <{if $maetadata.display_lang_type[3] != ""}>
+          <{$lang.repository_language_ja}><{elseif $metadata.display_lang_type[3] == "english"}><{$lang.repository_language_en}><{/if}>
+      <{else}><{$lang.repository_language_no_mapping}><{/if}>
+      </td>
+     </tr>
+     <{* 開始ページ *}>
+     <tr>
+      <td class="item_edit_list al"><{$lang.repository_item_biblio_spage}></td>
+      <td class="item_edit_list al"><{$metadata.junii2_mapping[4]}></td>
+      <{* td class="item_edit_list al" *}>
+          <{* $metadata.lom_mapping[4] *}>
+      <{* /td *}>
+      <td class="item_edit_list al"><{if $metadata.display_lang_type[4] == "japanese"}>
+      <{if $maetadata.display_lang_type[4] != ""}>
+          <{$lang.repository_language_ja}><{elseif $metadata.display_lang_type[4] == "english"}><{$lang.repository_language_en}><{/if}>
+      <{else}><{$lang.repository_language_no_mapping}><{/if}>
+      </td>
+     </tr>
+     <{* 終了ページ *}>
+     <tr>
+      <td class="item_edit_list al"><{$lang.repository_item_biblio_epage}></td>
+      <td class="item_edit_list al"><{$metadata.junii2_mapping[5]}></td>
+      <{* td class="item_edit_list al" *}>
+          <{* $metadata.lom_mapping[5] *}>
+      <{* /td *}>
+      <td class="item_edit_list al"><{if $metadata.display_lang_type[5] == "japanese"}>
+      <{if $maetadata.display_lang_type[5] != ""}>
+          <{$lang.repository_language_ja}><{elseif $metadata.display_lang_type[5] == "english"}><{$lang.repository_language_en}><{/if}>
+      <{else}><{$lang.repository_language_no_mapping}><{/if}>
+      </td>
+     </tr>
+     <{* 発行年 *}>
+     <tr>
+      <td class="item_edit_list al"><{$lang.repository_item_biblio_dateofissued}></td>
+      <td class="item_edit_list al"><{$metadata.junii2_mapping[6]}></td>
+      <{* td class="item_edit_list al" *}>
+          <{* $metadata.lom_mapping[6] *}>
+      <{* /td *}>
+      <td class="item_edit_list al"><{if $metadata.display_lang_type[6] == "japanese"}>
+      <{if $maetadata.display_lang_type[5] != ""}>
+          <{$lang.repository_language_ja}><{elseif $metadata.display_lang_type[6] == "english"}><{$lang.repository_language_en}><{/if}>
+      <{else}><{$lang.repository_language_no_mapping}><{/if}>
+      </td>
+     </tr>
+    <{* 書誌情報以外の場合 *}>
+    <{else}>
+     <tr>
+      <td class="item_edit_list al"><{$metadata.attribute_name}></td>
+      <td class="item_edit_list al">
+       <{* テキスト *}>
+        <{if $metadata.input_type=="text"}><{$lang.repository_attribute_type_text}><{/if}>
+       <{* テキストエリア *}>
+        <{if $metadata.input_type=="textarea"}><{$lang.repository_attribute_type_textarea}><{/if}>
+       <{* リンク *}>
+        <{if $metadata.input_type=="link"}><{$lang.repository_attribute_type_link}><{/if}>
+       <{* チェック *}>
+        <{if $metadata.input_type=="checkbox"}><{$lang.repository_attribute_type_checkbox}><{/if}>
+       <{* 選択式(ラジオ) *}>
+        <{if $metadata.input_type=="radio"}><{$lang.repository_attribute_type_radio}><{/if}>
+       <{* 選択式(プルダウン) *}>
+        <{if $metadata.input_type=="select"}><{$lang.repository_attribute_type_pulldown}><{/if}>
+       <{* 氏名 *}>
+        <{if $metadata.input_type=="name"}><{$lang.repository_attribute_type_name}><{/if}>
+       <{* サムネイル *}>
+        <{if $metadata.input_type=="thumbnail"}><{$lang.repository_attribute_type_image}><{/if}>
+       <{* ファイル *}>
+        <{if $metadata.input_type=="file"}><{$lang.repository_attribute_type_file}><{/if}>
+       <{* 課金ファイル Add 2008/08/28 *}>
+        <{if $metadata.input_type=="file_price"}><{$lang.repository_attribute_type_fileprice}><{/if}>
+       <{* 日付 Add 2008/10/10 *}>
+        <{if $metadata.input_type=="date"}><{$lang.repository_attribute_type_date}><{/if}>
+       <{* サプリ Add 2009/08/12 *}>
+        <{if $metadata.input_type=="supple"}><{$lang.repository_attribute_type_supple}><{/if}>
+       <{* heading Add 2010/07/02 *}>
+        <{if $metadata.input_type=="heading"}><{$lang.repository_attribute_type_heading}><{/if}>
+      </td>
+      <td class="item_edit_list al"><{$metadata.dublin_core_mapping}></td>
+      <td class="item_edit_list al"><{$metadata.junii2_mapping}></td>
+      <td class="item_edit_list al"><{$metadata.lom_mapping}></td>
+      <td class="item_edit_list al"><{$metadata.lido_mapping}></td>
+      <td class="item_edit_list al"><{$metadata.spase_mapping}></td>
+      <td class="item_edit_list al nobr">
+        <{if $metadata.display_lang_type == "japanese"}>
+            <{$lang.repository_language_ja}>
+        <{elseif $metadata.display_lang_type == "english"}>
+            <{$lang.repository_language_en}>
+        <{else}>
+            <{$lang.repository_language_no_mapping}>
+        <{/if}>
+      </td>
+     </tr>
+     <{/if}>
+   <{/foreach}>
+  </table>
+ </form>
+</div>
+
+<div align=center class="paging">
+ <input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_edit_itemtype_mapping'); return false;">
+ <input type="button" class="btn_blue" value="<{$lang.repository_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemTypeMappingAdddb(); return false;">
+</div>
+</div>
+<{* mt10 *}>
+
+<{include file="repository_script.html"}>

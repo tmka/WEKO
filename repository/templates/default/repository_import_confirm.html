@@ -1,0 +1,174 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_import_confirm.html 30569 2014-01-09 07:37:40Z rei_matsuura $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+
+<{strip}>
+<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+    <div align="right" class="pt10 pr10">
+        <a href="#" style="cursor: help;" 
+            <{if $action.importmode == "nameauthority"}>
+                onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'import_authority_result'); return false;"
+            <{else}>
+                onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'import_result'); return false;"
+            <{/if}>
+            >
+            <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" alt="help">
+        </a>
+    </div>
+<{/if}>
+<div class="import_confirm_frame">
+ <form name="import_result" method="post" class="plr20 ptb20"> 
+  <{*Import Authority Result*}>
+  <{if $action.importmode == "nameauthority"}>
+   <{if $action.successnum > 0}>
+    <table class="full tb01" align="center">
+     <tr>
+      <th class="th_col_repos ac"><{$lang.repository_importauthority_result_title}></th>
+     </tr>
+     <tr>
+      <td class="th_col_repos ac"><{ $action.successnum}><{$lang.repository_importauthority_result_success}></td>
+     </tr>
+    </table>
+   <{/if}>
+   <{if $action.error_msg != ""}>
+       <div class="error_msg">
+           <{$action.error_msg}>
+       </div>
+   <{/if}>
+   <{if count($smarty.session.items) > 0}>
+    <table id="item_confirm_tbl" class="full tb01 mt20" align="center">
+     <tr>
+      <th class="th_col_repos ac"><{$lang.repository_importauthority_result_error}></th>
+     </tr>
+     <{foreach from=$smarty.session.items item=item_info name="iCnt"}>
+      <{assign var="iCnt" value=$smarty.foreach.iCnt.iteration-1}> 
+      <{if $iCnt%2==0}>
+       <tr class="list_line_repos1">
+      <{else}>
+       <tr class="list_line_repos2">
+      <{/if}>
+       <td>
+        <table class="full">
+         <tr>
+          <td>
+           <{if $item_info.error_msg!=""}>
+             <div class="error_msg">
+               <{$lang.repository_import_result_status_insert}>
+               <{$lang.repository_import_result_error_msg_failed}>
+               <div class="pl15">-&nbsp;<{$item_info.error_msg}><div>
+             </div>
+           <{/if}>
+          </td>
+         </tr>
+        </table>
+       </td>
+      </tr>
+     <{/foreach}>
+    </table>
+   <{/if}>
+   
+  <{*Import Result*}>
+  <{else}>
+    <table class="full tb01" align="center">
+     <tr>
+      <th class="th_col_repos ac"><{$lang.repository_import_index}></th>
+     </tr>
+  	<{foreach from=$smarty.session.index item=index_info}>
+  	 <tr>
+        <td>
+         <div class="plr10">
+  	       <{if $smarty.session._lang == "japanese"}>
+  	        <{$index_info[0]}><br>
+  	       <{else}>
+  	        <{$index_info[1]}><br>
+  	       <{/if}>
+  	   </div>
+        </td>
+  	 </tr>
+  	<{/foreach}>
+    </table>
+
+  <{if $action.error_msg != ""}>
+      <div class="error_msg">
+          <{$action.error_msg}>
+      </div>
+  <{/if}>
+
+    <table id="item_confirm_tbl" class="full tb01 mt20" align="center">
+     <tr>
+      <th class="th_col_repos ac"><{$lang.repository_search_item}></th>
+      <th class="th_col_repos ac"><{$lang.repository_itemtype}></th>
+     </tr>
+     <{foreach from=$smarty.session.items item=item_info name="iCnt"}>
+      <{assign var="iCnt" value=$smarty.foreach.iCnt.iteration-1}> 
+      <{if $iCnt%2==0}>
+       <tr class="list_line_repos1">
+      <{else}>
+       <tr class="list_line_repos2">
+      <{/if}>
+       <td>
+        <table class="full">
+         <tr>
+          <td class="w70px vt"><b><{$item_info.mode|upper}>:</b></td>
+          <td>
+           <div>
+            <{if $smarty.session._lang == "japanese"}>
+             <{if $item_info.title != "" && $item_info.title != null}>
+              <{$item_info.title}>
+             <{else}>
+              <{$item_info.title_english}>
+             <{/if}>
+            <{else}>
+             <{if $item_info.title_english != "" && $item_info.title_english != null}>
+              <{$item_info.title_english}>
+             <{else}>
+              <{$item_info.title}>
+             <{/if}>
+            <{/if}>
+           </div>
+           <{if $item_info.error_msg!=""}>
+            <{if $item_info.status == "success"}>
+             <div class="warning_msg">
+              <{if $item_info.mode|upper == "UPDATE"}>
+               <{$lang.repository_import_result_status_update}>
+              <{else}>
+               <{$lang.repository_import_result_status_insert}>
+              <{/if}>
+              <{$lang.repository_import_result_error_msg_success}>
+              <div class="pl15">-&nbsp;<{$item_info.error_msg}><div>
+             </div>
+            <{else}>
+             <div class="error_msg">
+              <{if $item_info.mode|upper == "UPDATE"}>
+               <{$lang.repository_import_result_status_update}>
+              <{else}>
+               <{$lang.repository_import_result_status_insert}>
+              <{/if}>
+              <{$lang.repository_import_result_error_msg_failed}>
+              <div class="pl15">-&nbsp;<{$item_info.error_msg}><div>
+             </div>
+            <{/if}>
+           <{/if}>
+          </td>
+         </tr>
+        </table>
+       </td>
+       <td class="ac"><{$item_info.item_type}></td>
+      </tr>
+     <{/foreach}>
+    </table>
+    
+   <{/if}>
+ </form>
+</div>
+<{/strip}>
+<{include file="repository_script.html"}>
+

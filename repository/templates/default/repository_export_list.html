@@ -1,0 +1,252 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_export_list.html 31571 2014-02-10 10:16:56Z tomohiro_ichikawa $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{*一覧表示内容のExport*}>
+ <form id="export_list<{$id}>" method="post" class="w800px box_center">
+ <!-- セッション情報からアイテムタイトルを取得し、表示 -->
+ <{if ($smarty.session.file_flg!=true && $smarty.session.item_info_count!=0) || $action.count_over_msg!=null || $action.size_over_msg!=null || $action.max_export_count_msg!=null}>
+ <div class="error_msg mt10" align="left">
+  <{if $smarty.session.file_flg != true && $smarty.session.item_info_count != 0}>
+   <font color="red"><{$lang.repository_export_cannot_export_files}></font><br/>
+  <{/if}>
+  <{if $action.count_over_msg!=null}>
+   <font color="red"><{$action.count_over_msg}></font><br/>
+  <{/if}>
+  <{if $action.size_over_msg!=null}>
+   <font color="red"><{$action.size_over_msg}></font><br/>
+  <{/if}>
+  <{if $action.max_export_count_msg!=null}>
+   <font color="red"><{$action.max_export_count_msg}></font><br/>
+  <{/if}>
+  </div>
+ <{/if}>
+  
+  <div class="pt20">
+  <div class="w90 box_center">
+  <{*export item のタイトルバー*}>
+  <h3 class="th_repos_title_bar text_color mb10"><{$lang.repository_export_item}></h3>
+  </div>
+  
+  <div id="scrollTable" class="w90 box_center">
+  <table class="text_color belt_repos full" cellspacing="1" id="hidden">
+   <{if $smarty.session.item_info_count != 0}>
+    <{foreach from=$smarty.session.item_info item=item_infos name="info"}>
+    <{assign var="loop_num" value=$smarty.foreach.info.iteration-1}>
+     <tr <{if $loop_num%2==0}>class="list_line_repos1"<{else}>class="list_line_repos2"<{/if}>>
+      <td class="al vt tb00 pl10 pt10 w20px">
+      <{$loop_num+1}>.
+      <input type="hidden" name="exportItemId[]" value="<{$item_infos.item_id}>" />
+      <input type="hidden" name="exportItemNo[]" value="<{$item_infos.item_no}>" />
+      </td>
+      <td class="al vt tb00 pl00 pt10 pr10 pb10">
+       <{if $smarty.session._lang == "japanese"}>
+        <{if $item_infos.title != "" && $item_infos.title != null}>
+         <{$item_infos.title}>
+        <{else}>
+         <{$item_infos.title_english}>
+        <{/if}>
+       <{else}>
+        <{if $item_infos.title_english != "" && $item_infos.title_english != null}>
+         <{$item_infos.title_english}>
+        <{else}>
+         <{$item_infos.title}>
+        <{/if}>
+       <{/if}>
+      </td>
+     </tr>
+    <{/foreach}>
+   <{else}>
+    <tr class="list_line_repos1">
+     <td class="al tb00">
+      <{$lang.repository_export_no_select_item}>
+     </td>
+    </tr>
+   <{/if}>
+  </table>
+
+ </div>
+ </div>
+ 
+ <{* 2012/2/29 Download functional correspondence of ELS formal data --jin-- add*}>
+ <div class="pt20" align="center">
+	<table class="ac narrow mb10 nobr">
+	<tr>
+		<td>
+			<label for="<{$id}>_select_export_0" class="mr20">
+				<input type="radio" name="select_export" class="vam" value="0" id="<{$id}>_select_export_0" checked onclick="$('select_export_flag').value = 0;"/>
+				<label class="vam" onClick="javascript: imageClick(0); return false;"><img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/export.png" alt="WEKO EXPORT"></label>
+			</label>
+		</td>
+		<td>
+			<label for="<{$id}>_select_export_1" class="mr20">
+				<input type="radio" name="select_export" class="vam" value="1" id="<{$id}>_select_export_1" onclick="$('select_export_flag').value = 1;"/>
+				<label class="vam" onClick="javascript: imageClick(1); return false;"><img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/bibtex.png" alt="BIBTEX"></label>
+			</label>
+		</td>
+		<td>
+			<label for="<{$id}>_select_export_2" class="mr20">
+				<input type="radio" name="select_export" class="vam" value="2" id="<{$id}>_select_export_2" onclick="$('select_export_flag').value = 2;"/>
+				<label class="vam" onClick="javascript: imageClick(2); return false;"><img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/oai_pmh.png" alt="OAI-PMH"></label>
+			</label>
+		</td>
+		<td>
+			<label for="<{$id}>_select_export_3" class="mr20">
+				<input type="radio" name="select_export" class="vam" value="3" id="<{$id}>_select_export_3" onclick="$('select_export_flag').value = 3;"/>
+				<label class="vam" onClick="javascript: imageClick(3); return false;"><img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/swrc.png" alt="SWRC"></label>
+			</label>
+		</td>
+		<td>
+			<label for="<{$id}>_select_export_4" class="mr20">
+				<input type="radio" name="select_export" class="vam" value="4" id="<{$id}>_select_export_4" onclick="$('select_export_flag').value = 4;"/>
+				<label class="vam" onClick="javascript: imageClick(4); return false;"><img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/els.png" alt="ELS"></label>
+			</label>
+		</td>
+		<td>
+			<label for="<{$id}>_select_export_5" class="mr20">
+				<input type="radio" name="select_export" class="vam" value="5" id="<{$id}>_select_export_5" onclick="$('select_export_flag').value = 5;"/>
+				<label class="vam" onClick="javascript: imageClick(5); return false;"><img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/Excel_TSV.png" alt="TSV"></label>
+			</label>
+		</td>
+	</tr>
+	</table>
+	<input id="select_export_flag" type="hidden" value="0">
+ </div>
+ <{* 2012/2/29Download functional correspondence of ELS formal data --jin-- end*}>
+ </form>
+
+<span style="display:none;height=0px;width=0px;" id="repositoryListDownload<{$id}>"></span>
+
+<div class="paging nobr ac">
+	<input class="btn_blue" type="button" value=<{$lang.repository_return}> onclick="redirctPrevPage(); return false;">
+	<{ if $smarty.session.item_info_count != 0 }>
+	<span id="repositoryExportBtn<{$id}>">
+		<input class="btn_blue" type="button" value="<{$lang.repository_export}>" onclick="javascript: listDownload(); return false;">
+	</span>
+	<span id="repository<{$id}>_exportBtn">
+		<img border="0" id="repositoryNowLoading<{$id}>" style="display:none" src="<{$smarty.const.BASE_URL}>/images/common/indicator.gif" />
+	</span>
+	<{/if}>
+</div>
+
+<{include file="repository_script.html"}>
+
+<script class="nc_script" type="text/javascript">
+	redirctPrevPage = function() {
+		location.reload(true);
+		return false;
+	}
+</script>
+
+<script class="nc_script" type="text/javascript">
+//	if($('scrollTable') != null){
+//		if($('scrollTable').offsetHeight > 500){
+//			$('scrollTable').style.height = "500px";
+//			//$('scrollTable').style.width = "600px";
+//			$('scrollTable').style.overflowY = "auto";
+//			//$('scrollTable').style.overflowX = "hidden";
+//		}
+//		else{
+//		    $('scrollTable').style.height = "auto";
+//		    $('scrollTable').style.overflowY = "hidden";
+//		}
+//	}
+
+	if($('export_msg') != null){
+		if(navigator.userAgent.indexOf("MSIE")!=-1 || navigator.userAgent.indexOf("Trident")!=-1){
+			if(navigator.userAgent.indexOf("MSIE 8")==-1){
+				$('export_msg').style.position = "relative";
+			}
+		}
+	}
+</script>
+
+<script class="nc_script" type="text/javascript">
+	loadingIcon = function(onFlg) {
+		if(onFlg)
+		{
+			$('repositoryExportBtn<{$id}>').style.display='none';
+			$('repositoryNowLoading<{$id}>').style.display='';
+		}
+		else
+		{
+			$('repositoryExportBtn<{$id}>').style.display='';
+			$('repositoryNowLoading<{$id}>').style.display='none';
+		}
+	}
+</script>
+
+<script class="nc_script" type="text/javascript">
+	listDownload = function() {
+		
+		if('<$smarty.session.item_info_count>' == 0){
+			$('repositoryNowLoading<{$id}>').style.display='none';
+			return;
+		}
+		
+		var url = _nc_base_url + "/index.php"+
+					"?action=repository_action_main_export_listdownload"+
+					"&select_export="+$('select_export_flag').value+
+					"&" + Form.serialize($('export_list<{$id}>'));
+		
+		// brauzaCheck
+		var userAgent = window.navigator.userAgent.toLowerCase();
+		var appVersion = window.navigator.appVersion.toLowerCase();
+		//IE
+		if (userAgent.indexOf("msie") > -1 || userAgent.indexOf("trident") > -1) {
+			loadingIcon(true);
+			$('repositoryListDownload<{$id}>').innerHTML = '<iframe boder="0" name="exportFrame<{$id}>" id="exportFrame<{$id}>" src="'+url+'"></iframe>';
+			$('exportFrame<{$id}>').onreadystatechange = function(){
+				if (($('exportFrame<{$id}>').readyState == "complete")||($('exportFrame<{$id}>').readyState == "interactive")) {
+					loadingIcon(false);
+				}
+			}
+		}
+		//Firefox…OK
+		else if (userAgent.indexOf("firefox") > -1) {
+			loadingIcon(true);
+			$('repositoryListDownload<{$id}>').innerHTML = '<iframe boder="0" name="exportFrame<{$id}>" id="exportFrame<{$id}>" src="'+url+'" onload="javascript: loadingIcon(false);"></iframe>';
+		}
+		else
+		{
+			$('repositoryListDownload<{$id}>').innerHTML = '<iframe boder="0" name="exportFrame<{$id}>" id="exportFrame<{$id}>" src="'+url+'"></iframe>';
+		}
+	}
+</script>
+
+<script class="nc_script" type="text/javascript">
+	imageClick = function(no) {
+		if(no == 0){
+			$('select_export_flag').value = 0;
+			$('<{$id}>_select_export_0').focus();
+			$('<{$id}>_select_export_0').click();
+		}else if(no == 1) {
+			$('select_export_flag').value = 1;
+			$('<{$id}>_select_export_1').focus();
+			$('<{$id}>_select_export_1').click();
+		}else if(no == 2) {
+			$('select_export_flag').value = 2;
+			$('<{$id}>_select_export_2').focus();
+			$('<{$id}>_select_export_2').click();
+		}else if(no == 3) {
+			$('select_export_flag').value = 3;
+			$('<{$id}>_select_export_3').focus();
+			$('<{$id}>_select_export_3').click();
+		}else if(no == 4){
+			$('select_export_flag').value = 4;
+			$('<{$id}>_select_export_4').focus();
+			$('<{$id}>_select_export_4').click();
+		} else {
+			$('select_export_flag').value = 5;
+			$('<{$id}>_select_export_5').focus();
+			$('<{$id}>_select_export_5').click();
+		}
+	}
+</script>

@@ -1,0 +1,104 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: item_setting.html 39639 2014-08-06 00:07:45Z yuko_nakao $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+	<HTML>
+		<HEAD>
+			<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+			<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+			<link rel="stylesheet" href="./css/style.css" type="text/css">
+			<TITLE>item</TITLE>
+		</HEAD>
+	<BODY>
+		<div class="main_body">
+			<h2>アイテム管理</h2>
+			アイテム管理」タブをクリックすると、アイテム管理画面が表示されます。<br/>
+				<br/>
+				<center><img src="./img/item_setting_01.png" alt="アイテムタイプ管理" border="0" /></center><br/>
+				<br/>
+			
+			<h3>表示順序設定</h3>
+			<div class="page_list">
+				<a name="customsort"></a>
+				インデックスに属するアイテムの表示順序を設定することができます。<br/>
+				<br/>
+				「表示順序設定」タブをクリックし、「インデックスツリー」から表示順序を設定するインデックスを選択します。<br/>
+				 選択したインデックスの直下に配置されているアイテムの一覧が表示されます。<br/>
+				<br/>
+				<center><img src="./img/item_setting_02.png" alt="表示順序設定" border="0" /></center><br/>
+				<br/>
+				「↑」または「↓」ボタンをクリックすると表示順序を変更・設定することができます。<br/>
+				<br/>
+				<center><img src="./img/item_setting_03.png" alt="表示順序設定" border="0" /></center><br/>
+				<br/>
+				<br/>
+				<center><img src="./img/item_setting_04.png" alt="表示順序設定" border="0" /></center><br/>
+				<br/>
+				<div class="page_list">
+					<b>【注意】</b><br/>
+					　インデックス検索時に上記のカスタム順序で表示を行うためには、ソート順序を「カスタム」に設定する必要があります。</br>
+					　インデックス検索時のソート条件は <a href="./setting.html#view_search">WEKO管理画面 &gt; 表示設定 &gt; 検索結果表示設定</a> にて設定が可能です。<br/>
+					　こちらの変更もあわせて実施してください。<br/>
+				</div>
+				<br/>
+				<br/>
+			</div>
+			
+			<h3>一括エンバーゴ設定</h3>
+			<div class="page_list">
+				<a name="embargo"></a>
+				インデックスに属するアイテムの「ファイル」属性にライセンスおよびエンバーゴを一括設定することができます。<br/>
+				<br/>
+				「一括エンバーゴ設定」タブをクリックし、「インデックスツリー」からライセンスを一括設定するインデックスを選択します。<br/>
+				アイテムの「ファイル」属性に一括設定するライセンスを設定します。<br/>
+				ライセンスの設定については<a href="./item_entry.html#lisence">アイテム登録 ライセンス設定</a>をご覧ください。<br/>
+				「サブインデックスにも適用する」にチェックが付いている場合、再帰的に子インデックスに所属するアイテムにもライセンスおよびエンバーゴが一括設定されます。<br/>
+				「決定」ボタンをクリックすると、ライセンスおよびエンバーゴの一括設定が実行されます。<br/>
+				<br/>
+				<center><img src="./img/item_setting_05.png" alt="一括エンバーゴ設定" border="0" /></center><br/>
+				<br/>
+			</div>
+			
+			<h3>一括削除</h3>
+			<div class="page_list">
+				<a name="listdelete"></a>
+				インデックスに属するアイテムを一括削除することができます。<br/>
+				<br/>
+				「一括削除」タブをクリックし、「インデックスツリー」からアイテムを一括削除するインデックスを選択します。<br/>
+				「サブインデックスのアイテムも削除する」にチェックが付いている場合、再帰的に子インデックスに所属するアイテムも削除されます。<br/>
+				「アイテムを削除」ボタンをクリックすると、アイテムの一括削除が実行されます。<br/>
+				<br/>
+				<center><img src="./img/item_setting_06.png" alt="一括削除" border="0" /></center><br/>
+				<br/>
+			</div>
+			
+			<h3>DOI一括付与</h3>
+			<div class="page_list">
+				<a name="doibulkgrant"></a>
+				インデックスに属するアイテムに一括でDOIを付与することができます。<br/>
+				<br/>
+				「DOI一括付与」タブをクリックし、「インデックスツリー」からDOI一括付与を行うインデックスを選択します。<br/>
+				 選択したインデックスの直下に配置されているアイテムのうち、DOIを付与できるアイテムの一覧が表示されます。<br/>
+				 DOIを付与したいアイテムのチェックボックスをONにし、「実行」ボタンを押下するとDOIが一括付与されます。<br/>
+				<br/>
+				<center><img src="./img/item_setting_DOI_add.png" alt="DOI一括付与" width="600" border="0" /></center><br/>
+				<br/>
+				すべてにチェックを入れる場合は、下部のプルダウンメニューから実行することができます。<br/>
+				<br/>
+				<center><img src="./img/item_setting_DOI_check.png" alt="DOI一括付与" width="600" border="0" /></center><br/>
+				<br/>
+			</div>
+			
+			<p align="center"><font size="2"><a href="./../index.html" target="_top">WEKO Help Top</a></font></p>
+		</div>
+		
+	</BODY>
+</HTML>

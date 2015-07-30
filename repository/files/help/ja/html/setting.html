@@ -1,0 +1,858 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: setting.html 39583 2014-08-05 01:33:00Z keiya_sugimoto $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+	<HTML>
+		<HEAD>
+			<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+			<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+			<link rel="stylesheet" href="./css/style.css" type="text/css">
+			<TITLE>setting</TITLE>
+		</HEAD>
+	<BODY>
+		<div class="main_body">
+			<h2>WEKO管理</h2>
+			<div class="page_list">
+				<a name="top"></a>
+				WEKOモジュールの表示、運用、サーバー設定を行うことができます。<br/>
+				<ul>
+					<li><a href="#view">表示設定</a></li>
+					<li><a href="#run">運用設定</a></li>
+					<li><a href="#server">サーバー設定</a></li>
+				</ul>
+				<h3><a name="view">表示設定</a></h3>
+				<div class="page_list">
+					「表示設定」では下記6項目を設定することができます。<br/>
+					<ul>
+						<li><a href="#view_first_setting">初期表示設定</a></li>
+						<li><a href="#view_language">言語表示設定</a></li>
+						<li><a href="#view_unit_money">通貨単位設定</a></li>
+						<li><a href="#simple_list">インデックス一覧表示設定</a></li>
+						<li><a href="#view_ranking">ランキング管理</a></li>
+						<li><a href="#view_detail_search">詳細検索条件設定</a></li>
+						<li><a href="#view_search">検索結果表示設定</a></li>
+					</ul>
+					「管理」タブを選択し、「表示設定」タブを選択すると表示設定画面が表示されます。<br/>
+					設定変更後は「適用」ボタンを押下し、変更を反映してください。<br/>
+					<br/>
+					<center><img src="./img/setting_01.png" alt="表示設定" border="0"/></center>
+					<br/>
+					<h4><a name="view_first_setting">初期表示設定<a/></h4>
+					<div class="page_list">
+						トップページの初期表示を設定することができます。<br/>
+						設定する初期表示画面はトップページの右側となります。<br/>
+						<br/>
+						<center><img src="./img/setting_02.png" alt="トップページの初期表示" border="0"/></center>
+						<br/>
+						<b>初期表示画面設定</b><br/>
+						<div class="page_list">
+							セレクトボックスから「ランキングを表示する」を選択するとトップページの初期表示がランキングとなります。<br/>
+							セレクトボックスから「インデックス検索結果を表示する」を選択するとトップページの初期表示がインデックス検索結果となります。<br/>
+						</div>
+						<b>初期表示画面設定</b><br/>
+						<div class="page_list">
+							初期表示画面設定で「インデックス検索結果を表示する」が選択されている場合、インデックスの検索条件を設定することができます。<br/>
+							セレクトボックスから「最も新しい公開アイテムの属するインデックス」を選択すると最も新しいアイテムが登録されたインデックスの検索結果が表示されます。<br/>
+							セレクトボックスから「インデックス指定」を選択すると検索インデックス指定欄が表示され、指定されたインデックスの検索結果が表示されます。<br/>
+							検索インデックスを複数指定することはできません。<br/>
+						</div>
+						<br/>
+						<center><img src="./img/setting_03.png" alt="初期表示設定" border="0"/></center>
+						<br/>
+					</div>
+					<h4><a name="view_language">言語表示設定</a></h4>
+					<div class="page_list">
+						<b>言語選択表示設定</b><br/>
+						<div class="page_list">
+							言語選択欄の表示/非表示を設定することができます。<br/>
+							セレクトボックスから「表示する」を選択すると、トップページに言語選択欄が表示されます。<br/>
+							セレクトボックスから「表示しない」を選択すると、トップページの言語選択欄が非表示となります。<br/>
+							<br/>
+							<center><img src="./img/setting_11.png" alt="言語選択表示設定" border="0"/></center>
+							<br/>
+						</div>
+						<b>他言語表示設定</b><br/>
+						<div class="page_list">
+							サイトの表示言語およびメタデータ属性の言語設定に応じてメタデータの表示/非表示を設定することができます。<br/>
+							<br/>
+							<center><img src="./img/setting_15.png" alt="他言語表示設定" border="0"/></center>
+							<br/>
+							下記は表示言語とメタデータ属性の言語設定によるメタデータの表示対応表です。<br/>
+							<br/>
+							<table class="table_border" alt="" border="0" align="center" cellspacing="0">
+								<tr>
+									<th colspan="2" nowrap>チェック状態</th>
+									<th rowspan="2" nowrap>サイト表示言語</th>
+									<th colspan="3" nowrap>メタデータ属性の言語設定</th>
+								</tr>
+								<tr>
+									<th>日本語</th>
+									<th>英語</th>
+									<th>指定なし</th>
+									<th>日本語</th>
+									<th>英語</th>
+								</tr>
+								<tr>
+									<td rowspan="2" align="center">チェックなし</td>
+									<td rowspan="2" align="center">チェックなし</td>
+									<td align="center">日本語</td>
+									<td align="center">表示</td>
+									<td align="center">表示</td>
+									<td align="center">非表示</td>
+								</tr>
+								<tr>
+									<td align="center">英語</td>
+									<td align="center">表示</td>
+									<td align="center">非表示</td>
+									<td align="center">表示</td>
+								</tr>
+								<tr>
+									<td rowspan="2" align="center">チェックなし</td>
+									<td rowspan="2" align="center">チェックあり</td>
+									<td align="center">日本語</td>
+									<td align="center">表示</td>
+									<td align="center">表示</td>
+									<td align="center">非表示</td>
+								</tr>
+								<tr>
+									<td align="center">英語</td>
+									<td align="center">表示</td>
+									<td align="center">表示</td>
+									<td align="center">表示</td>
+								</tr>
+								<tr>
+									<td rowspan="2" align="center">チェックあり</td>
+									<td rowspan="2" align="center">チェックなし</td>
+									<td align="center">日本語</td>
+									<td align="center">表示</td>
+									<td align="center">表示</td>
+									<td align="center">表示</td>
+								</tr>
+								<tr>
+									<td align="center">英語</td>
+									<td align="center">表示</td>
+									<td align="center">非表示</td>
+									<td align="center">表示</td>
+								</tr>
+								<tr>
+									<td rowspan="2" align="center">チェックあり</td>
+									<td rowspan="2" align="center">チェックあり</td>
+									<td align="center">日本語</td>
+									<td align="center">表示</td>
+									<td align="center">表示</td>
+									<td align="center">表示</td>
+								</tr>
+								<tr>
+									<td align="center">英語</td>
+									<td align="center">表示</td>
+									<td align="center">表示</td>
+									<td align="center">表示</td>
+								</tr>
+							</table>
+						</div>
+						<!--
+						<br/>
+						<center><img src="./img/setting_16.png" alt="メタデータ表示(日本語)" border="0"/></center>
+						<br/>
+						<br/>
+						<center><img src="./img/setting_22.png" alt="メタデータ表示(英語)" border="0"/></center>
+						<br/>
+						-->
+					</div>
+					<h4><a name="view_unit_money">通貨単位設定</a></h4>
+					<div class="page_list">
+						課金ファイルの価格表示に利用する通貨単位を設定することができます。<br/>
+						セレクトボックスから選択した通貨単位が課金表示に使用されます。<br/>
+						<br/>
+						<center><img src="./img/setting_17.png" alt="通貨単位設定" border="0"/></center>
+						<br/>
+					</div>
+					<h4><a name="simple_list">インデックス一覧表示</a></h4>
+					<div class="page_list">
+						トップページのインデックス簡易アクセスUI表示を設定することができます。<br/>
+						設定するインデックス簡易アクセスUIはトップページの左側となります。
+						<br/>
+						<br/>
+						<center><img src="./img/setting_88.png" alt="インデックス簡易アクセスUI" border="0"/></center>
+						<br/>
+						<br/>
+						【注意事項】
+						<ul>
+							<li>
+								インデックス簡易アクセスUIに含めるインデックスは、ツリー編集から個別に設定する必要があります。
+							</li>
+						</ul>
+					</div>
+					<h4><a name="view_ranking">ランキング管理</a></h4>
+					<div class="page_list">
+						ランキングの集計方法、集計期間について設定することができます。<br/>
+						<br/>
+						<center><img src="./img/setting_21.png" alt="ランキング管理" border="0"/></center>
+						<br/>
+						各項目の概要は下記のとおりです。
+						<br/>
+						<table class="table_border" alt="" border="0" align="center" cellspacing="0">
+							<tr>
+								<th nowrap>項目名</th>
+								<th nowrap>概要</th>
+							</tr>
+							<tr>
+								<td nowrap>表示設定</td>
+								<td>
+									ランキングをリアルタイム集計するかDB情報を利用するか設定する<br/>
+									セレクトボックスから「リアルタイムに更新する」を選択すると、リアルタイムで集計したランキングが表示される<br/>
+									セレクトボックスから「DB保存情報を表示する」を選択すると、DBに登録されているランキング情報を利用したランキングが表示される<br/>
+								</td>
+							</tr>
+							<tr>
+								<td nowrap>新規登録期間</td>
+								<td>
+									登録アイテムを新着アイテムとして扱う期間を設定する<br/>
+								</td>
+							</tr>
+							<tr>
+								<td nowrap>統計期間</td>
+								<td>
+									ランキングに集計するログの期間を設定する<br/>
+								</td>
+							</tr>
+							<tr>
+								<td nowrap>表示順位</td>
+								<td>
+									ランキングに表示する順位を設定する
+								</td>
+							</tr>
+							<tr>
+								<td nowrap>表示項目</td>
+								<td>
+									表示するランキングを設定する<br/>
+									チェックされているランキングが表示される<br/>
+								</td>
+							</tr>
+						</table>
+						<br/>
+						<br/>
+						【注意事項】
+						<ul>
+							<li>DBに登録されているランキング情報を利用する場合、あらかじめランキングデータベースに情報が登録されている必要があります。</li>
+							<li>http://[サイトURL]/?action=repository_action_common_ranking?login_id=[管理者のログインID]&password=[管理者のログインパスワード]へアクセスするとランキングデータベースが作成されます。</li>
+							<li>新規登録期間に設定できる日数は「1日」からとなります。</li>
+						</ul>
+					</div>
+					<h4><a name="view_detail_search">詳細検索条件設定</a></h4>
+					<div class="page_list">
+						使用可能な詳細検索条件およびデフォルトで表示する詳細検索条件について設定することができます。<br/>
+						なお、著者名 OR 著者IDに関しては使用項目から外すことはできません。<br/>
+						<br/>
+						<center><img src="./img/setting_detail_search.png" alt="詳細検索条件設定" border="0"/></center>
+						<br/>
+					</div>
+					<h4><a name="view_search">検索結果表示設定</a></h4>
+					<div class="page_list">
+						デフォルト検索条件および表示するソート条件について設定することができます。<br/>
+						<br/>
+						<center><img src="./img/setting_28.png" alt="検索結果表示設定" border="0"/></center>
+						<br/>
+						各項目の概要は下記のとおりです。 <br/>
+						<br/>
+						<table class="table_border" alt="" border="0" align="center" cellspacing="0">
+							<tr>
+								<th nowrap>項目名</th>
+								<th nowrap>概要</th>
+							</tr>
+							<tr>
+								<td nowrap>デフォルト表示件数</td>
+								<td>
+									セレクトボックスから検索結果のデフォルト表示件数を設定する<br/>
+								</td>
+							</tr>
+							<tr>
+								<td nowrap>インデックス検索<br/>デフォルトソート条件</td>
+								<td>
+									セレクトボックスからインデックス検索のデフォルトソート条件を設定する<br/>
+								</td>
+							</tr>
+							<tr>
+								<td nowrap>キーワード検索<br/>デフォルトソート条件</td>
+								<td>
+									セレクトボックスからキーワード検索のデフォルトソート条件を設定する<br/>
+								</td>
+							</tr>
+							<tr>
+								<td nowrap>一覧に表示するソート条件</td>
+								<td>
+									一覧に表示するソート条件を設定する<br/>
+									セレクトボックスから「表示しない」リストにあるソート条件は、トップページのソート条件選択欄に表示されません。<br/>
+									セレクトボックスから「表示する」リストにあるソート条件は、トップページのソート条件選択欄に表示されます。<br/>
+								</td>
+							</tr>
+						</table>
+						<br/>
+					</div>
+				</div>
+				<h3><a name="run">運用設定</a></h3>
+				<div class="page_list">
+					「運用設定」では下記12項目を設定することが可能です。<br/>
+					<ul>
+						<li><a href="#run_item_setting">アイテム管理</a></li>
+						<li><a href="#run_supple">サプリメンタルWEKO設定</a></li>
+						<li><a href="#run_review">査読・承認</a></li>
+						<li><a href="#run_privatetree">プライベートツリー設定</a></li>
+						<li><a href="#run_pdfcoverpage">PDFカバーページ</a></li>
+						<li><a href="#run_log">ログ解析管理</a></li>
+						<li><a href="#run_license">サイトライセンス認可</a></li>
+						<li><a href="#run_DB">データベース管理</a></li>
+						<li><a href="#file_clean">ファイルクリーンアップ</a></li>
+						<li><a href="#author_id">外部著者ID Prefix設定</a></li>
+						<li><a href="#feedback">フィードバック</a></li>
+						<li><a href="#referer">検索キーワード表示設定</a></li>
+					</ul>
+					「管理」タブを選択し、「運用設定」タブを選択すると表示設定画面が表示されます。<br/>
+					設定変更後は「適用」ボタンを押下し、変更を反映してください。<br/>
+					<br/>
+					<center><img src="./img/setting_29.png" alt="運用設定" border="0"/></center>
+					<br/>
+					<h4><a name="run_item_setting">アイテム管理</a></h4>
+					<div class="page_list">
+						アイテムの一括エクスポートに登録ファイルを含めるかどうかを設定することができます。<br/>
+						セレクトボックスから「ファイルをExportしない」を選択した場合、アイテムのエクスポートから登録ファイルをダウンロードすることができません。<br/>
+						セレクトボックスから「ファイルをExportする」を選択した場合、アイテムのエクスポートから登録ファイルをダウンロードすることができるようになります。<br/>
+						<br/>
+						登録されたファイルのダウンロード形式を設定する事ができます。<br/>
+						ダウンロード形式の詳細は<a href="./search.html#item_list">アイテムリストの表示</a>をご参照下さい。<br/>
+						<br/>
+						<center><img src="./img/setting_61.png" alt="アイテム管理" border="0"/></center>
+						<br/>
+					</div>
+					<h4><a name="run_supple">サプリメンタルWEKO設定</a></h4>
+					<div class="page_list">
+						サプリWEKOとなるサイトURLを設定することができます。<br/>
+						サプリメンタルコンテンツはこのURLのサイトに登録されたアイテムを利用します。<br/>
+						<br/>
+						<center><img src="./img/setting_63.png" alt="サプリメンタルWEKO設定" border="0"/></center>
+						<br/>
+					</div>
+					<h4><a name="run_review">査読・承認</a></h4>
+					<div class="page_list">
+						アイテムの査読・承認について設定することができます。<br/>
+						「査読承認実施」にチェックがある場合、登録されたアイテムまたはサプリメンタルコンテンツの査読・承認を実施することができます。<br/>
+						チェックがない場合、登録されたアイテムまたはサプリコンテンツが自動的に承認されます。<br/>
+						「査読通知メールを送信する」にチェックがある場合、査読対象のアイテムまたはサプリメンタルコンテンツが登録された際に査読通知メールが送信されます。<br/>
+						査読通知メールの送信先は査読通知送信先設定欄に設定してください。<br/>
+						「査読後のアイテム公開方式」セレクトボックスから承認されたアイテムを自動公開するか選択します。<br/>
+						<br/>
+						<center><img src="./img/setting_66.png" alt="査読・承認" border="0"/></center>
+						<br/>
+					</div>
+					<h4><a name="run_pdfcoverpage">PDFカバーページ</a></h4>
+					<div class="page_list">
+						PDFカバーページについて設定することができます。<br/>
+						登録したPDFにコンテンツデータからカバーページを追加出来るようになります。<br/>
+						ヘッダーに文字列または、画像を表示出来ます。<br/>
+						ヘッダーの表示位置を設定できます。<br/>
+						<br/>
+						ヘッダーに文字列を表示する場合
+						<center><img src="./img/setting_89.png" alt="PDFカバーページ(文字列)" border="0"/></center>
+						<br/>
+						ヘッダーに画像を表示する場合
+						<center><img src="./img/setting_90.png" alt="PDFカバーページ(画像)" border="0"/></center>
+						<br/>
+						【注意事項】
+						<ul>
+							<li>ヘッダーには、文字列または画像のどちらかのみが設定出来ます。</li>
+							<li>ヘッダーに表示する画像の拡張子は、「jpg」,「png」,「gif」のみ使用可能です。</li>
+							<li>PDFカバーページの設定はサブインデックス以下には適用されません。</li>
+							<li>カバーページの作成はツリー編集でPDFカバーページの作成するにチェックを入れなければ作成できません。</li>
+						</ul>
+						<br/>
+					</div>
+					<h4><a name="run_privatetree">プライベートツリー設定</a></h4>
+					<div class="page_list">
+						プライベートツリーの作成について設定することができます。<br/>
+						プライベートツリーはユーザーごとに作成されるインデックスで、ユーザー本人と管理者のみアイテムを投稿できます。<br/>
+						プライベートツリー作成にチェックがある場合、プライベートツリーが自動で作成されます。<br/>
+						プライベートツリーデフォルト表示順序でプライベートツリーの表示順序が設定できます。<br/>
+						表示順序にはカスタムソート・インデックス名(昇順)・インデックス名(降順)があり、プライベートツリー以外の通常のインデックスの下に指定した表示順序で表示されるようになります。<br/>
+						登録インデックスでプライベートツリーの作成インデックスが設定できます。<br/>
+						<br/>
+						<center><img src="./img/setting_93.png" alt="プライベートツリー設定" border="0"/></center>
+						<br/>
+					</div>
+					<h4><a name="run_log">ログ解析管理</a></h4>
+					<div class="page_list">
+						ログ解析から除外するIPアドレスを指定することができます。<br/>
+						<br/>
+						<center><img src="./img/setting_69.png" alt="ログ解析管理" border="0"/></center>
+						<br/>
+					</div>
+					<h4><a name="run_license">サイトライセンス認可</a></h4>
+					<div class="page_list">
+						サイトライセンスを認可するIPアドレスを設定することができます。<br/>
+						サイトライセンスを認可されたIPアドレスからのアクセスであれば、課金ファイルが無料でダウンロードできるようになります。<br/>
+						また、サイトライセンスが認可されているIPアドレスからのアクセスであってもアイテムタイプごとに無料ダウンロード対象から除外することが可能です。<br/>
+						サイトライセンスユーザーの利用状況をフィードバックする事が出来ます。<br/>
+						<br/>
+						<center><img src="./img/setting_73.png" alt="サイトライセンス認可" border="0"/></center>
+						<br/>
+					</div>
+					<h4><a name="run_DB">データベース管理</a></h4>
+					<div class="page_list">
+						サイトマップ、ランキングデータベースの作成および更新、インデックス閲覧権限テーブル再構成、検索テーブル再構成、利用統計ログ集計を行うことができます。
+						<br/>
+						<br/>
+						<center><img src="./img/setting_database.png" alt="データベース管理" border="0"/></center>
+						<br/>
+						<br/>
+						■サイトマップ作成/更新
+						<br/>
+						サイトマップの作成および更新を行うことができます。
+						<br/>
+						クーロン設定用URLは、サイトマップの作成および更新を実行するためのURLです。
+						<br/>
+						<br/>
+						<center><img src="./img/setting_create_sitemap.png" alt="サイトマップ作成/更新" border="0"/></center>
+						【注意事項】
+						<ul>
+							<li>サイトマップの作成および更新には管理者権限が必要です。</li>
+						</ul>
+						<br/>
+						<br/>
+						■ランキングデータベース作成/更新
+						<br/>
+						ランキングデータベースの作成および更新を行うことができます。
+						<br/>
+						クーロン設定用URLは、ランキングデータベースの作成および更新を実行するためのURLです。
+						<br/>
+						<br/>
+						<center><img src="./img/setting_create_ranking.png" alt="ランキングデータベース作成/更新" border="0"/></center>
+						【注意事項】
+						<ul>
+							<li>ランキングデータベースの作成および更新には管理者権限が必要です。</li>
+							<li>作成および更新したランキングデータベースの表示設定は、<a href="#view_ranking">ランキング管理</a>をご参照ください。</li>
+						</ul>
+						<br/>
+						<br/>
+						■インデックス閲覧権限テーブル再構成
+						<br/>
+						インデックス閲覧権限テーブル再構成を行うことができます。
+						<br/>
+						クーロン設定用URLは、インデックス閲覧権限テーブル再構成を実行するためのURLです。
+						<br/>
+						<br/>
+						<center><img src="./img/setting_reconstruction_index_authority.png" alt="インデックス閲覧権限テーブル再構成" border="0"/></center>
+						【注意事項】
+						<ul>
+							<li>インデックス閲覧権限テーブル再構成には管理者権限が必要です。</li>
+						</ul>
+						<br/>
+						<br/>
+						■検索テーブル再構成
+						<br/>
+						検索テーブル再構成を行うことができます。
+						<br/>
+						クーロン設定用URLは、検索テーブル再構成を実行するためのURLです。
+						<br/>
+						<br/>
+						<center><img src="./img/setting_reconstruction_search_table.png" alt="検索テーブル再構成" border="0"/></center>
+						【注意事項】
+						<ul>
+							<li>検索テーブル再構成には管理者権限が必要です。</li>
+						</ul>
+						<br/>
+						<br/>
+						■利用統計ログ集計
+						<br/>
+						利用統計ログ集計を行うことができます。
+						<br/>
+						クーロン設定用URLは、利用統計ログの集計を実行するためのURLです。
+						<br/>
+						<br/>
+						<center><img src="./img/setting_create_tokei.png" alt="利用統計ログ集計" border="0"/></center>
+						【注意事項】
+						<ul>
+							<li>利用統計ログの集計には管理者権限が必要です。</li>
+						</ul>
+					</div>
+					<h4><a name="file_clean">ファイルクリーンアップ</a></h4>
+					<div class="page_list">
+						ランキングデータの削除およびゴミファイルの削除を行うことができます。
+						<br/>
+						<br/>
+						<center><img src="./img/setting_file_cleanup.png" alt="ファイルクリーンアップ" border="0"/></center>
+						<br/>
+						<br/>
+						■ランキングデータ クリア
+						<br/>
+						ランキングデータの削除を行うことができます。<br/>
+						実行ボタンを押下するとゴミファイルを削除します。<br/>
+						以前に実行した事がある場合、前回実行した日時が表示されます。<br/>
+						<br/>
+						<center><img src="./img/setting_ranking_clear.png" alt="ランキングデータ クリア" border="0"/></center>
+						<br/>
+						<br/>
+						■ファイルクリーンアップ
+						<br/>
+						ファイルのクリーンアップをすることができます。<br/>
+						実行ボタンを押下するとゴミファイルを削除します。<br/>
+						以前に実行した事がある場合、前回実行した日時が表示されます。<br/>
+						クーロン設定用URLは、ファイルのクリーンアップを実行するためのURLです。<br/>
+						<br/>
+						<center><img src="./img/setting_file_cleanup_execute.png" alt="ファイルクリーンアップ" border="0"/></center>
+						<br/>
+						【注意事項】
+						<ul>
+							<li>ファイルクリーンアップには管理者権限が必要です。</li>
+						</ul>
+					</div>
+					<h4><a name="author_id">外部著者ID Prefix設定</a></h4>
+					<div class="page_list">
+						外部著者ID Prefixを設定することができます。<br/>
+						
+						<br/>
+						<br/>
+						■外部著者IDの追加<br/>追加したい著者IDを入力し、「追加」ボタンを押下します。<br/>
+						<br/>
+						<center><img src="./img/setting_81.png" alt="外部著者ID Prefix設定" border="0"/></center>
+						<br/>
+						■外部著者IDの削除<br/>削除したい著者IDを選択し、「削除」ボタンを押下します。<br/>
+						<center><img src="./img/setting_82.png" alt="外部著者ID Prefix設定" border="0"/></center>
+						<br/>
+					</div>
+					<h4><a name="feedback">フィードバック</a></h4>
+					<div class="page_list">
+						著者へのフィードバックを設定することができます。</br>
+						<br/>
+						アイテムのContributorに対して月毎の利用統計をメールで送信することができます。<br/>
+						また、メール送信除外対象者を設定することができます。
+						<center><img src="./img/setting_91.png" alt="著者へのフィードバック" border="0"/></center>
+						<br/>
+						【フィードバックメールサンプル】<br/>
+						<div style="border: 1px solid #598f34; font-size:80%; margin-left: 1em;">
+							From：〇〇機関リポジトリ管理者<br/>
+							件名：[〇〇機関リポジトリ]2013-01 利用統計レポート<br/>
+							本文：<br/>
+							<div style="padding-left: 1em;">
+								平成 太郎 様<br/>
+								<br/>
+								平成 太郎 様が登録したコンテンツの利用統計をお知らせいたします。<br/>
+								<br/>
+								このメールが不要な場合は、お手数ですが管理者までご連絡ください。<br/>
+								<br/>
+								統計月 : 2013-01<br/>
+								<br/>
+								----------------------------------------<br/>
+								[タイトル] : サンプルアイテム１<br/>
+								[URL] : http://id.nii.ac.jp/1000/00000001/<br/>
+								[閲覧回数] : (&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0)<br/>
+								<br/>
+								----------------------------------------<br/>
+								[タイトル] : サンプルアイテム２<br/>
+								[URL] : http://id.nii.ac.jp/1000/00000003/<br/>
+								[閲覧回数] : (&nbsp;&nbsp;7241)<br/>
+								[ダウンロード回数] : <br/>
+								&nbsp;&nbsp;&nbsp;&nbsp;KJ00002671847.pdf (&nbsp;&nbsp;1384)<br/>
+								&nbsp;&nbsp;&nbsp;&nbsp;KJ00002671848.pdf (&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0)<br/>
+							</div>
+							<br/>
+						</div>
+						<br/>
+						【注意事項】
+						<ul>
+							<li>「フィードバックメール送信機能設定」を有効にしている場合はメールは送付されません。</li>
+							<li>Contributorのユーザー情報にメールアドレスが登録されていない場合はメールは送付されません。</li>
+							<li>複数のアイテムのContributorに対して、メールは1通のみ送付します。</li>
+							<li>閲覧回数、ダウンロード回数が共にゼロであるアイテムもメールに記述します。</li>
+						</ul>
+					</div>
+					<h4><a name="referer">検索キーワード表示設定</a></h4>
+					<div class="page_list">
+						検索キーワードのメタデータ設定をすることができます。<br/>
+						<br/>
+						<center><img src="./img/setting_94.png" alt="検索キーワード表示" border="0"/></center>
+						<br>
+						<br/>
+						■WEKO検索キーワードメタデータ表示<br/>アイテム詳細画面での検索キーワードメタデータの表示・非表示を設定します。<br/>
+						<center><img src="./img/setting_95.png" alt="検索キーワード表示 WEKO検索キーワードメタデータ表示" border="0"/></center>
+						<br/>
+						■リファラ解析ストップワード使用ルール<br/>	キーワードの解析ルールを設定します。<br/>
+						<br/>
+						<table class="table_border" alt="" border="0" align="center" cellspacing="0">
+							<tr>
+								<th nowrap>名称</th>
+								<th nowrap>概要</th>
+							</tr>
+							<tr>
+								<td>ストップワードを使用しない</td>
+								<td>ストップワードを使用しません。</td>
+							</tr>
+							<tr>
+								<td>形態素解析を行わずストップワードを使用する</td>
+								<td>ストップワードに設定されている単語以外の検索ワードをメタデータとして登録します。</td>
+							</tr>
+							<tr>
+								<td>形態素解析を行いストップワードを使用する</td>
+								<td>ストップワードに設定されている単語以外の検索ワードをメタデータとして登録します。<dt>検索ワードは形態素解析によって分割された後、ストップワードを判定します。<dt>mecabのパス設定を行わないと使用できません。<dt>mecabの設定については<a href="#server_path">サーバ環境</a>をご覧ください。</td>
+							</tr>
+						</table><br/>
+						<center><img src="./img/setting_96.png" alt="検索キーワード表示 リファラ解析ストップワード使用ルール" border="0"/></center>
+						<br/>
+						■ストップワード編集<br/>ストップワードとして扱う単語の設定を行います。<br/>設定変更後は「適用」ボタンを押下し、変更を反映してください。<br/>「デフォルトを設定」ボタンを押下する事によって、ストップワードを初期状態に戻すことができます。<br/>
+						<center><img src="./img/setting_97.png" alt="検索キーワード表示 ストップワード編集" border="0"/></center>
+						<br/>
+						<table class="table_border" alt="" border="0" align="center" cellspacing="0">
+							<tr>
+								<th nowrap>No</th>
+								<th align="center">0</td>
+								<th align="center">1</td>
+								<th align="center">2</td>
+								<th align="center">3</td>
+								<th align="center">4</td>
+								<th align="center">5</td>
+								<th align="center">6</td>
+								<th align="center">7</td>
+								<th align="center">8</td>
+								<th align="center">9</td>
+								<th align="center">10</td>
+							</tr>
+							<tr>
+								<th nowrap>品詞</th>
+								<td>未設定</td>
+								<td>動詞</td>
+								<td>形容詞</td>
+								<td>形容動詞</td>
+								<td>名詞</td>
+								<td>連体詞</td>
+								<td>副詞</td>
+								<td>接続詞</td>
+								<td>感動詞</td>
+								<td>助動詞</td>
+								<td>助詞</td>
+							</tr>
+						</table><br/>
+						■ストップワード更新<br/>現在のストップワードで検索ワードのメタデータを更新します。<br/>
+						<center><img src="./img/setting_98.png" alt="検索キーワード表示 ストップワード更新" border="0"/></center>
+						<br/>
+					</div>
+				</div>
+				<h3><a name="server">サーバー設定</a></h3>
+				<div class="page_list">
+					「サーバー設定」では下記5項目を設定することが可能です。<br/>
+					<ul>
+						<li><a href="#server_prefix">Prefix設定</a></li>
+						<li><a href="#server_biblio">書誌情報簡単登録</a></li>
+						<li><a href="#server_OAIPMH">OAI-PMH設定</a></li>
+						<li><a href="#harvesting">ハーベスティング</a></li>
+						<li><a href="#server_path">サーバー環境</a></li>
+					</ul>
+					「管理」タブを選択し、「サーバー設定」タブを選択すると表示設定画面が表示されます。<br/>
+					設定変更後は「適用」ボタンを押下し、変更を反映してください。<br/>
+					<br/>
+					<center><img src="./img/setting_40.png" alt="サーバー設定" border="0"/></center>
+					<br/>
+					<h4><a name="server_prefix">Prefix設定</a></h4>
+					<div class="page_list">
+						<br/>
+						■PrefixID(<a href="http://japanlinkcenter.org/jalc/" target="_blank">JaLC DOI</a>)
+						<br/>
+						JaLC DOIハンドルサーバのPrefixIDを設定することができます。<br/>
+						<br/>
+						<center><img src="./img/setting_41.png" alt="" border="0"/></center>
+						<br/>
+						
+						<br/>
+						■PrefixID(<a href="http://www.crossref.org/" target="_blank">Cross Ref</a>)
+						<br/>
+						Cross RefハンドルサーバのPrefixIDを設定することができます。<br/>
+						<br/>
+						<center><img src="./img/setting_42.png" alt="" border="0"/></center>
+						<br/>
+						
+						<br/>
+						■PrefixID(<a href="http://www.cnri.reston.va.us/" target="_blank">CNRIハンドル</a>)
+						<br/>
+						CNRIハンドルサーバのPrefixIDを設定することができます。<br/>
+						<br/>
+						<center><img src="./img/setting_43.png" alt="" border="0"/></center>
+						<br/>
+						
+						■PrefixID取得(http://id.nii.ac.jp/)<br/>
+						IDサーバーのPrefixID(Yハンドル)を取得することができます。<br/>
+						すでにPrefixIDを取得している場合は管理画面に取得済のPrefixIDが表示され、「取得」ボタンは表示されません。<br/>
+						「取得」ボタンを押下します。<br/>
+						<br/>
+						<center><img src="./img/setting_56.png" alt="" border="0"/></center>
+						<br/>
+						OpenSSLの実行パスを記述し、「実行」ボタンを押下します。<br/>
+						<br/>
+						<center><img src="./img/setting_57.png" alt="" border="0"/></center>
+						<br/>
+						表示される画像の英数字を入力し、「送信」ボタンを押下します。<br/>
+						<br/>
+						<center><img src="./img/setting_58.png" alt="" border="0"/></center>
+						<br/>
+						取得したPrefixIDが表示されます。<br/>
+						<br/>
+						<center><img src="./img/setting_59.png" alt="" border="0"/></center>
+						<br/>
+						<br/>
+						<br/>
+						【注意事項】
+						<ul>
+							<li>PrefixIDの取得にはOpenSSLが必要です。</li>
+						</ul>
+					</div>
+					<h4><a name="server_biblio">書誌情報簡単登録</a></h4>
+					<div class="page_list">
+						<br/>
+						■AWSAccessKeyId
+						<br/>
+						アイテム登録時のfill機能において利用しているAmazonの「AWSAccessKeyId」を変更することができます。<br/>
+						「AccessKeyID」は、Amazon Webサービスを利用する登録IDです。 <br/>
+						<br/>
+						<center><img src="./img/setting_55.png" alt="AWSAccessKeyId" border="0"/></center>
+						<br/>
+						<br/>
+						【注意事項】
+						<ul>
+							<li>「AccessKeyID」が空白の場合、Amazonのfill機能が利用できなくなります。</li>
+						</ul>
+						<br/>
+						<br/>
+						■医中誌連携
+						<br/>
+						医中誌との連携設定ができます。<br/>
+						連携している場合はアイテム登録時のfill機能にて、医中誌からのメタデータ取得が可能になります。<br/>
+						<br/>
+						<center><img src="./img/setting_92.png" alt="IchushiConnectStatus" border="0"/></center>
+						<br/>
+						<br/>
+						【注意事項】
+						<ul>
+							<li>医中誌へ連携しない場合、及び「現在の連携状態」が未認証状態の場合、医中誌のfill機能が利用できなくなります。</li>
+							<li>医中誌へのIP認証が通っている場合、ログインID・ログインパスワードの設定は必要ありません。</li>
+						</ul>
+					</div>
+					<h4><a name="server_OAIPMH">OAI-PMH設定</a></h4>
+					<div class="page_list">
+					    OAI-PMHからリポジトリの情報を出力する際に使用する情報と、OAI-PMHのベースURLを標準形式に対応させるように設定することができます
+					    <br/>
+					    <center><img src="./img/setting_85.png" alt="OAI-PMH設定画面" border="0" /></center>
+					    <br/>
+						OAI-PMHからリポジトリの情報を出力する際に使用する情報を設定することができます。<br/>
+						リポジトリ情報は「http://[サイトURL]/?action=repository_oaipmh&verb=Identify」から取得可能です。<br/>
+						<br/>
+						<center><img src="./img/setting_54.png" alt="OAI-PMH設定" border="0"/></center>
+						<br/>
+						<center><img src="./img/setting_53.png" alt="OAI-PMH出力画面" border="0"/></center>
+						<br/>
+						URLリライトを有効にすると、OAI-PMHのベースURLを標準形式に対応することができます。<br/>
+						<center><img src="./img/setting_83.png" alt="URLリライト設定画面(有効)" border="0" /></center>
+					</div>
+					<h4><a name="harvesting">ハーベスティング</a></h4>
+					<div class="page_list">
+						OAI-PMHを利用し、他の機関からハーベストを行うことができます。
+						<br/>
+						metadataPrefixは「oai_dc」、「junii2」、「oai_lom」、「lido」に対応しています。
+						<br/>
+						クーロン設定用URLは、ハーベスティングを実行するためのURLです。
+						<br/>
+						<br/>
+						<center>
+							<img src="./img/setting_86.png" alt="ハーベスト" border="0" style="width:700px"/>
+						</center>
+						<br/>
+						<br/>
+						ハーベストの実行中は設定の変更を行うことはできません。
+						<br/>
+						<br/>
+						<center>
+							<img src="./img/setting_87.png" alt="ハーベスト実行中" border="0" style="width:650px"/>
+						</center>
+						<br/>
+						<br/>
+						■from、until、setの説明
+						<br/>
+						fromの値をデフォルト値(0001-01-01T00:00:00Z)から変更した場合、更新日時がfromで設定した時間以後のアイテムに対してのみハーベスティングを実行します。
+						<br/>
+						untilの値をデフォルト値(9999-12-31T23:59:59Z)から変更した場合、更新日時がuntilで設定した時間以前のアイテムに対してのみハーベスティングを実行します。
+						<br/>
+						set条件を設定した場合、設定したセット内のアイテムに対してのみハーベスティングを実行します。
+						<br/>
+						<br/>
+						■サブインデックスへの自動振分
+						<br/>
+						「実行しない」を選択した場合、登録先インデックス直下にはインデックスツリーが作成されず、ハーベストで取得したアイテムが登録先インデックス直下に全て配置されます。
+						<br/>
+						「実行する」を選択した場合、登録先インデックス直下にハーベスト対象リポジトリのインデックスツリーが作成され、ハーベストで取得したアイテムがそれぞれのインデックスに配置されます。
+						<br/>
+						<br/>
+						【注意事項】
+						<ul>
+							<li>
+								ハーベストの実行には管理者権限が必要です。
+							</li>
+							<li>
+								ハーベストを実行してから完了するまで時間がかかる場合があります。
+							</li>
+						</ul>
+					</div>
+					<h4><a name="server_path">サーバー環境</a></h4>
+					<div class="page_list">
+						WEKOモジュールで利用する下記6種類の外部コマンド実行パスを設定することができます。<br/>
+						<br/>
+						<table class="table_border" alt="" border="0" align="center" cellspacing="0">
+							<tr>
+								<th nowrap>名称</th>
+								<th nowrap>概要</th>
+							</tr>
+							<tr>
+								<td>wvWare</td>
+								<td>Wordファイル(*.doc)をhtmlファイルに変換する</td>
+							</tr>
+							<tr>
+								<td>xlhtml</td>
+								<td>Excelファイル(*.xls)をhtmlファイルに変換する</td>
+							</tr>
+							<tr>
+								<td>poppler</td>
+								<td>PDFファイル(*.pdf)をhtmlファイルに変換する</td>
+							</tr>
+							<tr>
+								<td>ImageMagick</td>
+								<td>PDFファイル(*.pdf)のサムネイルを生成する</td>
+							</tr>
+							<tr>
+								<td>PDFTK</td>
+								<td>PDFカバーページとPDFファイル(*.pdf)を連結する</td>
+							</tr>
+							<tr>
+								<td>ffmpeg</td>
+								<td>動画コンテンツをFLVファイルに変換する</td>
+							</tr>
+							<tr>
+								<td>mecab</td>
+								<td>形態素解析を行う</td>
+							</tr>
+						</table>
+						<br/>
+						<!--登録されたファイルの全文検索を行うために利用します-->
+						「自動設定」項目の「実行」ボタンを押下するとコマンドの検索が行われ、見つかったコマンドのパスが自動的にfillされます。<br/>
+						パスが通ったコマンドは「緑ランプ」が点灯します。<br/>
+						<br/>
+						<center><img src="./img/setting_51.png" alt="自動設定" border="0"/></center>
+						<br/>
+					</div>
+				</div>
+			</div>
+			<p align="center"><font size="2"><a href="./../index.html" target="_top">WEKO Help Top</a></font></p>
+		</div>
+	</BODY>
+</HTML>

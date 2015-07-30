@@ -1,0 +1,167 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_item_embargo.html 23258 2013-06-11 10:10:06Z ayumi_jin $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{*エラーメッセージ*}>
+    <{if $smarty.session.error_msg != ""}>
+        <div class="error_msg mt10">
+            <{$smarty.session.error_msg}>
+        </div>
+    <{/if}>
+    
+    <{* HELP *}>
+    <{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+        <div class="pt05 pr00 fr">
+            <a style="cursor: help;" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'item_embargo'); return false;" href="#">
+                <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" alt="help">
+            </a>
+        </div>
+        <br/>
+    <{else}>
+        <div class="pt15">
+        </div>
+    <{/if}>
+
+<div id="repository<{$id}>_embartgoDiv" style="height:400px;">
+<{*アイテム管理(公開・エンバーゴ拡張)*}>
+    <div id="_repository_right_col<{$id}>" class="repository_right_header">
+   <form>
+   <div class="ofx_auto ofy_hidden">
+   <table class="tb01 ml15 w700px">
+     <tr class="ranking_repos">
+       <th class="ac w500px"><{$lang.repository_item_embargo_index}></th>
+       <th class="ac"><{$lang.repository_admin_param}></th>
+     </tr>
+     <{*エンバーゴ入力*}>
+     <tr>
+      <td class="w40 vt al">
+           <p id="select_embargo_index">
+           <{if strlen($action.sortIndexName) > 0}>
+               <{$action.sortIndexName}>
+           <{else}>
+               <p id="select_index" class="red"><{$lang.repository_item_embargo_select_index}></p>
+           <{/if}>
+           </p>
+       <input id="select_embargo_index_id" type="hidden" value="<{$action.sortIndexId}>">
+      </td>
+      <td class="w60 vt al">
+       <input type="radio" id="embargo_flag1" name="embargo_flag" onclick="$('embargo_flag_chk').value=1; $('embargo_open_date').style.display='none';" <{if $action.embargo_flag_chk==1}>CHECKED<{/if}>>
+       <label for="embargo_flag1"><{$lang.repository_item_embargo_candidate1}></label>
+       </input>
+       <br/>
+       <input type="radio" id="embargo_flag2" name="embargo_flag" onclick="$('embargo_flag_chk').value=2; $('embargo_open_date').style.display='block';" <{if $action.embargo_flag_chk==2}>CHECKED<{/if}>>
+       <label for="embargo_flag2"><{$lang.repository_item_embargo_candidate2}></label>
+       </input>
+       <br/>
+       <span id="embargo_open_date" style="<{if $action.embargo_flag_chk.value==2}>display:block;<{else}>display:none;<{/if}>">
+         <input class="w035em" type="text" id="embargo_year" value="<{$action.date.year}>" />
+         <{$lang.repository_year}>
+         <select id="embargo_month">
+           <option value= "1" <{if $action.date.month ==  "1"}>SELECTED<{/if}> >1</option>
+           <option value= "2" <{if $action.date.month ==  "2"}>SELECTED<{/if}> >2</option>
+           <option value= "3" <{if $action.date.month ==  "3"}>SELECTED<{/if}> >3</option>
+           <option value= "4" <{if $action.date.month ==  "4"}>SELECTED<{/if}> >4</option>
+           <option value= "5" <{if $action.date.month ==  "5"}>SELECTED<{/if}> >5</option>
+           <option value= "6" <{if $action.date.month ==  "6"}>SELECTED<{/if}> >6</option>
+           <option value= "7" <{if $action.date.month ==  "7"}>SELECTED<{/if}> >7</option>
+           <option value= "8" <{if $action.date.month ==  "8"}>SELECTED<{/if}> >8</option>
+           <option value= "9" <{if $action.date.month ==  "9"}>SELECTED<{/if}> >9</option>
+           <option value="10" <{if $action.date.month == "10"}>SELECTED<{/if}> >10</option>
+           <option value="11" <{if $action.date.month == "11"}>SELECTED<{/if}> >11</option>
+           <option value="12" <{if $action.date.month == "12"}>SELECTED<{/if}> >12</option>
+         </select>
+         <{$lang.repository_month}>
+         <select id="embargo_day">
+           <option value= "1" <{if $action.date.day ==  "1"}>SELECTED<{/if}> >1</option>
+           <option value= "2" <{if $action.date.day ==  "2"}>SELECTED<{/if}> >2</option>
+           <option value= "3" <{if $action.date.day ==  "3"}>SELECTED<{/if}> >3</option>
+           <option value= "4" <{if $action.date.day ==  "4"}>SELECTED<{/if}> >4</option>
+           <option value= "5" <{if $action.date.day ==  "5"}>SELECTED<{/if}> >5</option>
+           <option value= "6" <{if $action.date.day ==  "6"}>SELECTED<{/if}> >6</option>
+           <option value= "7" <{if $action.date.day ==  "7"}>SELECTED<{/if}> >7</option>
+           <option value= "8" <{if $action.date.day ==  "8"}>SELECTED<{/if}> >8</option>
+           <option value= "9" <{if $action.date.day ==  "9"}>SELECTED<{/if}> >9</option>
+           <option value="10" <{if $action.date.day == "10"}>SELECTED<{/if}> >10</option>
+           <option value="11" <{if $action.date.day == "11"}>SELECTED<{/if}> >11</option>
+           <option value="12" <{if $action.date.day == "12"}>SELECTED<{/if}> >12</option>
+           <option value="13" <{if $action.date.day == "13"}>SELECTED<{/if}> >13</option>
+           <option value="14" <{if $action.date.day == "14"}>SELECTED<{/if}> >14</option>
+           <option value="15" <{if $action.date.day == "15"}>SELECTED<{/if}> >15</option>
+           <option value="16" <{if $action.date.day == "16"}>SELECTED<{/if}> >16</option>
+           <option value="17" <{if $action.date.day == "17"}>SELECTED<{/if}> >17</option>
+           <option value="18" <{if $action.date.day == "18"}>SELECTED<{/if}> >18</option>
+           <option value="19" <{if $action.date.day == "19"}>SELECTED<{/if}> >19</option>
+           <option value="20" <{if $action.date.day == "20"}>SELECTED<{/if}> >20</option>
+           <option value="21" <{if $action.date.day == "21"}>SELECTED<{/if}> >21</option>
+           <option value="22" <{if $action.date.day == "22"}>SELECTED<{/if}> >22</option>
+           <option value="23" <{if $action.date.day == "23"}>SELECTED<{/if}> >23</option>
+           <option value="24" <{if $action.date.day == "24"}>SELECTED<{/if}> >24</option>
+           <option value="25" <{if $action.date.day == "25"}>SELECTED<{/if}> >25</option>
+           <option value="26" <{if $action.date.day == "26"}>SELECTED<{/if}> >26</option>
+           <option value="27" <{if $action.date.day == "27"}>SELECTED<{/if}> >27</option>
+           <option value="28" <{if $action.date.day == "28"}>SELECTED<{/if}> >28</option>
+           <option value="29" <{if $action.date.day == "29"}>SELECTED<{/if}> >29</option>
+           <option value="30" <{if $action.date.day == "30"}>SELECTED<{/if}> >30</option>
+           <option value="31" <{if $action.date.day == "31"}>SELECTED<{/if}> >31</option>
+         </select>
+         <{$lang.repository_day}>
+         <br/>
+       </span>
+       <input id="embargo_flag3" name="embargo_flag" type="radio" onclick="$('embargo_flag_chk').value=3; $('embargo_open_date').style.display='none';" <{if $action.embargo_flag_chk==3}>CHECKED<{/if}>/>
+       <label for="embargo_flag3"><{$lang.repository_item_embargo_candidate3}></label>
+       <br/>
+       <input id="embargo_flag_chk" type="hidden" value="<{$action.embargo_flag_chk}>" />
+       <{*ライセンス入力*}> 
+       <div class="pl00 pt05 pb05 mt10 al">
+       <{$lang.repository_licence}>:
+       <select onchange="if(this.value=='licence_free'){$('span_licence').style.display='block';}else{$('span_licence').style.display='none';}" id="licence_id">
+        <{*最初に自由記述欄を入れる*}>
+        <option id="licence_id_0" value="licence_free" <{if $action.license_id==0 }>SELECTED<{/if}>><{$lang.repository_licence_free}></option>
+        <{*ライセンスマスタに登録されている分だけライセンスをプルダウンメニューに入れる*}>
+        <{section name=k loop=$action.licence_master}>
+        <{assign var="cnt" value=$smarty.section.k.index}>
+          <option id="licence_id_<{$cnt+1}>" value="<{$action.licence_master[k].license_id}>" <{if $action.licence_master[k].license_id==$action.license_id }>SELECTED<{/if}> >
+          <{$action.licence_master[k].license_notation}>
+          </option>
+        <{/section}>
+       </select>
+       <div class="al">
+       <span id="span_licence" <{if $action.license_id!=0 && $('licence_id').value!='licence_free' }>style="display: none;"<{else}>style="display: block;"<{/if}>>
+        <{$lang.repository_item_embargo_free_licence}><br/>
+        <textarea class="w400px al" id="licence_free_text" rows=5 cols=40 wrap=hard ><{$action.licence_free_text}></textarea>
+        </span>
+        </div>
+        </div>
+       <input id="embargo_recursion" type="checkbox" class="mt10 mb10" <{if $action.embargo_recursion==true }>CHECKED<{/if}>><label for="embargo_recursion"><{$lang.repository_item_embargo_recursion}></label></input>
+      </td>
+     </tr>
+   </table>
+   </div>
+   </form>
+    
+    <div class="btn-bottom full">
+        <input type="button" class="btn_next" value="<{$lang.repository_next}>" onclick="javascript: setEmbargo();">
+    </div>
+    </div><!-- //_repository_right_col<{$id}>-->
+    </div><!-- //repo_main_content -->
+
+<{* make index tree 2008/12/03 Y.Nakao --end-- *}>
+<script class="nc_script" type="text/javascript">
+ setEmbargo = function(){
+     var selectnode = $('select_embargo_index_id');
+     if(selectnode == null || selectnode.value == 0)
+     {
+     	alert("<{$lang.repository_item_embargo_index_error}>");
+     	return false;
+     }
+     repositoryCls['<{$id}>'].repositorySetEmbargo(selectnode.value);
+ }
+</script>
+<{include file="repository_script.html"}>

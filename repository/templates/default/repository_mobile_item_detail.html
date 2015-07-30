@@ -1,0 +1,1114 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_mobile_item_detail.html 40423 2014-08-26 02:30:50Z tatsuya_koyasu $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+
+<div style="padding: 5px 0 0 0; margin-bottom: -5px;">
+    <table>
+        <tr>
+            <th>
+                <{$lang.repository_index}>
+            </th>
+        </tr>
+    </table>
+</div>
+<hr />
+<div style="padding: 5px 0 0 0; width:100%; line-height: 1.5em; ">
+    <{section name=i loop=$smarty.session.position_index}>
+        
+        <{assign var="position_index" value=$smarty.session.position_index}>
+        <!-- ↓パンくず表示用HTML↓ -->
+        
+        <!-- ↓「Root > 」アイコン表示部分↓ -->
+        <a target="_top" href="<{$smarty.const.BASE_URL}>/?action=repository_opensearch&index_id=0&count=<{$smarty.session.list_view_num}>&order=<{$smarty.session.sort_order}>&pn=1">
+            Root
+        </a>
+        <span style="padding-right:5px;padding-left:5px;" onclick="javascript: repository<{$id}>ShowSubIndexTreeForDetail(event, 'repository_subIndexPanelForDetail', 'Root', 0, <{$smarty.section.i.index_next}>);">
+            <img border="0" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/page_next.gif" />
+        </span>
+        <!-- ↑「Root > 」アイコン表示部分↑ -->
+        
+        <!-- ↓「親インデックス > 子インデックス」作成部分↓ -->
+        <{strip}>
+            <{if $position_index[i][1] != null}>
+                <{section name=j loop=$position_index[i][1]}>
+                    <{if $position_index[i][1][j].pub_status == "1"}>
+                    <a target="_top" href="<{$smarty.const.BASE_URL}>/?action=repository_opensearch&index_id=<{$position_index[i][1][j].index_id}>&count=<{$smarty.session.list_view_num}>&order=<{$smarty.session.sort_order}>&pn=1">
+                    <{/if}>
+                        <{assign var="indexName" value=''}>
+                        <{if $smarty.session._lang=="japanese"}>
+                            <{if $position_index[i][1][j].index_name != "" && $position_index[i][1][j].index_name != null}>
+                                <{$position_index[i][1][j].index_name}>
+                                <{assign var="indexName" value=$position_index[i][1][j].index_name|truncate:15:"..."}>
+                            <{else}>
+                                <{$position_index[i][1][j].index_name_english}>
+                                <{assign var="indexName" value=$position_index[i][1][j].index_name_english|truncate:15:"..."}>
+                            <{/if}>
+                        <{else}>
+                            <{if $position_index[i][1][j].index_name_english != "" && $position_index[i][1][j].index_name_english != null}>
+                                <{$position_index[i][1][j].index_name_english}>
+                                <{assign var="indexName" value=$position_index[i][1][j].index_name_english|truncate:15:"..."}>
+                            <{else}>
+                                <{$position_index[i][1][j].index_name}>
+                                <{assign var="indexName" value=$position_index[i][1][j].index_name|truncate:15:"..."}>
+                            <{/if}>
+                        <{/if}>
+                    <{if $position_index[i][1][j].pub_status == "1"}>
+                    </a>
+                    <{/if}>
+                    <span style="padding-right:5px;padding-left:5px;" onclick="javascript: repository<{$id}>ShowSubIndexTreeForDetail(event, 'repository_subIndexPanelForDetail<{$id}>', '<{$indexName}>', '<{$position_index[i][1][j].index_id}>', <{$smarty.section.i.index_next}>);">
+                        <img border="0" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/page_next.gif" />
+                    </span>
+                <{/section}>
+            <{/if}>
+        <{/strip}>
+        
+        <!-- ↑「親インデックス > 子インデックス」作成部分↑ -->
+        <{if $position_index[i][0].pub_status == "1"}>
+            <a target="_top" style="margin-bottom: 10px;" href="<{$smarty.const.BASE_URL}>/?action=repository_opensearch&index_id=<{$position_index[i][0].index_id}>&count=<{$smarty.session.list_view_num}>&order=<{$smarty.session.sort_order}>">
+            <span class="strong">
+        <{/if}>
+        <{if $smarty.session._lang=="japanese"}>
+            <{if $position_index[i][0].index_name != "" && $position_index[i][0].index_name != null}>
+                <{$position_index[i][0].index_name}>
+            <{else}>
+                <{$position_index[i][0].index_name_english}>
+            <{/if}>
+        <{else}>
+            <{if $position_index[i][0].index_name_english != "" && $position_index[i][0].index_name_english != null}>
+                <{$position_index[i][0].index_name_english}>
+            <{else}>
+                <{$position_index[i][0].index_name}>
+            <{/if}>
+        <{/if}>
+        <{if $position_index[i][0].pub_status == "1"}>
+            </span>
+            </a>
+        <{/if}>
+        <!-- ↑パンくず表示用HTML↑ -->
+        
+        <br/>
+        
+        <div style="display:none;background-color: #fff;border: 1px solid #000; " id="repository_subIndexPanelForDetail_<{$smarty.section.i.index_next}>">
+        </div>
+    <{/section}>
+</div>
+
+<{if $action.uri != null && $action.uri != ""}>
+<{* permalink *}>
+    <hr />
+    <div style="padding: 10px 0 0 0; width:100%; ">
+        <div style="text-align:left; font-weight:bold;">
+            Permalink
+        </div>
+        <div style="padding-left:10px; text-align:right;">
+            <{$action.uri}>
+        </div>
+    </div>
+<{/if}>
+
+<{* title *}>
+<div style="width:100%;">
+    <h2 style="border-style:solid none; border-color: #A0A0A0; padding:15px 0; font-size:112%; margin-top: 10px;">
+        <div style="width:16px; height:16px; float:left;">
+            <{if $smarty.session.item_info.item_type[0].icon_name != ""}>
+                <img 
+                <{if $smarty.session.item_info.item_type[0].icon_width > 16 || $smarty.session.item_info.item_type[0].icon_height > 16}>
+                    <{if $smarty.session.item_info.item_type[0].icon_width >= $smarty.session.item_info.item_type[0].icon_height}>
+                        width="16px"
+                    <{else}>
+                        height="16px"
+                    <{/if}> 
+                <{/if}>
+                src="<{$smarty.const.BASE_URL}>/?action=repository_action_common_download&item_type_id=<{$smarty.session.item_info.item_type[0].item_type_id}>"/>
+            <{else}>
+                <img width="16px" height="16px" src="images/repository/tree/item.png"/>
+            <{/if}>
+        </div>
+        <div style="margin-left:25px;">
+            <{if $smarty.session._lang=="japanese"}>
+                <{if $smarty.session.item_info.item[0].title != ""}>
+                    <{$smarty.session.item_info.item[0].title}>
+                <{else}>
+                    <{$smarty.session.item_info.item[0].title_english}>
+                <{/if}>
+            <{else}>
+                <{if $smarty.session.item_info.item[0].title_english != ""}>
+                    <{$smarty.session.item_info.item[0].title_english}>
+                <{else}>
+                    <{$smarty.session.item_info.item[0].title}>
+                <{/if}>
+            <{/if}>
+        </div>
+        <{* Add display usagestaticstics link A.Suzuki --start-- *}>
+        <{if $smarty.session.workflow_flg=="false" && $action.isDispUsageLink == true}>
+            <span style="padding: 0px 6px; font-size: 12px; float: right; text-align: right; width: 100%;">
+                <a href="<{$smarty.const.BASE_URL}>/?action=repository_view_common_usagestatistics&itemId=<{$action.item_id}>&itemNo=<{$action.item_no}>&page_id=<{$page_id}>&block_id=<{$block_id}><{$session_param}>">
+                    <{$lang.repository_detail_show_usagestatistics}>
+                </a>
+            </span>
+        <{/if}>
+        <{* Add display usagestaticstics link A.Suzuki --end-- *}>
+    </h2>
+</div>
+
+<{* file list *}>
+<{if ($action.IsFile=='true' && $action.IsFileView=='true') || ($action.IsFile=='true' && $action.IsFlashView=='true') || ($action.IsFile=='true' && $action.IsMultimediaView=='true')}>
+    <{section name=i loop=$smarty.session.item_info.item_attr}>
+        <{assign var="attr_type" value=$smarty.session.item_info.item_attr_type}>
+        <{assign var="item_attr" value=$smarty.session.item_info.item_attr}>
+        <{assign var="cnt1" value=$smarty.section.i.index}>
+        <{if ($smarty.session.workflow_flg=="false" && $attr_type[i].hidden == '0') || $smarty.session.workflow_flg!="false"}>
+            <{if $attr_type[i].input_type == 'file' || $attr_type[i].input_type == 'file_price'}>
+                <{section name=j loop=$item_attr[i]}>
+                    <{if $item_attr[i][j].display_type == '0' || $item_attr[i][j].display_type == '2'}>
+                        <div style="margin:10px 0px; width:100%;">
+                            <div style="text-align:left; <{if $attr_type[i].hidden == '1'}>color: #808080;<{/if}>">
+                                <{* Fix Multimedia file view Y.Nakao 2013/04/12 --start-- *}>
+                                <{if $item_attr[i][j].access_flag != '2'}>
+                                    <a style="cursor : pointer;" target="_top" href="<{$smarty.const.BASE_URL}>/?action=repository_uri&item_id=<{$item_attr[i][j].item_id}>&file_id=<{$item_attr[i][j].attribute_id}>&file_no=<{$item_attr[i][j].file_no}>">
+                                <{else}>
+                                    <span>
+                                <{/if}>
+                                    <{if $item_attr[i][j].mime_type == "1"}>
+                                        <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/icon/icon_16_txt.jpg" />
+                                    <{elseif $item_attr[i][j].mime_type == "2"}>
+                                        <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/icon/icon_16_pdf.jpg" />
+                                    <{elseif $item_attr[i][j].mime_type == "3"}>
+                                        <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/icon/icon_16_doc.jpg" />
+                                    <{elseif $item_attr[i][j].mime_type == "4"}>
+                                        <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/icon/icon_16_xls.jpg" />
+                                    <{elseif $item_attr[i][j].mime_type == "5"}>
+                                        <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/icon/icon_16_ppt.jpg" />
+                                    <{elseif $item_attr[i][j].mime_type == "6"}>
+                                        <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/icon/icon_16_zip.jpg" />
+                                    <{elseif $item_attr[i][j].mime_type == "7"}>
+                                        <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/icon/icon_16_picture.jpg" />
+                                    <{elseif $item_attr[i][j].mime_type == "8"}>
+                                        <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/icon/icon_16_flash.jpg" />
+                                    <{elseif $item_attr[i][j].mime_type == "9"}>
+                                        <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/icon/icon_16_music.jpg" />
+                                    <{elseif $item_attr[i][j].mime_type == "10"}>
+                                        <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/icon/icon_16_movie.jpg" />
+                                    <{else}>
+                                       <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/icon/icon_16_others.jpg" />
+                                   <{/if}>
+                                    <{if $item_attr[i][j].display_name != ""}>
+                                        <{* 表示名が設定されている場合 *}>
+                                        &nbsp;
+                                        <{$item_attr[i][j].display_name}>
+                                        &nbsp;
+                                        (<{$item_attr[i][j].file_size}>)
+                                    <{else}>
+                                        <{* 表示名が設定されていない場合 *}>
+                                        &nbsp;
+                                        <{$item_attr[i][j].file_name}>
+                                        &nbsp;
+                                        (<{$item_attr[i][j].file_size}>)
+                                    <{/if}>
+                                <{if $item_attr[i][j].access_flag != '2'}>
+                                    </a>
+                                <{else}>
+                                    </span>
+                                <{/if}>
+                                <{* Fix Multimedia file view Y.Nakao 2013/04/12 --end-- *}>
+                                <{* Add download count A.Suzuki --start-- *}>
+                                <span>[&nbsp;<{$item_attr[i][j].cnt}>&nbsp;downloads&nbsp;]</span>
+                                <{* Add download count A.Suzuki --end-- *}>
+                                <{if $item_attr[i][j].openaccess_flag == 'true'}>
+                                    <{if $item_attr[i][j].price_accent != 'license'}>
+                                        <BR><span style="margin-left: 16px"><{$lang.repository_detail_openaccess|replace:"YYYY":$item_attr[i][j].openaccess_date_year|replace:"MM":$item_attr[i][j].openaccess_date_month|replace:"DD":$item_attr[i][j].openaccess_date_day}></span>
+                                    <{/if}>
+                                <{/if}>
+                            </div>
+                            <{if $item_attr[i][j].display_name != ""}>
+                                <div style="text-align:left; padding-left:20px; font-size:80%;">
+                                    <{* Download file name *}>
+                                    <{$item_attr[i][j].display_name}>
+                                </div>
+                            <{/if}>
+                            
+                            <{if count($item_attr[i][j].group_price) > 0}>
+                                <div style="text-align:left; padding-left:20px; font-size:80%; <{if $attr_type[i].hidden == '1'}>color: #808080;<{/if}>">
+                                    
+                                    <{if $item_attr[i][j].price_accent == "free"}>
+                                        <{$lang.repository_item_embargo_candidate1}>
+                                    <{* Bug Fix string "license" is set to $item_attr[i][j].price_accent T.Koyasu 2014/08/05 --start-- *}>
+                                    <{elseif $item_attr[i][j].price_accent == "license"}>
+                                        <{$lang.repository_log_is_sitelicense|replace:"UNIT":$smarty.session.money_unit|replace:"&amp;":"&"}>
+                                    <{* Bug Fix string "license" is set to $item_attr[i][j].price_accent T.Koyasu 2014/08/05 --end-- *}>
+                                    <{else}>
+                                        <{section name=k loop=$item_attr[i][j].group_price}>
+                                            <{assign var="group_price" value=$item_attr[i][j].group_price}>
+                                            <{* Bug Fix string "license" is set to $item_attr[i][j].price_accent T.Koyasu 2014/08/05 --start-- *}>
+                                            <{if $item_attr[i][j].price_accent[k] == "true" || $item_attr[i][j].price_accent[k] == "already"}>
+                                                <font style="margin-right: 7px; background-color: #ADD8E6;">
+                                            <{/if}>
+                                            <{if $group_price[k].name == "0"}>
+                                                <{$lang.repository_item_gest}>
+                                            <{else}>
+                                                <{$group_price[k].name}>
+                                            <{/if}>
+                                            :&nbsp;
+                                            <{strip}>
+                                                <{* Mod change yen mark to html special char T.Koyasu 2014/07/31 --start-- *}>
+                                                <{$smarty.session.money_unit|smarty:nodefaults}>
+                                                <{* Mod change yen mark to html special char T.Koyasu 2014/07/31 --end-- *}>
+                                                <{$group_price[k].price}>-
+                                            <{/strip}>
+                                            <{if $item_attr[i][j].price_accent[k] == "already"}>
+                                                [<{$lang.repository_workflow_already_paid}>]
+                                            <{/if}>
+                                            <{if $item_attr[i][j].price_accent[k] == "true" || $item_attr[i][j].price_accent[k] == "already"}>
+                                                </font>
+                                            <{/if}>
+                                            <{* Bug Fix string "license" is set to $item_attr[i][j].price_accent T.Koyasu 2014/08/05 --end-- *}>
+                                            <{if $smarty.section.k.index!=count($item_attr[i][j].group_price)-1}>
+                                                , 
+                                            <{/if}>
+                                        <{/section}>
+                                    <{/if}>
+                                </div>
+                            <{/if}>
+                            
+                            <div style="text-align:left; padding-left:20px; font-size:80%;">
+                                <{* Licence *}>
+                                <{if $item_attr[i][j].text_url!=""}>
+                                <{strip}>
+                                    <a style="margin-right: 3px;" href="<{$item_attr[i][j].text_url}>" target="_blank">
+                                        <img style="margin-top:10px;" width="44px" src="<{$item_attr[i][j].img_url}>" />
+                                    </a>
+                                    <{/strip}>
+                                <{/if}>
+                                <{section name=k loop=$item_attr[i][j].license_notation_array}>
+                                    <{$item_attr[i][j].license_notation_array[k]}>
+                                    <{if count($item_attr[i][j].license_notation_array)!=0}>
+                                        <br/>
+                                    <{/if}>
+                                <{/section}>
+                            </div>
+                        </div>
+                    <{/if}>
+                <{/section}>
+            <{/if}>
+        <{/if}>
+    <{/section}>
+<{/if}>
+
+<{* suppleMentalContents *}>
+<{if $action.IsSupple == true}>
+    <{section name=i loop=$smarty.session.item_info.item_attr}>
+        <{assign var="attr_type" value=$smarty.session.item_info.item_attr_type}>
+        <{assign var="item_attr" value=$smarty.session.item_info.item_attr}>
+        <{assign var="cnt1" value=$smarty.section.i.index}>
+        <{if $attr_type[i].input_type == 'supple'}>
+            <{section name=j loop=$item_attr[i]}>
+                <{if $smarty.section.j.index_next == 1}>
+                    <hr />
+                <{/if}>
+                <{if $item_attr[i][j].supple_reject_status != "1" && ($item_attr[i][j].supple_review_status == "1" || $item_attr[i][j].ins_user_id == $smarty.session._user_id || ($smarty.session._user_auth_id >= $smarty.const._REPOSITORY_BASE_AUTH && $smarty.session._auth_id >= $smarty.const._REPOSITORY_ROOM_AUTH))}>
+                    <table style="width:100%; margin-top:10px;">
+                        <tr>
+                            <td style="width:16px;">
+                                <{if $item_attr[i][j].download_url != ""}>
+                                    <a target="_top" href="<{$item_attr[i][j].download_url}>" title="<{$lang.repository_supple_download_contents}>">
+                                        <{if $item_attr[i][j].mime_type == "1"}>
+                                            <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/icon/icon_16_txt.jpg" />
+                                        <{elseif $item_attr[i][j].mime_type == "2"}>
+                                            <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/icon/icon_16_pdf.jpg" />
+                                        <{elseif $item_attr[i][j].mime_type == "3"}>
+                                            <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/icon/icon_16_doc.jpg" />
+                                        <{elseif $item_attr[i][j].mime_type == "4"}>
+                                            <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/icon/icon_16_xls.jpg" />
+                                        <{elseif $item_attr[i][j].mime_type == "5"}>
+                                            <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/icon/icon_16_ppt.jpg" />
+                                        <{elseif $item_attr[i][j].mime_type == "6"}>
+                                            <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/icon/icon_16_zip.jpg" />
+                                        <{elseif $item_attr[i][j].mime_type == "7"}>
+                                            <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/icon/icon_16_picture.jpg" />
+                                        <{elseif $item_attr[i][j].mime_type == "8"}>
+                                            <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/icon/icon_16_flash.jpg" />
+                                        <{elseif $item_attr[i][j].mime_type == "9"}>
+                                            <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/icon/icon_16_music.jpg" />
+                                        <{elseif $item_attr[i][j].mime_type == "10"}>
+                                            <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/icon/icon_16_movie.jpg" />
+                                        <{else}>
+                                            <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/icon/icon_16_others.jpg" />
+                                        <{/if}>
+                                    </a>
+                                <{/if}>
+                            </td>
+                            <td>
+                                <span style="text-align:left; font-size:80%;">
+                                    <{$item_attr[i][j].supple_item_type_name}>
+                                </span>
+                                <br/>
+                                <a href="<{$item_attr[i][j].uri}>">
+                                    <{if $smarty.session._lang=="japanese"}>
+                                        <{if $item_attr[i][j].supple_title != ""}>
+                                            <{$item_attr[i][j].supple_title}>
+                                        <{else}>
+                                            <{$item_attr[i][j].supple_title_en}>
+                                        <{/if}>
+                                    <{else}>
+                                        <{if $item_attr[i][j].supple_title_en != ""}>
+                                            <{$item_attr[i][j].supple_title_en}>
+                                        <{else}>
+                                            <{$item_attr[i][j].supple_title}>
+                                        <{/if}>
+                                    <{/if}>
+                                </a>
+                                <{if ($item_attr[i][j].ins_user_id == $smarty.session._user_id || ($smarty.session._user_auth_id >= $smarty.const._REPOSITORY_BASE_AUTH && $smarty.session._auth_id >= $smarty.const._REPOSITORY_ROOM_AUTH)) && $smarty.session.workflow_flg=="false"}>
+                                    <{if $item_attr[i][j].supple_review_status == "0"}>
+                                        <br/>
+                                        <span style="text-align:left; font-size:80%; color:#CC0000">
+                                            <{$lang.repository_workflow_review}>
+                                        </span>
+                                    <{/if}>
+                                <{/if}>
+                            </td>
+                        </tr>
+                    </table>
+                <{/if}>
+            <{/section}>
+        <{/if}>
+    <{/section}>
+<{/if}>
+
+<{* output xml -start- *}>
+<div style="width:100%; white-space:nowrap; text-align:right; padding-top:10px;">
+    <{strip}>
+        <a href="<{$smarty.session.oaipmh_uri}>" target="_blank">
+            <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/oai_pmh.png" alt="OAI-PMH" />
+        </a>
+    <{/strip}>
+    <{strip}>
+        <a href="<{$smarty.session.bibtex_uri}>" target="_blank">
+            <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/bibtex.png" alt="BIBTEX" />
+        </a>
+    <{/strip}>
+    <{strip}>
+        <a href="<{$smarty.session.swrc_uri}>" target="_blank">
+            <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/swrc.png" alt="SWRC" />
+        </a>
+    <{/strip}>
+</div>
+<{* output xml -end- *}>
+
+<{* METADATA -start- *}>
+<{* 他言語タイトル *}>
+<{if $action.alter_flg == "1" && $smarty.session.item_info.item[0].title != "" && $smarty.session.item_info.item[0].title_english != ""}>
+    <div style="text-align:left; font-weight: bold; padding-top:10px; color:#000000;">
+        <{if $smarty.session._lang=="japanese"}>
+            <{$lang.repository_title_english}>
+        <{else}>
+            <{$lang.repository_title_japanese}>
+        <{/if}>
+    </div>
+    <div style="text-align:left; padding-left:20px;">
+        <{if $smarty.session._lang=="japanese"}>
+            <{$smarty.session.item_info.item[0].title_english}>
+        <{else}>
+            <{$smarty.session.item_info.item[0].title}>
+        <{/if}>
+    </div>
+<{/if}>
+
+<{* アイテムタイプ *}>
+<div style="text-align:left; font-weight: bold; padding-top:10px; color:#000000;">
+    <{$lang.repository_itemtype}>
+</div>
+<div style="text-align:left; padding-left:20px;">
+    <{$smarty.session.item_info.item_type[0].item_type_name}>
+</div>
+
+<{* 言語 *}>
+<div style="text-align:left; font-weight: bold; padding-top:10px; color:#000000;">
+    <{$lang.repository_language}>
+</div>
+<div style="text-align:left; padding-left:20px;">
+    <{if $smarty.session.item_info.item[0].language=="ja"}><{$lang.repository_language_ja}><{/if}>
+    <{if $smarty.session.item_info.item[0].language=="en"}><{$lang.repository_language_en}><{/if}>
+    <{if $smarty.session.item_info.item[0].language=="fr"}><{$lang.repository_language_fr}><{/if}>
+    <{if $smarty.session.item_info.item[0].language=="it"}><{$lang.repository_language_it}><{/if}>
+    <{if $smarty.session.item_info.item[0].language=="de"}><{$lang.repository_language_de}><{/if}>
+    <{if $smarty.session.item_info.item[0].language=="es"}><{$lang.repository_language_es}><{/if}>
+    <{if $smarty.session.item_info.item[0].language=="zh"}><{$lang.repository_language_zh}><{/if}>
+    <{if $smarty.session.item_info.item[0].language=="ru"}><{$lang.repository_language_ru}><{/if}>
+    <{if $smarty.session.item_info.item[0].language=="la"}><{$lang.repository_language_la}><{/if}>
+    <{if $smarty.session.item_info.item[0].language=="ms"}><{$lang.repository_language_ms}><{/if}>
+    <{if $smarty.session.item_info.item[0].language=="eo"}><{$lang.repository_language_eo}><{/if}>
+    <{if $smarty.session.item_info.item[0].language=="ar"}><{$lang.repository_language_ar}><{/if}>
+    <{if $smarty.session.item_info.item[0].language=="el"}><{$lang.repository_language_el}><{/if}>
+    <{if $smarty.session.item_info.item[0].language=="ko"}><{$lang.repository_language_ko}><{/if}>
+    <{if $smarty.session.item_info.item[0].language=="otherlanguage"}><{$lang.repository_language_other}><{/if}>
+</div>
+
+<{* キーワード *}>
+<{if $smarty.session.item_info.item[0].serch_key != null || $smarty.session.item_info.item[0].serch_key_english != null}>
+    <div style="text-align:left; font-weight: bold; padding-top:10px; color:#000000;">
+        <{$lang.repository_keyword}>
+    </div>
+    <div style="text-align:left; padding-left:20px;">
+        <{if $smarty.session._lang=="japanese"}>
+            <{if $smarty.session.keyword != ""}>
+                <{$smarty.session.keyword}><br/>
+            <{else}>
+                <{$smarty.session.keyword_english}><br/>
+            <{/if}>
+        <{else}>
+            <{if $smarty.session.keyword_english != ""}>
+                <{$smarty.session.keyword_english}><br/>
+            <{else}>
+                <{$smarty.session.keyword}><br/>
+            <{/if}>
+        <{/if}>
+    </div>
+<{/if}>
+
+<{* 他言語キーワード *}>
+<{if $action.alter_flg == "1" && $smarty.session.keyword != "" && $smarty.session.keyword_english != ""}>
+    <div style="text-align:left; font-weight: bold; padding-top:10px; color:#000000;">
+        <{if $smarty.session._lang=="japanese"}>
+            <{$lang.repository_keyword_english}>
+        <{else}>
+            <{$lang.repository_keyword_japanese}> 
+        <{/if}>
+    </div>
+    <div style="text-align:left; padding-left:20px;">
+        <{if $smarty.session._lang=="japanese"}>
+            <{$smarty.session.keyword_english}>
+        <{else}>
+            <{$smarty.session.keyword}>
+        <{/if}>
+    </div>
+<{/if}>
+
+<{*メタデータ*}>
+<{section name=i loop=$smarty.session.item_info.item_attr}>
+    <{assign var="attr_type" value=$smarty.session.item_info.item_attr_type}>
+    <{assign var="item_attr" value=$smarty.session.item_info.item_attr}>
+    <{assign var="cnt1" value=$smarty.section.i.index}>
+    <{if $attr_type[i].hidden == '0'}>
+        <{if $attr_type[i].display_flag == "true"}>
+            <{*アイテム属性値の表示 : text*}>
+            <{if $attr_type[i].input_type == 'text'}>
+                <{if count($item_attr[i])>0}>
+                    <div style="text-align:left; font-weight: bold; padding-top:10px; color:#000000;">
+                        <{$attr_type[i].attribute_name}>
+                    </div>
+                    <div style="text-align:left; padding-left:20px;">
+                        <{if count($item_attr[i])==1}>
+                            <{$item_attr[i][0].attribute_value}>
+                        <{else}>
+                            <table width="100%">
+                                <{section name=j loop=$item_attr[i]}>
+                                <tr>
+                                    <td style="vertical-align: top; padding-top: 5px;">
+                                        <{$smarty.section.j.index_next}>.
+                                    </td>
+                                    <td style="width:100%; padding-top: 5px;">
+                                        <{$item_attr[i][j].attribute_value}>
+                                    </td>
+                                </tr>
+                                <{/section}>
+                            </table>
+                        <{/if}>
+                    </div>
+                <{/if}>
+            <{*アイテム属性値の表示 : textarea*}>
+            <{elseif $attr_type[i].input_type == 'textarea'}>
+                <{if count($item_attr[i])>0}>
+                    <div style="text-align:left; font-weight: bold; padding-top:10px; color:#000000;">
+                        <{$attr_type[i].attribute_name}>
+                    </div>
+                    <div style="text-align:left; padding-left:20px;">
+                        <{if count($item_attr[i]) == 1}>
+                            <{section name=k loop=$item_attr[i][0].attribute_value}>
+                                <{$item_attr[i][0].attribute_value[k]}>
+                                <br/>
+                            <{/section}>
+                        <{else}>
+                            <table width="100%">
+                                <{section name=j loop=$item_attr[i]}>
+                                    <tr>
+                                        <td style="vertical-align: top; padding-top: 5px;">
+                                            <{$smarty.section.j.index_next}>.
+                                        </td>
+                                        <td style="width:100%; padding-top: 5px;">
+                                            <{section name=k loop=$item_attr[i][j].attribute_value}>
+                                                <{$item_attr[i][j].attribute_value[k]}>
+                                                <br/>
+                                            <{/section}>
+                                        </td>
+                                    </tr>
+                                <{/section}>
+                            </table>
+                        <{/if}>
+                    </div>
+                <{/if}>
+
+            <{*アイテム属性値の表示 : name*}>
+            <{elseif $attr_type[i].input_type == 'name'}>
+                <{if count($item_attr[i])>0}>
+                     <div style="text-align:left; font-weight: bold; padding-top:10px; color:#000000;">
+                         <{$attr_type[i].attribute_name}>
+                     </div>
+                     <div style="text-align:left; padding-left:20px;">
+                         <{if count($item_attr[i]) == 1}>
+                             <a href="" id="searchAuthorDetail<{$id}>_<{$k}>" onclick="javascript: redirectAuthorSearch<{$id}>( 'searchAuthorDetail<{$id}>_<{$k}>' ); return false;" >
+                                 <{$item_attr[i][0].family}>
+                                 <{if $item_attr[i][0].name!=""}>
+                                     ,&nbsp;<{$item_attr[i][0].name}>
+                                 <{/if}>
+                             </a>
+                             <{if $attr_type[i].display_lang_type=="japanese"}>
+                                 <{if $item_attr[i][0].family_ruby!="" || $item_attr[i][0].name_ruby!=""}>
+                                     <br/>
+                                     <{$item_attr[i][0].family_ruby}>,&nbsp;<{$item_attr[i][0].name_ruby}>
+                                 <{/if}>
+                             <{/if}>
+                             <{if $item_attr[i][0].e_mail_address!=""}>
+                                 <br/>
+                                 <{$item_attr[i][0].e_mail_address}>
+                             <{/if}>
+                             <{if $item_attr[i][0].author_id_text!=""}>
+                                 <br/>
+                                 <{$item_attr[i][0].author_id_text}>
+                             <{/if}>
+                         <{else}>
+                             <table width="100%">
+                                 <{section name=j loop=$item_attr[i]}>
+                                     <tr>
+                                         <td style="vertical-align: top; padding-top: 5px;">
+                                             <{$smarty.section.j.index_next}>.
+                                         </td>
+                                         <td style="width:100%; padding-top: 5px;">
+                                             <a href="" id="searchAuthorDetailElse<{$id}>_<{$k}>" onclick="javascript: redirectAuthorSearch<{$id}>( 'searchAuthorDetailElse<{$id}>_<{$k}>' ); return false;" >
+                                                 <{$item_attr[i][j].family}>
+                                                 <{if $item_attr[i][j].name!=""}>
+                                                     ,&nbsp;<{$item_attr[i][j].name}>
+                                                 <{/if}>
+                                             </a>
+                                             <{if $attr_type[i].display_lang_type=="japanese"}>
+                                                 <{if $item_attr[i][j].family_ruby!="" || $item_attr[i][j].name_ruby!=""}>
+                                                     <br/>
+                                                     <{$item_attr[i][j].family_ruby}>,&nbsp;<{$item_attr[i][j].name_ruby}>
+                                                 <{/if}>
+                                             <{/if}>
+                                             <{if $item_attr[i][j].e_mail_address!=""}>
+                                                 <br/>
+                                                 <{$item_attr[i][j].e_mail_address}>
+                                             <{/if}>
+                                             <{if $item_attr[i][j].author_id_text!=""}>
+                                                 <br/>
+                                                 <{$item_attr[i][j].author_id_text}>
+                                             <{/if}>
+                                         </td>
+                                     </tr>
+                                 <{/section}>
+                             </table>
+                         <{/if}>
+                     </div>
+                <{/if}>
+                
+            <{*アイテム属性値の表示 : link*}>
+            <{elseif $attr_type[i].input_type == 'link'}>
+                <{if count($item_attr[i])>0}>
+                    <div style="text-align:left; font-weight: bold; padding-top:10px; color:#000000;">
+                        <{$attr_type[i].attribute_name}>
+                    </div>
+                    <div style="text-align:left; padding-left:20px;">
+                        <{if count($item_attr[i])==1}>
+                             <a target="_blank" href="<{$item_attr[i][0].attribute_value[0]}>">
+                                 <{if $item_attr[i][0].attribute_value[1] != ""}>
+                                     <{$item_attr[i][0].attribute_value[1]}>
+                                 <{else}>
+                                     <{$item_attr[i][0].attribute_value[0]}>
+                                 <{/if}>
+                             </a>
+                        <{else}>
+                            <table width="100%">
+                                <{section name=j loop=$item_attr[i]}>
+                                    <tr>
+                                        <td style="vertical-align: top; padding-top: 5px;">
+                                            <{$smarty.section.j.index_next}>.
+                                        </td>
+                                        <td style="width:100%; padding-top: 5px;">
+                                            <a target="_blank" href="<{$item_attr[i][j].attribute_value[0]}>">
+                                                <{if $item_attr[i][j].attribute_value[1] != ""}>
+                                                    <{$item_attr[i][j].attribute_value[1]}>
+                                                <{else}>
+                                                    <{$item_attr[i][j].attribute_value[0]}>
+                                                <{/if}>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <{/section}>
+                            </table>
+                        <{/if}>
+                    </div>
+                <{/if}>
+                
+            <{*アイテム属性値の表示 : select*}>
+            <{elseif $attr_type[i].input_type == 'select'}>
+                <{if count($item_attr[i])>0}>
+                    <div style="text-align:left; font-weight: bold; padding-top:10px; color:#000000;">
+                        <{$attr_type[i].attribute_name}>
+                    </div>
+                    <div style="text-align:left; padding-left:20px;">
+                        <{$item_attr[i][0].attribute_value}>
+                    </div>
+                <{/if}>
+                
+            <{*アイテム属性値の表示 : checkbox*}>
+            <{elseif $attr_type[i].input_type == 'checkbox'}>
+                <{if count($item_attr[i])>0}>
+                    <div style="text-align:left; font-weight: bold; padding-top:10px; color:#000000;">
+                        <{$attr_type[i].attribute_name}>
+                    </div>
+                    <div style="text-align:left; padding-left:20px;">
+                        <{section name=j loop=$item_attr[i]}>
+                            <{$item_attr[i][j].attribute_value}>
+                        <{/section}>
+                    </div>
+                <{/if}>
+                
+            <{*アイテム属性値の表示 : radio*}>
+            <{elseif $attr_type[i].input_type == 'radio'}>
+                <{if count($item_attr[i])>0}>
+                    <div style="text-align:left; font-weight: bold; padding-top:10px; color:#000000;">
+                        <{$attr_type[i].attribute_name}>
+                    </div>
+                    <div style="text-align:left; padding-left:20px;">
+                        <{section name=j loop=$item_attr[i]}>
+                            <{$item_attr[i][j].attribute_value}>
+                        <{/section}>
+                    </div>
+                <{/if}>
+                
+            <{*アイテム属性値の表示 : file(簡易表示)*}>
+            <{elseif $attr_type[i].input_type == 'file' || $attr_type[i].input_type == 'file_price'}>
+                <{if $action.IsFileSimpleView[i]=="true" && count($item_attr[i])>0}>
+
+                    <div style="text-align:left; font-weight: bold; padding-top:10px; color:#000000;">
+                        <{$attr_type[i].attribute_name}>
+                    </div>
+                    <div style="text-align:left; padding-left:20px;">
+                        <table width="100%">
+                            <{section name=j loop=$item_attr[i]}>
+                                <{if $smarty.section.j.index_next==1}>
+                                    <{assign var="fileCnt" value=$smarty.section.j.index_next}>
+                                <{/if}>
+                                <{if $item_attr[i][j].display_type == '1'}>
+                                    <tr>
+                                        <td style="vertical-align: top; padding-top: 5px;">
+                                            <{$fileCnt}>.
+                                        </td>
+                                        <td style="width:100%; padding-top: 5px;">
+                                            <{* Fix Multimedia file view Y.Nakao 2013/04/12 --start-- *}>
+                                            <{if $item_attr[i][j].access_flag != '2'}>
+                                                <a target="_top" style="cursor : pointer; text-decoration: underline;" 
+                                                    href="<{$smarty.const.BASE_URL}>/?action=repository_uri&item_id=<{$item_attr[i][j].item_id}>&file_id=<{$item_attr[i][j].attribute_id}>&file_no=<{$item_attr[i][j].file_no}>"
+                                                >
+                                               <{if $item_attr[i][j].display_name != ""}>
+                                                   <{$item_attr[i][j].display_name}>
+                                               <{else}>
+                                                   <{$item_attr[i][j].file_name}>
+                                               <{/if}>
+                                               </a>
+                                           <{else}>
+                                               <span>
+                                                   <{if $item_attr[i][j].display_name != ""}>
+                                                       <{$item_attr[i][j].display_name}>
+                                                   <{else}>
+                                                       <{$item_attr[i][j].file_name}>
+                                                   <{/if}>
+                                               </span>
+                                           <{/if}>
+                                           <{* Fix Multimedia file view Y.Nakao 2013/04/12 --end-- *}>
+                                        </td>
+                                    </tr>
+                                    <{assign var="fileCnt" value=`$fileCnt+1`}>
+                                <{/if}>
+                            <{/section}>
+                        </table>
+                    </div>
+                <{/if}>
+                
+            <{*アイテム属性値の表示 : thumbnail*}>
+            <{elseif $attr_type[i].input_type == 'thumbnail'}>
+                <{if count($item_attr[i])>0}>
+                    <div style="text-align:left; font-weight: bold; padding-top:10px; color:#000000;">
+                        <{$attr_type[i].attribute_name}>
+                    </div>
+                    <div style="text-align:left; padding-left:20px;">
+                        <{if count($item_attr[i]) == 1}>
+                            <{$item_attr[i][0].file_name}><br/>
+                            <img 
+                            <{if $item_attr[i][0].width > 120 || $item_attr[i][0].height > 120}>
+                                <{if $item_attr[i][0].width >= $item_attr[i][0].height}>
+                                    width="120px"
+                                <{else}>
+                                    height="120px"
+                                <{/if}> 
+                            <{/if}>
+                            src="<{$smarty.const.BASE_URL}>/?action=repository_action_common_download&item_id=<{$item_attr[i][0].item_id}>&item_no=<{$item_attr[i][0].item_no}>&attribute_id=<{$item_attr[i][0].attribute_id}>&file_no=<{$item_attr[i][0].file_no}>&img=true" />
+                        <{else}>
+                            <table width="100%">
+                                <{section name=j loop=$item_attr[i]}>
+                                    <tr>
+                                        <td style="vertical-align: top; padding-top: 5px;">
+                                            <{$smarty.section.j.index_next}>.
+                                        </td>
+                                        <td style="width:100%; padding-top: 5px;">
+                                            <{$item_attr[i][j].file_name}><br/>
+                                            <img 
+                                            <{if $item_attr[i][j].width > 100 || $item_attr[i][j].height > 100}>
+                                                <{if $item_attr[i][j].width >= $item_attr[i][j].height}>
+                                                    width="100px"
+                                                <{else}>
+                                                    height="100px"
+                                                <{/if}> 
+                                            <{/if}>
+                                            src="<{$smarty.const.BASE_URL}>/?action=repository_action_common_download&item_id=<{$item_attr[i][j].item_id}>&item_no=<{$item_attr[i][j].item_no}>&attribute_id=<{$item_attr[i][j].attribute_id}>&file_no=<{$item_attr[i][j].file_no}>&img=true" />
+                                        </td>
+                                    </tr>
+                                <{/section}>
+                            </table>
+                        <{/if}>
+                    </div>
+                <{/if}>
+            <{*アイテム属性値の表示 : biblio*}>
+            <{elseif $attr_type[i].input_type == 'biblio_info'}>
+                <{if count($item_attr[i])>0}>
+                    <div style="text-align:left; font-weight: bold; padding-top:10px; color:#000000;">
+                        <{$lang.repository_item_biblio_name}>
+                    </div>
+                    <div style="text-align:left; padding-left:20px;">
+                        <table>
+                            <{if ($item_attr[i][0].biblio_name != "") || ($item_attr[i][0].biblio_name_english != "")}>
+                                <tr>
+                                    <th>
+                                        <{$lang.repository_item_biblio_name}>
+                                    </th>
+                                    <td style="padding-left: 10px;">
+                                        <{if $smarty.session._lang=="japanese"}>
+                                            <{if $item_attr[i][0].biblio_name != ""}>
+                                                <{$item_attr[i][0].biblio_name}>
+                                            <{else}>
+                                                <{$item_attr[i][0].biblio_name_english}>
+                                            <{/if}>
+                                        <{else}>
+                                            <{if $item_attr[i][0].biblio_name_english != ""}>
+                                                <{$item_attr[i][0].biblio_name_english}>
+                                            <{else}>
+                                                <{$item_attr[i][0].biblio_name}>
+                                            <{/if}>
+                                        <{/if}>
+                                    </td>
+                                </tr>
+                            <{/if}>
+                            <{* alternative language setting *}>
+                            <{if $action.alter_flg == "1" && $item_attr[i][0].biblio_name != "" && $item_attr[i][0].biblio_name_english != ""}>
+                                <tr>
+                                    <th>
+                                        <{if $smarty.session._lang=="japanese"}>
+                                            <{$lang.repository_item_biblio_name_english}> 
+                                        <{else}>
+                                            <{$lang.repository_item_biblio_name_japanese}> 
+                                        <{/if}>
+                                    </th>
+                                    <td>
+                                        <{if $smarty.session._lang=="japanese"}>
+                                            <{$item_attr[i][0].biblio_name_english}>
+                                        <{else}>
+                                            <{$item_attr[i][0].biblio_name}>
+                                        <{/if}>
+                                    </td>
+                                </tr>
+                            <{/if}>
+                            <{*巻*}>
+                            <{if $item_attr[i][0].volume != ""}>
+                                <tr>
+                                    <th>
+                                        <{$lang.repository_item_biblio_volume}>
+                                    </th>
+                                    <td style="padding-left: 10px;">
+                                        <{$item_attr[i][0].volume}>
+                                    </td>
+                                </tr>
+                            <{/if}>
+                            <{*号*}>
+                            <{if $item_attr[i][0].issue != ""}>
+                                <tr>
+                                    <th>
+                                        <{$lang.repository_item_biblio_issue}>
+                                    </th>
+                                    <td style="padding-left: 10px;">
+                                        <{$item_attr[i][0].issue}>
+                                    </td>
+                                </tr>
+                            <{/if}>
+                            <{*ページ*}>
+                            <{if ($item_attr[i][0].start_page != "") || ($item_attr[i][0].end_page != "")}>
+                                <tr>
+                                    <th>
+                                        <{$lang.repository_item_biblio_spage}>
+                                    </th>
+                                    <td style="padding-left: 10px;">
+                                        <{$item_attr[i][0].start_page}>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <{$lang.repository_item_biblio_epage}>
+                                    </th>
+                                    <td style="padding-left: 10px;">
+                                        <{$item_attr[i][0].end_page}>
+                                    </td>
+                                </tr>
+                            <{/if}>
+                            <{*発行年*}>
+                            <{if $item_attr[i][0].date_of_issued != ""}>
+                                <tr>
+                                    <th>
+                                        <{$lang.repository_item_biblio_dateofissued}>
+                                    </th>
+                                    <td style="padding-left: 10px;">
+                                        <{$item_attr[i][0].date_of_issued}>
+                                    </td>
+                                </tr>
+                            <{/if}>
+                        </table>
+                    </div>
+                <{/if}>
+            <{*アイテム属性値の表示 : date*}>
+            <{elseif $attr_type[i].input_type == 'date'}>
+                <{if count($item_attr[i])>0}>
+                    <div style="text-align:left; font-weight: bold; padding-top:10px; color:#000000;">
+                        <{$attr_type[i].attribute_name}>
+                    </div>
+                    <div style="text-align:left; padding-left:20px;">
+                        <{if count($item_attr[i]) == 1}>
+                            <{$item_attr[i][0].attribute_value}>
+                        <{else}>
+                            <table width="100%">
+                                <{section name=j loop=$item_attr[i]}>
+                                    <tr>
+                                        <td style="vertical-align: top; padding-top: 5px;">
+                                            <{$smarty.section.j.index_next}>.
+                                        </td>
+                                        <td style="width:100%; padding-top: 5px;">
+                                            <{$item_attr[i][j].attribute_value}>
+                                        </td>
+                                    </tr>
+                                <{/section}>
+                            </table>
+                        <{/if}>
+                    </div>
+                <{/if}>
+            <{* heading *}>
+            <{elseif $attr_type[i].input_type == 'heading'}>
+                <{section name=j loop=$item_attr[i]}>
+                    <{* heading -start- *}>
+                    <{if $item_attr[i][j].attribute_value[0] != "" || $item_attr[i][j].attribute_value[1] != ""}>
+                        <div style="text-align:left; font-weight: bold; padding-top:10px; color:#000000;">
+                            <{$lang.repository_item_heading}>
+                        </div>
+                        <div style="text-align:left; padding-left:20px;">
+                            <{if $smarty.session._lang=="japanese"}>
+                                <{if $item_attr[i][j].attribute_value[0] != ""}>
+                                    <{$item_attr[i][j].attribute_value[0]}>
+                                <{else}>
+                                    <{$item_attr[i][j].attribute_value[1]}>
+                                <{/if}>
+                            <{else}>
+                                <{if $item_attr[i][j].attribute_value[1] != ""}>
+                                    <{$item_attr[i][j].attribute_value[1]}>
+                                <{else}>
+                                    <{$item_attr[i][j].attribute_value[0]}>
+                                <{/if}>
+                            <{/if}>
+                        </div>
+                    <{/if}>
+                    <{if $action.alter_flg == "1" && $item_attr[i][j].attribute_value[0] != "" && $item_attr[i][j].attribute_value[1] != ""}>
+                        <div style="text-align:left; font-weight: bold; padding-top:10px; color:#000000;">
+                            <{if $smarty.session._lang=="japanese"}>
+                                <{$lang.repository_item_heading_en}> 
+                            <{else}>
+                                <{$lang.repository_item_heading}> 
+                            <{/if}>
+                        </div>
+                        <div style="text-align:left; padding-left:20px;">
+                            <{if $smarty.session._lang=="japanese"}>
+                                <{$item_attr[i][j].attribute_value[1]}>
+                            <{else}>
+                                <{$item_attr[i][j].attribute_value[0]}>
+                            <{/if}>
+                        </div>
+                    <{/if}>
+                    <{* heading -end- *}>
+                    <{* Sub heading -start- *}>
+                    <{if $item_attr[i][j].attribute_value[2] != "" || $item_attr[i][j].attribute_value[3] != ""}>
+                        <div style="text-align:left; font-weight: bold; padding-top:10px; color:#000000;">
+                            <{$lang.repository_item_heading_sub}>
+                        </div>
+                        <div style="text-align:left; padding-left:20px;">
+                            <{if $smarty.session._lang=="japanese"}>
+                                <{if $item_attr[i][j].attribute_value[2] != ""}>
+                                    <{$item_attr[i][j].attribute_value[2]}>
+                                <{else}>
+                                    <{$item_attr[i][j].attribute_value[3]}>
+                                <{/if}>
+                            <{else}>
+                                <{if $item_attr[i][j].attribute_value[3] != ""}>
+                                    <{$item_attr[i][j].attribute_value[3]}>
+                                <{else}>
+                                    <{$item_attr[i][j].attribute_value[2]}>
+                                <{/if}>
+                            <{/if}>
+                        </div>
+                    <{/if}>
+                    <{if $action.alter_flg == "1" && $item_attr[i][j].attribute_value[2] != "" && $item_attr[i][j].attribute_value[3] != ""}>
+                        <div style="text-align:left; font-weight: bold; padding-top:10px; color:#000000;">
+                            <{if $smarty.session._lang=="japanese"}>
+                                <{$lang.repository_item_heading_sub_en}> 
+                            <{else}>
+                                <{$lang.repository_item_heading_sub}> 
+                            <{/if}>
+                        </div>
+                        <div style="text-align:left; padding-left:20px;">
+                            <{if $smarty.session._lang=="japanese"}>
+                                <{$item_attr[i][j].attribute_value[3]}>
+                            <{else}>
+                                <{$item_attr[i][j].attribute_value[2]}>
+                            <{/if}>
+                        </div>
+                    <{/if}>
+                    <{* Sub heading -end- *}>
+                <{/section}>
+            <{/if}>
+        <{/if}>
+    <{/if}>
+<{/section}>
+
+<{* reference link *}>
+<{if count($smarty.session.reference)>0}>
+    <div style="text-align:left; font-weight: bold; padding-top:10px; color:#000000;">
+        <{$lang.repository_link}>
+    </div>
+    <div style="text-align:left; padding-left:20px;">
+        <{if count($smarty.session.reference) == 1}>
+            <a target="_top" href="<{$smarty.const.BASE_URL}>/?action=repository_uri&item_id=<{$smarty.session.reference[0].item_id}>">
+                <{$smarty.session.reference[0].title}>
+            </a>
+        <{else}>
+            <table>
+                <{section name=i loop=$smarty.session.reference}>
+                    <tr>
+                        <th style="vertical-align: top; padding-top: 5px;">
+                            <{$smarty.section.i.index_next}>.
+                        </th>
+                        <td style="width:100%; padding-top: 5px;">
+                            <a target="_top" href="<{$smarty.const.BASE_URL}>/?action=repository_uri&item_id=<{$smarty.session.reference[i].item_id}>">
+                                <{$smarty.session.reference[i].title}>
+                            </a>
+                        </td>
+                    </tr>
+                <{/section}>
+            </table>
+        <{/if}>
+    </div>
+<{/if}>
+
+<{*公開状況*}>
+<div style="text-align:left; font-weight: bold; padding-top:10px; color:#000000;">
+    <{$lang.repository_shown_status}>
+</div>
+<div style="text-align:left; padding-left:20px;">
+    <{if $action.review_status == "-1"}>
+        <{$lang.repository_item_edit}>
+    <{elseif $action.review_status=="0" && $action.reject_status=="0"}>
+        <{$lang.repository_item_review}>
+    <{elseif $action.review_status=="0" && $action.reject_status=="1"}>
+        <{$lang.repository_item_reject}>
+    <{elseif $action.review_status == "1" && $action.shown_status == "1"}>
+        <{$lang.repository_public}>
+    <{else}>
+        <{$lang.repository_private}>
+    <{/if}>
+</div>
+<{* METADATA -end- *}>
+
+<{*show pdf reference S.Suzuki 2013/11/27 --start--*}>
+	<{if count($action.fileName) > 0}>
+		<{include file="repository_mobile_pdf_reference.html"}>
+	<{/if}>
+<{*show pdf reference S.Suzuki 2013/11/27 --end--*}>
+
+<{* Script for indexSubTreeListForDetail --start-- *}>
+<script class="nc_script" type="text/javascript">
+var subTreePanelId = 1;
+
+    repository<{$id}>ShowSubIndexTreeForDetail = function(event, panelId, headerTitle, indexId, showedId)
+    {
+        var hiddenPanelId = 'repository_subIndexPanelForDetail_' + subTreePanelId;
+        var hiddenPanel =document.getElementById(hiddenPanelId);
+        hiddenPanel.innerHTML = "";
+        hiddenPanel.style.display = 'none';
+        subTreePanelId = showedId;
+        
+        var subTreePanel =document.getElementById('repository_subIndexPanelForDetail_'+showedId);
+        
+        var tmpHtml = '<div style="display:100%;" onclick="document.getElementById(\''+'repository_subIndexPanelForDetail_'+showedId+'\').style.display=\'none\';document.getElementById(\''+'repository_subIndexPanelForDetail_'+showedId+'\').innerHTML=\'\';">' + 
+                      '    <table bgcolor="#d3d3d3" border="0" width="100%">' + 
+                      '        <tr>' + 
+                      '            <td align="left">' + headerTitle + '</td>' + 
+                      '            <td align="right">' + 
+                      '                <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/close.png" border="0" />' + 
+                      '            </td>' + 
+                      '        </tr>' + 
+                      '    </table>' + 
+                      '</div>' + 
+                      '<div style="text-align:left;width:100%;overflow:auto;" id="repository<{$id}>SubIndexTree">' + 
+                      '    <div style="text-align:center;padding:4px;">' +
+                      '        <img src="<{$smarty.const.CORE_BASE_URL}>/images/common/indicator.gif" />' +
+                      '    </div>' +
+                      '</div>';
+        
+        subTreePanel.innerHTML = tmpHtml;
+        subTreePanel.style.display = 'block';
+        
+        var subTree =document.getElementById('repository<{$id}>SubIndexTree');
+        
+        // set tree HTML
+        $.ajax({
+           url: '<{$smarty.const.BASE_URL}>/index.php',
+           type: 'post',
+           dataType: 'html',
+           data: {
+               'action':'repository_action_main_tree',
+               'click_id':indexId,
+               'sel_mode':'subIndexList'
+           },
+           dataFilter: function(tree_html){
+               tree_html = tree_html.replace(/class="node_repos"/g, 'class="node_repos0"');
+               tree_html = tree_html.replace(/<a class="nodelabel_repos"/g, '<a target="_top" class="nodelabel_repos"');
+               return tree_html;
+           },
+           success: function(tree_html) {
+               //subTree.innerHTML = tree_html;
+               subTree.innerHTML = tree_html;
+           }
+       });
+    }
+</script>
+<{* Script for indexSubTreeListForDetail --end-- *}>

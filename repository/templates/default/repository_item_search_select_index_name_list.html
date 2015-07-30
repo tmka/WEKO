@@ -1,0 +1,40 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_item_search_select_index_name_list.html 22709 2013-05-17 06:39:14Z yuko_nakao $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{* index list *}>
+<{strip}>
+<form action="./item_snippet.html" method="get" name="form_select_indextree">
+	<{if count($action.select_index_list) == 0}>
+		<{$lang.repository_item_select_index_list_null}>
+	<{else}>
+		<select id="select_indextree<{$id}>" name="select_indextree" onchange="repositoryShowSelectedIndexData(this.value); return false;" class="full">
+		    <option value=""><{$lang.repository_item_select_index_list_default}></option>
+			<{foreach item="select_index_list" from=$action.select_index_list}> 
+				<option title="<{$select_index_list.select_index_list_name}>" value="<{$select_index_list.index_id}>">
+					<{$select_index_list.select_index_list_name|smarty:nodefaults}>
+				</option>
+			<{/foreach}>
+		</select>
+	<{/if}>
+</form>
+<{/strip}>
+<script class="nc_script" type="text/javascript">
+    repositoryShowSelectedIndexData = function(index_id) {
+        var redirect_url = "<{$smarty.const.BASE_URL}>" + "/?action=repository_opensearch";
+        if(index_id.length == 0){
+            return false;
+        }
+        redirect_url += "&index_id=" + index_id;
+        redirect_url += "&sort_order=" + "<{$smarty.session.sort_order}>";
+        redirect_url += "&page_no=1";
+        location.href = redirect_url;
+    }
+</script>

@@ -1,0 +1,171 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_item_setting.html 17777 2012-05-22 09:53:02Z tatsuya_koyasu $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{strip}>
+	<{if $action.authCheckFlg==true}>
+	<div class="mt10 min-w1000px">
+		<div id="repo_side_navi" class="fl">
+			<div id="repository_index_tree">
+				<h3 id="item_setting<{$id}>_title" class="th_repos_title_bar nc_block_title c"><span class="pl05"><{$lang.repository_index_tree}></span></h3>
+				<div>
+					<div class="th_classic_content content" id="itemSettingTree<{$id}>panel" style="width: <{$smarty.const._SNIPPET_WIDTH}>px; overflow:auto;"></div>
+					<{include file="repository_item_search_tree.html"}>
+				</div>
+			</div>
+		</div>
+
+	    <div id="item_setting<{$id}>_tabs_id" class="repository_right_header pr05">
+			<div class="comp_tabset"></div>
+			<div class="comp_tabset_content">
+				<div class="th_classic_content content text_color" id="itemSettingTab1" align="center">
+					<{include file="repository_item_customsort.html"}>
+				</div>
+				<div class="th_classic_content content text_color" id="itemSettingTab2" align="center">
+					<{include file="repository_item_embargo.html"}>
+				</div>
+				<div class="th_classic_content content text_color" id="itemSettingTab3" align="center">
+					<{include file="repository_item_listdelete.html"}>
+				</div>
+				<div class="th_classic_content content text_color" id="itemSettingTab4" align="center">
+					<{include file="repository_item_doi.html"}>
+				</div>
+			</div>
+			<input type="hidden" value="0" id="item_setting_active_tab_id" />
+
+		</div>
+	</div>
+	<{else}>
+		<{$lang._invalid_auth}>
+	<{/if}>
+<{/strip}>
+<{include file="repository_script.html"}>
+
+<script class="nc_script" type="text/javascript">
+	var active_tab = "item_setting_active_tab_id";
+	changeActiveTab1 = function(){
+		var active_tab = "item_setting_active_tab_id";
+		$(active_tab).value = 0;
+		initSettingTree<{$id}>(1);
+	}
+	changeActiveTab2 = function(){
+		var active_tab = "item_setting_active_tab_id";
+		$(active_tab).value = 1;
+		initSettingTree<{$id}>(2);
+	}
+	changeActiveTab3 = function(){
+		var active_tab = "item_setting_active_tab_id";
+		$(active_tab).value = 2;
+		initSettingTree<{$id}>(3);
+	}
+	changeActiveTab4 = function(){
+		var active_tab = "item_setting_active_tab_id";
+		$(active_tab).value = 3;
+		initSettingTree<{$id}>(4);
+	}
+
+	initSettingTree<{$id}> = function(num){
+		var id = num;
+
+		var elm = $('itemSettingTab'+id);
+		var elm_title = $('item_setting<{$id}>_title');
+
+		var elm_height = Element.getHeight(elm);
+		var elm_title_height = Element.getHeight(elm_title);
+
+		//var tree_height = elm_height - elm_title_height;
+		var tree_height = elm_height;
+
+		if(tree_height > <{$smarty.const._SNIPPET_HEIGHT}>)
+		{
+			$('itemSettingTree<{$id}>panel').style.height = tree_height + "px";
+		}
+		else
+		{
+			$('itemSettingTree<{$id}>panel').style.height = <{$smarty.const._SNIPPET_HEIGHT}>+"px";
+		}
+
+		$('itemSettingTree<{$id}>panel').style.width = <{$smarty.const._SNIPPET_WIDTH}>+"px";
+	}
+</script>
+
+<script class="nc_script" type="text/javascript">
+		var tabset = new compTabset('<{$id}>');
+		tabset.setActiveIndex(valueParseInt(<{$action.item_setting_active_tab}>));
+		tabset.addTabset("<{$lang.repository_item_sortorder}>", changeActiveTab1);
+		tabset.addTabset("<{$lang.repository_item_embargo}>", changeActiveTab2);
+		tabset.addTabset("<{$lang.repository_item_listdelete}>", changeActiveTab3);
+		tabset.addTabset("<{$lang.repository_item_enterdoi}>", changeActiveTab4);
+		tabset.render();
+</script>
+
+<script class="nc_script" type="text/javascript">
+    repositoryInitTree<{$id}>('itemSettingTree<{$id}>panel','<{$id}>', 'sel');
+</script>
+
+<script class="nc_script" type="text/javascript">
+	var click_id = '';
+	repositoryClickTreeSelect<{$id}> = function(id, idx_name){
+		var active_tab = "item_setting_active_tab_id";
+		click_id = id;
+		if($(active_tab).value == "0")
+		{
+			if( $('select_sort_index') != null ) {
+				$('select_sort_index').innerHTML = idx_name;
+				$('select_sort_index_id').value = id;
+			}
+			commonCls.sendView('<{$id}>', {'action':'repository_view_edit_item_setting', 'sortIndexId':id, 'sortIndexName':idx_name, 'item_setting_active_tab':0});
+
+			initSettingTree<{$id}>(1);
+
+			return false;
+		}
+		else if($(active_tab).value == "1")
+		{
+
+
+			if( $('select_embargo_index') != null ) {
+				$('select_embargo_index').innerHTML = idx_name;
+				$('select_embargo_index_id').value = id;
+			}
+
+			commonCls.sendView('<{$id}>', {'action':'repository_view_edit_item_setting', 'sortIndexId':id, 'sortIndexName':idx_name, 'item_setting_active_tab':1});
+
+			initSettingTree<{$id}>(2);
+
+			return false;
+		}
+		else if($(active_tab).value == "2")
+		{
+			if( $('select_delete_index') != null ) {
+				$('select_delete_index').innerHTML = idx_name;
+				$('select_delete_index_id').value = id;
+			}
+			commonCls.sendView('<{$id}>', {'action':'repository_view_edit_item_setting', 'sortIndexId':id, 'sortIndexName':idx_name, 'item_setting_active_tab':2});
+
+			initSettingTree<{$id}>(3);
+
+			return false;
+		}
+		else if($(active_tab).value == "3")
+		{
+			if( $('select_jalc_index') != null ) {
+				$('select_jalc_index').innerHTML = idx_name;
+				$('select_jalc_index_id').value = id;
+			}
+			commonCls.sendView('<{$id}>', {'action':'repository_view_edit_item_setting', 'sortIndexId':id, 'sortIndexName':idx_name, 'item_setting_active_tab':3});
+
+			initSettingTree<{$id}>(4);
+
+			return false;
+		}
+	}
+</script>
+

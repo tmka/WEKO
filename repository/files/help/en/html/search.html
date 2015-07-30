@@ -1,0 +1,538 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: search.html 36553 2014-05-30 11:01:40Z tomohiro_ichikawa $        -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+	<HTML>
+		<HEAD>
+			<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+			<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+			<link rel="stylesheet" href="./css/style.css" type="text/css">
+			<TITLE>search</TITLE>
+		</HEAD>
+	<BODY>
+		<div class="main_body">
+			<h2>アイテム検索</h2>
+			<div class="page_list">
+				「トップ」タブをクリックすると、キーワード検索欄、インデックス一覧、インデックスツリーが表示されます。<br/>
+				これらを用いて公開中のインデックスおよびアイテムを検索し、アイテムを閲覧することができます。<br/>
+				<br/>
+				各項目の詳細は<a href="#simple">簡易検索</a>、<a href="#detail">詳細検索</a>、<a href="#index">インデックス検索</a>、<a href="#author">著者名検索</a>をご覧ください。<br/>
+				<br/>
+				<br/>
+				<center><img src="./img/search_path.png" alt="アイテム検索"></center><br/>
+				<br/>
+				
+				<h3><a name="index">インデックス検索</a></h3>
+					<div class="page_list">
+						<h4><a name="item_list_view">インデックス一覧</a></h4>
+						<div class="page_list">
+							ツリー編集でインデックス一覧に表示するよう設定したインデックスの表示名がプルダウン内に表示されます。
+							<br/>
+							プルダウンからインデックスを選択すると、選択したインデックスの<a href="#index_list">インデックスリスト</a>と<a href="#item_list">アイテムリスト</a>が表示されます。
+							<br/>
+							<br/>
+							<center><img src="./img/search_simple_list.png" alt="インデックス一覧"></center><br/>
+							<br/>
+							【注意事項】
+							<ul>
+								<li>
+									ツリー編集での設定方法に関しては、<a href="./tree_edit.html#tree_edit">ツリー編集</a>をご参照ください。
+								</li>
+								<li>
+									インデックス簡易アクセスUIの設定方法は、<a href="./setting.html#simple_list">WEKO管理</a>をご参照ください。
+								</li>
+							</ul>
+						</div>
+						<h4><a name="item_list_view">インデックスツリー</a></h4>
+						<div class="page_list">
+							インデックスをクリックすると、選択したインデックスのインデックスリストとアイテムリストが表示されます。
+							各リストの詳細は<a href="#index_list">インデックスリスト</a>および<a href="#item_list">アイテムリスト</a>をご覧ください。<br/>
+							<br/>
+							<br/>
+							<center><img src="./img/search_index.png" alt="インデックス検索"></center><br/>
+							<br/>
+							<center><img src="./img/search_child_index.png" alt="子インデックス表示"></center><br/>
+							<br/>
+							<center><img src="./img/search_more_index.png" alt="非表示インデックス表示"></center><br/>
+							<br/>
+							インデックスツリーをクリックすると、ルートインデックスのインデックスリストが表示されます。
+							<br/>
+							<br/>
+							<center><img src="./img/search_root_index.png" alt="ルートインデックス検索"></center><br/>
+							<br/>
+						</div>
+					</div>
+				<br/>
+				
+				<h3><a name="simple">簡易検索</a></h3>
+				<div class="page_list">
+					指定したキーワードに該当するアイテムの検索と閲覧ができます。<br/>
+					<br/>
+					<br/>
+					<center><img src="./img/search_simple.png" alt="簡易検索"></center><br/>
+					<br/>
+					「メタデータ検索」にチェックを入れ検索すると、登録されたアイテム内のメタデータから検索した結果を表示します。<br/>
+					「全文検索」にチェックを入れ検索すると、登録されたアイテム内のメタデータと登録されたファイルの内容から検索した結果を表示します。<br/>
+					<br/>
+				</div>
+				
+				<h3><a name="detail">詳細検索</a></h3>
+				<div class="page_list">
+					指定したキーワードと条件に該当するアイテムの検索と閲覧ができます。<br/>
+					<br/>
+					<br/>
+					<center><img src="./img/search_switch_detail.png" alt="詳細検索欄切替"></center><br/>
+					<br/>
+					<br/>
+					<center><img src="./img/search_keyword.png" alt="詳細検索欄"></center><br/>
+					<br/>
+					一覧リンクをクリックしたときに表示される選択候補は下記のようになります。
+					<br/>
+					各検索条件に対応するJuNii2マッピングについては<a href="./setting.html#view_detail_search">WEKO管理</a>をご参照ください。
+					<br/>
+					<br/>
+					<table class="table_border" border="0" aglign="center" cellspacing="0">
+						<tr>
+							<th>検索条件項目名</th>
+							<th>一覧ポップアップの選択値</th>
+							<th>備考</th>
+						</tr>
+						<tr>
+							<td>件名・分類</td>
+							<td>
+								NIIsubject<br/>
+								NDC<br/>
+								NDLC<br/>
+								BSH<br/>
+								NDLSH<br/>
+								MeSH<br/>
+								DDC<br/>
+								LCC<br/>
+								UDC<br/>
+								LCSH
+							</td>
+							<td>　</td>
+						</tr>
+						<tr>
+							<td>アイテムタイプ</td>
+							<td>WEKOに登録済のアイテムタイプ。</td>
+							<td>　</td>
+						</tr>
+						<tr>
+							<td>資源タイプ</td>
+							<td>
+								Journal Article<br/>
+								Thesis orDissertation<br/>
+								DepartmentalBulletin Paper<br/>
+								ConferencePaper<br/>
+								Presentation<br/>
+								Book<br/>
+								Technical Report<br/>
+								ResearchPaper<br/>
+								Article<br/>
+								Preprint<br/>
+								Learning Material<br/>
+								Data orDataset<br/>
+								Software<br/>
+								Others<br/>
+								自由記述
+							</td>
+							<td>
+								一覧ポップアップで「自由記述」を選択した場合は、Niitypeから検索を行う。<br/>
+								一覧ポップアップで「自由記述」以外を選択した場合は、Junii2マッピングが「type」のメタデータから検索を行う。
+							</td>
+						</tr>
+						<tr>
+							<td>ID</td>
+							<td>
+								identifier<br/>
+								URI<br/>
+								fullTextURL<br/>
+								selfDOI<br/>
+								ISBN<br/>
+								ISSN<br/>
+								NCID<br/>
+								pmid<br/>
+								doi<br/>
+								NAID<br/>
+								ichushi
+							</td>
+							<td>　</td>
+						</tr>
+						<tr>
+							<td>言語</td>
+							<td>
+								日本語<br/>
+								英語<br/>
+								フランス語<br/>
+								イタリア語<br/>
+								ドイツ語<br/>
+								スペイン語<br/>
+								中国語<br/>
+								ロシア語<br/>
+								ラテン語<br/>
+								マレー語<br/>
+								エスペラント語<br/>
+								アラビア語<br/>
+								ギリシャ語<br/>
+								朝鮮語
+							</td>
+							<td>　</td>
+						</tr>
+						<tr>
+							<td>権利</td>
+							<td>
+								BY<br/>
+								BY-SA<br/>
+								BY-ND<br/>
+								BY-NC<br/>
+								BY-NC-SA<br/>
+								BY-NC-ND<br/>
+								すべて<br/>
+								自由記述
+							</td>
+							<td>
+								検索対象・・・ファイルのライセンスを含む。<br/>
+								「すべて」にチェックがある場合、他の候補は選択不可とする。<br/>
+								<br/>
+								※注意<br/>
+								一覧ポップアップで1つもチェックを入れなかった場合は、Junii2マッピングが「rights」のメタデータから検索する。<br/>
+								一覧ポップアップでいずれかにチェックを入れた場合は、以下のように検索する。<br/>
+								一覧ポップアップで「自由記述」にチェックを入れた場合<br/>
+								…ファイルライセンスの自由記述文字列から検索する。<br/>
+								一覧ポップアップで「自由記述」にチェックを入れなかった場合<br/>
+								…ファイルライセンスマスタのIDから検索する。
+							</td>
+						</tr>
+						<tr>
+							<td>著者版フラグ</td>
+							<td>
+								author<br/>
+								publisher<br/>
+								ETD<br/>
+								none
+							</td>
+							<td>　</td>
+						</tr>
+						<tr>
+							<td>インデックス</td>
+							<td>WEKOに登録されているインデックスの一覧</td>
+							<td>　</td>
+						</tr>
+					</table>
+					<br/>
+					<br/>
+					検索条件を選択およびテキストボックスに検索キーワードを入力し、「検索」ボタンをクリックすると検索結果がリストで表示されます。<br/>
+					検索結果表示の詳細は<a href="#item_list">アイテムリスト</a>をご覧ください。<br/>
+					<br/>
+					<center><img src="./img/search_detail.png" alt="詳細検索"></center><br/>
+					<br/>
+					<br/>
+					詳細検索の初期表示状態およびプルダウンで選択可能な検索条件については管理画面で設定できます。<br/>
+					設定方法については<a href="./setting.html#view_detail_search">WEKO管理</a>をご覧ください。<br/>
+					<br/>
+				</div>
+				
+				<h3><a name="author">著者名検索</a></h3>
+				<div class="page_list">
+					検索結果または詳細画面の著者名メタデータのリンクから実施ができます。<br/>
+					<br/>
+					<br/>
+					<center><img src="./img/search_author.png" alt="著者名検索"></center><br/>
+					<br/>
+				</div>
+				<h3><a name="author">関連ワード検索</a></h3>
+				<div class="page_list">
+					詳細画面の「コンテンツに関連する検索キーワード」のリンクから実施ができます。<br/>
+					<br/>
+					<br/>
+					<center><img src="./img/search_referer.png" alt="関連ワード検索"></center><br/>
+					<br/>
+				</div>
+				
+				<h3><a name="searchResult">検索結果</a></h3>
+				<div class="page_list">
+					検索結果は、インデックスに応じて<a href="#searchList">一覧形式</a>または<a href="#searchContents">目次形式</a>のいずれかで表示されます。<br/>
+					<br/>
+					<br/>
+					<a name="searchList"><b>一覧形式</b><br/>
+					<div class="page_list">
+						選択したインデックスの子インデックス(インデックスリスト)ならびにインデックスに所属するアイテム(アイテムリスト)の一覧が表示されます。<br/>
+						各リストの詳細は<a href="#index_list">インデックスリスト</a>および<a href="#item_list">アイテムリスト</a>をご覧ください。<br/>
+						<br/>
+						<br/>
+						<center><img src="./img/search_index.png" alt="インデックス検索"></center><br/>
+						<br/>
+						<br/>
+						「インデックスツリー」の文字をクリックすると、ルートインデックスのインデックスリストが表示されます。<br/>
+						また、インデックスツリーの<img src="./img/oai_ore.png" alt="OAI-OREアイコン">をクリックすると別ウインドウが開き、ルートインデックス以下のインデックスの情報をOAI-ORE形式で画面に表示します。<br/>
+						<br/>
+						<center><img src="./img/search_root_index.png" alt="ルートインデックス検索"></center><br/>
+						<br/>
+					</div>
+						
+					<br/>
+					<a name="index_Finding">■目次形式</a><br/>
+					<div class="page_list">
+						指定したインデックスの検索結果の表示形式が目次形式の場合に見出しの一覧が表示されます。<br/>
+						また、登録されたサムネイルが表示されます。<br/>
+						<br/>
+						<center><img src="./img/index_search_03.png" alt="目次形式によるインデックス表示"></center><br/>
+						<br/>
+					</div>
+				</div>
+				
+				<h3><a name="index_list">インデックスリスト</a></h3>
+				<div class="page_list">
+					選択した親インデックス以下に所属する子インデックスが表示されます。<br/>
+					<br/>
+					<img src="./img/folder.png" alt="フォルダアイコン">またはインデックス名をクリックすると、そのインデックス内の子インデックスおよびアイテムの検索と閲覧ができます。<br/>
+					<img src="./img/rss.png" alt="RSSアイコン">をクリックすると別ウインドウが開き、そのインデックス以下の新着アイテムの情報をRSS形式で画面に表示します。<br/>
+					<img src="./img/oai_ore.png" alt="OAI-OREアイコン">をクリックすると別ウインドウが開き、そのインデックス以下のインデックスおよびアイテムの情報をOAI-ORE形式で画面に表示します。<br/>
+					<br/>
+					<center><img src="./img/index_list.png" alt="インデックスリスト"></center><br/>
+					<br/>
+					<br/>
+					【注意事項】
+					<ul>
+						<li>
+							RSSおよびOAI-ORE形式の表示を行うにはメタデータのマッピング設定がされている必要があります。<br/>
+							マッピング設定については<a href="./itemtype_mapping.html">アイテムタイプ管理(OAH-PMHマップ)</a>をご覧ください。
+						</li>
+					</ul>
+				</div>
+				
+				<h3><a name="item_list">アイテムリスト</a></h3>
+				<div class="page_list">
+					<h4><a name="item_list_view">アイテムリストの表示</a></h4>
+					<div class="page_list">
+						選択したインデックスに所属するアイテムおよび指定したキーワードに該当するアイテムの概要を閲覧できます。<br/>
+						<br/>
+						アイテムタイトルをクリックすると、そのアイテムの詳細情報が閲覧できます。<br/>
+						詳細情報の表示については<a href="./item_detail.html">アイテム詳細</a>をご覧下さい。<br/>
+						<br/>
+						<a href="./itemtype_metadata.html#itemtype_metadata">アイテムタイプメタデータ編集</a>にてメタデータ属性が『ファイル』の項目のオプションに
+						『一覧表示』を設定している場合、ボタンが表示されます。<br/>
+						<br/>
+						<center><img src="./img/item_list.png" alt="アイテムリスト"></center><br/>
+						<div class="page_list">
+						<table class="table_border" border="0" cellspacing="0">
+								<tr>
+									<th nowrap>ボタンの種類</th>
+									<th nowrap>状態</th>
+								</tr>
+								<tr>
+									<td>ダウンロードボタン</td>
+									<td>
+									アイコンをクリックするとファイル保存ダイアログが起動し、そのファイルをダウンロードすることができます。</td>
+								</tr>
+						</table>
+						<br>
+						【注意事項】
+						<ul>
+							<li>
+								Flash形式でファイルを閲覧するためにはIDサーバーと連携できている必要があります。<br>
+								IDサーバーの設定については<a href="./setting.html#server_prefix">PrefixID取得</a>をご覧ください。
+							</li>
+							<li>
+								ファイルダウンロード方式の設定については<a href="./setting.html#run_item_setting">運用設定のアイテム管理</a>をご覧ください。
+							</li>
+						</ul>
+						</div>
+						<br/>
+						■表示順の変更<br/>
+						<div class="page_list">
+							アイテムの表示順を下記の項目から選択し、変更することができます。<br/>
+							新たな検索を行った場合はデフォルトで設定されている表示順で表示されます。<br/>
+							<br/>
+							<table class="table_border" border="0" cellspacing="0">
+								<tr>
+									<th nowrap>表示順</th>
+									<th nowrap>内容</th>
+								</tr>
+								<tr>
+									<td>タイトル(昇順)</td>
+									<td>アイテムタイトルについて昇順で並べ替えます。</td>
+								</tr>
+								<tr>
+									<td>タイトル(降順)</td>
+									<td>アイテムタイトルについて降順で並べ替えます。</td>
+								</tr>
+								<tr>
+									<td>登録者(昇順)</td>
+									<td>アイテムの登録者名について昇順で並べ替えます。</td>
+								</tr>
+								<tr>
+									<td>登録者(降順)</td>
+									<td>アイテムの登録者名について降順で並べ替えます。</td>
+								</tr>
+								<tr>
+									<td>アイテムタイプ(昇順)</td>
+									<td>アイテムタイプのID順について昇順で並べ替えます。</td>
+								</tr>
+								<tr>
+									<td>アイテムタイプ(降順)</td>
+									<td>アイテムタイプのID順について降順で並べ替えます。</td>
+								</tr>
+								<tr>
+									<td>WEKOID(昇順)</td>
+									<td>アイテムごとに発行されたID順に昇順で並べ替えます。</td>
+								</tr>
+								<tr>
+									<td>WEKOID(降順)</td>
+									<td>アイテムごとに発行されたID順に降順で並べ替えます。</td>
+								</tr>
+								<tr>
+									<td>更新日時(昇順)</td>
+									<td>アイテムの更新日時について昇順で並べ替えます。</td>
+								</tr>
+								<tr>
+									<td>更新日時(降順)</td>
+									<td>アイテムの更新日時について降順で並べ替えます。</td>
+								</tr>
+								<tr>
+									<td>作成日時(昇順)</td>
+									<td>アイテムの作成日時について昇順で並べ替えます。</td>
+								</tr>
+								<tr>
+									<td>作成日時(降順)</td>
+									<td>アイテムの作成日時について降順で並べ替えます。</td>
+								</tr>
+								<tr>
+									<td>査読日時(昇順)</td>
+									<td>アイテムの査読日時について昇順で並べ替えます。</td>
+								</tr>
+								<tr>
+									<td>査読日時(降順)</td>
+									<td>アイテムの査読日時について降順で並べ替えます。</td>
+								</tr>
+								<tr>
+									<td>出版年(昇順)</td>
+									<td>
+										アイテムの書誌情報メタデータの発行年月日について昇順で並べ替えます。<br/>
+										発行年月日のメタデータを持たないアイテムは発行されたID順に昇順で並べ替えます。
+									</td>
+								</tr>
+								<tr>
+									<td>出版年(降順)</td>
+									<td>
+										アイテムの書誌情報メタデータの発行年月日について降順で並べ替えます。<br/>
+										発行年月日のメタデータを持たないアイテムは発行されたID順に降順で並べ替えます。
+									</td>
+								</tr>
+							</table>
+							<br/>
+						</div>
+						■表示数の変更<br/>
+						<div class="page_list">
+							1ページあたりのアイテム表示数を下記の項目から選択し、変更することができます。<br/>
+							表示数は20, 50, 75, 100の4種類から選択できます。<br/>
+							新たな検索を行った場合はデフォルトで設定されている表示数で表示されます。<br/>
+							<br/>
+						</div>
+						■ページ切り替え<br/>
+						<div class="page_list">
+							<img src="./img/page_next.png" alt="次へ">をクリックするとアイテムリストの次ページが表示されます。<br/>
+							<img src="./img/page_prev.png" alt="前へ">をクリックするとアイテムリストの前ページが表示されます。<br/>
+							ページ番号をクリックすると指定したページが表示されます。<br/>
+							<br/>
+						</div>
+					</div>
+				
+					<h4><a name="export">エクスポート＆印刷</a></h4>
+					<div class="page_list">
+						アイテムリストに表示されたアイテムの情報をWEKOインポート形式でダウンロードすることができます。<br/>
+						また、現在表示しているアイテムリストを印刷することができます。<br/>
+						<br/>
+						■エクスポート<br/>
+						<div class="page_list">
+							エクスポートするアイテムを選択し「実行」ボタンをクリックすると、エクスポート確認画面が表示されます。<br/>
+							<br/>
+							<table class="table_border" border="0" cellspacing="0">
+								<tr>
+									<th nowrap>項目</th>
+									<th nowrap>内容</th>
+								</tr>
+								<tr>
+									<td>チェックしたアイテムをExport</td>
+									<td>
+										アイテムリストのチェックボックスにチェックをいれたアイテムのみをエクスポートします。<br/>
+									</td>
+								</tr>
+								<tr>
+									<td>全てのアイテムをExport</td>
+									<td>
+										アイテムリストに表示されているアイテムを全てエクスポートします。<br/>
+									</td>
+								</tr>
+							</table>
+							<br/>
+							<center><img src="./img/list_export_select.png" alt="エクスポート選択"></center><br/>
+							<br/>
+							エクスポート確認画面では、選択したアイテムのタイトルが表示されます。<br/>
+							「エクスポート」ボタンをクリックするとファイル保存ダイアログが起動し、選択した形式のファイルをダウンロードすることができます。<br/>
+							選択可能な形式は下記の通りです。
+							<br/>
+							<ul>
+								<li>WEKOインポート形式</li>
+								<li>BIBTEX形式</li>
+								<li>OAI-PMH形式</li>
+								<li>SWRC形式</li>
+								<li>ELS形式</li>
+								<li>TSV形式</li>
+							</ul>
+							<br/>
+							<center><img src="./img/list_export_confirm.png" alt="エクスポート確認"></center><br/>
+							<br/>
+							<br/>
+							【注意事項】
+							<ul>
+								<li>ファイルのダウンロード権限がない場合は添付ファイルはエクスポートされません。</li>
+								<li>管理者がファイルのエクスポートを制限している場合は添付ファイルはエクスポートされません。</li>
+								<li>TSV形式でExportしたファイルをExcelで開く場合、ファイル指定で開かなければ正常に開けません。</li>
+							</ul>
+							<br/>
+						</div>
+						■印刷<br/>
+						<div class="page_list">
+							印刷するアイテムを選択し「実行」ボタンをクリックすると印刷用画面が表示され、印刷ダイアログが起動します。<br/>
+							<br/>
+							<table class="table_border" border="0" cellspacing="0">
+								<tr>
+									<th nowrap>項目</th>
+									<th nowrap>内容</th>
+								</tr>
+								<tr>
+									<td>チェックしたアイテムを印刷</td>
+									<td>
+										アイテムリストのチェックボックスにチェックをいれたアイテムのみリスト化し、印刷用レイアウトで表示します<br/>
+									</td>
+								</tr>
+								<tr>
+									<td>全てのアイテムを印刷</td>
+									<td>
+										アイテムリストを印刷用レイアウトで表示します。<br/>
+									</td>
+								</tr>
+							</table>
+							<br/>
+							<center><img src="./img/list_print_select.png" alt="印刷選択"></center><br/>
+							<br/>
+						</div>
+					</div>
+				</div>
+			</div>
+			<p align="center"><font size="2"><a href="../index.html" target="_top">WEKO Help Top</a></font></p>
+		</div>
+		
+	</BODY>
+</HTML>

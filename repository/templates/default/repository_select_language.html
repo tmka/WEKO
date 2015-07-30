@@ -1,0 +1,28 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_select_language.html 30197 2013-12-19 09:55:45Z rei_matsuura $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{* 言語選択 *}>
+<{strip}>
+<form action="./item_snippet.html" method="get" name="form_select_lang" id="form_select_lang">
+	<{*$lang.repository_select_lang_title*}>
+	<div class="plr05 ptb10">
+		<select id="select_lang<{$id}>" class="full" name="select_lang" onchange="repositoryCls['<{$id}>'].repositorySwitchLanguage(); return false;">
+			<{foreach name="lang_list" key="dirname" item="lang_name" from=$smarty.session.lang_list}>
+				<option value="<{$dirname}>"<{if ($dirname == $smarty.session._lang) }> selected="selected"<{/if}>>
+					<{$lang_name}>
+				</option>
+			<{/foreach}>
+		</select>
+	</div>
+</form>
+<{/strip}>
+<{include file="repository_script.html"}>
+

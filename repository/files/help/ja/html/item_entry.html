@@ -1,0 +1,801 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: item_entry.html 43357 2014-10-29 07:45:24Z keiya_sugimoto $        -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+	<HTML>
+		<HEAD>
+			<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+			<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+			<link rel="stylesheet" href="./css/style.css" type="text/css">
+			<TITLE>item_entry</TITLE>
+		</HEAD>
+	<BODY>
+		<div class="main_body">
+			<h2><a name="entry">アイテム登録</a></h2>
+			<div class="page_list">
+				「アイテム登録」タブを選択すると、アイテムタイプ選択画面が表示されます。<br/>
+				WEKO上で公開するアイテムの登録および編集を行うことができます。<br/>
+				<br/>
+				<center><img src="./img/item_entry_tab.png" alt="アイテム登録タブ"></center><br/>
+				<br/>
+				<br/>
+				<h3><a name="select">アイテムタイプ選択</a></h3>
+				<div class="page_list">
+					登録するアイテムのアイテムタイプを選択します。<br/>
+					<br/>
+					<a href="./itemtype_metadata.html#itemtype_default">デフォルトアイテムタイプ</a>および管理者が作成したアイテムタイプから選択できます。<br/>
+					アイテムタイプ作成については<a href="./itemtype_metadata.html">アイテムタイプ管理（作成／編集）</a>をご覧ください。<br/>
+					<br/>
+					「次へ」ボタンを押下すると、アイテムタイプがファイル属性を持つ場合は<a href="#file">ファイル選択</a>画面が、持たない場合は<a href="#metadata">メタデータ入力</a>画面が表示されます。<br/>
+					<br/>
+					<center><img src="./img/itemtype_select.png" alt="アイテムタイプ選択"></center><br/>
+					<br/>
+					<br/>
+					【注意事項】
+					<ul>
+						<li>アイテム作成後は、そのアイテムのアイテムタイプは変更できません。</li>
+					</ul>
+					<br/>
+				</div>
+				
+				<h3><a name="file">ファイル選択</a></h3>
+				<div class="page_list">
+					<h4><a name="file_entry">ファイル登録</a></h4>
+					<div class="page_list">
+						アイテムに添付するファイルを登録します。<br/>
+						<br/>
+						「参照」ボタンを押下するとアップロードファイル選択ダイアログが表示されます。<br/>
+						アップロードするローカルファイルを選択し、「保存」ボタンまたは「次へ」ボタンを押下するとファイルが登録されます。<br/>
+						複数のファイルが入力可能な場合は「More input row」ボタンを押下することでファイル入力行を追加することができます。<br/>
+						<br/>
+						<center><img src="./img/file_entry_01.png" alt="ファイル登録"></center><br/>
+						<br/>
+						html5が使用可能なブラウザではテキストボックスにドラッグ&ドロップすることで複数ファイルの登録ができる。<br/>
+						<br/>
+						<center><img src="./img/file_entry_03.png" alt="ファイル登録"></center><br/>
+						<br/>
+						「↑」ボタンおよび「↓」ボタンを押下すると、登録したファイルの順番を変更できます。<br/>
+						登録ファイルを削除する場合は「削除」ボタンを押下します。<br/>
+						<br/>
+						<center><img src="./img/file_entry_02.png" alt="ファイル操作"></center><br/>
+						<br/>
+					</div>
+					<br/>
+					<h4><a name="lisence">ライセンス設定</a></h4>
+					<div class="page_list">
+						ファイルの表示形式、本文へのリンク名、公開方法とライセンス表記の設定をします。
+						<br/>
+						<br/>
+						■表示形式
+						<br/>
+						ファイルの表示形式は下記の3つから選択することができます。
+						<br/>
+						<br/>
+						<table class="table_border" border="0" align="center"  cellspacing="0">
+							<tr>
+								<th nowrap>表示形式</th>
+								<th nowrap>表示内容</th>
+							</tr>
+							<tr>
+								<td>詳細表示</td>
+								<td>
+									本文へのリンク名、ファイルサイズ、ライセンスを表示します。
+								</td>
+							</tr>
+							<tr>
+								<td>簡易表示</td>
+								<td>
+									本文へのリンク名のみを表示します。
+								</td>
+							</tr>
+							<tr>
+								<td>Flash表示</td>
+								<td>
+									flashに変換された登録ファイル、本文へのリンク名、ファイルサイズ、ライセンスを表示します。
+								</td>
+							</tr>
+						</table>
+						<br/>
+						<center><img src="./img/item_entry_display_type.png" alt="表示形式の違いによる詳細画面の記述"></center><br/>
+						<br/>
+						【注意事項】
+						<ul>
+							<li>
+								Flashの表示にはPrefixIDを取得している必要があります。
+								<br/>
+								PrefixIDの取得方法は、<a href="./setting.html#server_prefix">WEKO管理</a>をご参照ください。
+							</li>
+							<li>
+								「Flash表示」を選択できるファイル形式はpdf、swf、doc、docx、xls、xlsx、ppt、pptx、emf、wmf、bmp、png、gif、tiff、jpg、jp2です。
+							</li>
+							<li>
+								「Flash表示」選択時にファイルのflash変換に失敗した場合は、詳細表示となります。
+							</li>
+						</ul>
+						<br/>
+						■本文へのリンク名
+						<br/>
+						ファイルのリンク名を任意に設定することができます。
+						<br/>
+						未入力の場合は、ファイル名が自動で入力されます。
+						<br/>
+						<br/>
+						<center><img src="./img/item_entry_linkname.png" alt="本文へのリンク名"></center><br/>
+						<br/>
+						<br/>
+						■ファイルの公開方法
+						<br/>
+						ファイルの公開方法は下記の3つから選択することができます。<br/>
+						<br/>
+						<table class="table_border" border="0" align="center"  cellspacing="0">
+							<tr>
+								<th nowrap>公開方法</th>
+								<th nowrap>内容</th>
+							</tr>
+							<tr>
+								<td>オープンアクセス</td>
+								<td>
+									すべてのユーザーがダウンロード可能となります。<br/>
+								</td>
+							</tr>
+							<tr>
+								<td>オープンアクセス日を指定する</td>
+								<td>
+									ファイルの公開日を指定することができます。<br/>
+									公開日が過ぎるまではログインしたユーザーのみダウンロード可能となります。<br/>
+									公開日を過ぎた場合はすべてのユーザーがダウンロード可能となります。<br/>
+								</td>
+							</tr>
+							<tr>
+								<td>ログインユーザーのみ</td>
+								<td>
+									ログインユーザーのみがダウンロード可能となります。<br/>
+									課金ファイルの場合は価格が設定されているグループのユーザーのみダウンロード可能となります。<br/>
+								</td>
+							</tr>
+						</table>
+						<br/>
+						<br/>
+						■flashの公開方法
+						<br/>
+						ファイルの公開方法とは別に、flashの公開方法を設定することができます。
+						<br/>
+						flashの公開方法は下記の3つから選択することができます。
+						<br/>
+						<br/>
+						<table class="table_border" border="0" align="center"  cellspacing="0">
+							<tr>
+								<th nowrap>公開方法</th>
+								<th nowrap>内容</th>
+							</tr>
+							<tr>
+								<td>オープンアクセス</td>
+								<td>
+									すべてのユーザーが閲覧可能となります。<br/>
+								</td>
+							</tr>
+							<tr>
+								<td>オープンアクセス日を指定する</td>
+								<td>
+									flashの公開日を指定することができます。<br/>
+									公開日が過ぎるまではログインしたユーザーのみ閲覧可能となります。<br/>
+									公開日を過ぎた場合はすべてのユーザーが閲覧可能となります。<br/>
+								</td>
+							</tr>
+							<tr>
+								<td>ログインユーザーのみ</td>
+								<td>
+									ログインユーザーのみが閲覧可能となります。<br/>
+									課金ファイルの場合は価格が設定されているグループのユーザーのみ閲覧可能となります。<br/>
+								</td>
+							</tr>
+						</table>
+						<br/>
+						<br/>
+						<center><img src="./img/item_entry_flash_access.png" alt="flashの公開方法"></center><br/>
+						<br/>
+						
+						■ライセンス
+						<br/>
+						ライセンスは<a href="http://creativecommons.org/international/jp/" target="_blank">Creative Commons</a>のライセンス表記からいずれかを選択するか、自由に記述することができます。<br/>
+						<br/>
+						<center><img src="./img/file_lisence.png" alt="ライセンス設定"></center><br/>
+						<br/>
+					</div>
+					<br/>
+					<h4><a name="price">課金設定</a></h4>
+					<div class="page_list">
+						メタデータ属性が課金ファイルである場合はグループごとに価格の設定をすることができます。<br/>
+						価格が設定されていないグループのユーザーは課金ファイルをダウンロードできません。<br/>
+						複数のグループに所属するユーザーには該当する価格の最低値が適用されます。<br/>
+						<br/>
+						「More input row」ボタンを押下すると価格を設定するグループを追加できます。<br/>
+						「削除」ボタンを押下するとその行が削除されます。<br/>
+						<br/>
+						公開方法がオープンアクセスのファイルには価格は設定できません。<br/>
+						オープンアクセス日が経過した場合は無料となり、すべてのユーザーがファイルをダウンロードできます。<br/>
+						<br/>
+						<center><img src="./img/file_price_setting.png" alt="課金設定"></center><br/>
+						<br/>
+					</div>
+				</div>
+				
+				<h3><a name="metadata">メタデータ入力</a></h3>
+				<div class="page_list">
+					<h4><a name="input_type">入力形式</a></h4>
+					<div class="page_list">
+						アイテムのメタデータを入力します。<br/>
+						<br/>
+						複数入力が可能な項目では「More input row」ボタンを押下することで入力欄の追加ができます。<br/>
+						また、「↑」ボタンおよび「↓」ボタンでメタデータ表示位置の入れ替えができます。<br/>
+						<br/>
+						「<font color="#FF0000">*</font>」が付いている項目は必須項目です。<br/>
+						<br/>
+						必須項目が入力されていない状態でもアイテム登録および編集は続行できますが、「登録中」の状態になりアイテムは公開されません。<br/>
+						なお、「登録中」状態のアイテムは<a href="./workflow.html">ワークフロー</a>の<a href="./workflow.html#entry">登録中</a>から編集が可能です。<br/>
+						また必須項目の設定は<a href="./itemtype_metadata.html#itemtype_metadata">アイテムタイプメタデータ編集</a>から編集が可能です。<br/>
+						<br/>
+						<center><img src="./img/metadata_input.png" alt="メタデータ入力"></center><br/>
+						<br/>
+						<br/>
+						【注意事項】
+						<ul>
+							<li>「タイトル」と「タイトル(英)」はどちらか一方のみ必須です。</li>
+						</ul>
+					</div>
+					<h4><a name="input_name">著者入力</a></h4>
+					<div class="page_list">
+						著者メタデータの入力をします。<br/>
+						<br/>
+						<br>姓名(ヨミ)は氏名タイプに言語として「日本語」を選択する事で表示されます。<br/>
+						設定方法は<a href="./itemtype_mapping.html#mapping">マッピング設定</a>をご覧ください。<br/>
+						<br/>
+						入力できる著者メタデータは下記のとおりです。<br/>
+						必須項目の設定は<a href="./itemtype_metadata.html#itemtype_metadata">アイテムタイプメタデータ編集</a>から編集が可能です。<br/>
+						<table class="table_border" border="0" align="center" cellspacing="0">
+							<tr>
+								<th nowrap>項目名</th>
+								<th nowrap>概要</th>
+							</tr>
+							<tr>
+								<td nowrap>姓</td>
+								<td>
+									姓を設定します。<br/>
+								</td>
+							</tr>
+							<tr>
+								<td nowrap>名</td>
+								<td>
+									名を設定します。<br/>
+								</td>
+							</tr>
+							<tr>
+								<td nowrap>姓(ヨミ)</td>
+								<td>
+									姓の読み仮名を設定します。<br/>
+								</td>
+							</tr>
+							<tr>
+								<td nowrap>名(ヨミ)</td>
+								<td>
+									名の読み仮名を設定します。<br/>
+								</td>
+							</tr>
+							<tr>
+								<td nowrap>e-mail</td>
+								<td>
+									メールアドレスを設定します。<br/>
+								</td>
+							</tr>
+							<tr>
+								<td nowrap>著者ID</td>
+								<td>
+									著者IDを設定します。<br/>
+									著者IDの追加、削除方法は<a href="./setting.html#author_id">外部著者ID Prefix設定</a>をご覧ください。<br/>
+								</td>
+							</tr>
+						</table>
+						<br/>
+						「More input row」ボタンを押下することで入力欄の追加ができます。<br/>
+						また、「↑」ボタンおよび「↓」ボタンでメタデータ表示位置の入れ替えができます。<br/>
+						<br/>
+						<center><img src="./img/metadata_nameinput.png" alt="メタデータ著名入力"></center><br/>
+						<br/>
+						■著者候補表示機能<br/>
+						　入力情報から既存著者情報の候補がリストで表示されます。候補から著者情報を選択すると、選択した著者情報が自動入力されます。<br/>
+						<br/>
+						<center><img src="./img/meta_mapping.png" alt="著者情報サジェスト"></center><br/>
+						<br/>
+						■外部機関による自動入力<br/>
+						　入力した著者ID情報から外部機関の著者情報を取得し、自動入力します。著者情報の外部機関は<a href="http://ci.nii.ac.jp/" target="_blank">CiNii</a>, <a href="http://rns.nii.ac.jp/;jsessionid=1305D370D75A62231B8BB5913F766672" target="_blank">研究者リゾルバー</a>, <a href="http://kaken.nii.ac.jp/" target="_blank">KAKEN</a>が利用できます<br/>
+						　各機関で利用可能な著者IDを入力し、「fill」ボタンを押下すると取得した著者情報が自動入力されます。自動入力の対象は下記のとおりです<br/>
+						
+						<br/>
+						<table class="table_border" border="0"  align="center" cellspacing="0">
+							<tr>
+								<th nowrap>機関名</th>
+								<th nowrap>検索用著者ID</th>
+								<th nowrap>自動入力対象項目</th>
+							</tr>
+							<tr>
+								<td>CiNii</td>
+								<td>
+									CiNii ID
+								</td>
+								<td>
+									姓、名、著者ID(suffix)
+								</td>
+							</tr>
+							<tr>
+								<td>研究者リゾルバー</td>
+								<td>
+									研究者リゾルバーID
+								</td>
+								<td>
+									姓、名、姓(ヨミ)、名(ヨミ)、著者ID(suffix)
+								</td>
+							</tr>
+							<tr>
+								<td>KAKEN</td>
+								<td>
+									科研費研究者番号
+								</td>
+								<td>
+									姓、名、姓(ヨミ)、名(ヨミ)、著者ID(suffix)
+								</td>
+							</tr>
+						</table>
+						<br/>
+						<br/>
+						■著者情報クリア<br/>
+						　「著者情報をクリア」ボタンを押下するとWEKOの持つ著者名典拠情報との連結を解除することができます。
+						連結が解除されると、WEKO著者IDは「***」となります。<br/>
+						<br/>
+						<center><img src="./img/metadata_clearnm.png" alt="著者情報をクリア"></center><br/>
+						
+						<br/>
+						<br/>
+					</div>
+					
+					<h4><a name="empty">空白文字列入力</a></h4>
+					<div class="page_list">
+						メタデータ入力時、「&EMPTY&」と入力すると、「空データ」を登録することができます。<br/>
+						個別のメタデータで、登録順序に意味がある場合などに利用します。<br/>
+						<br/>
+						<center><img src="./img/blank_word_01.png" alt="空白文字列入力"></center><br/>
+						<br/>
+						<p class="indent">
+							◆詳細画面<br/>
+							　詳細画面では「空データ」は表示されません。<br/>
+								<center><img src="./img/blank_word_02.png" alt="詳細表示"></center><br/>
+							<br/>
+						</p>
+						<br/>
+						<p class="indent">
+							◆OAI-PMH<br/>
+							　グルーピングに意味がある項目を出力する際に「空データ」を考慮してデータを出力します。<br/>
+								<center><img src="./img/blank_word_03.png" alt="詳細表示"></center><br/>
+							<br/>
+						</p>
+					</div>
+					
+					<h4><a name="policy_name">著作権ポリシー表示</a></h4>
+					<div class="page_list">
+						書誌に定められた著作権ポリシーを表示する。<br/>
+						著作権ポリシーは「雑誌名」をキーに<a href="http://scpj.tulips.tsukuba.ac.jp/" target="_blank">学協会著作権ポリシーデータベース(SCPJ)</a>、及び<a href="http://www.sherpa.ac.uk/romeo/index.php" target="_blank">SHERPA/RoMEO</a>からポリシーを取得し、表示する。<br/>
+						<br/>
+						<br/>
+						■雑誌名候補表示機能<br/>
+						<p class="indent">
+						　入力情報から学協会著作権ポリシーデータベース(SCPJ)及びSHERPA/RoMEOから取得した雑誌名の候補がリストで表示されます。<br/>
+						候補から雑誌名を選択すると、選択した雑誌名が自動入力され、著作権ポリシーのポップアップが表示されます。
+						<br/>
+						<center>
+							<img src="./img/item_scpj_01.png" border="0" /><br/>
+						</center>
+						<br/>
+						<center>
+							<img src="./img/item_scpj_02.png" border="0" /><br/>
+						</center>
+						</p>
+						<br/>
+						■著作権ポリシーポップアップ<br/>
+						<p class="indent">
+						雑誌名候補から選択した雑誌名の著作権ポリシーを表示します。</p>
+						<br/>
+						<p class="indent">
+						<b>学協会著作権ポリシーデータベース(SCPJ)</b><br/>
+						<p class="indent">
+							　学協会著作権ポリシーデータベース(SCPJ)の著作権ポリシーには下記５種類が存在する。
+							<br/>
+							<br/>
+							
+							<span style="color:#45B035;"><b>■Green</b></span><br/>
+							　査読前・査読後のどちらでもよい<br/>
+							<br/>
+							<span style="color:#1677B8;"><b>■Blue</b></span><br/>
+							　査読後の論文のみ認める<br/>
+							<br/>
+							<span style="color:#FFCC00;"><b>■Yellow</b></span><br/>
+							　査読前の論文のみ認める<br/>
+							<br/>
+							<b>□White</b><br/>
+							　リポジトリへの保存を認めていない<br/>
+							<br/>
+							<span style="color:#999999;"><b>■Gray</b></span><br/>
+							　検討中・非公開・無回答・その他<br/>
+							<br/>
+							<center>
+								<img src="./img/item_scpj_03.png" border="0" /><br/>
+							</center>
+							
+						</p>
+						</p>
+						<br/>
+						<p class="indent">
+						<b>SHERPA/RoMEO</b><br/>
+						<p class="indent">
+							　SHERPA/RoMEOの著作権ポリシーには下記５種類が存在する。
+							<br/>
+							<br/>
+							<span style="color:#45B035;"><b>■Green</b></span><br/>
+							　査読前の論文、査読後の論文あるいは出版バージョン/PDFを保存することができる<br/>
+							<br/>
+							<span style="color:#1677B8;"><b>■Blue</b></span><br/>
+							　査読後の論文あるいは出版バージョン/PDFを保存することができる<br/>
+							<br/>
+							<span style="color:#FFCC00;"><b>■Yellow</b></span><br/>
+							　査読前の論文を保存することができる<br/>
+							<br/>
+							<b>□White</b><br/>
+							　保存は正式に認められていない<br/>
+							<br/>
+							<span style="color:#999999;"><b>■Other</b></span><br/>
+							　その他<br/>
+							<br/>
+							<center>
+								<img src="./img/item_romeo_01.png" border="0" /><br/>
+							</center>
+						</p>
+						</p>
+						
+					</div>
+					
+					<h4><a name="fill">メタデータ自動入力機能</a></h4>
+					<div class="page_list">
+						外部データベースから書誌情報を取得し該当項目に自動入力します。<br/>
+						<br/>
+						外部データベースは<a href="http://www.amazon.co.jp/" target="_blank">Amazon</a>, <a href="http://www.ncbi.nlm.nih.gov/sites/entrez/" target="_blank">PubMed</a>, <a href="http://ci.nii.ac.jp/" target="_blank">CiNii</a>, <a href="http://search.jamas.or.jp/" target="_blank">医中誌</a>が利用できます。<br/>
+						各サイトで利用可能な書誌IDを入力し、「取得」ボタンを押下すると書誌情報が取得されます。<br/>
+						取得された書誌情報は、アイテムの対応項目および対応するjunii2マッピングが設定されたメタデータ項目に自動入力されます。<br/>
+						<br/>
+						<table class="table_border" border="0"  align="center" cellspacing="0">
+							<tr>
+								<th nowrap>データベース名</th>
+								<th nowrap>入力ID種別</th>
+								<th nowrap>自動入力対象項目</th>
+								<th nowrap>自動入力対象マッピング(junii2)</th>
+							</tr>
+							<tr>
+								<td>Amazon</td>
+								<td>
+									ISBN<br/>
+								</td>
+								<td>
+									タイトル<br/>
+									タイトル（英）<br/>
+									言語<br/>
+									雑誌名<br/>
+									雑誌名（英）<br/>
+									ページ<br/>
+									発行年<br/>
+								</td>
+								<td>
+									publisher<br/>
+								</td>
+							</tr>
+							<tr>
+								<td>PubMed</td>
+								<td>
+									PMID<br/>
+								</td>
+								<td>
+									タイトル（英）<br/>
+									言語<br/>
+									キーワード（英）<br/>
+									雑誌名（英）<br/>
+									巻<br/>
+									号<br/>
+									ページ<br/>
+									発行年<br/>
+								</td>
+								<td>
+									creator<br/>
+									description<br/>
+									issn<br/>
+									pmid<br/>
+									doi<br/>
+								</td>
+							</tr>
+							<tr>
+								<td>CiNii</td>
+								<td>
+									NAID<br/>
+								</td>
+								<td>
+									タイトル<br/>
+									タイトル（英）<br/>
+									言語<br/>
+									キーワード<br/>
+									キーワード（英）<br/>
+									雑誌名<br/>
+									雑誌名（英）<br/>
+									ページ<br/>
+									発行年<br/>
+								</td>
+								<td>
+									creator<br/>
+									contributor<br/>
+									publisher<br/>
+								</td>
+							</tr>
+							<tr>
+								<td>医中誌</td>
+								<td>
+									医中誌ID<br/>
+								</td>
+								<td>
+									タイトル<br/>
+									タイトル（英）<br/>
+									著者名<br/>
+									抄録<br/>
+									言語<br/>
+									キーワード<br/>
+									キーワード（英）<br/>
+									雑誌名<br/>
+									雑誌名（英）<br/>
+									巻<br/>
+									号<br/>
+									ページ<br/>
+									発行年<br/>
+								</td>
+								<td>
+									creator<br/>
+									description<br/>
+									issn<br/>
+								</td>
+							</tr>
+						</table>
+						<br/>
+						<center><img src="./img/metadata_fill.png" alt="メタデータ自動入力"></center><br/>
+						<br/>
+						<br/>
+						【注意事項】
+						<ul>
+							<li>
+								メタデータ自動入力機能を利用するにはアイテムタイプがメタデータ属性「書誌情報」を持っている必要があります。<br/>
+								また、各メタデータのマッピング設定がされている必要があります。<br/>
+								マッピング設定については<a href="./itemtype_mapping.html">アイテムタイプ管理(OAH-PMHマップ)</a>をご覧ください。
+							</li>
+							<li>
+								医中誌は、医中誌と連携ができる場合のみメタデータ自動入力の項目に表示されます。<br/>
+								医中誌の連携については<a href="./setting.html#server_biblio">WEKO管理 書誌情報簡単登録</a>をご覧ください。
+							</li>
+						</ul>
+					</div>
+					<h4><a name="contributor">代理投稿機能</a></h4>
+					<div class="page_list">
+						NetCommons上のユーザーを、編集中のアイテムの登録者として指定することができます。
+						<br/>
+						「ハンドル名」、「会員氏名」、「e-mailアドレス」からユーザーを特定します。
+						<br/>
+						<br/>
+						各項目にユーザー情報を入力すると、入力情報に該当するユーザー情報がリストで表示されます。 
+						<br/>
+						候補からユーザー情報を選択すると、選択したユーザー情報が自動入力されます。
+						<br/>
+						<br/>
+						なお、本機能はWEKOの管理権限を持つユーザーのみ使用可能です。
+						<br/>
+						<br/>
+						<center>
+							<img alt="代理投稿機能" src="./img/contributor.png">
+						</center>
+					</div>
+					<h4><a name="feedbackmail">フィードバックメール送信先設定機能</a></h4>
+					<div class="page_list">
+						WEKOに登録されている著者を、フィードバックメール送信先として指定することができます。
+						<br/>
+						「名」、「姓」、「名(ヨミ)」、「姓(ヨミ)」、「著者ID」、「e-mailアドレス」から著者を特定します。
+						<br/>
+						<br/>
+						各項目に著者情報を入力すると、下部のボックスに該当する著者情報がリストで表示されます。 
+						<br/>
+						候補から著者情報を選択し、「追加」ボタンを押下すると、選択した著者情報がフィードバックメール送信先に設定されます。
+						<br/>
+						<br/>
+						<center>
+							<img alt="フィードバックメール送信先設定機能" src="./img/feedbackmail.png">
+						</center>
+					</div>
+				</div>
+				
+				<h3><a name="link">リンク設定</a></h3>
+				<div class="page_list">
+					<h4><a name="index">インデックス指定</a></h4>
+					<div class="page_list">
+						アイテムが所属するインデックスを選択します。<br/>
+						<br/>
+						アイテムを所属させるインデックスにチェックを入れます。<br/>
+						また、アイテムは同時に複数のインデックスに所属させることができます。<br/>
+						<br/>
+						なお、インデックス指定は必須項目です。<br/>
+						未選択の状態で登録を終了した場合、アイテムは「登録中」の状態となり公開されません。<br/>
+						<br/>
+						<center><img src="./img/item_link.png" alt="インデックス指定"></center><br/>
+						<br/>
+					</div>
+					<h4><a name="item_link">アイテム間リンク設定</a></h4>
+					<div class="page_list">
+						登録してあるアイテム同士を関連付けることができます。<br/>
+						<br/>
+						インデックスツリーのインデックス名をクリックすると、そのインデックスに所属するアイテムのリストが表示されます。<br/>
+						<br/>
+						検索結果に表示されたアイテムからリンクしたいアイテムの「↑」ボタンを選択すると、リンクが登録されます。<br/>
+						また、リンクしたアイテムとの詳細な関係性を設定することができます。<br/>
+						選択可能な関係性は下記の13種類があります。<br/>
+						<br/>
+						<table class="table_border" border="0" align="center"  cellspacing="0">
+							<tr>
+								<th nowrap>表示名</th>
+								<th nowrap>内容</th>
+							</tr>
+							<tr>
+								<td style="white-space: pre;">relate to</td>
+								<td>関連する(詳細未設定)<br/></td>
+							</tr>
+							<tr>
+								<td style="white-space: pre;">is version of</td>
+								<td>異版である<br/></td>
+							</tr>
+							<tr>
+								<td style="white-space: pre;">has version</td>
+								<td>異版あり<br/></td>
+							</tr>
+							<tr>
+								<td style="white-space: pre;">replaces</td>
+								<td>置換される<br/></td>
+							</tr>
+							<tr>
+								<td style="white-space: pre;">is replaces by</td>
+								<td>置換する<br/></td>
+							</tr>
+							<tr>
+								<td style="white-space: pre;">is required by</td>
+								<td>要件とされる<br/></td>
+							</tr>
+							<tr>
+								<td style="white-space: pre;">requires</td>
+								<td>要件とする<br/></td>
+							</tr>
+							<tr>
+								<td style="white-space: pre;">is part of</td>
+								<td>部分である<br/></td>
+							</tr>
+							<tr>
+								<td style="white-space: pre;">has part</td>
+								<td>部分を持つ<br/></td>
+							</tr>
+							<tr>
+								<td style="white-space: pre;">is referenced by</td>
+								<td>参照される<br/></td>
+							</tr>
+							<tr>
+								<td style="white-space: pre;">references</td>
+								<td>参照する<br/></td>
+							</tr>
+							<tr>
+								<td style="white-space: pre;">is format of</td>
+								<td>別フォーマットである<br/></td>
+							</tr>
+							<tr>
+								<td style="white-space: pre;">has format</td>
+								<td>別フォーマットあり<br/></td>
+							</tr>
+							
+						</table>
+						<br/>
+						「削除」ボタンを押下すると、そのアイテムとのリンクが解除されます。<br/>
+						<br/>
+						<center><img src="./img/item_link_search_index.png" alt="アイテム間リンク設定（インデックス検索）"></center><br/>
+						<br/>
+						また、キーワード検索でリンクさせるアイテムを検索することができます。<br/>
+						<br/>
+						<center><img src="./img/item_link_search_keyword.png" alt="アイテム間リンク設定（キーワード検索）"></center><br/>
+						<br/>
+					</div>
+				</div>
+				
+				<h3><a name="doi">DOI付与</a></h3>
+				<div class="page_list">
+					<h4><a name="input_type">付与条件</a></h4>
+					<div class="page_list">
+						下記の条件を満たしている場合、DOIを付与することができます。<br/>
+						<font color="#f00">一度付与されたDOIは変更ができません。</font><br/>
+						DOIの取扱は十分注意して行ってください。<br/>
+						<ul>
+							<li>アイテム登録時にIDサーバー(http://id.nii.ac.jp/)のSuffixが付与される状態となっている</li>
+							<li>「JaLC」または「CrossRef」のプレフィックスがWEKOの管理画面にて登録されている</li>
+							<li>削除されたアイテムではなく、公開されているアイテムである</li>
+							<li>ハーベストが許可(公開)されている</li>
+							<li>OAI-PMHのJuNii2形式でメタデータを出力することができる</li>
+							<li>WEKO内部で管理しているDOIが未付与である</li>
+							<li>下記表の条件を満たすアイテムである</li>
+						</ul>
+						<center><img src="./img/item_entry_DOI_condition.png" width="1200" border="0"/></center></br>
+					</div>
+					
+					<h4><a name="input_type">DOI付与</a></h4>
+					<div class="page_list">
+						DOIは一度だけ付与することができます。<br/>
+						<br/>
+						<center><img src="./img/item_entry_DOI_add.png" width="600" border="0"/></center></br>
+						<br/>
+						DOIが付与されると、詳細画面にDOIが表示されます<br/>
+						<br/>
+						<center><img src="./img/item_entry_DOI_view.png" width="600" border="0"/></center></br>
+						<br/>
+						【注意事項】<br/>
+						<ul>
+							<li>誤って付与してしまった場合は取り下げを行ってください。</li><br/>
+							<li>すでにDOIが発行されているものについては付与しないよう注意してください。</li><br/>
+						</ul>
+					</div>
+					
+					<h4><a name="input_type">DOI取り下げ</a></h4>
+					<div class="page_list">
+						付与したDOIは取り下げることができます。<br/>
+						<br/>
+						<center><img src="./img/item_entry_DOI_cancel.png" width="600" border="0"/></center></br>
+						<br/>
+						取り下げると下記の画面が表示されます。<br/>
+						<br/>
+						<center><img src="./img/item_entry_DOI_drop.png" width="600" border="0"/></center></br>
+						<br/>
+						【注意事項】<br/>
+						<ul>
+							<li>一度DOIの取り下げを行うと、二度とDOIは付与できません。</li><br/>
+							<li>再度付与する必要がある場合は、アイテムを再登録してください。</li><br/>
+						</ul>
+					</div>
+				</div>
+				
+				<h3><a name="confirm">確認</a></h3>
+				<div class="page_list">
+					入力したメタデータの内容を確認します。<br/>
+					<br/>
+					「決定」ボタンを押下するとアイテム登録が完了します。<br/>
+					作成されたアイテムは、管理者の査読後に公開されます。<br/>
+					<br/>
+					作成されたアイテムの査読状況および公開状況は<a href="./workflow.html">ワークフロー</a>から確認することができます。<br/>
+					<br/>
+					<br/>
+					【注意事項】
+					<ul>
+						<li>必須項目が未入力の場合、アイテムは「登録中」の状態となります。</li>
+					</ul>
+				</div>
+			</div>
+			<p align="center"><font size="2"><a href="../index.html" target="_top">WEKO Help Top</a></font></p>
+		</div>
+	</BODY>
+</HTML>

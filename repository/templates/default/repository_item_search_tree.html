@@ -1,0 +1,450 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_item_search_tree.html 36236 2014-05-26 07:53:04Z satoshi_arata $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{* 検索用ツリー表示画面 *}>
+<{* make index tree 2008/12/02 Y.Nakao --start-- *}>
+<script class="nc_script" type="text/javascript">
+    repositoryInitTree<{$id}> = function(elm_name, id_module, sel_mode){
+
+		var pars="";
+		pars += 'action=repository_action_main_tree';
+		pars += '&id_module='+id_module;
+		if(sel_mode == 'privateTreeParentCheck')
+		{
+			pars += '&sel_mode=rootcheck&private_root_select=1';
+		}
+		else
+		{
+			pars += '&sel_mode='+sel_mode;
+		}
+		if(sel_mode == 'rootcheck'){
+			pars += '&chk_index_id='+$('id_default_disp_index').value;
+		} else if(sel_mode == 'privateTreeParentCheck'){
+			pars += '&chk_index_id=' + $('repository<{$id}>PrivateTreeParentId').value;
+		} else if(sel_mode == 'link'){
+			pars += '&CheckedIds=' + $('check_insert_idx').value;
+		}
+		var url = "<{$smarty.const.BASE_URL}>/index.php";	// Modify Directory specification BASE_URL K.Matsuo 2011/9/2
+		var myAjax = new Ajax.Request(
+						url,
+						{
+							method: 'post',
+							postBody: pars,
+							cache : false,
+							onComplete: function(req) {
+                                // replace id
+                                var tree_html = repositoryReplaceTreeId<{$id}>(req.responseText, sel_mode);
+
+                                $(elm_name).innerHTML="";
+                                var tree_node = document.createElement("span");
+                                tree_node.innerHTML = tree_html;
+                                $(elm_name).appendChild(tree_node);
+
+                                repositorySetTreeHeight<{$id}>();
+								setMaxSize();
+							}
+						}
+					);
+		if(sel_mode=="" || sel_mode==null){
+			var str_tree = '<{$smarty.session.view_tree_html|smarty:nodefaults}>';
+			$(elm_name).innerHTML="";
+			var tree_node = document.createElement("span");
+			tree_node.innerHTML = str_tree;
+			$(elm_name).appendChild(tree_node);
+		}
+
+	}
+</script>
+
+<{* bottom action is fro edit index tree *}>
+<script class="nc_script" type="text/javascript">
+    repositoryAddTree<{$id}> = function(idx_id, elm_name, sel_mode){
+		var pars="";
+		pars += 'action=repository_action_main_tree';
+		pars += '&edit_id='+idx_id;
+		pars += '&sel_mode='+sel_mode;
+		var url = "<{$smarty.const.BASE_URL}>/index.php";	// Modify Directory specification BASE_URL K.Matsuo 2011/9/2
+		var myAjax = new Ajax.Request(
+						url,
+						{
+							method: 'post',
+							postBody: pars,
+							onComplete: function(req) {
+								$(elm_name).innerHTML = req.responseText;
+							}
+						}
+					);
+	}
+</script>
+
+<script class="nc_script" type="text/javascript">
+    repositoryUpdateTree<{$id}> = function(idx_id, elm_name, sel_mode){
+		var pars="";
+		pars += 'action=repository_action_main_tree';
+		pars += '&edit_id='+idx_id;
+		pars += '&sel_mode='+sel_mode;
+		var url = "<{$smarty.const.BASE_URL}>/index.php";	// Modify Directory specification BASE_URL K.Matsuo 2011/9/2
+		var myAjax = new Ajax.Request(
+						url,
+						{
+							method: 'post',
+							postBody: pars,
+							onComplete: function(req) {
+								$(elm_name).innerHTML = req.responseText;
+							}
+						}
+					);
+	}
+</script>
+<{* make index tree 2008/12/02 Y.Nakao --end-- *}>
+<{* Add child index display more 2009/01/19 Y.Nakao --start-- *}>
+<script class="nc_script" type="text/javascript">
+    repositoryClickMoreTree<{$id}> = function(more_idx, elm_name){
+		$('more'+more_idx).style.display = 'none';
+		accordian('moreHiddenArea'+more_idx, 'dw');
+	}
+</script>
+<script class="nc_script" type="text/javascript">
+	var max_height = 0;
+	var sl_timer = null;
+	var speed = 5;
+	var tree_html = "";
+	var tree_inner = "";
+	var click_more = "";
+	var more_height = "";
+	var prev_height = 0;
+	accordian = function(id, focus){
+		var tmp = 0;
+		if(sl_timer != null){
+			return false;
+		}
+		$(id).style.display = "block";	// dsp(d,'block');
+		// 最大高さ保持
+		max_height = parseInt($(id).offsetHeight);
+		$(id).style.overflow = 'hidden';
+		if(focus == "dw"){
+			$(id).style.height='0px';		// d.style.height='0px';
+		}
+		if(click_more == "true" && more_height != ""){
+			$(id).style.height = more_height + 'px';
+			click_more = "false";
+		}
+
+		//clearInterval(sl_timer);		// タイマークリア
+		sl_timer = setInterval( 'slider("'+id+'", "'+focus+'")', 10);	// タイマーセット
+		return true;
+
+	}
+
+	slider = function(id, focus){
+		var elm = $(id);
+		if(focus == "up"){
+			// 上方向に縮小 close for top
+			var now_height = parseInt($(id).offsetHeight);
+			if(now_height > 0 && now_height != prev_height){
+				var val = Math.round((now_height)/speed);
+				val = (val<1) ? 1 : val;
+				val = now_height - val;
+				$(id).style.height = val+'px';
+                repositorySetTreeHeight<{$id}>();
+				prev_height = now_height;
+			} else {
+				$(id).style.height = 'auto';
+				$(id).style.display = "none";
+				if(tree_inner != ""){
+					$(tree_inner).innerHTML = tree_html;
+					tree_inner = "";
+					tree_html = "";
+				}
+                repositorySetTreeHeight<{$id}>();
+				prev_height = 0;
+				clearInterval(sl_timer);
+				sl_timer = null;
+			}
+		} else if(focus == "dw"){
+			// 下方向に展開 open for bottom
+			var now_height = parseInt($(id).offsetHeight);
+			if(max_height > now_height){
+				var val = Math.round((max_height-now_height)/speed);
+				val = (val<1) ? 1 : val;
+				val = now_height + val;
+				$(id).style.height = val+'px';
+                repositorySetTreeHeight<{$id}>();
+			}else{
+				$(id).style.height = 'auto';
+				$(id).style.display = "block";
+				if(tree_inner != ""){
+					$(tree_inner).innerHTML = tree_html;
+				}
+                repositorySetTreeHeight<{$id}>();
+				clearInterval(sl_timer);
+				sl_timer = null;
+			}
+		} else {
+			// error
+			clearInterval(sl_timer);
+			sl_timer = null;
+		}
+		setMaxSize();
+	}
+</script>
+<{* Add child index display more 2009/01/19 Y.Nakao --end-- *}>
+
+<{* Add expand left header 2011/01/31 T.Koyasu -start- *}>
+<script class="nc_script" type="text/javascript">
+	var isLarge = false;
+	setMaxSize = function() {
+		right_height = $('_repository_folders<{$id}>').offsetHeight;
+		left_height = $('repo_side_navi').offsetHeight;
+
+		if(!isLarge) {
+			if(right_height > left_height) {
+				isLarge = true;
+			}
+		}
+
+		if(isLarge) {
+			var temp_height = right_height;
+			$('repo_side_navi').style.height = temp_height + "px";
+
+			var diff_height = $('_repository_keyword').offsetHeight;
+			if(<{$smarty.session.select_language}> == 1){
+				diff_height = diff_height + $('_repository_select_language').offsetHeight;
+			}
+			<{if $action.select_index_list_display == 1}>
+				diff_height = diff_height + $('select_index_list').offsetHeight;
+			<{/if}>
+			temp_height = temp_height - diff_height - 30;
+
+			if(temp_height < <{$smarty.const._SNIPPET_HEIGHT}>){
+			} else {
+				$('snippetTree<{$id}>panel').style.height = temp_height + "px";
+			}
+		}
+	}
+</script>
+<{* Add expand left header 2011/01/31 T.Koyasu -end- *}>
+
+<{* Add hide tree access control list 2013/04/19 K.Matsuo --start-- *}>
+<script class="nc_script" type="text/javascript">
+
+    repositoryClickTreeOpenClose<{$id}> = function(event, idx_id, sel_mode){
+		if (event.preventDefault) {
+			event.preventDefault();
+			event.stopPropagation();
+		} else {
+			event.returnValue = false;
+			event.cancelBubble = true;
+		}
+		var child_name = 'child_'+idx_id;
+		var tree_branch_name = 'tree_branch'+idx_id;
+        var tree_node = 'tree_node'+idx_id;
+		if(sel_mode == "harvestingCheck"){
+			child_name = 'harvesting_child_'+idx_id;
+			tree_branch_name = 'harvesting_tree_branch'+idx_id;
+            tree_node = 'harvesting_tree_node'+idx_id;
+		} else if(sel_mode == 'privateTreeParentCheck'){
+			child_name = 'privateTree_child_'+idx_id;
+			tree_branch_name = 'privateTree_tree_branch'+idx_id;
+            tree_node = 'privateTree_tree_node'+idx_id;
+		}
+
+        var pars="";
+        pars += 'action=repository_action_main_tree';
+        pars += '&click_id='+idx_id;
+        if(sel_mode == 'privateTreeParentCheck')
+        {
+            pars += '&sel_mode=rootcheck';
+        } else
+        {
+            pars += '&sel_mode='+sel_mode;
+        }
+        if(sel_mode == 'link'){
+            // when sel_mode == 'link'
+            pars += '&CheckedIds='+$('check_insert_idx').value;
+        } else if(sel_mode == 'check'){
+            // when sel_mode == 'check'
+            pars += '&CheckedIds='+$('check_insert_idx').value;
+        } else if(sel_mode == 'rootcheck'){
+            // when sel_mode == 'rootcheck'
+            pars += '&chk_index_id='+$('id_default_disp_index').value;
+        } else if(sel_mode == 'privateTreeParentCheck'){
+            pars += '&chk_index_id=' + $('repository<{$id}>PrivateTreeParentId').value;
+        } else if(sel_mode == 'harvestingCheck'){
+            pars += '&CheckedIds=' + $('harvesting_check_indexId').value;
+        }
+        var url = "<{$smarty.const.BASE_URL}>/index.php";   // Modify Directory specification BASE_URL K.Matsuo 2011/9/2
+
+		if($(child_name) == null)
+		{
+            $(tree_branch_name).src = '<{$smarty.const.BASE_URL}>/images/common/indicator.gif';
+            var myAjax = new Ajax.Request(
+                            url,
+                            {
+                                method: 'post',
+                                postBody: pars,
+                                onComplete: function(req) {
+                                    // replace id
+                                    var tree_html = repositoryReplaceTreeId<{$id}>(req.responseText, sel_mode);
+
+                                    // open
+                                    var span_html = document.createElement("span");
+                                    span_html.innerHTML = tree_html;
+                                    $(tree_node).appendChild(span_html);
+                                    if(sel_mode == ""){
+                                        accordian(child_name, 'dw');
+                                    } else if(sel_mode == "edit" || sel_mode == "editPrivatetree"){
+                                        $('tree_sentryP'+idx_id).style.display = 'block';
+                                    }
+                                    $(tree_branch_name).src = '<{$smarty.const.BASE_URL}>/images/repository/tree/open.png';
+	                                setMaxSize();
+	                            }
+	                        }
+	                    );
+
+		} else if($(child_name).style.display == 'none'){
+//			$(tree_branch_name).src = '<{$smarty.const.BASE_URL}>/images/common/indicator.gif'
+			if(sel_mode == ""){
+				if(!accordian(child_name, 'dw')){
+					return false;
+				}
+			} else {
+				if(sel_mode == "edit" || sel_mode == "editPrivatetree"){
+					$('tree_sentryP'+idx_id).style.display = 'block';
+				}
+				$(child_name).style.display = 'block';
+			}
+			$(tree_branch_name).src = '<{$smarty.const.BASE_URL}>/images/repository/tree/open.png'
+
+            pars += '&updateOpenInfo=true';
+            var myAjax = new Ajax.Request(
+                            url,
+                            {
+                                method: 'post',
+                                postBody: pars,
+                                onComplete: function(req) {
+                                }
+                            }
+                        );
+		} else {
+//			$(tree_branch_name).src = '<{$smarty.const.BASE_URL}>/images/common/indicator.gif'
+			if(sel_mode == ""){
+				if(!accordian(child_name, 'up')){
+					return false;
+				}
+			} else {
+				if(sel_mode == "edit" || sel_mode == "editPrivatetree"){
+					$('tree_sentryP'+idx_id).style.display = 'none';
+				}
+				$(child_name).style.display = 'none';
+			}
+			$(tree_branch_name).src = '<{$smarty.const.BASE_URL}>/images/repository/tree/close.png'
+
+            pars += '&updateOpenInfo=true';
+            var myAjax = new Ajax.Request(
+                            url,
+                            {
+                                method: 'post',
+                                postBody: pars,
+                                onComplete: function(req) {
+                                }
+                            }
+                        );
+		}
+	}
+
+    repositoryReplaceTreeId<{$id}> = function(tree_html, sel_mode){
+        if(sel_mode == 'harvestingCheck'){
+            var reg = new RegExp('tree_nodelabel([0-9]+)', 'gi');
+            tree_html = tree_html.replace(reg, 'harvesting_tree_nodelabel'+ "$1");
+            reg = new RegExp('tree_node([0-9]+)', 'gi');
+            tree_html = tree_html.replace(reg, 'harvesting_tree_node'+ "$1");
+            reg = new RegExp('tree_sentry([0-9]+)', 'gi');
+            tree_html = tree_html.replace(reg, 'harvesting_tree_sentry'+ "$1");
+            reg = new RegExp('tree_check([0-9]+)', 'gi');
+            tree_html = tree_html.replace(reg, 'harvesting_tree_check'+ "$1");
+            reg = new RegExp('tree_branch([0-9]+)', 'gi');
+            tree_html = tree_html.replace(reg, 'harvesting_tree_branch'+ "$1");
+            reg = new RegExp('child_([0-9]+)', 'gi');
+            tree_html = tree_html.replace(reg, 'harvesting_child_'+ "$1");
+            reg = new RegExp('child_top_([0-9]+)', 'gi');
+            tree_html = tree_html.replace(reg, 'harvesting_child_top_'+ "$1");
+
+            // check => harvestingCheck
+            tree_html = tree_html.replace(/'check'/gi, "'harvestingCheck'");
+            tree_html = tree_html.replace(/repositoryClickTreeCheck/gi, "repositoryClickTreeCheckHarvesting");
+
+        } else if(sel_mode == 'privateTreeParentCheck'){
+            // replace id
+            var reg = new RegExp('tree_nodelabel([0-9]+)', 'gi');
+            tree_html = tree_html.replace(reg, 'privateTree_tree_nodelabel'+ "$1");
+            reg = new RegExp('tree_node([0-9]+)', 'gi');
+            tree_html = tree_html.replace(reg, 'privateTree_tree_node'+ "$1");
+            reg = new RegExp('tree_sentry([0-9]+)', 'gi');
+            tree_html = tree_html.replace(reg, 'privateTree_tree_sentry'+ "$1");
+            reg = new RegExp('tree_check([0-9]+)', 'gi');
+            tree_html = tree_html.replace(reg, 'privateTree_tree_check'+ "$1");
+            reg = new RegExp('tree_branch([0-9]+)', 'gi');
+            tree_html = tree_html.replace(reg, 'privateTree_tree_branch'+ "$1");
+            reg = new RegExp('child_([0-9]+)', 'gi');
+            tree_html = tree_html.replace(reg, 'privateTree_child_'+ "$1");
+            reg = new RegExp('child_top_([0-9]+)', 'gi');
+            tree_html = tree_html.replace(reg, 'privateTree_child_top_'+ "$1");
+
+            // check => privateTreeCheck
+            tree_html = tree_html.replace(/'rootcheck'/gi, "'privateTreeParentCheck'");
+            tree_html = tree_html.replace(/repositoryClickTreeCheck/gi, "repositoryClickTreeCheckPrivateTreeParent");
+        }
+
+        return tree_html;
+    }
+
+    repositorySetTreeHeight<{$id}> = function(){
+        var scrollbar_height = 25;
+        var hei = $('_repository_folders<{$id}>').offsetHeight - $('_repository_keyword').offsetHeight;
+        if(<{$smarty.session.select_language}> == 1){
+            hei = hei - $('_repository_select_language').offsetHeight;
+        }
+        if(hei > <{$smarty.const._SNIPPET_HEIGHT}>){
+            // ツリーが描画できるスペースが300px以上
+            if($('child_0') != null){
+                // ツリーの中身がある
+                if($('child_0').offsetHeight + scrollbar_height > hei){
+                    // 表示するツリー長さが描画スペース以上の場合
+                    $('snippetTree<{$id}>panel').style.height = hei+"px";
+                } else if($('child_0').offsetHeight + scrollbar_height < <{$smarty.const._SNIPPET_HEIGHT}>){
+                    // 表示するツリー長さが300px未満の場合
+                    $('snippetTree<{$id}>panel').style.height = <{$smarty.const._SNIPPET_HEIGHT}>+"px";
+                } else {
+                    // 表示するツリー長さは描画スペース内で収まる
+                    $('snippetTree<{$id}>panel').style.height = $('child_0').offsetHeight + scrollbar_height +"px";
+                }
+            } else {
+                // ツリーの中身が取得できない
+                if($('snippetTree<{$id}>panel').offsetHeight > hei){
+                    // 表示するツリー長さが描画スペース以上の場合
+                    $('snippetTree<{$id}>panel').style.height = hei+"px";
+                } else if($('snippetTree<{$id}>panel').offsetHeight < <{$smarty.const._SNIPPET_HEIGHT}>){
+                    // 表示するツリー長さが300px未満の場合
+                    $('snippetTree<{$id}>panel').style.height = <{$smarty.const._SNIPPET_HEIGHT}>+"px";
+                } else {
+                    // 表示するツリー長さは描画スペース内で収まる
+                }
+            }
+        } else {
+            // ツリーが描画できるスペースが300px以下
+            $('snippetTree<{$id}>panel').style.height = <{$smarty.const._SNIPPET_HEIGHT}>+"px";
+        }
+    }
+
+</script>
+<{* Add hide tree access control list 2013/04/19 K.Matsuo --end-- *}>
+<{include file="repository_script.html"}>

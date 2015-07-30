@@ -1,0 +1,79 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_item_listdelete.html 17777 2012-05-22 09:53:02Z tatsuya_koyasu $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<div id="repository<{$id}>_listdeleteDiv" style="height:350px;">
+	<table class="full clear">
+		<tr>
+			<th class="pd10 th01" colspan="2">
+				<div class="fl">
+					<{$lang.repository_item_listdelete_target_index}>
+				</div>
+				<{* HELP *}>
+				<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+					<div class="fr">
+						<a style="cursor: help;" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'item_listdelete'); return false;" href="#">
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" alt="help">
+						</a>
+					</div>
+				<{/if}>
+			</th>
+		</tr>
+		<tr>
+			<td class="pd10 al">
+				<div id="select_delete_index">
+				    <{if strlen($action.sortIndexName) > 0}>
+				        <{$action.sortIndexName}>
+				    <{else}>
+					    <font style="color:#f00;" id="del_select_index"><{$lang.repository_item_embargo_select_index}></font>
+					<{/if}>
+				</div>
+				<input id="select_delete_index_id" type="hidden" value="<{$action.sortIndexId}>">
+			</td>
+			<td rowspan="2" align="right">
+				<input type="button" value="<{$lang.repository_item_listdelete_delete_button_title}>" class="btn_delete" onclick="javascript: deleteItems();return false;">
+			</td>
+		</tr>
+		<tr>
+			<td class="pd10 al">
+				<label for="repository_subindex_chk_itemDeleteList<{$id}>">
+					<input type="checkbox" id="repository_subindex_chk_itemDeleteList<{$id}>"/>
+					<{$lang.repository_item_listdelete_sub_index}>
+				</label>
+			</td>
+		</tr>
+	</table>
+</div>
+
+<script class="nc_script" type="text/javascript">
+	deleteItems = function(){
+		var indexName = $('select_delete_index_id');
+
+		if(indexName == null || indexName.value == 0)
+		{
+			alert("<{$lang.repository_item_listdelete_select_index_list_default}>");
+			return false;
+		}
+		
+		if(commonCls.confirm("<{$lang.repository_confimation_delete}>")){
+			
+			if($('repository_subindex_chk_itemDeleteList<{$id}>').checked){
+			
+				repositoryCls['<{$id}>'].repositoryListDelete($('select_delete_index_id').value, 1);
+			}else{
+				repositoryCls['<{$id}>'].repositoryListDelete($('select_delete_index_id').value, 0);
+			}
+		}
+		else{
+			return false;
+		}
+	}
+</script>
+<{include file="repository_script.html"}>

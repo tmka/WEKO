@@ -1,0 +1,135 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: log.html 32710 2014-03-11 09:28:04Z shota_suzuki $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+	<HTML>
+		<HEAD>
+			<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+			<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+			<link rel="stylesheet" href="./css/style.css" type="text/css">
+			<TITLE>log</TITLE>
+		</HEAD>
+	<BODY>
+		<div class="main_body">
+			<h2>ログ解析</h2>
+			<div class="page_list">
+				「ログ解析」タブをクリックするとログ解析画面が表示されます。<br/>
+				ログの集計、解析を行い、その結果を表示またはダウンロードすることができます。<br/>
+				<br/>
+				<center><img src="./img/log_01.png" alt="定型レポート" border="0"/></center><br/>
+				<br/>
+				<h3><a name="sum">アイテム登録総数</a></h3>
+				<div class="page_list">
+					WEKOに登録されたアイテムの総数を表示します。<br/>
+					登録アイテム総数、公開登録アイテム総数、非公開登録アイテム総数が表示されます。<br/>
+					<br/>
+					<center><img src="./img/log_02.png" alt="登録アイテム総数" border="0"/></center><br/>
+				</div>
+				<h3><a name="report">定型レポート</a></h3>
+				<div class="page_list">
+					指定した期間の定型レポートをTSV(タブ区切りテキスト)形式でダウンロードすることができます。<br/>
+					定型レポートは下記4種類です。<br/>
+					<br/>
+					<table class="table_border" border="0" alt="Downloadクリック" align="center" cellspacing="0">
+						<tr>
+							<th nowrap>ファイル名</th>
+							<th nowrap>ログ内容</th>
+						</tr>
+						<tr>
+							<td>logReport_IndexAccess_YYYYMM.tsv</td>
+							<td>各インデックスに所属するアイテムのアイテム詳細画面アクセス数</td>
+						</tr>
+						<tr>
+							<td>logReport_PayPerView_YYYYMM.tsv</td>
+							<td>課金およびオープンアクセスファイルのダウンロード数</td>
+						</tr>
+						<tr>
+							<td>logReport_SiteAccess_YYYYMM.tsv</td>
+							<td>サイトライセンスを設定しているホストからのアクセスとサイトライセンス以外からのアクセス数</td>
+						</tr>
+						<tr>
+							<td>logReport_SuppleAccess_YYYYMM.tsv</td>
+							<td>サプリメンタルコンテンツアクセス数およびダウンロード数</td>
+						</tr>
+					</table>
+					<br/>
+					集計年月をセレクトボックスから指定し、「Download」リンクをクリックします。<br/>
+					「Download」リンクをクリックするとファイル保存ダイアログが起動し、定形レポートをダウンロードすることができます。<br/>
+					<br/>
+					<center><img src="./img/log_03.png" alt="定型レポート" border="0"/></center><br/>
+					<br/>
+					<br/>
+					【注意事項】
+					<ul>
+						<li>定型レポートでダウンロードできるファイルは、4種類のTSV(タブ区切りテキスト)形式ファイルを圧縮したZIPアーカイブとなります。</li>
+					</ul>
+				</div>
+				<h4>定型レポート メール送信</h4>
+				<div class="page_list">
+					指定した期間の定型レポートを登録したメールアドレスで受信することができます。<br/>
+					<br/>
+					定型レポートを受け取るメールアドレスを入力し、「決定」ボタンをクリックします。<br/>
+					「>>定型レポートを送信する」ボタンをクリックすると登録したメールアドレスへ定型レポートが送信されます。<br/>
+					<br/>
+					定期的にメールを受信する場合、<br/>
+					図中のURLから[login_id]および[password]をWEKO管理者のログイン情報に置き換えた上で、クーロンから指定されたURLへアクセスするように設定します。<br/>
+					<br/>
+					<center><img src="./img/log_04.png" alt="定型レポート メール送信" border="0"/></center><br/>
+					<br/>
+				</div>
+				<h3>カスタムレポート</h3>
+				<div class="page_list">
+					下記3種類のデータを指定した期間のログから集計することができます。<br/>
+					また、集計データを「日」「週」「月」「年」「アイテム」「ホスト」ごとに区切ったヒストグラムで表示またはダウンロードすることができます。<br/>
+					<br/>
+					<table class="table_border" border="0" align="center" cellspacing="0">
+						<tr>
+							<th nowrap>名称</th>
+							<th nowrap>ログ内容</th>
+						</tr>
+						<tr>
+							<td>アイテム登録数</td>
+							<td>期間中に登録されたアイテムの数</td>
+						</tr>
+						<tr>
+							<td>ダウンロード回数</td>
+							<td>期間中にダウンロードされたアイテムの数</td>
+						</tr>
+						<tr>
+							<td>閲覧回数</td>
+							<td>期間中に閲覧されたアイテムの数</td>
+						</tr>
+					</table>
+					<br/>
+					セレクトボックスから集計期間および集計単位を選択し、「表示」ボタンを押下すると集計対象データのヒストグラムが表示されます。<br/>
+					「印刷」ボタンを押下すると印刷プレビュー画面が別ウィンドウに表示されます。<br/>
+					<br/>
+					<center><img src="./img/log_06.png" alt="集計期間指定" border="0"/></center><br/>
+					<br/>
+					セレクトボックスから集計期間および集計単位を選択し、「CSV」および「TSV」ボタンを押下するとファイル保存ダイアログが起動し、集計結果をCSV(カンマ区切りテキスト)またはTSV(タブ区切りテキスト)形式でダウンロードできます。<br/>
+					<br/>
+					<center><img src="./img/log_12.png" alt="Downloadクリック" border="0"/></center><br/>
+					<br/>
+				</div>
+				<h3>ログ削除</h3>
+				<div class="page_list">
+					指定した期間のログを削除することができます。<br/>
+					WEKOの可動年月から現在の一月前までのログを対象に指定する事ができます。<br/>
+					<br/>
+					<center><img src="./img/log_05.png" alt="ログ削除" border="0"/></center><br/>
+					<br/>
+					<br/>
+				</div>
+			</div>
+			<p align="center"><font size="2"><a href="./../index.html" target="_top">WEKO Help Top</a></font></p>
+		</div>
+	</BODY>
+</HTML>

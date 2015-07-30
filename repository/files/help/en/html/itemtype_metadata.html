@@ -1,0 +1,1790 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: itemtype_metadata.html 32903 2014-03-15 13:03:56Z tatsuya_koyasu $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+	<HTML>
+		<HEAD>
+			<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+			<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+			<link rel="stylesheet" href="./css/style.css" type="text/css">
+			<TITLE>itemtype_making</TITLE>
+		</HEAD>
+	<BODY>
+		<div class="main_body">
+			<h2>アイテムタイプ管理(作成/編集)</h2>
+			<div class="page_list">
+				「アイテムタイプ」タブをクリックするとアイテムタイプ管理画面が表示されます。<br/>
+				アイテム登録に利用するアイテムタイプを作成または編集することができます。<br/>
+				<br/>
+				<center><img src="./img/itemtype.png" alt="アイテムタイプ管理" border="0"/></center>
+				<br/>
+				<h3><a name="itemtype_default">デフォルトアイテムタイプ</a></h3>
+				<div class="page_list">
+					WEKOには10種類のアイテムタイプがデフォルトでインストールされています。<br/>
+					デフォルトアイテムタイプ一覧は下記のとおりです。<br/>
+					<br/>
+					<table class="table_border" border="0" align="center" cellspacing="0">
+						<tr>
+							<th rowspan="2" nowrap>アイテムタイプ名</th>
+							<th rowspan="2" nowrap>項目名</th>
+							<th rowspan="2" nowrap>属性</th>
+							<th colspan="5" nowrap>オプション</th>
+						</tr>
+						<tr>
+							<th>必須</th>
+							<th>複数可否</th>
+							<th>一覧表示</th>
+							<th>改行指定</th>
+							<th>非表示</th>
+						</tr>
+						<tr>
+							<td rowspan="23" nowrap>
+								学術雑誌論文 / Journal Article<br/>
+								紀要論文 / Departmental Bulletin Paper<br/>
+								会議発表論文 / Conference Paper<br/>
+								一般雑誌記事 / Article<br/>
+								その他 / Others<br/>
+								<br/>
+								（同様のメタデータ構成を持つ<br/>
+								アイテムタイプが5種類存在する）<br/>
+							</td>
+							<td>その他(別言語等)のタイトル</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>著者</td>
+							<td>氏名</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>著者別名</td>
+							<td>氏名</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>著者ID</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>抄録</td>
+							<td>テキストエリア</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>内容記述</td>
+							<td>テキストエリア</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>書誌情報</td>
+							<td>書誌情報</td>
+							<td align="center">×</td>
+							<td align="center">-</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>出版者</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>ISSN</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>ISBN</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>書誌レコードID</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>論文ID(NAID)</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>PubMed番号</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>DOI</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>権利</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>情報源</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>関連サイト</td>
+							<td>リンク</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>他の資源との関係</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>フォーマット</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>著者版フラグ</td>
+							<td>選択式(プルダウン)</td>
+							<td align="center">×</td>
+							<td align="center">-</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>日本十進分類法</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>コンテンツ本体</td>
+							<td>ファイル</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">-</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>見出し</td>
+							<td>見出し</td>
+							<td align="center">×</td>
+							<td align="center">-</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						
+						<tr>
+							<td rowspan="17" nowrap>会議発表用資料</td>
+							<td>その他(別言語等)のタイトル</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>著者</td>
+							<td>氏名</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>著者別名</td>
+							<td>氏名</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>著者ID</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>抄録</td>
+							<td>テキストエリア</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>会議概要(会議名，開催地，会期，主催者等)</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>発表年月日</td>
+							<td>日付</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>公開者</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>権利</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>情報源</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>関連サイト</td>
+							<td>リンク</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>他の資源との関係</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>フォーマット</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>著者版フラグ</td>
+							<td>選択式(プルダウン)</td>
+							<td align="center">×</td>
+							<td align="center">-</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>日本十進分類法</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>コンテンツ本体</td>
+							<td>ファイル</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">-</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>見出し</td>
+							<td>見出し</td>
+							<td align="center">×</td>
+							<td align="center">-</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						
+						<tr>
+							<td rowspan="21" nowrap>学位論文 / Thesis or Dissertation</td>
+							<td>その他(別言語等)のタイトル</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>著者</td>
+							<td>氏名</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>著者別名</td>
+							<td>氏名</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>著者ID</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>公開者</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>寄与者</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>抄録</td>
+							<td>テキストエリア</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>学位名</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>学位授与機関</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>学位授与年度</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>学位授与年月日</td>
+							<td>日付</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>学位授与番号</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>権利</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>情報源</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>関連サイト</td>
+							<td>リンク</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>他の資源との関係</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>フォーマット</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>著者版フラグ</td>
+							<td>選択式(プルダウン)</td>
+							<td align="center">×</td>
+							<td align="center">-</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>日本十進分類法</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>コンテンツ本体</td>
+							<td>ファイル</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">-</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>見出し</td>
+							<td>見出し</td>
+							<td align="center">×</td>
+							<td align="center">-</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						
+						<tr>
+							<td rowspan="23" nowrap>報告書 / Research Paper</td>
+							<td>その他（別言語等）の研究課題名</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>研究代表者</td>
+							<td>氏名</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>研究代表者別名</td>
+							<td>氏名</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>研究代表者ID</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>研究分担者</td>
+							<td>氏名</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>研究分担者別名</td>
+							<td>氏名</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>研究分担者ID</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>報告年度</td>
+							<td>日付</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>研究課題番号</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>研究代表者番号</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>研究機関</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>助成元</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>抄録</td>
+							<td>テキストエリア</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>内容記述</td>
+							<td>テキストエリア</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>権利</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>情報源</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>関連サイト</td>
+							<td>リンク</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>他の資源との関係</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>フォーマット</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>著者版フラグ</td>
+							<td>選択式(プルダウン)</td>
+							<td align="center">×</td>
+							<td align="center">-</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>日本十進分類法</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>コンテンツ本体</td>
+							<td>ファイル</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">-</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>見出し</td>
+							<td>見出し</td>
+							<td align="center">×</td>
+							<td align="center">-</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						
+						<tr>
+							<td rowspan="20" nowrap>図書 / Book</td>
+							<td>その他(別言語等)のタイトル</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>著者</td>
+							<td>氏名</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>著者別名</td>
+							<td>氏名</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>著者ID</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>抄録</td>
+							<td>テキストエリア</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>内容記述</td>
+							<td>テキストエリア</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>出版者</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>出版年月日</td>
+							<td>日付</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>ISSN</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>ISBN</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>書誌レコードID</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>権利</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>情報源</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>関連サイト</td>
+							<td>リンク</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>他の資源との関係</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>フォーマット</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>著者版フラグ</td>
+							<td>選択式(プルダウン)</td>
+							<td align="center">×</td>
+							<td align="center">-</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>日本十進分類法</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>コンテンツ本体</td>
+							<td>ファイル</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">-</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>見出し</td>
+							<td>見出し</td>
+							<td align="center">×</td>
+							<td align="center">-</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						
+						<tr>
+							<td rowspan="23" nowrap>図書の一部 / Book</td>
+							<td>その他(別言語等)のタイトル</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>著者</td>
+							<td>氏名</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>著者別名</td>
+							<td>氏名</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>著者ID</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>抄録</td>
+							<td>テキストエリア</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>内容記述</td>
+							<td>テキストエリア</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>図書名</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>出版者</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>開始ページ</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>終了ページ</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>出版年月日</td>
+							<td>日付</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>ISSN</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>ISBN</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>書誌レコードID</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>権利</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>情報源</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>関連サイト</td>
+							<td>リンク</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>他の資源との関係</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>フォーマット</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>著者版フラグ</td>
+							<td>選択式(プルダウン)</td>
+							<td align="center">×</td>
+							<td align="center">-</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>日本十進分類法</td>
+							<td>テキスト</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>コンテンツ本体</td>
+							<td>ファイル</td>
+							<td align="center">×</td>
+							<td align="center">○</td>
+							<td align="center">○</td>
+							<td align="center">-</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td>見出し</td>
+							<td>見出し</td>
+							<td align="center">×</td>
+							<td align="center">-</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+							<td align="center">×</td>
+						</tr>
+					</table>
+				</div>
+				<a name="itemtype_create"><h3>アイテムタイプ作成</h3></a>
+				<div class="page_list">
+					<h4>新規作成</h4>
+					<div class="page_list">
+						アイテムタイプを新規に作成することができます。<br/>
+						「新規作成」ボタンをクリックするとアイテムタイプ名入力欄が表示されます。<br/>
+						「」
+						アイテムタイプ名入力欄にアイテムタイプ名を入力し、「次へ」ボタンをクリックします。<br/>
+						「次へ」ボタンをクリックすると、アイテムタイプメタデータ編集画面が表示されます。<br/>
+						アイテムタイプメタデータの編集方法については<a href="#itemtype_metadata">アイテムタイプメタデータ編集</a>をご覧ください。<br/>
+						<br/>
+						<center><img src="./img/itemtype_create_01.png" alt="アイテムタイプ新規作成" border="0"/></center>
+						<br/>
+					</div>
+					<h4>アイテムタイプインポート</h4>
+					<div class="page_list">
+						アイテムタイプをWEKOインポート形式のファイルからインポートすることができます。<br/>
+						「インポート」ボタンをクリックするとインポートファイル指定欄が表示されます。<br/>
+						「参照」ボタンをクリックすると、ファイル選択ダイアログが表示されます。<br/>
+						ファイル選択ダイアログからインポートファイルを選択し、「インポート」ボタンをクリックするとアイテムタイプがインポートされ、インポート結果画面が表示されます。<br/>
+						<br/>
+						<center><img src="./img/itemtype_import_01.png" alt="アイテムタイプインポート" border="0"></center>
+						<br/>
+						<br/>
+						【注意事項】
+						<ul>
+							<li>WEKOインポート形式のファイルとは、アイテムタイプの情報が記述されたXML(import.xml)およびアイテムタイプアイコンファイルがまとめられたZIPファイルです。</li>
+							<li>メタデータ構成の異なる同名のアイテムタイプ名が存在した場合は、元のアイテムタイプ名に自動的にサフィックスを付加し、「アイテムタイプ名_XX」としてインポートされます。</li>
+						</ul>
+					</div>
+				</div>
+				<a name="itemtype_edit"><h3>アイテムタイプ編集</h3></a>
+				<div class="page_list">
+					<h4>メタデータ編集</h4>
+					<div class="page_list">
+						指定したアイテムタイプのメタデータを編集することができます。<br/>
+						セレクトボックスからアイテムタイプを選択し、「メタデータ編集」ボタンをクリックすると、アイテムタイプメタデータ編集画面が表示されます。<br/>
+						アイテムタイプメタデータの編集方法については<a href="#itemtype_metadata">アイテムタイプメタデータ編集</a>をご覧ください。<br/>
+						<br/>
+						<center><img src="./img/itemtype_edit_01.png" alt="アイテムタイプ編集" border="0"/></center>
+						<br/>
+					</div>
+					<h4>マッピング設定</h4>
+					<div class="page_list">
+						指定したアイテムタイプのマッピング設定を編集することができます。<br/>
+						セレクトボックスからアイテムタイプを選択し、「マッピング設定」ボタンをクリックするとアイテムタイプマッピング編集画面が表示されます。<br/>
+						アイテムタイプマッピングの編集方法については<a href="./itemtype_mapping.html">アイテムタイプマッピング編集</a>をご覧ください。<br/>
+						<br/>
+						<center><img src="./img/itemtype_mapping_01.png" alt="アイテムタイプマッピング設定" border="0"/></center>
+						<br/>
+					</div>
+					<a name="itemtype_export"><h4>エクスポート</h4></a><br/>
+					<div class="page_list">
+						指定したアイテムタイプをWEKOインポート形式でエクスポートすることができます。<br/>
+						セレクトボックスからアイテムタイプを選択し、「エクスポート」ボタンをクリックするとファイル保存ダイアログが起動し、WEKOインポート形式でアイテムタイプの情報をダウンロードできます。<br/>
+						エクスポートしたZIPファイルは、そのままアイテムタイプのインポートで使用することができます。<br/>
+						<br/>
+						<center><img src="./img/itemtype_export_01.png" alt="アイテムタイプエクスポート" border="0"/></center>
+						<br/>
+						【注意事項】
+						<ul>
+							<li>WEKOインポート形式のファイルとは、アイテムタイプの情報が記述されたXML(import.xml)およびアイテムタイプアイコンファイルがまとめられたZIPファイルです。</li>
+						</ul>
+					</div>
+					<h4>コピー</h4>
+					<div class="page_list">
+						指定したアイテムタイプをコピーすることができます。<br/>
+						セレクトボックスからアイテムタイプを選択し、「コピー」ボタンをクリックするとアイテムタイプがコピーされます。<br/>
+						<br/>
+						<center><img src="./img/itemtype_copy_01.png" alt="アイテムタイプコピー" border="0"/></center>
+						<br/>
+						<center><img src="./img/itemtype_copy_02.png" alt="コピー結果" border="0"/></center>
+						<br/>
+						【注意事項】
+						<ul>
+							<li>コピーされたアイテムタイプの名称はコピー元の名称に自動的にサフィックスを付加し、「コピー元のアイテムタイプ名_XX」となります。</li>
+						</ul>
+					</div>
+					<h4>削除</h4>
+					<div class="page_list">
+						指定したアイテムタイプを削除することができます。<br/>
+						セレクトボックスからアイテムタイプを選択し、「削除」ボタンをクリックすると削除確認画面が表示され、「OK」ボタンをクリックするとアイテムタイプが削除されます。<br/>
+						<br/>
+						<center><img src="./img/itemtype_delete_01.png" alt="アイテムタイプ削除" border="0"/></center>
+						<br/>
+						<center><img src="./img/itemtype_delete_03.png" alt="削除結果" border="0"/></center>
+						<br/>
+						<br/>
+						【注意事項】
+						<ul>
+							<li>削除したアイテムタイプを使用してアイテムを新規作成することはできません。</li>
+							<li>削除したアイテムタイプに属するアイテムは引き続き利用することができます。</li>
+						</ul>
+					</div>
+				</div>
+				<br/>
+				<a name="itemtype_metadata"><h3>アイテムタイプメタデータ編集</h3></a>
+				<div class="page_list">
+					アイテムタイプのメタデータ属性を編集することができます。<br/>
+					<a name="load"><h4>ロード</h4></a>
+					<div class="page_list">
+						既存アイテムタイプに設定されているメタデータ属性をロードすることができます。<br/>
+						セレクトボックスからアイテムタイプを選択し、「ロード」ボタンをクリックすると、選択したアイテムタイプのメタデータ属性がロードされます。<br/>
+						ロードを実行すると、編集中の項目はすべて上書きされます。<br/>
+						<br/>
+						<center><img src="./img/itemtype_load_01.png" alt="アイテムタイプロード" border="0"/></center>
+						<br/>
+					</div>
+					<a name="itemtype_name"><h4>アイテムタイプ名変更</h4></a>
+					<div class="page_list">
+					メタデータ属性編集画面では、アイテムタイプ名の変更も行うことができます。
+					<br/>
+					<br/>
+						<center><img src="./img/itemtype_namechange.png" alt="アイテムタイプ名変更" border="0"/></center>
+					</div>
+					<a name="metadata_name_edit"><h4>メタデータ項目名編集</h4></a>
+					<div class="page_list">
+						メタデータ属性名の設定をすることができます。
+						<br/>
+						<br/>
+						<center><img src="./img/itemtype_multilanguage.png" alt="アイテムタイプ名変更" border="0"/></center>
+						多言語設定リンクを押下すると、多言語設定のポップアップが表示されます。<br/>
+						表示されている言語のテキストボックスにその言語で表示する項目名を記述します。<br/>
+						項目名のテキストボックスの入力内容とデフォルトのテキストボックスの入力内容は同じになります。<br/>
+					</div>
+					<a name="itemtype_edit_metadata"><h4>メタデータ属性編集</h4></a>
+					<div class="page_list">
+						アイテムタイプのメタデータ属性を編集することができます。<br/>
+						ただし、下記6つのメタデータ属性はアイテムの基本属性となるため変更、削除することはできません。<br/>
+						<br/>
+						<table class="table_border" border="0" align="center" cellspacing="0">
+							<tr>
+								<th rowspan="2" nowrap>項目名</th>
+								<th rowspan="2" nowrap>属性</th>
+								<th colspan="5" nowrap>オプション</th>
+							</tr>
+							<tr>
+								<th>必須</th>
+								<th>一覧表示</th>
+								<th>複数可否</th>
+								<th>改行指定</th>
+								<th>非表示</th>
+							</tr>
+							<tr>
+								<td>タイトル</td>
+								<td>テキスト</td>
+								<td align="center">○</td>
+								<td align="center">×</td>
+								<td align="center">○</td>
+								<td align="center">○</td>
+								<td align="center">×</td>
+							</tr>
+							<tr>
+								<td>タイトル(英)</td>
+								<td>テキスト</td>
+								<td align="center">○</td>
+								<td align="center">×</td>
+								<td align="center">○</td>
+								<td align="center">○</td>
+								<td align="center">×</td>
+							</tr>
+							<tr>
+								<td>言語</td>
+								<td>テキスト</td>
+								<td align="center">○</td>
+								<td align="center">×</td>
+								<td align="center">×</td>
+								<td align="center">×</td>
+								<td align="center">×</td>
+							</tr>
+							<tr>
+								<td>公開日</td>
+								<td>日付</td>
+								<td align="center">○</td>
+								<td align="center">×</td>
+								<td align="center">×</td>
+								<td align="center">×</td>
+								<td align="center">×</td>
+							</tr>
+							<tr>
+								<td>キーワード</td>
+								<td>テキスト</td>
+								<td align="center">×</td>
+								<td align="center">×</td>
+								<td align="center">×</td>
+								<td align="center">×</td>
+								<td align="center">×</td>
+							</tr>
+							<tr>
+								<td>キーワード(英)</td>
+								<td>テキスト</td>
+								<td align="center">×</td>
+								<td align="center">×</td>
+								<td align="center">×</td>
+								<td align="center">×</td>
+								<td align="center">×</td>
+							</tr>
+						</table>
+						<br/>
+						「メタデータ追加」リンクをクリックすると、メタデータ属性入力欄が追加されます。<br/>
+						「↑」または「↓」ボタンをクリックすると、メタデータ属性入力欄の表示位置が入れ替わります。<br/>
+						「削除」ボタンをクリックすると、メタデータ属性入力欄が削除されます。<br/>
+						<br/>
+						<center><img src="./img/itemtype_metadata_11.png" alt="メタデータ属性追加と削除" border="0" /></center>
+						<br/>
+						セレクトボックスからメタデータ属性を選択します。<br/>
+						メタデータ属性は下記の12種類があります。<br/>
+						メタデータ属性に応じて、アイテム登録時の入力形式が決定されます。<br/>
+						<br/>
+						<table class="table_border" border="0" align="center" cellspacing="0">
+							<tr>
+								<th nowrap>メタデータ属性</th>
+								<th nowrap>固定オプション</th>
+								<th nowrap>概要</th>
+								<th nowrap>アイテム登録時のサンプル</th>
+							</tr>
+							<tr>
+								<td nowrap>テキスト</td>
+								<td>&nbsp;</td>
+								<td>1行テキスト入力</td>
+								<td nowrap><input type="text" style="width: 200px;"/></td>
+							</tr>
+							<tr>
+								<td nowrap>テキストエリア</td>
+								<td>&nbsp;</td>
+								<td>複数行テキスト入力</td>
+								<td nowrap><textarea style="width: 200px;"></textarea></td>
+							</tr>
+							<tr>
+								<td>リンク</td>
+								<td>&nbsp;</td>
+								<td>URLリンク入力</td>
+								<td nowrap>
+									<font size="-1">表示名:<input type="text" style="width: 60px;">&nbsp;URL:<input type="text" style="width: 60px;"></font>
+								</td>
+							</tr>
+							<tr>
+								<td nowrap>チェックボックス</td>
+								<td>複数不可</td>
+								<td>複数選択(チェックボックス)入力</td>
+								<td nowrap>
+									<input type="checkbox" />aaa<br/>
+									<input type="checkbox" />bbb<br/>
+									<input type="checkbox" />ccc<br/>
+								</td>
+							</tr>
+							<tr>
+								<td nowrap>選択式(ラジオ)</td>
+								<td>複数不可</td>
+								<td>単一選択(ラジオボタン)入力</td>
+								<td nowrap>
+									<input type="radio" name="radio"/>aaa<br/>
+									<input type="radio" name="radio"/>bbb<br/>
+									<input type="radio" name="radio"/>ccc<br/>
+								</td>
+							</tr>
+							<tr>
+								<td nowrap>選択式(プルダウン)</td>
+								<td>複数不可</td>
+								<td>単一選択(プルダウン)入力</td>
+								<td nowrap>
+									<select> 
+										<option>aaa</option>
+										<option>bbb</option>
+										<option>ccc</option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td nowrap>氏名</td>
+								<td>&nbsp;</td>
+								<td>姓、名、姓(ヨミ)、名(ヨミ)、email入力、著者ID</td>
+								<td nowrap>
+								<div>
+                                    <table>
+                                        <tbody><tr>
+                                            <td style="text-align: right;"><font size="-1">姓:</font></td>
+                                            <td><input style="width: 120px;" type="text"></td>
+                                            <td style="text-align: right;"><font size="-1">名:</font></td>
+                                            <td><input style="width: 120px;" type="text"></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;"><font size="-1">姓(ヨミ):</font></td>
+                                            <td><input style="width: 120px;" type="text"></td>
+                                            <td style="text-align: right;"><font size="-1">名(ヨミ):</font></td>
+                                            <td><input style="width: 120px;" type="text"></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;">e-mail:</td>
+                                            <td colspan="3"><input style="width: 300px;" type="text"></td>
+                                        </tr></tbody>
+                                    </table>
+                                </div>
+                                <div style="padding-bottom: 5px;">
+                                    <table>
+                                        <tbody><tr>
+                                            <td><font size="-1">著者ID:</font></td>
+                                            <td>
+												<select style="width: 150px;">
+													<option value="0">--- Prefix選択 ---</option>
+													<option value="1">CINII ID</option>
+													<option value="2">研究者リゾルバーID</option>
+													<option value="3">科研費研究者番号</option>
+												</select>
+													<input style="width: 145px;" type="text">
+													<input value="fill" onclick="" type="button"><br>
+											</td>
+                                        </tr>
+                                    </tbody></table>
+                                </div>
+                            		<br>姓名(ヨミ)は氏名タイプに言語として「日本語」を選択する事で表示されます。<br/>
+									設定方法は<a href="./itemtype_mapping.html#mapping">マッピング設定</a>をご覧ください。<br/>
+								</td>
+							</tr>
+							<tr>
+								<td nowrap>書誌情報</td>
+								<td>複数不可</td>
+								<td>雑誌名、巻、号、ページ、発行年月日入力</td>
+								<td nowrap>
+									<font size="-1">
+										雑誌名 :<input type="text" style="width: 60px; text-align: left;"/><br/>
+										雑誌名(英) :<input type="text" style="width: 60px; text-align: left;"/><br/>
+										巻 :<input type="text" style="width: 20px; text-align: right;"/>, 
+										号 :<input type="text" value="" style="width: 20px; text-align: right;"/>,  
+										ページ :<input type="text" style="width: 20px; text-align: right;"/> - <input type="text" style="width: 20px; text-align: right;"/>,  <br/>
+										発行年 :<input type="text" value="" style="width: 20px; text-align: right;"/>年
+										<select>
+											<option value=" ">--</option>
+											<option value="1">1</option>
+											<option value="2">2</option>
+											<option value="3">3</option>
+											<option value="4">4</option>
+											<option value="5">5</option>
+											<option value="6">6</option>
+											<option value="7">7</option>
+											<option value="8">8</option>
+											<option value="9">9</option>
+											<option value="10">10</option>
+											<option value="11">11</option>
+											<option value="12">12</option>
+										</select>
+										月
+										<select>
+											<option value=" ">--</option>
+											<option value="1">1</option>
+											<option value="2">2</option>
+											<option value="3">3</option>
+											<option value="4">4</option>
+											<option value="5">5</option>
+											<option value="6">6</option>
+											<option value="7">7</option>
+											<option value="8">8</option>
+											<option value="9">9</option>
+											<option value="10">10</option>
+											<option value="11">11</option>
+											<option value="12">12</option>
+											<option value="13">13</option>
+											<option value="14">14</option>
+											<option value="15">15</option>
+											<option value="16">16</option>
+											<option value="17">17</option>
+											<option value="18">18</option>
+											<option value="19">19</option>
+											<option value="20">20</option>
+											<option value="21">21</option>
+											<option value="22">22</option>
+											<option value="23">23</option>
+											<option value="24">24</option>
+											<option value="25">25</option>
+											<option value="26">26</option>
+											<option value="27">27</option>
+											<option value="28">28</option>
+											<option value="29">29</option>
+											<option value="30">30</option>
+											<option value="31">31</option>
+										</select>
+										日
+									</font>
+								</td>
+							</tr>
+							<tr>
+								<td nowrap>日付</td>
+								<td>&nbsp;</td>
+								<td>年、月、日入力</td>
+								<td nowrap>
+									<input type="text" value="" style="width: 20px; text-align: right;"/>年
+									<select>
+										<option value=" ">--</option>
+										<option value="1">1</option>
+										<option value="2">2</option>
+										<option value="3">3</option>
+										<option value="4">4</option>
+										<option value="5">5</option>
+										<option value="6">6</option>
+										<option value="7">7</option>
+										<option value="8">8</option>
+										<option value="9">9</option>
+										<option value="10">10</option>
+										<option value="11">11</option>
+										<option value="12">12</option>
+									</select>
+									月
+									<select>
+										<option value=" ">--</option>
+										<option value="1">1</option>
+										<option value="2">2</option>
+										<option value="3">3</option>
+										<option value="4">4</option>
+										<option value="5">5</option>
+										<option value="6">6</option>
+										<option value="7">7</option>
+										<option value="8">8</option>
+										<option value="9">9</option>
+										<option value="10">10</option>
+										<option value="11">11</option>
+										<option value="12">12</option>
+										<option value="13">13</option>
+										<option value="14">14</option>
+										<option value="15">15</option>
+										<option value="16">16</option>
+										<option value="17">17</option>
+										<option value="18">18</option>
+										<option value="19">19</option>
+										<option value="20">20</option>
+										<option value="21">21</option>
+										<option value="22">22</option>
+										<option value="23">23</option>
+										<option value="24">24</option>
+										<option value="25">25</option>
+										<option value="26">26</option>
+										<option value="27">27</option>
+										<option value="28">28</option>
+										<option value="29">29</option>
+										<option value="30">30</option>
+										<option value="31">31</option>
+									</select>
+									日
+								</td>
+							</tr>
+							<tr>
+								<td nowrap>ファイル</td>
+								<td>改行指定</td>
+								<td>ファイル入力</td>
+								<td nowrap>
+									<input type="file"/>
+								</td>
+							</tr>
+							<tr>
+								<td nowrap>サムネイル</td>
+								<td>&nbsp;</td>
+								<td>画像ファイル(PNG,JPEGなど)入力</td>
+								<td nowrap>
+									<input type="file"/>
+								</td>
+							</tr>
+							<!--
+							<tr>
+								<td nowrap>課金ファイル</td>
+								<td>改行指定</td>
+								<td>ファイル入力および課金設定</td>
+								<td nowrap>
+									<input type="file"/>
+								</td>
+							</tr>
+							-->
+							<tr>
+								<td nowrap>サプリメンタルコンテンツ</td>
+								<td>任意</td>
+								<td>
+									サプリメンタルコンテンツ登録<br/>
+								</td>
+								<td>サプリメンタルコンテンツの登録はアイテム登録ではなく、アイテム詳細から行います。<br/>
+									登録方法は<a href="./item_detail.html#supple">サプリメンタルコンテンツの登録</a>をご覧ください。<br/>
+								</td>
+							</tr>
+							<tr>
+								<td nowrap>見出し</td>
+								<td>インデックス検索のみ</td>
+								<td>
+									大見出し、大見出し（英語）、小見出し、小見出し（英語）<br/>
+								</td>
+								<td>ツリー編集の検索結果表示形式から目次形式を選択する事で表示されます。<br/>
+									表示方法は<a href="./tree_edit.html#tree_edit">インデックスの情報の編集</a>をご覧ください。
+								<br/>
+								</td>
+							</tr>
+						</table>
+						<br/>
+						アイテム属性タイプにチェックボックス、選択肢(ラジオ)、選択肢(プルダウン)のいずれかを選択した場合、選択肢入力欄が表示されます。<br/>
+						選択肢入力欄に選択肢を「|」(半角パイプ)区切りで入力します。<br/>
+						<div class="page_list">
+							例：AAA|BBB|CCC
+						</div>
+						<br/>
+						<center><img src="./img/itemtype_metadata_04.png" alt="アイテム属性タイプ指定" border="0" /></center>
+						<br/>
+						チェックボックスにチェックを入れ、オプションを設定します。<br/>
+						オプションのチェックボックスにチェックを入れると有効となり、チェックを外すと無効となります。<br/>
+						オプションの詳細は下記の通りです。<br/>
+						<br/>
+						<table class="table_border" border="0" align="center" cellspacing="0">
+							<tr>
+								<th nowrap>オプション</th>
+								<th nowrap>概要</th>
+							</tr>
+							<tr>
+								<td nowrap>必須</td>
+								<td>
+									アイテム登録時に<font color="#ff0000">*</font>を表示し、必須入力メタデータとすることができます。<br/>
+									必須メタデータが入力されていないアイテムは公開することができません。<br/>
+								</td>
+							</tr>
+							<tr>
+								<td nowrap>複数可</td>
+								<td>アイテム登録時に<img src="./img/more_input_row.png" title="More input row" border="0"/>を表示し、メタデータの複数入力を可能にします。</td>
+							</tr>
+							<tr>
+								<td nowrap>一覧表示</td>
+								<td>インデックスサーチおよびキーワードサーチ結果表示にメタデータを表示することができます。</td>
+							</tr>
+							<tr>
+								<td nowrap>改行指定</td>
+								<td>インデックスサーチおよびキーワードサーチ結果でのメタデータ表示後に改行を行うことができます。</td>
+							</tr>
+							<tr>
+								<td nowrap>非表示</td>
+								<td>
+									インデックス、キーワードサーチ結果およびアイテム詳細にメタデータの詳細を表示しないようにできます。<br/>
+									ただしアイテムエクスポートにより出力した情報には記載されます。<br/>
+									また、アイテム登録者のみワークフローでの表示にて登録内容が灰色で表示されます。<br/>
+								</td>
+							</tr>
+						</table>
+						<br/>
+						<center><img src="./img/itemtype_metadata_05.png" alt="オプション" border="0" /></center>
+						<br/>
+					</div>
+				<div/>
+				<a name="itemtype_icon"><h3>アイテムタイプアイコン登録</h3></a>
+				<div class="page_list">
+					アイテムタイプアイコンには画像ファイル(*.gif, *.jpg, *.png)を登録することができます。<br/>
+					登録されたアイコンは「16×16ピクセル」サイズに縮小され、アイテム情報の表示に利用されます。<br/>
+					<br/>
+					「参照」ボタンをクリックするとファイル選択ダイアログが表示されます。<br/>
+					ファイル選択ダイアログから画像ファイルを指定し、「次へ」ボタンをクリックするとアイテムタイプメタデータ属性登録情報確認画面が表示されます。<br/>
+					<br/>
+					<center><img src="./img/itemtype_icon_02.png" alt="アイテムタイプアイコンファイル選択" border="0"/></center>
+					<br/>
+					<br/>
+					【注意事項】
+					<ul>
+						<li>アイテムタイプアイコンの登録は必須ではありません。</li>
+					</ul>
+				</div>
+				<a name="itemtype_confirm"><h3>アイテムタイプメタデータ属性登録情報確認</h3></a>
+				<div class="page_list">
+					アイテムタイプのメタデータ属性登録情報を確認します。<br/>
+					「決定」ボタンをクリックするとアイテムタイプが登録され、自動的にアイテムタイプ管理画面へ移動します。<br/>
+					<br/>
+					<center><img src="./img/itemtype_confirm_01.png" alt="アイテムタイプメタデータ属性登録情報確認画面" border="0"/></center>
+					<br/>
+					<br/>
+					【注意事項】
+					<ul>
+						<li>
+							新規作成したアイテムタイプにはOAI-PMHマッピングが設定されていません。<br/>
+							OAI-PMHマッピングの設定方法については<a href="./itemtype_mapping.html">アイテムタイプ管理(OAI-PMHマップ)</a>をご覧ください。
+						</li>
+					</ul>
+				</div>
+			</div>
+			<br/>
+			<br/>
+			<p align="center"><font size="2"><a href="./../index.html" target="_top">WEKO Help Top</a></font></p>
+		</div>
+		
+	</BODY>
+</HTML>

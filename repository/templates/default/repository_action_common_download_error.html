@@ -1,0 +1,225 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_action_common_download_error.html 6683 2011-03-18 11:02:11Z yuko_nakao $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+	<{if $action.ufinityFlag|smarty:nodefaults == _ON}>
+		<{include file=$smarty.const.VIEW_TEMPLATE_DIR|cat:"main/key_error.html"}>
+	<{else}>
+		<script class="nc_script" type="text/javascript">
+			
+			// ---------------------------------------
+			// view error message
+			// ---------------------------------------
+			var errorString = "<{errorList->getMessagesString param=false}>";
+			errorString = errorString.replace(/\<br \/\>/g, "");
+			errorString = errorString.replace(/\<br\/\>/g, "");
+			errorString = errorString.replace(/\<br\>/g, "");
+			var errorArray = errorString.split(":");
+			
+			// ---------------------------------------
+			// check error no
+			// ---------------------------------------
+			if(errorArray[1]=='loginRequest'){
+				// ---------------------------------------
+				// call login action
+				// ---------------------------------------
+				var version = parseInt(errorArray[3]);
+				var shibboleth = parseInt(errorArray[4]);
+				var fileInfo = errorArray[5];
+				var pageId = parseInt(errorArray[6]);
+				var blockId = parseInt(errorArray[7]);
+				var itemPubFlg = parseInt(errorArray[8]);
+				var fileInfoArray = fileInfo.split("_");
+				var itemId = parseInt(fileInfoArray[0]);
+				var itemNo = parseInt(fileInfoArray[1]);
+				var attributeId = parseInt(fileInfoArray[2]);
+				var fileNo = parseInt(fileInfoArray[3]);
+				if('<{$smarty.session._mobile_flag}>'==1)
+				{
+					alert(errorArray[2]);
+					// view top page
+					location.href='<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id='+pageId;
+				} else if(confirm(errorArray[2])){
+					
+					if(shibboleth==1){
+						// shibboleth
+						location.href="<{$smarty.const.BASE_URL}>/index.php?action=login_view_main_init"
+									 +"&_redirect_url=?_sub_action=pages_view_main@page_id="+pageId+"@active_action=repository_view_main_item_detail@item_id="+itemId
+									 +"@item_no="+itemNo+"@block_id="+blockId;
+					} else if(version==0){
+						// version <= NC2.3.0.0
+						
+						if(itemId != 0){
+							location.href="<{$smarty.const.BASE_URL}>/index.php?action=login_view_main_init"
+										 +"&_redirect_url=?_sub_action=pages_view_main@page_id="+pageId+"@active_action=repository_view_main_item_detail@item_id="+itemId
+										 +"@item_no="+itemNo+"@block_id="+blockId;
+						} else {
+							location.href='<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id='+pageId;
+						}
+						
+					} else {
+						// version >= NC2.3.0.1
+						commonCls.displayVisible($("login_popup"));
+						commonCls.sendPopupView(null, {'action':'login_view_main_init'}, {'center_flag':true,'_redirect_url':'page_id='+pageId});
+						
+						var forms = document.getElementsByTagName("INPUT");
+						var len = forms.length;
+						for (i=0; i<len; i++) {
+							if(forms[i].type=="hidden" && forms[i].name=="_redirect_url")
+							{
+								// view detail page
+								if(itemId != 0){
+									forms[i].value = "?action=pages_view_main&active_action=repository_view_main_item_detail&item_id="+itemId
+													 +"&item_no="+itemNo+"&page_id="+pageId+"&block_id="+blockId;
+								} else{
+									forms[i].value = '?action=pages_view_main&page_id='+pageId;
+								}
+								break;
+							}
+						}
+						var elm = $$(".th_system_header_right");
+						var len = elm.length;
+						for (i=0; i<len; i++) {
+							var childs = elm[i].childNodes;
+							var cnt = childs.length;
+							for (j=0; j<cnt; j++) {
+								childs[j].onclick = function(){
+									commonCls.displayNone($("login_popup"));
+									// view detail page
+									if(itemId != 0 && itemPubFlg==1){
+										location.href="<{$smarty.const.BASE_URL}>/?action=pages_view_main&active_action=repository_view_main_item_detail&item_id="+itemId
+													  +"&item_no="+itemNo+"&page_id="+pageId+"&block_id="+blockId;
+									} else {
+										location.href='<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id='+pageId;
+									}
+									return false;
+								}
+							}
+						}
+						$('login_cancel_button_0').onclick = function(){
+							commonCls.displayNone($("login_popup"));
+							// view detail page
+							if(itemId != 0 && itemPubFlg==1){
+								location.href="<{$smarty.const.BASE_URL}>/?action=pages_view_main&active_action=repository_view_main_item_detail&item_id="+itemId
+											  +"&item_no="+itemNo+"&page_id="+pageId+"&block_id="+blockId;
+							} else {
+								location.href='<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id='+pageId;
+							}
+							return false;
+						}
+					}
+				// Fix jump to close detail page. 2012/01/30 Y.Nakao --start--
+				} else if(itemPubFlg==1){
+					location.href="<{$smarty.const.BASE_URL}>/?action=pages_view_main&active_action=repository_view_main_item_detail&item_id="+itemId
+								 +"&item_no="+itemNo+"&page_id="+pageId+"&block_id="+blockId;
+				} else {
+					// view top page
+					location.href='<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id='+pageId;
+				}
+				// Fix jump to close detail page. 2012/01/30 Y.Nakao --end--
+			} else if(errorArray[1] == 'unknown'){
+				if (confirm("<{$lang.repository_workflow_nocredit}>\n<{$lang.repository_worlflow_entry_credit}>\n\n")){
+					location.href="<{$smarty.session.user_info_url}>";
+				}
+				else
+				{
+					location.href='<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id='+pageId;
+				}
+            } else if(errorArray[1] == 'shared'){
+                alert("<{$lang.repository_workflow_cannot_register_cardinfo}>\n<{$lang.repository_workflow_not_download_paid_contents}>");
+                var fileInfo = errorArray[2];
+                var pageId = parseInt(errorArray[3]);
+                var blockId = parseInt(errorArray[4]);
+                var itemPubFlg = parseInt(errorArray[5]);
+                var fileInfoArray = fileInfo.split("_");
+                var itemId = parseInt(fileInfoArray[0]);
+                var itemNo = parseInt(fileInfoArray[1]);
+                var attributeId = parseInt(fileInfoArray[2]);
+                var fileNo = parseInt(fileInfoArray[3]);
+                if(itemPubFlg==1){
+                    location.href='<{$smarty.const.BASE_URL}>/?action=pages_view_main&active_action=repository_view_main_item_detail&page_id='+pageId+
+                                    '&block_id='+blockId+'&item_id='+itemId+'&item_no='+itemNo;
+                }
+                else
+                {
+                    location.href='<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id='+pageId;
+                }
+			} else if(errorArray[1] == 'creditError'){
+				if (confirm("<{$lang.repository_workflow_location}>\n<{$lang.repository_workflow_fix_location}>\n\n")){
+					location.href="<{$smarty.session.user_info_url}>";
+				}
+				else
+				{
+					location.href='<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id='+pageId;
+				}
+			} else if(errorArray[1] == 'GMOError'){
+				var pageId = parseInt(errorArray[2]);
+				var blockId = parseInt(errorArray[3]);
+				var itemId = parseInt(errorArray[4]);
+				var itemNo = parseInt(errorArray[5]);
+				alert('<{$lang.repository_snippet_gmoerror}>');
+				location.href='<{$smarty.const.BASE_URL}>/?action=pages_view_main&active_action=repository_view_main_item_detail&page_id='+pageId+
+								'&block_id='+blockId+'&item_id='+itemId+'&item_no='+itemNo;
+			} else if(errorArray[1] == 'delete'){
+				alert(errorArray[2]);
+				var pageId = parseInt(errorArray[3]);
+				// ---------------------------------------
+				// reload
+				// ---------------------------------------
+				// view top page
+				location.href='<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id='+pageId;
+			} else if(errorArray[1] == 'close' || errorArray[1] == 'false'){ 	
+				alert(errorArray[2]);		  
+				var fileInfo = errorArray[3];
+				var pageId = parseInt(errorArray[4]);
+				var blockId = parseInt(errorArray[5]);
+				var itemPubFlg = parseInt(errorArray[6]);
+				var fileInfoArray = fileInfo.split("_");
+				var itemId = parseInt(fileInfoArray[0]);
+				var itemNo = parseInt(fileInfoArray[1]);
+				var attributeId = parseInt(fileInfoArray[2]);
+				var fileNo = parseInt(fileInfoArray[3]);
+				if(itemPubFlg==1){
+					location.href='<{$smarty.const.BASE_URL}>/?action=pages_view_main&active_action=repository_view_main_item_detail&page_id='+pageId+
+									'&block_id='+blockId+'&item_id='+itemId+'&item_no='+itemNo;
+				}
+				else
+				{
+					location.href='<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id='+pageId;
+				}
+			} else if(errorArray[1] == 'needPay'){
+				var fileInfo = errorArray[5];
+				var pageId = parseInt(errorArray[6]);
+				var blockId = parseInt(errorArray[7]);
+				var fileInfoArray = fileInfo.split("_");
+				var itemId = parseInt(fileInfoArray[0]);
+				var itemNo = parseInt(fileInfoArray[1]);
+				var attributeId = parseInt(fileInfoArray[2]);
+				var fileNo = parseInt(fileInfoArray[3]);
+				if(confirm('<{$smarty.session.money_unit_conf}>'+errorArray[3]+errorArray[4])){
+					location.href='<{$smarty.const.BASE_URL}>/?action=pages_view_main&active_action=repository_action_common_download&page_id='+pageId+
+							         '&block_id='+blockId+'&item_id='+itemId+'&item_no='+itemNo+'&attribute_id='+attributeId+'&file_no='+fileNo+'&pay=true';
+				} else {
+					 location.href='<{$smarty.const.BASE_URL}>/?action=pages_view_main&active_action=repository_view_main_item_detail&page_id='+pageId+
+								'&block_id='+blockId+'&item_id='+itemId+'&item_no='+itemNo;
+				
+				}
+			} else {
+				alert(errorArray[2]);
+				var pageId = parseInt(errorArray[3]);
+				var blockId = parseInt(errorArray[4]);
+				// ---------------------------------------
+				// reload
+				// ---------------------------------------
+				// view top page
+				location.href='<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id='+pageId;
+			}
+		</script>
+	<{/if}>

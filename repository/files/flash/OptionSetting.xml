@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OptionSettingData>
+	<ControlPanel visible="true" align="top" color="#99CCFF"></ControlPanel>
+	<ContentsArea scale="0" border="false"></ContentsArea>
+	<AnnotateArea visible="false" width="150" server=""></AnnotateArea>
+	<Debug trace="false" file=""></Debug>
+</OptionSettingData>

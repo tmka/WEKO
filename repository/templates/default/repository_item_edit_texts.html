@@ -1,0 +1,1685 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_item_edit_texts.html 39150 2014-07-28 08:48:19Z tomohiro_ichikawa $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{if file_exists($smarty.const.WEBAPP_DIR|cat:'/modules/repository/templates/default/addin/repository_item_edit_texts.html')}>
+    <{include file='addin/repository_item_edit_texts.html'}>
+<{else}>
+<div class="mt10">
+
+	<div>
+		<table align="center">
+			<{* HELP *}>
+			<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+				<tr>
+					<td align="right" class="ptb10">
+						<a href="#" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'edit_metadata');return false;" style="cursor: help;">
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" align="right" alt="help">
+						</a>
+					</td>
+				</tr>
+			<{/if}>
+			
+			<{* FLOW *}>
+			<tr>
+				<td align="center">
+					<{if $smarty.session._lang == "japanese"}>
+						<{if $smarty.session.attr_file_flg == 1 && $smarty.session.doi_itemtype_flag == true}>
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_3.png" alt="" />
+						<{elseif $smarty.session.attr_file_flg == 1}>
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_3.png" />
+						<{else}>
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_no_file_2.png" />
+						<{/if}>
+					<{else}>
+						<{if $smarty.session.attr_file_flg == 1 && $smarty.session.doi_itemtype_flag == true}>
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_3_eng.png" alt="" />
+						<{elseif $smarty.session.attr_file_flg == 1}>
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_3_eng.png" />
+						<{else}>
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_no_file_2_eng.png" />
+						<{/if}>
+					<{/if}>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<div class="mt10" align=center>
+		<{*メタデータにファイル属性があるか否かで戻り先を変える*}> 
+		<{if $smarty.session.isfile == 2}>
+		<input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>','repository_view_main_item_editfileslicense'); return false;" />
+		<{elseif $smarty.session.isfile == 1}>
+		<input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>','repository_view_main_item_editfiles'); return false;" /> 
+		<{else}>
+	
+		<{*編集中の場合はアイテムタイプ選択まで戻れない*}>
+		<{if $smarty.session.ej_workflow_flag =="true"}>
+		<input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="javascript: backToEJWEKO(); return false;">
+		<{elseif $smarty.session.return_screen == "1"}>
+		<input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="location.reload();">
+		<{elseif $smarty.session.return_screen == "2"}>
+		<input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_main_workflow');return false;">
+		<{else}>
+		<input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>','repository_view_main_item_selecttype'); return false;">
+		<{/if}>
+		<{/if}>
+		<input type="button" class="btn_blue" value="<{$lang.repository_save}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditLinks('stay');return false;" />
+		<input type="button" class="btn_next" value="<{$lang.repository_page_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditLinks('next');return false;" />
+	</div>
+<div class="paging text_color" align="center">
+<b><{$lang.repository_itemtype}> : <{$smarty.session.item_type_all.item_type_name}></b>
+</div>
+
+<table class="box_center">
+	<tr>
+		<td class="item_edit_list3 al">
+		<{$lang.repository_item_fill_data_type}>： 
+		<select id="fill_type" onchange="javascript: fillTypeCheck();">
+			<option value="">--</option>
+			<{if $action.access_key_check}>
+			<option value="amazon"><{$lang.repository_item_fill_data_type_amazon}></option>
+			<{/if}>
+			<option value="pubmed"><{$lang.repository_item_fill_data_type_pubmed}></option>
+			<option value="cinii"><{$lang.repository_item_fill_data_type_cinii}></option>
+			<option value="itemid"><{$lang.repository_item_fill_data_type_itemid}></option>
+			<{if $smarty.session.login_connect=='1'}>
+			<option value="ichushi"><{$lang.repository_item_fill_data_type_ichushi}></option>
+			<{/if}>
+		</select>
+		</td>
+		<td class="item_edit_list3"style="text-align: right;" width="45px"><span id="fillPrefixId<{$id}>" class="nobr"></span></td>
+		<td class="item_edit_list2" style="text-align: left;" width="120px">
+		<input type="text" id="fill_id" value="" disabled>
+		</td>
+		<td class="item_edit_list3 al">
+			<img border="0" id="fillDataNowLoading<{$id}>" style="display:none;" src="<{$smarty.const.BASE_URL}>/images/common/indicator.gif" />
+			<input type="button" id="fillBtn<{$id}>" class="btn_white nobr" value="<{$lang.repository_get_data}>" onclick="javascript: fill(); return false;">
+		</td>
+	</tr>
+	
+</table>
+
+<center>
+	<{if count($action.error_msg) > 0}>
+		<div class="error_msg al">
+			<{section name=i loop=$action.error_msg}>
+				<{$action.error_msg[i]}><br />
+			<{/section}>
+		</div>
+	<{/if}>
+	<{if strlen($action.warning) > 0}>
+		<div class="warning_msg al">
+			<{$action.warning}>
+		</div>
+	<{/if}>
+</center>
+
+<form name="item_attr_form" id="item_edit_text">
+<table class="tb01 box_center min-w630px">
+	<{*タイトル*}>
+	<tr>
+		<th class="item_edit_list w175px"><{$lang.repository_title}><font
+			color="red">*</font></th>
+		<td class="item_edit_list"><input id="base_attr" class="full"
+			type="text" name="base_attr[]" value="<{$smarty.session.base_attr.title}>">
+		</td>
+	</tr>
+
+	<{*タイトル(英)*}>
+	<tr>
+		<th class="item_edit_list w175px">
+		<{$lang.repository_title_english}></th>
+		<td class="item_edit_list"><input id="base_attr" class="full"
+			type="text" name="base_attr[]" value="<{$smarty.session.base_attr.title_english}>">
+		</td>
+	</tr>
+
+	<{*言語*}>
+	<tr>
+		<th class="item_edit_list w175px"><{$lang.repository_language}>
+		<font color="red">*</font></th>
+		<td class="item_edit_list al">
+		<select id="base_attr" name="base_attr[]">
+			<option value="ja"<{if $smarty.session.base_attr.language=="ja"}>SELECTED<{/if}>><{$lang.repository_language_ja}></option>
+			<option value="en"<{if $smarty.session.base_attr.language=="en"}>SELECTED<{/if}>><{$lang.repository_language_en}></option>
+			<option value="fr"<{if $smarty.session.base_attr.language=="fr"}>SELECTED<{/if}>><{$lang.repository_language_fr}></option>
+			<option value="it"<{if $smarty.session.base_attr.language=="it"}>SELECTED<{/if}>><{$lang.repository_language_it}></option>
+			<option value="de"<{if $smarty.session.base_attr.language=="de"}>SELECTED<{/if}>><{$lang.repository_language_de}></option>
+			<option value="es"<{if $smarty.session.base_attr.language=="es"}>SELECTED<{/if}>><{$lang.repository_language_es}></option>
+			<option value="zh"<{if $smarty.session.base_attr.language=="zh"}>SELECTED<{/if}>><{$lang.repository_language_zh}></option>
+			<option value="ru"<{if $smarty.session.base_attr.language=="ru"}>SELECTED<{/if}>><{$lang.repository_language_ru}></option>
+			<option value="la"<{if $smarty.session.base_attr.language=="la"}>SELECTED<{/if}>><{$lang.repository_language_la}></option>
+			<option value="ms"<{if $smarty.session.base_attr.language=="ms"}>SELECTED<{/if}>><{$lang.repository_language_ms}></option>
+			<option value="eo"<{if $smarty.session.base_attr.language=="eo"}>SELECTED<{/if}>><{$lang.repository_language_eo}></option>
+			<option value="ar"<{if $smarty.session.base_attr.language=="ar"}>SELECTED<{/if}>><{$lang.repository_language_ar}></option>
+			<option value="el"<{if $smarty.session.base_attr.language=="el"}>SELECTED<{/if}>><{$lang.repository_language_el}></option>
+			<option value="ko"<{if $smarty.session.base_attr.language=="ko"}>SELECTED<{/if}>><{$lang.repository_language_ko}></option>
+			<option value="otherlanguage"<{if $smarty.session.base_attr.language=="otherlanguage"}>SELECTED<{/if}>><{$lang.repository_language_other}></option>
+		</select></td>
+	</tr>
+	<{*公開日*}>
+	<tr>
+		<th class="item_edit_list w175px"><{$lang.repository_pub_date}><font color="red">*</font></th>
+		<td class="item_edit_list al">
+		<input id="id_item_pub_date_year" type="text" name="item_pub_date_year" size="4" style="width: 45px;" value="<{$smarty.session.item_pub_date.year}>"
+		onchange="javascript: checkItemPubdate();">
+		<{$lang.repository_log_year}> 
+		<select id="id_item_pub_date_month" name="item_pub_date_month" type="text" onchange="javascript: checkItemPubdate();">
+			<{foreach from=$action.month_option_pub item=metadata name=loop}>
+			<{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> 
+			<{if $action.month_option_pub[$loop_num][1]=="1"}>
+			<option value="<{$action.month_option_pub[$loop_num][0]}>" selected>
+			<{$action.month_option_pub[$loop_num][0]}>
+			</option>
+			<{else}>
+			<option value="<{$action.month_option_pub[$loop_num][0]}>"><{$action.month_option_pub[$loop_num][0]}></option>
+			<{/if}> <{/foreach}>
+		</select><{$lang.repository_log_month}>
+		<select id="id_item_pub_date_day"
+			name="item_pub_date_day" type="text"
+			onchange="javascript: checkItemPubdate();">
+			<{foreach from=$action.day_option_pub item=metadata name=loop}>
+			<{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> <{if
+			$action.day_option_pub[$loop_num][1]=="1"}>
+			<option value="<{$action.day_option_pub[$loop_num][0]}>"
+			selected><{$action.day_option_pub[$loop_num][0]}></option>
+			<{else}>
+			<option value="<{$action.day_option_pub[$loop_num][0]}>"><{$action.day_option_pub[$loop_num][0]}></option>
+			<{/if}> <{/foreach}>
+		</select><{$lang.repository_log_day}></td>
+	</tr>
+	<{*検索キーワード*}>
+	<tr>
+		<th class="item_edit_list w175px">
+		<{$lang.repository_search_keyword}></th>
+		<td class="item_edit_list al">
+		<{$lang.repository_item_input_keyword}><br />
+		<input id="id_item_keyword" class="full" type="text"
+			name="item_keyword" value="<{$smarty.session.item_keyword}>">
+		</td>
+	</tr>
+
+	<{*検索キーワード(英)*}>
+	<tr>
+		<th class="item_edit_list w175px">
+		<{$lang.repository_keyword_english}></th>
+		<td class="item_edit_list al">
+		<{$lang.repository_item_input_keyword}><br />
+		<input id="id_item_keyword_english" class="full" type="text"
+			name="item_keyword_english" value="<{$smarty.session.item_keyword_english}>">
+		</td>
+	</tr>
+
+	<{*↑ここまで基本情報登録。↓ここからメタデータ登録*}>
+	<{section name=i loop=$smarty.session.item_attr_type}>
+	<{assign var="attr_type" value=$smarty.session.item_attr_type}>
+	<{assign var="item_attr" value=$smarty.session.item_attr}>
+	<{assign var="num_attr" value=$smarty.session.item_num_attr}>
+	<{assign var="cnt1" value=$smarty.section.i.index}>
+	<{assign var="feedback_mailaddress_str" value=$smarty.session.feedback_mailaddress_str}>
+	<{assign var="feedback_mailaddress_author_str" value=$smarty.session.feedback_mailaddress_author_str}>
+	<{assign var="feedback_mailaddress_array" value=$smarty.session.feedback_mailaddress_array}>
+	<{assign var="feedback_mailaddress_author_array" value=$smarty.session.feedback_mailaddress_author_array}>
+	<{*Exclusion file, thumbnail, file_price, supple*}>
+	<{* Add contents page 2010/08/15 Y.Nakao --start--*}>
+	<{if $attr_type[i].input_type != 'file' && $attr_type[i].input_type != 'thumbnail' && $attr_type[i].input_type != 'file_price' && $attr_type[i].input_type != 'supple' && $attr_type[i].input_type !='heading'}>
+	<tr>
+		<{*アイテム属性名の表示*}>
+		<th class="item_edit_list w175px">
+		<{$attr_type[i].attribute_name}>
+		<{if $attr_type[i].is_required == 1}>
+		<font color="red">*</font>
+		<{/if}>
+		</th>
+		<{*アイテム属性値の表示 : text*}>
+		<{if $attr_type[i].input_type == 'text'}>
+		<td class="item_edit_list al">
+		<div class="nobr"><{section name=j loop=$item_attr[i]}>
+		<{if $attr_type[i].plural_enable==1}><{$smarty.section.j.index_next}>.<{/if}>
+		<{if $attr_type[i].plural_enable==1}> <input id="item_attr_text" class="w80" type="text" name="item_attr_text[]" value="<{$item_attr[i][j]}>">
+		<input type="button" class="btn_white nobr w06_05" value="<{$lang.repository_up}>"
+		<{if $smarty.section.j.index==0}>disabled<{/if}> onclick="repositoryCls['<{$id}>'].repositoryItemEditSaveSession('up_row','<{$smarty.section.i.index}>','<{$smarty.section.j.index}>');return false;">
+		<input type="button" class="btn_white nobr w06_05" value="<{$lang.repository_dw}>"
+		<{if $smarty.section.j.index==$num_attr[i]-1}>disabled<{/if}> onclick="repositoryCls['<{$id}>'].repositoryItemEditSaveSession('down_row','<{$smarty.section.i.index}>','<{$smarty.section.j.index}>');return false;"> <{else}> <input id="item_attr_text" class="full" type="text" name="item_attr_text[]" value="<{$item_attr[i][j]}>">
+		<{/if}> <br>
+		<{/section}></div>
+		<{if $attr_type[i].plural_enable==1}>
+		<input type="button" class="btn_white nobr" value="<{$lang.repository_item_addrow}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditSaveSession('add_row','<{$smarty.section.i.index}>');
+		return false;"><{/if}></td>
+		<{*アイテム属性値の表示 : textarea*}>
+		<{elseif $attr_type[i].input_type == 'textarea'}>
+		<td class="item_edit_list al nobr">
+		<{section name=j loop=$item_attr[i]}> <{if $attr_type[i].plural_enable==1}><p class="vt pr00"><{$smarty.section.j.index_next}>.</p><{/if}>
+		<{if $attr_type[i].plural_enable==1}>
+		<textarea id="item_attr_textarea" name="item_attr_textarea[]" wrap=hard class="w80" value="<{$item_attr[i][j]}>"><{$item_attr[i][j]}></textarea>
+		<input type="button" class="btn_white nobr" value="<{$lang.repository_up}>" <{if $smarty.section.j.index==0}>disabled<{/if}> onclick="repositoryCls['<{$id}>'].repositoryItemEditSaveSession('up_row','<{$smarty.section.i.index}>','<{$smarty.section.j.index}>');return false;"> 
+		<input type="button" class="btn_white nobr" value="<{$lang.repository_dw}>" <{if $smarty.section.j.index==$num_attr[i]-1}>disabled<{/if}> onclick="repositoryCls['<{$id}>'].repositoryItemEditSaveSession('down_row','<{$smarty.section.i.index}>','<{$smarty.section.j.index}>'); return false;"> <{else}>
+		<textarea id="item_attr_textarea" name="item_attr_textarea[]" wrap=hard class="full" value="<{$item_attr[i][j]}>"><{$item_attr[i][j]}></textarea>
+		<{/if}> <br>
+		<{/section}> <{if $attr_type[i].plural_enable==1}>
+		<input type="button" class="btn_white nobr" value="<{$lang.repository_item_addrow}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditSaveSession('add_row','<{$smarty.section.i.index}>');return false;"><{/if}></td>
+		<{*アイテム属性値の表示 : name*}> <{elseif $attr_type[i].input_type == 'name'}>
+		<{* Add author ID --start-- *}>
+		<td class="item_edit_list al">
+		<table>
+			<{section name=j loop=$item_attr[i]}>
+			<tr>
+				<{if $attr_type[i].plural_enable==1}>
+				<td valign="top"><{$smarty.section.j.index_next}>.</td>
+				<{/if}>
+				<td nowrap="nowrap">
+				<div class="pb02">
+				&nbsp;<{$lang.repository_local_author_id}>:&nbsp; 
+				<{if $item_attr[i][j].author_id=='0' || $item_attr[i][j].author_id==''}>
+					***
+				<{else}>
+					<{$item_attr[i][j].author_id}>&nbsp;&nbsp;
+					<input type="button" class="btn_white nobr" value="<{$lang.repository_local_author_data_clear}>" title="<{$lang.repository_local_author_data_clear_message}>" onclick="if(confirm('<{$lang.repository_local_author_data_clear_confirm}>')){repositoryCls['<{$id}>'].repositoryItemEditSaveSession('clear_author','<{$smarty.section.i.index}>','<{$smarty.section.j.index}>');return false;}">
+					<br />
+					<{*span style="color:#ff8c00;">&nbsp;<{$lang.repository_local_author_data_clear_message}><br /></span*}>
+				<{/if}>
+				</div>
+				<div class="pb05">
+				<table class="tb00">
+					<tr>
+						<td nowrap="nowrap" align="right"><{$lang.repository_family}>
+						<{if $attr_type[i].is_required == 1}><font color="red">*</font><{/if}>:</td>
+						<td align="left">
+						<input class="w150px" id="item_attr_name_family_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>" type="text" name="item_attr_name_family[]" value="<{$item_attr[i][j].family}>" onblur="suggestAuthorListCrear();" onfocus="suggestAuthorList('<{$smarty.section.i.index}>','<{$smarty.section.j.index}>',this);" /></td>
+						<td nowrap="nowrap" class="min_w50px">
+						<div class="ar"><{$lang.repository_name}>:</div>
+						</td>
+						<td align="left">
+						<input class="w150px" id="item_attr_name_given_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>" type="text" name="item_attr_name_given[]" value="<{$item_attr[i][j].given}>" onblur="suggestAuthorListCrear();" onfocus="suggestAuthorList('<{$smarty.section.i.index}>','<{$smarty.section.j.index}>', this);" /></td>
+					</tr>
+					<tr <{if $attr_type[i].display_lang_type!="japanese"}>style="display:none;"<{/if}>>
+						<td nowrap="nowrap" align="right"><{$lang.repository_family}>(<{$lang.repository_ruby}>):</td>
+                                        <td align="left">
+                                            <input class="w150px" id="item_attr_name_family_ruby_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>" type="text" name="item_attr_name_family_ruby[]" value="<{$item_attr[i][j].family_ruby}>" onblur="suggestAuthorListCrear();" onfocus="suggestAuthorList('<{$smarty.section.i.index}>', '<{$smarty.section.j.index}>', this);" />
+                                        </td>
+                                        <td nowrap="nowrap" align="right"><{$lang.repository_name}>(<{$lang.repository_ruby}>):</td>
+                                        <td align="left">
+                                            <input style="width:150px;" id="item_attr_name_given_ruby_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>" type="text" name="item_attr_name_given_ruby[]" value="<{$item_attr[i][j].given_ruby}>" onblur="suggestAuthorListCrear();" onfocus="suggestAuthorList('<{$smarty.section.i.index}>', '<{$smarty.section.j.index}>', this);" />
+                                        </td>
+                                    </tr>
+					<tr>
+						<td nowrap="nowrap" align="right"><{$lang.repository_email}>:</td>
+						<td colspan="2">
+						<input style="width:130%;" id="item_attr_name_email_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>" type="text" name="item_attr_name_email[]" value="<{$item_attr[i][j].email}>" onblur="suggestAuthorListCrear();" onfocus="suggestAuthorList('<{$smarty.section.i.index}>','<{$smarty.section.j.index}>', this);" />
+						<span id="item_attr_name_fill_button_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>_<{$smarty.section.k.index}>"></span>
+						<{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 *}>
+
+						<input type="button" style="width:23%;" class="btn_white nobr" value="fill"
+						      onclick="this.style.display='none';
+						      $('item_attr_name_fill_button_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>_<{$smarty.section.k.index}>').style.paddingLeft='16px';
+						      $('item_attr_name_fill_button_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>_<{$smarty.section.k.index}>').style.paddingRight='16px';
+						      $('item_attr_name_fill_button_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>_<{$smarty.section.k.index}>').innerHTML='<img src=&quot;<{$smarty.const.CORE_BASE_URL}>/images/common/indicator.gif&quot;/>';
+						      repositoryCls['<{$id}>'].repositoryItemEditFillAuthor('fill', '','0',$('item_attr_name_email_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>').value,'<{$smarty.section.i.index}>', '<{$smarty.section.j.index}>');return false;" />
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td colspan="3" class="pt00 pb00">
+							<div id="repository<{$id}>_suggest_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>" class="repositorySuggest" style="display:none;"></div>
+						</td>
+					</tr>
+					<{section name=k loop=$item_attr[i][j].external_author_id}>
+					<tr>
+						<{if $smarty.section.k.index==0}>
+						<td class="pt00 pb00" nowrap="nowrap" rowspan="<{$item_attr[i][j].external_author_id|@count}>"
+						valign="middle" align="right"><{$lang.repository_author_id}>:</td>
+						<{/if}>
+						<td class="pt00 pb00">
+						<select id="item_attr_name_author_id_prefix_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>_<{$smarty.section.k.index}>"
+							name="item_attr_name_author_id_prefix[]" style="width:150px;"
+							onchange="javascript: changeDisplayAuthorId(this.value,'<{$smarty.section.i.index}>', '<{$smarty.section.j.index}>','<{$smarty.section.k.index}>','<{$item_attr[i][j].external_author_id|@count}>','<{$lang.repository_select_author_id_prefix_same_error}>');">
+							<option value="0">--- <{$lang.repository_select_author_id_prefix}> ---</option>
+                                                        <{section name=l loop=$action.author_id_prefix_list}>
+                                                            <option value="<{$action.author_id_prefix_list[l].prefix_id}>" <{if $item_attr[i][j].external_author_id[k].prefix_id==$action.author_id_prefix_list[l].prefix_id}>SELECTED<{/if}>><{$action.author_id_prefix_list[l].prefix_name}></option>
+                                                        <{/section}>
+                                                    </select></td>
+						<td class="pt00 pb00" colspan="2" align="right">
+						<{strip}>
+						<input type="text" id="item_attr_name_author_id_suffix_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>_<{$smarty.section.k.index}>" name="item_attr_name_author_id_suffix[]" value="<{if $item_attr[i][j].external_author_id[k].suffix != null && $item_attr[i][j].external_author_id[k].prefix_id > 0}><{$item_attr[i][j].external_author_id[k].suffix}><{/if}>" <{if $item_attr[i][j].external_author_id[k].prefix_id==0 || $item_attr[i][j].external_author_id[k].prefix_id==''}>style="width:70%;display:none;"<{else}>style="width:70%;"<{/if}> /> 
+						<input type="text" id="item_attr_name_author_id_suffix_hidden_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>_<{$smarty.section.k.index}>" value="" disabled="disabled" <{if $item_attr[i][j].external_author_id[k].prefix_id!=0 && $item_attr[i][j].external_author_id[k].prefix_id!=''}>style="width:70%;display:none;"<{else}>style="width:70%;"<{/if}>/>
+						<span id="item_attr_name_fill_button_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>_<{$smarty.section.k.index}>"></span>
+						<{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 *}>
+
+						<input type="button" style="width:23%;" class="btn_white nobr" value="fill"
+						      onclick="this.style.display='none';
+						      $('item_attr_name_fill_button_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>_<{$smarty.section.k.index}>').style.paddingLeft='16px';
+						      $('item_attr_name_fill_button_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>_<{$smarty.section.k.index}>').style.paddingRight='16px';
+						      $('item_attr_name_fill_button_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>_<{$smarty.section.k.index}>').innerHTML='<img src=&quot;<{$smarty.const.CORE_BASE_URL}>/images/common/indicator.gif&quot;/>';
+						      repositoryCls['<{$id}>'].repositoryItemEditFillAuthor('fill', '',$('item_attr_name_author_id_prefix_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>_<{$smarty.section.k.index}>').value,$('item_attr_name_author_id_suffix_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>_<{$smarty.section.k.index}>').value,'<{$smarty.section.i.index}>', '<{$smarty.section.j.index}>');return false;" />
+						<{/strip}></td>
+					</tr>
+					<{/section}>
+					<tr>
+						<td></td>
+						<td colspan="3" align="left">
+						<input type="button" class="btn_white nobr" value="more ID" onclick="repositoryCls['<{$id}>'].repositoryItemEditSaveSession('add_author_id','<{$smarty.section.i.index}>','<{$smarty.section.j.index}>');return false;" /></td>
+					</tr>
+				</table>
+				</div>
+				</td>
+				<td class="pl10 nobr"><{if $attr_type[i].plural_enable==1}>
+				<input type="button" class="btn_white nobr" value="<{$lang.repository_up}>" <{if $smarty.section.j.index==0}>disabled<{/if}>
+				onclick="repositoryCls['<{$id}>'].repositoryItemEditSaveSession('up_row','<{$smarty.section.i.index}>','<{$smarty.section.j.index}>');return false;">
+				<input type="button" class="btn_white nobr" value="<{$lang.repository_dw}>"
+				<{if $smarty.section.j.index==$num_attr[i]-1}>disabled<{/if}>
+				onclick="repositoryCls['<{$id}>'].repositoryItemEditSaveSession('down_row','<{$smarty.section.i.index}>','<{$smarty.section.j.index}>');return false;">
+				<{/if}> <br>
+				</td>
+			</tr>
+			<{/section}>
+		</table>
+		<{if $attr_type[i].plural_enable==1}>
+		<input type="button" class="btn_white nobr" value="<{$lang.repository_item_addrow}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditSaveSession('add_row','<{$smarty.section.i.index}>');return false;"> <{/if}></td>
+		<{* Add author ID --end-- *}>
+		<{*アイテム属性値の表示 : link*}>
+		<{elseif $attr_type[i].input_type == 'link'}>
+		<td class="item_edit_list al nobr">
+		<{section name=j loop=$item_attr[i]}>
+		<{if $attr_type[i].plural_enable==1}><{$smarty.section.j.index_next}>.<{/if}>
+		<font size="-1"><{$lang.repository_item_attr_link_name}>:</font>
+		<input id="item_attr_link_name" type="text" name="item_attr_link_name[]"
+			 class="w30" value="<{$action.link_data[i][j][1]}>">
+			<font size="-1">
+			<{$lang.repository_item_attr_link_url}>:</font>
+			<input id="item_attr_link" type="text" name="item_attr_link[]" class="w35" value="<{$action.link_data[i][j][0]}>">
+			<{if $attr_type[i].plural_enable==1}>
+			<input type="button" class="btn_white nobr" value="<{$lang.repository_up}>"
+			<{if $smarty.section.j.index==0}>disabled<{/if}>
+		onclick="repositoryCls['<{$id}>'].repositoryItemEditSaveSession('up_row','<{$smarty.section.i.index}>','<{$smarty.section.j.index}>');return false;">
+		<input type="button" class="btn_white nobr" value="<{$lang.repository_dw}>" <{if $smarty.section.j.index==$num_attr[i]-1}>disabled<{/if}>
+		onclick="repositoryCls['<{$id}>'].repositoryItemEditSaveSession('down_row','<{$smarty.section.i.index}>','<{$smarty.section.j.index}>');return false;">
+		<{/if}> <br>
+		<{/section}> <{if $attr_type[i].plural_enable==1}>
+		<input type="button" class="btn_white nobr" value="<{$lang.repository_item_addrow}>"
+		onclick="repositoryCls['<{$id}>'].repositoryItemEditSaveSession('add_row','<{$smarty.section.i.index}>');return false;">
+		<{/if}>
+		</td>
+		<{*アイテム属性値の表示 : select*}> 
+		<{elseif $attr_type[i].input_type == 'select'}>
+		<td class="item_edit_list al">
+		<{section name=j loop=$item_attr[i]}>
+		<select id="item_attr_select" onchange="javascript: $('item_attr_select_<{$cnt1}>').value=this.options[this.selectedIndex].value">
+			<{if $attr_type[i].is_required == 0}>
+			<option value=" ">
+			<{$lang.repository_item_please_select}>
+			</option>
+			<{/if}>
+           <{foreach from=$smarty.session.option_data[i] item=option}>
+            <option value="<{$option}>" <{if $item_attr[i][j]==$option}>SELECTED<{/if}>><{$option}></option>
+           <{/foreach}>
+          </select>
+          <{* Bug Fix WEKO-2014-033 T.Koyasu 2014/07/10 --start-- *}>
+          <input type="hidden" value="<{if $item_attr[i][j]==''}><{if $attr_type[i].is_required == 1}><{$smarty.session.option_data[i][0]}><{else}> <{/if}><{else}><{$item_attr[i][j]}><{/if}>" name="item_attr_select[]" id="item_attr_select_<{$cnt1}>" />
+          <{* Bug Fix WEKO-2014-033 T.Koyasu 2014/07/10 --end-- *}>
+          <br>
+		<{/section}>
+		<{if $attr_type[i].plural_enable==1}><input type="button" class="btn_white nobr" value="<{$lang.repository_item_addrow}>"
+		onclick="repositoryCls['<{$id}>'].repositoryItemEditSaveSession('add_row','<{$smarty.section.i.index}>');return false;">
+		<{/if}></td>
+		<{*アイテム属性値の表示 : checkbox*}> <{*注 : valueはhiddenタグの値で返す。1or0*}>
+		<{elseif $attr_type[i].input_type == 'checkbox'}>
+		<td class="item_edit_list al">
+		<{section name=j loop=$smarty.session.option_data[i]}>
+		<{assign var="cnt2" value=$smarty.section.j.index}>
+		<{assign var="option" value=$smarty.session.option_data[i]}>
+		<{*input id="item_attr_check" name="dummy" type="checkbox" value="dummy"
+		onChange="repositoryCls['<{$id}>'].changeNextHiddenVal(this,this.checked)"
+		<{if $item_attr[i][j]==1}>CHECKED<{/if}>><{$option[j]}*}>
+		<input id="item_attr_check_<{$cnt1}>_<{$cnt2}>_dummy" name="dummy" type="checkbox" value="dummy"
+		onChange="repositoryCls['<{$id}>'].changeNextHiddenVal(document.getElementById('item_attr_check_<{$cnt1}>_<{$cnt2}>'),this.checked);"<{if $item_attr[i][j]==1}>CHECKED<{/if}>>
+		<label for="item_attr_check_<{$cnt1}>_<{$cnt2}>_dummy"><{$option[j]}></label>
+		<input id="item_attr_check_<{$cnt1}>_<{$cnt2}>" type="hidden" name="item_attr_checkbox[]" value="<{if $item_attr[i][j]==1}>1<{else}>0<{/if}>" > <br>
+		<{/section}>
+		</td>
+		<{*アイテム属性値の表示 : radio*}> <{*注 : valueは"属性番号_選択肢番号"で返す : radio*}> 
+		<{*注: ラジオボタンは複数不可前提で処理する*}> <{elseif $attr_type[i].input_type == 'radio'}>
+		<td class="item_edit_list al">
+		<{foreach from=$smarty.session.option_data[i] item=option name=obj}>
+		<{assign var="cnt" value=$smarty.foreach.obj.iteration-1}>
+		<input id="item_attr_radio_<{$cnt}>" name="radio_<{$smarty.section.i.index}>" type="radio" onclick="document.getElementById('<{$smarty.section.i.index}>_radio').value='<{$cnt}>'" value="dummy" <{if $item_attr[i][0] == $cnt}>CHECKED<{/if}>><label for="item_attr_radio_<{$cnt}>"><{$option}></label> <br>
+		<{/foreach}>
+		<{*id="radio_<{$smarty.section.i.index}>"でユニークなはずだが、IEだと何故か判別不可。IEって・・・ *}>
+		<input type="hidden" name="item_attr_radio[]" value="<{$item_attr[i][0]}>" id="<{$smarty.section.i.index}>_radio"></td>
+		<{*アイテム属性値の表示 : biblio*}> <{elseif $attr_type[i].input_type == 'biblio_info'}>
+		<td class="item_edit_list al">
+		<{section name=j loop=$item_attr[i]}> <{if $attr_type[i].plural_enable==1}>
+		<{if $smarty.section.j.index!=0}><br />
+		<{/if}><{$smarty.section.j.index_next}>.<{/if}>
+		
+		<div>
+			<table class="tb00 full">
+				<tr class="al">
+					<td <{if $smarty.session._lang=="japanese"}>class="w15"<{else}>class="w20"<{/if}>><{$lang.repository_item_biblio_name}> :</td>
+					<td class="al pl00">
+						<input id="item_attr_biblio_name_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>" type="text" name="item_attr_biblio_name[]" class="al full"
+							value="<{$item_attr[i][j].biblio_name}>"
+							onblur="javascript: hideLoadingImage<{$id}>('<{$smarty.section.i.index}>','<{$smarty.section.j.index}>'); suggestJournalTitleListCrear<{$id}>('<{$smarty.section.i.index}>','<{$smarty.section.j.index}>');"
+							onfocus="javascript: suggestJournalTitleList<{$id}>('<{$smarty.section.i.index}>','<{$smarty.section.j.index}>','<{$smarty.session.item_attr_type|@count}>','<{$item_attr[i]|@count}>', this, 'ja');"
+						/>
+					</td>
+				</tr>
+				<tr class="al">
+					<td <{if $smarty.session._lang=="japanese"}>class="w18"<{else}>class="w35"<{/if}>><{$lang.repository_item_biblio_name_english}> :</td>
+					<td class="al pl00">
+						<input id="item_attr_biblio_name_english_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>" type="text" name="item_attr_biblio_name_english[]" class="al full"
+							value="<{$item_attr[i][j].biblio_name_english}>"
+							onblur="javascript: hideLoadingImage<{$id}>('<{$smarty.section.i.index}>','<{$smarty.section.j.index}>'); suggestJournalTitleListCrear<{$id}>('<{$smarty.section.i.index}>','<{$smarty.section.j.index}>');"
+							onfocus="javascript: suggestJournalTitleList<{$id}>('<{$smarty.section.i.index}>','<{$smarty.section.j.index}>','<{$smarty.session.item_attr_type|@count}>','<{$item_attr[i]|@count}>', this, 'en');" 
+						/>
+					</td>
+				</tr>
+				
+				<{* Add Suggest Jtitle *}>
+				<tr>
+					<td></td>
+					<td colspan="2" class="pt00 pb00">
+						<div id="repository<{$id}>_suggest_jtitle_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>" class="repositoryWideSuggest" style="display:none;" tabindex="-1"></div>
+						<div id="repository<{$id}>_suggest_loading_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>" class="repositoryWideLoadingSuggest" style="display:none;" tabindex="-1"></div>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div id="repositoryPolicyPopupWindow<{$id}>_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>" style="position: absolute; display:none; opacity:1.0;" onmouseover="this.style.opacity=2.0;"></div>
+		
+		<div class="al pl05"><{$lang.repository_item_biblio_volume}> : <input id="item_attr_biblio_volume" type="text" name="item_attr_biblio_volume[]" class="ar w20px plr02" value="<{$item_attr[i][j].volume}>"/>,&nbsp;
+		<{$lang.repository_item_biblio_issue}> : <input id="item_attr_biblio_issue" type="text" name="item_attr_biblio_issue[]" class="ar w20px plr02" value="<{$item_attr[i][j].issue}>"/>,&nbsp;
+		<{$lang.repository_item_biblio_page}> : <input id="item_attr_biblio_spage" type="text" name="item_attr_biblio_spage[]" class="ar w36px plr02" value="<{$item_attr[i][j].spage}>"/>&nbsp;-&nbsp;
+		<input id="item_attr_biblio_epage" type="text" name="item_attr_biblio_epage[]" class="ar w36px plr02" value="<{$item_attr[i][j].epage}>"/>,&nbsp;
+		
+		<{*--発行年月日の表示 A.Suzuki 2008/10/06 start --*}>
+		<{$lang.repository_item_biblio_dateofissued}> :
+		<input id="id_item_attr_biblio_dateofissued_year_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>" type="text" name="item_attr_biblio_dateofissued_year[]" class="ar w36px plr02" value="<{$item_attr[i][j].year}>" onchange="javascript:biblioInfoDateCheck('<{$smarty.section.i.index}>_<{$smarty.section.j.index}>');"/>
+		<{$lang.repository_log_year}> 
+		<select id="id_item_attr_biblio_dateofissued_month_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>"
+			name="item_attr_biblio_dateofissued_month[]" type="text" onchange="javascript:biblioInfoDateCheck('<{$smarty.section.i.index}>_<{$smarty.section.j.index}>');">
+			<option value=" ">--</option>
+	        <{foreach from=$action.month_of_issued[i] item=metadata name=loop}>
+	        <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> 
+	        <{if $action.month_of_issued[i][$loop_num][1]=="1"}>
+	        <option value="<{$action.month_of_issued[i][$loop_num][0]}>" selected><{$action.month_of_issued[i][$loop_num][0]}></option>
+	        <{else}>
+	        <option value="<{$action.month_of_issued[i][$loop_num][0]}>"><{$action.month_of_issued[i][$loop_num][0]}></option>
+	        <{/if}>
+	        <{/foreach}>
+	        </select><{$lang.repository_log_month}>
+	        <select id="id_item_attr_biblio_dateofissued_day_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>" name="item_attr_biblio_dateofissued_day[]" type="text"
+			onchange="javascript:biblioInfoDateCheck('<{$smarty.section.i.index}>_<{$smarty.section.j.index}>');">
+			<option value=" ">--</option>
+	        <{foreach from=$action.day_of_issued[i] item=metadata name=loop}>
+	        <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> 
+	        <{if $action.day_of_issued[i][$loop_num][1]=="1"}>
+	        <option value="<{$action.day_of_issued[i][$loop_num][0]}>" selected><{$action.day_of_issued[i][$loop_num][0]}></option>
+	        <{else}>
+	        <option value="<{$action.day_of_issued[i][$loop_num][0]}>"><{$action.day_of_issued[i][$loop_num][0]}></option>
+	        <{/if}>
+	        <{/foreach}>
+	        </select><{$lang.repository_log_day}>
+	        <{*--発行年月日の表示 A.Suzuki 2008/10/06 End--*}></div>
+		<{if $attr_type[i].plural_enable==1}>
+		<input type="button" class="btn_white nobr" value="<{$lang.repository_up}>" 
+		<{if $smarty.section.j.index==0}>disabled<{/if}> onclick="repositoryCls['<{$id}>'].repositoryItemEditSaveSession('up_row','<{$smarty.section.i.index}>','<{$smarty.section.j.index}>'); return false;">
+		<input type="button" class="btn_white nobr" value="<{$lang.repository_dw}>"
+		<{if $smarty.section.j.index==$num_attr[i]-1}>disabled<{/if}> onclick="repositoryCls['<{$id}>'].repositoryItemEditSaveSession('down_row','<{$smarty.section.i.index}>','<{$smarty.section.j.index}>');return false;"> <{/if}> <{/section}> 
+		<{if $attr_type[i].plural_enable==1}>
+		<input type="button" class="btn_white nobr" value="<{$lang.repository_item_addrow}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditSaveSession('add_row','<{$smarty.section.i.index}>');return false;">
+		<{/if}>
+		</td>
+		<{*--アイテム属性値: date A.Suzuki 2008/10/14 Start --*}>
+		<{*アイテム属性値の表示 :date*}> <{elseif $attr_type[i].input_type == 'date'}>
+		<td class="item_edit_list al">
+		<{section name=j loop=$item_attr[i]}>
+		<{if $attr_type[i].plural_enable==1}><{$smarty.section.j.index_next}>.<{/if}>
+		<input id="id_item_attr_date_year_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>" type="text" name="item_attr_date_year[]" class="ar w36px plr02" value="<{$item_attr[i][j].date_year}>" onchange="javascript:dateCheck('<{$smarty.section.i.index}>_<{$smarty.section.j.index}>');"/>
+		<{$lang.repository_log_year}> <select id="id_item_attr_date_month_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>"
+			name="item_attr_date_month[]" type="text" onchange="javascript:dateCheck('<{$smarty.section.i.index}>_<{$smarty.section.j.index}>');">
+			<option value=" ">--</option>
+	        <{foreach from=$action.month_of_date[i][j] item=metadata name=loop}>
+	        <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> 
+	        <{if $action.month_of_date[i][j][$loop_num][1]=="1"}>
+	        <option value="<{$action.month_of_date[i][j][$loop_num][0]}>" selected><{$action.month_of_date[i][j][$loop_num][0]}></option>
+	        <{else}>
+	        <option value="<{$action.month_of_date[i][j][$loop_num][0]}>"><{$action.month_of_date[i][j][$loop_num][0]}></option>
+	        <{/if}>
+	        <{/foreach}>
+	        </select><{$lang.repository_log_month}>
+	        <select id="id_item_attr_date_day_<{$smarty.section.i.index}>_<{$smarty.section.j.index}>"
+			name="item_attr_date_day[]" type="text" onchange="javascript:dateCheck('<{$smarty.section.i.index}>_<{$smarty.section.j.index}>');">
+			<option value=" ">--</option>
+	        <{foreach from=$action.day_of_date[i][j] item=metadata name=loop}>
+	        <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> 
+	        <{if $action.day_of_date[i][j][$loop_num][1]=="1"}>
+	        <option value="<{$action.day_of_date[i][j][$loop_num][0]}>" selected><{$action.day_of_date[i][j][$loop_num][0]}></option>
+	        <{else}>
+	        <option value="<{$action.day_of_date[i][j][$loop_num][0]}>"><{$action.day_of_date[i][j][$loop_num][0]}></option>
+	        <{/if}>
+	        <{/foreach}>
+	        </select>
+	        <{$lang.repository_log_day}>
+	        <{if $attr_type[i].plural_enable==1}>
+	        <input type="button" class="btn_white nobr" value="<{$lang.repository_up}>" <{if $smarty.section.j.index==0}>disabled<{/if}> onclick="repositoryCls['<{$id}>'].repositoryItemEditSaveSession('up_row','<{$smarty.section.i.index}>','<{$smarty.section.j.index}>');return false;"> <input type="button" class="btn_white nobr" value="<{$lang.repository_dw}>"
+		<{if $smarty.section.j.index==$num_attr[i]-1}>disabled<{/if}> onclick="repositoryCls['<{$id}>'].repositoryItemEditSaveSession('down_row','<{$smarty.section.i.index}>','<{$smarty.section.j.index}>');return false;"> <{/if}>
+		<br>
+		<{/section}>
+		<{if $attr_type[i].plural_enable==1}>
+		<input type="button" class="btn_white nobr" value="<{$lang.repository_item_addrow}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditSaveSession('add_row','<{$smarty.section.i.index}>');return false;"><{/if}>
+		</td>
+		<{*--アイテム属性値: date A.Suzuki 2008/10/14 End --*}> <{/if}>
+	</tr>
+	<{* Add contents page Y.Nakao 2010/08/06 --start-- *}>
+	<{elseif $attr_type[i].input_type == 'heading'}>
+	<{section name=j loop=$action.heading}>
+	<tr>
+		<th class="item_edit_list" class="w175px"><{$lang.repository_item_heading}>
+		<{if $attr_type[i].is_required == 1}><font color="red">*</font><{/if}></th>
+		<td class="item_edit_list" class="al">
+		<input type="text" class="full" name="item_attr_heading" value="<{$action.heading[j][0]}>" /></td>
+	</tr>
+	<tr>
+		<th class="item_edit_list" class="w175px"><{$lang.repository_item_heading_en}>
+		<{if $attr_type[i].is_required == 1}><font color="red">*</font><{/if}></th>
+		<td class="item_edit_list" class="al">
+		<input type="text" class="full" name="item_attr_heading_en" value="<{$action.heading[j][1]}>"></td>
+	</tr>
+	<tr>
+		<th class="item_edit_list" class="w175px"><{$lang.repository_item_heading_sub}></th>
+		<td class="item_edit_list" class="al">
+		<input type="text" class="full" name="item_attr_heading_sub" value="<{$action.heading[j][2]}>"></td>
+	</tr>
+	<tr>
+		<th class="item_edit_list" class="w175px"><{$lang.repository_item_heading_sub_en}></th>
+		<td class="item_edit_list" class="al">
+		<input type="text" class="full" name="item_attr_heading_sub_en" value="<{$action.heading[j][3]}>"></td>
+	</tr>
+	<{/section}> <{* Add contents page Y.Nakao 2010/08/06 --end-- *}>
+	<{/if}> <{/section}> 
+	<{* Add Contributor(Posted agency) A.Suzuki 2011/12/13 --start-- *}>
+	<{if $smarty.session._user_auth_id >=$smarty.const._REPOSITORY_BASE_AUTH && $smarty.session._auth_id >=$smarty.const._REPOSITORY_ROOM_AUTH}>
+	<tr>
+		<th class="item_edit_list w175px"><{$lang.repository_item_contributor}><font color="red">*</font></th>
+		<td class="item_edit_list al">
+		<{$lang.repository_item_contributor_select}><br />
+		<label for="id_item_contributor_0"> <input type="radio"
+			name="item_contributor" id="id_item_contributor_0" value="0"
+			onchange="javascript: contributorDetailDisplay(this.value);"
+			<{if $smarty.session.item_contributor == null}>CHECKED<{/if}> />
+		<{$lang.repository_item_contributor_yourself|replace:"%s":$smarty.session._handle}>
+		</label>
+		<br />
+		<label for="id_item_contributor_1">
+		<input type="radio" name="item_contributor" id="id_item_contributor_1" value="1" onchange="javascript: contributorDetailDisplay(this.value);"
+		<{if $smarty.session.item_contributor != null}>CHECKED<{/if}> />
+		<{$lang.repository_item_contributor_others}> </label> <br />
+		<div id="id_contributor_detail" style="<{if $smarty.session.item_contributor != null}>display:block<{else}>display:none<{/if}>">
+		<table class="full al">
+			<tr>
+				<td class="ar pl00 w20"><{$lang.repository_item_contributor_detail_handle}>:</td>
+				<td>
+				<input type="text" name="item_contributor_handle" class="full" value="<{if $smarty.session.item_contributor != null && $smarty.session.item_contributor.handle != null}><{$smarty.session.item_contributor.handle}><{/if}>" id="item_contributor_handle_<{$id}>" onblur="suggestContributorListCrear();" onfocus="initSuggestContributorList(this);">
+				</td>
+			</tr>
+			<tr>
+				<td class="ar pl00 w20"><{$lang.repository_item_contributor_detail_name}>:</td>
+				<td>
+				<input type="text" name="item_contributor_name" class="full" value="<{if $smarty.session.item_contributor != null && $smarty.session.item_contributor.name != null}><{$smarty.session.item_contributor.name}><{/if}>" id="item_contributor_name_<{$id}>" onblur="suggestContributorListCrear();" onfocus="initSuggestContributorList(this);">
+				</td>
+			</tr>
+			<tr>
+				<td class="ar pl00 w20"><{$lang.repository_item_contributor_detail_email}>:</td>
+				<td>
+				<input type="text" name="item_contributor_email" class="full" value="<{if $smarty.session.item_contributor != null && $smarty.session.item_contributor.email != null}><{$smarty.session.item_contributor.email}><{/if}>" id="item_contributor_email_<{$id}>" onblur="suggestContributorListCrear();" onfocus="initSuggestContributorList(this);"></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>
+					<div id="repository<{$id}>_contributorSuggest" class="repositorySuggest" style="display:none;"></div>
+				</td>
+			</tr>
+		</table>
+		</div>
+		</td>
+	</tr>
+	<{/if}> <{* Add Contributor(Posted agency) A.Suzuki 2011/12/13 --end--
+	*}>
+	<{* Add feedback mail R.Matsuura 2013/11/07 --start--*}>
+	<tr>
+		<th class="item_edit_list w175px" rowspan="2"><{$lang.repository_item_feedback_mail_feedback}></br><{$lang.repository_item_feedback_mail_send_mail}></th>
+		<td class="item_edit_list al">
+			<div class="pb05">
+				<table class="tb00">
+					<tr>
+						<td width="45px" nowrap="nowrap" align="right">
+							<{$lang.repository_item_feedback_mail_destination}>:
+						</td>
+						<td class="ptb04 plr08 w400px al" >
+							<select size="5" id="send_feedback_mail_address_id<{$id}>" class="full h8em" style="width:150px;">
+							<{section name=i loop=$feedback_mailaddress_array}>
+							<{if $feedback_mailaddress_array[i]!=""}>
+								<option value="<{$feedback_mailaddress_array[i]}>" ><{$feedback_mailaddress_author_array[i]}></option>
+							<{/if}>
+							<{/section}>
+							</select>
+							<input type="hidden" id="send_feedback_mail_address_mailaddresses_id<{$id}>" name="send_feedback_mail_address_mailaddresses[]" value="<{$feedback_mailaddress_str}>" />
+							<input type="hidden" id="send_feedback_mail_address_author_id<{$id}>" name="send_feedback_mail_address_authors[]" value="<{$feedback_mailaddress_author_str}>"/>
+						</td>
+						<td class="pt00 pb00">
+							<input type="button" class="btn_delete" value="<{$lang.repository_delete}>" onclick="javascript: deleteFeedbackmail<{$id}>(); "/>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="item_edit_list al">
+			<div class="pb05">
+			<table class="tb00">
+				<tr>
+					<td nowrap="nowrap" align="right"><{$lang.repository_family}>:</td>
+					<td align="left">
+					<input class="w150px" id="feedback_mail_suggest_name_family<{$id}>" type="text" name="feedback_mail_suggest_name_family" value="" onkeyup="javascript: suggestFeedbackMail<{$id}>(this);" /></td>
+					<td nowrap="nowrap" class="min_w50px">
+					<div class="ar"><{$lang.repository_name}>:</div>
+					</td>
+					<td align="left">
+					<input class="w150px" id="feedback_mail_suggest_name_given<{$id}>" type="text" name="feedback_mail_suggest_name_given" value="" onkeyup="javascript: suggestFeedbackMail<{$id}>(this);" /></td>
+				</tr>
+				<tr>
+					<td nowrap="nowrap" align="right"><{$lang.repository_family}>(<{$lang.repository_ruby}>):</td>
+					<td align="left">
+						<input class="w150px" id="feedback_mail_suggest_name_family_ruby<{$id}>" type="text" name="feedback_mail_suggest_name_family_ruby" value="" onkeyup="javascript: suggestFeedbackMail<{$id}>(this);" />
+					</td>
+					<td nowrap="nowrap" align="right"><{$lang.repository_name}>(<{$lang.repository_ruby}>):</td>
+					<td align="left">
+						<input class="w150px" id="feedback_mail_suggest_name_given_ruby<{$id}>" type="text" name="feedback_mail_suggest_name_given_ruby" value="" onkeyup="javascript: suggestFeedbackMail<{$id}>(this);" />
+					</td>
+				</tr>
+				<tr>
+					<td nowrap="nowrap" align="right"><{$lang.repository_email}>:</td>
+					<td colspan="3" align="left">
+					<input class="full" id="feedback_mail_suggest_name_email<{$id}>" type="text" name="feedback_mail_suggest_name_email" value="" onkeyup="javascript: suggestFeedbackMail<{$id}>(this);" /></td>
+				</tr>
+				<tr>
+					<td nowrap="nowrap" align="right"><{$lang.repository_author_id}>:</td>
+					<td colspan="3" align="left">
+						<input class="full" type="text" id="feedback_mail_suggest_name_author_id_suffix<{$id}>" name="feedback_mail_suggest_name_author_id_suffix" value="" style="width:70%;" onkeyup="javascript: suggestFeedbackMail<{$id}>(this);" />
+					</td>
+				</tr>
+				<tr>
+					<td>
+					</td>
+					<td colspan="3">
+						<select multiple size="5" id="feedback_mail_suggest_id<{$id}>" class="full h8em" style="width:150px;"></select>
+						<input type="hidden" id="feedback_mail_suggest_mailaddresses_id<{$id}>" value=""/>
+						<input type="hidden" id="feedback_mail_suggest_user_auth_id<{$id}>" value=""/>
+					</td>
+					<td>
+						<input type="button" class="btn_white" value="<{$lang.repository_item_feedback_mail_add}>" onclick="javascript: addFeedbackMailAddress<{$id}>();"/>
+					</td>
+				</tr>
+			</table>
+			</div>
+		</td>
+	</tr>
+	<{* Add feedback mail R.Matsuura 2013/11/07 --end--*}>
+</table>
+</form>
+
+<div align=center><!-- <form onsubmit="return false;"> -->
+<{*メタデータにファイル属性があるか否かで戻り先を変える*}> <{if $smarty.session.isfile == 2}>
+<input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>','repository_view_main_item_editfileslicense'); return false;" />
+<{elseif $smarty.session.isfile == 1}>
+<input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>','repository_view_main_item_editfiles'); return false;" /> 
+<{else}>
+
+<{*編集中の場合はアイテムタイプ選択まで戻れない*}>
+<{if $smarty.session.ej_workflow_flag =="true"}>
+<input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="javascript: backToEJWEKO(); return false;"> <{elseif $smarty.session.return_screen == "1"}>
+<input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="location.reload();">
+<{elseif $smarty.session.return_screen == "2"}>
+<input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_main_workflow');return false;">
+<{else}>
+<input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>','repository_view_main_item_selecttype'); return false;">
+<{/if}>
+<{/if}>
+<input type="button" class="btn_blue" value="<{$lang.repository_save}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditLinks('stay');return false;" />
+<input type="button" class="btn_next" value="<{$lang.repository_page_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditLinks('next');return false;" />
+<!-- </form>  --></div>
+</div>
+</div>
+
+<div id="repository_suggest_input_hidden" class="item_edit_display_non"></div>
+<div id="repository_suggest_list_hidden" class="item_edit_display_non"></div>
+<div id="repository_suggest_JournalTitle_input_hidden" class="item_edit_display_non"></div>
+<div id="repository_suggest_JournalTitle_list_hidden" class="item_edit_display_non"></div>
+
+<{* Add check pub date 2011/06/17 A.Suzuki --start-- *}>
+<script class="nc_script" type="text/javascript">
+    checkItemPubdate = function() {
+        var elm_year = "id_item_pub_date_year";
+        if($(elm_year) != null) {
+            date_year = ($(elm_year).value).trim();
+        }
+        var elm_month = "id_item_pub_date_month";
+        if($(elm_month) != null) {
+            date_month = $(elm_month).value;
+        }
+        var elm_day = "id_item_pub_date_day";
+        if($(elm_day) != null) {
+            date_day = $(elm_day).value;
+        }
+        
+        // Regular expression check
+        if(date_year.search(/[^0-9]+/) != -1) {
+            alert('<{$lang.repository_item_pub_date_illegal}>');
+            $(elm_year).value = "";
+            return;
+        }
+
+        if(date_year != "" && date_month != " " && date_day != " "){
+            var dt = new Date(date_year, date_month - 1, date_day);
+            if(dt == null || dt.getFullYear() != date_year || dt.getMonth() + 1 != date_month || dt.getDate() != date_day) {
+                alert('<{$lang.repository_item_pub_date_illegal}>');
+                $(elm_month).selectedIndex = 0;
+                $(elm_day).selectedIndex = 0;
+                return;
+            }
+        }
+    }
+</script>
+<{* Add check pub date 2011/06/17 A.Suzuki --end-- *}>
+<{*Add biblio info date check 2008/10/08 A.Suzuki --start--*}>
+<script class="nc_script" type="text/javascript">
+	biblioInfoDateCheck = function(section_index) {
+		var issued_year = "";
+		var issued_month = "";
+		var issued_day = "";
+		
+		var elm_year = "id_item_attr_biblio_dateofissued_year_" + section_index;
+		if($(elm_year) != null) {
+			issued_year = ($(elm_year).value).trim();
+		}
+		var elm_month = "id_item_attr_biblio_dateofissued_month_" + section_index;
+		if($(elm_month) != null) {
+			issued_month = $(elm_month).value;
+		}
+		var elm_day = "id_item_attr_biblio_dateofissued_day_" + section_index;
+		if($(elm_day) != null) {
+			issued_day = $(elm_day).value;
+		}
+		
+		// Regular expression check
+		if(issued_year.search(/[^0-9]+/) != -1) {
+			alert('<{$lang.repository_item_biblio_dateofissued_error}>');
+			$(elm_year).value = "";
+			return;
+		}
+
+		if(issued_year != "" && issued_month != " " && issued_day != " "){
+			var dt = new Date(issued_year, issued_month - 1, issued_day);
+			if(dt == null || dt.getFullYear() != issued_year || dt.getMonth() + 1 != issued_month || dt.getDate() != issued_day) {
+				alert('<{$lang.repository_item_biblio_dateofissued_error}>');
+				$(elm_month).selectedIndex = 0;
+				$(elm_day).selectedIndex = 0;
+				return;
+			}
+		}
+	}
+</script>
+<{*Add biblio info date check 2008/10/08 A.Suzuki --end--*}> 
+<{*Add item attribute:date 2008/10/15 A.Suzuki --start--*}>
+<script class="nc_script" type="text/javascript">
+	dateCheck = function(section_index) {
+		var date_year = "";
+		var date_month = "";
+		var date_day = "";
+		
+		var elm_year = "id_item_attr_date_year_" + section_index;
+		if($(elm_year) != null) {
+			date_year = ($(elm_year).value).trim();
+		}
+		var elm_month = "id_item_attr_date_month_" + section_index;
+		if($(elm_month) != null) {
+			date_month = $(elm_month).value;
+		}
+		var elm_day = "id_item_attr_date_day_" + section_index;
+		if($(elm_day) != null) {
+			date_day = $(elm_day).value;
+		}
+		
+		// Regular expression check
+		if(date_year.search(/[^0-9]+/) != -1) {
+			alert('<{$lang.repository_item_date_error}>');
+			$(elm_year).value = "";
+			return;
+		}
+
+		if(date_year != "" && date_month != " " && date_day != " "){
+			var dt = new Date(date_year, date_month - 1, date_day);
+			if(dt == null || dt.getFullYear() != date_year || dt.getMonth() + 1 != date_month || dt.getDate() != date_day) {
+				alert('<{$lang.repository_item_date_error}>');
+				$(elm_month).selectedIndex = 0;
+				$(elm_day).selectedIndex = 0;
+				return;
+			}
+		}
+	}
+</script>
+<{*Add item attribute:date 2008/10/15 A.Suzuki --end--*}> 
+<{*Add search bar for fill biblio info 2008/11/17 A.Suzuki --start--*}>
+<script class="nc_script" type="text/javascript">
+ 	fill = function() {
+ 		$('fillBtn<{$id}>').style.display='none';
+ 		$('fillDataNowLoading<{$id}>').style.display='';
+ 		if($('fill_type').value == ''){
+ 			alert('<{$lang.repository_item_fill_data_no_type_error}>');
+ 			$('fill_id').disabled = true;
+ 			$('fillBtn<{$id}>').disabled = true;
+	 		$('fillBtn<{$id}>').style.display='';
+	 		$('fillDataNowLoading<{$id}>').style.display='none';
+	 		fillTypeCheck();
+ 			return;
+ 		}
+ 		if(($('fill_id').value).trim() == ''){
+ 			if($('fill_type').value == 'amazon'){
+ 				alert('<{$lang.repository_item_fill_data_id_isbn}>'+'<{$lang.repository_item_fill_data_no_id_error}>');
+ 			} else if($('fill_type').value == 'pubmed'){
+ 				alert('<{$lang.repository_item_fill_data_id_pmid}>'+'<{$lang.repository_item_fill_data_no_id_error}>');
+ 			} else if($('fill_type').value == 'cinii'){
+ 				alert('<{$lang.repository_item_fill_data_id_naid}>'+'<{$lang.repository_item_fill_data_no_id_error}>');
+ 			} else if($('fill_type').value == 'itemid'){
+ 				alert('<{$lang.repository_item_fill_data_id_item}>'+'<{$lang.repository_item_fill_data_no_id_error}>');
+ 			} else if($('fill_type').value == 'ichushi'){
+ 				alert('<{$lang.repository_item_fill_data_id_ichushi}>'+'<{$lang.repository_item_fill_data_no_id_error}>');
+ 			}
+ 			$('fill_id').disabled = true;
+ 			$('fillBtn<{$id}>').disabled = true;
+	 		$('fillBtn<{$id}>').style.display='';
+	 		$('fillDataNowLoading<{$id}>').style.display='none';
+	 		fillTypeCheck();
+ 			return;
+ 		}
+  		repositoryCls['<{$id}>'].repositoryFillData($('fill_type').value, encodeURIComponent($('fill_id').value));
+  		return;
+  }
+ </script>
+<{*Add search bar for fill biblio info 2008/11/17 A.Suzuki --end--*}>
+<{*Add search bar for fill biblio info 2008/11/19 A.Suzuki --start--*}>
+<script class="nc_script" type="text/javascript">
+	fillTypeCheck = function() {
+		key = $('fill_type').value;
+		elm = $('fillPrefixId<{$id}>');
+		if(key == 'amazon'){
+			elm.innerHTML = '<{$lang.repository_item_fill_data_id_isbn}> : ';
+			$('fill_id').disabled = false;
+			$('fillBtn<{$id}>').disabled = false;
+		} else if(key == 'pubmed'){
+			elm.innerHTML = '<{$lang.repository_item_fill_data_id_pmid}> : ';
+			$('fill_id').disabled = false;
+			$('fillBtn<{$id}>').disabled = false;
+		} else if(key == 'cinii'){
+			elm.innerHTML = '<{$lang.repository_item_fill_data_id_naid}> : ';
+			$('fill_id').disabled = false;
+			$('fillBtn<{$id}>').disabled = false;
+		} else if(key == 'itemid'){
+			elm.innerHTML = '<{$lang.repository_item_fill_data_id_item}> : ';
+			$('fill_id').disabled = false;
+			$('fillBtn<{$id}>').disabled = false;
+		} else if(key == 'ichushi'){
+			elm.innerHTML = '<{$lang.repository_item_fill_data_id_ichushi}> : ';
+			$('fill_id').disabled = false;
+			$('fillBtn<{$id}>').disabled = false;
+		} else {
+			elm.innerHTML = '';
+			$('fill_id').disabled = true;
+			$('fillBtn<{$id}>').disabled = true;
+		}
+		return;
+	}
+ </script>
+<{*Add search bar for fill biblio info 2008/11/19 A.Suzuki --end--*}>
+
+<script class="nc_script" type="text/javascript">
+ backToEJWEKO = function(){
+	var location_str = 	'<{$smarty.session.ej_weko_url}>' + 
+						'index.php?action=pages_view_main&active_action=repository_view_main_suppleworkflow' + 
+						'&supple_workflow_active_tab=' + '<{$smarty.session.ej_workflow_active_tab}>' + 
+				  		'&page_id=' + '<{$smarty.session.ej_page_id}>' + 
+				  		'&block_id=' + '<{$smarty.session.ej_block_id}>';
+	location.href=location_str.replace(/&amp;/ig,"&");
+ }
+</script>
+
+<script class="nc_script" type="text/javascript">
+ changeDisplayAuthorId = function(prefix_value, i_index, j_index, k_index, length, message){
+    var prefix = "item_attr_name_author_id_prefix_" + i_index + "_" + j_index + "_" + k_index;
+	var suffix = "item_attr_name_author_id_suffix_" + i_index + "_" + j_index + "_" + k_index;
+	var hidden = "item_attr_name_author_id_suffix_hidden_" + i_index + "_" + j_index + "_" + k_index;
+    if(prefix_value=='0'){
+        $(suffix).value = "";
+        $(suffix).style.display = "none";
+        $(hidden).style.display = "";
+    } else {
+        $(suffix).style.display = "";
+        $(hidden).style.display = "none";
+        if($(prefix)!=null){
+            var alert_flag = false;
+            for(var ii=0; ii<parseInt(length); ii++){
+                var tmp_prefix = "item_attr_name_author_id_prefix_" + i_index + "_" + j_index + "_" + ii;
+                if($(tmp_prefix)!=null){
+                    if(prefix_value==$(tmp_prefix).value && ii!=k_index){
+                        alert_flag = true;
+                        break;
+                    }
+                }
+            }
+            if(alert_flag){
+                alert(message);
+                $(prefix).value = '0';
+                $(suffix).value = "";
+		        $(suffix).style.display = "none";
+		        $(hidden).style.display = "";
+            }
+        }
+    }
+ }
+</script>
+
+<{* Fix suggest script load 2011/09/07 Y.Nakao --start-- *}>
+<script class="nc_script" type="text/javascript">
+    suggestList = new Array();
+    var suggestSurName = new Suggest.Local(
+        "repository_suggest_input_hidden",    // 入力のエレメントID
+        "repository_suggest_list_hidden", // 補完候補を表示するエリアのID
+        suggestList,      // 補完候補の検索対象となる配列
+        {   dispMax: 0, 
+            interval: 1000, 
+            wekoBlockId: '<{$block_id}>', 
+            hookBeforeSearch: function(iiCnt, jjCnt) {
+            
+            suggestSurName.suggestArea.innerHTML = '<div style="text-align: center"><img src="' + _nc_core_base_url + '/images/common/indicator.gif"/></div>';	// Modify Directory specification BASE_URL K.Matsuo 2011/9/2
+            
+                // Modify Directory specification BASE_URL K.Matsuo 2011/9/2
+                var url = "<{$smarty.const.BASE_URL}>/index.php";
+                var pars = "";
+                pars += 'action=repository_action_main_item_fillauthor';
+                pars += '&page_id=<{$page_id}>';
+                pars += '&block_id=<{$block_id}>';
+                pars += '&surName='+$('item_attr_name_family_'+iiCnt+'_'+jjCnt).value;
+                pars += '&givenName='+$('item_attr_name_given_'+iiCnt+'_'+jjCnt).value;
+                pars += '&surNameRuby='+$('item_attr_name_family_ruby_'+iiCnt+'_'+jjCnt).value;
+                pars += '&givenNameRuby='+$('item_attr_name_given_ruby_'+iiCnt+'_'+jjCnt).value;
+                pars += '&emailAddress='+$('item_attr_name_email_'+iiCnt+'_'+jjCnt).value;
+                pars += '&attrId='+iiCnt;
+                pars += '&attrNo='+jjCnt;
+                var myAjax = new Ajax.Request(
+                    url,
+                    {
+                        method: 'post',
+                        parameters: pars,
+                        onSuccess: function(req) {
+                            suggestSurName.candidateList = new Array();
+                            authorList = eval("("+req.responseText+")");
+                            suggestSurName.candidateList = eval(authorList.candidate);
+                            suggestSurName.wekoAuthorList = eval(authorList.authorList);
+                            suggestSurName.candidateStr = req.responseText;
+                            
+                            suggestSurName.suggestArea.innerHTML = '';
+                        },
+                        onFailure: function(req) {
+                        },
+                        onComplete: function(req) {
+                        }
+                    }
+                );
+            }
+        }
+    );
+</script>
+
+<script class="nc_script" type="text/javascript">
+    suggestAuthorList = function(ii, jj, inputElm) {
+    
+        if(suggestSurName.suggestArea != null && suggestSurName.suggestArea != '')
+        {
+            suggestSurName.suggestArea.style.display = 'none';
+        }
+        
+        suggestSurName.input = inputElm;
+        suggestSurName.suggestArea = $("repository<{$id}>_suggest_"+ii+"_"+jj);
+        suggestSurName.candidateList = new Array();
+        suggestSurName.wekoAuthorList = new Array();
+        suggestSurName.candidateStr = "";
+        suggestSurName.iiCnt = ii;
+        suggestSurName.jjCnt = jj;
+        
+        suggestSurName.inputBlur();
+        suggestSurName.checkLoop();
+    }
+    
+    suggestAuthorListCrear = function() {
+        suggestSurName.inputBlur();
+    }
+</script>
+
+<{* Fix suggest script load 2011/09/07 Y.Nakao --end-- *}> <{* Add
+Contributor(Posted agency) A.Suzuki 2011/12/13 --start-- *}>
+<script class="nc_script" type="text/javascript">
+    contributorDetailDisplay = function(status) {
+        var detailBlock = "id_contributor_detail";
+        if($(detailBlock) != null)
+        {
+            if(status == 1)
+            {
+                $(detailBlock).style.display = "block";
+            }
+            else
+            {
+                $(detailBlock).style.display = "none";
+            }
+        }
+    }
+</script>
+
+<script class="nc_script" type="text/javascript">
+    suggestContributorList = new Array();
+    var suggestContributor = new SuggestContributor.Local(
+        "repository_suggest_input_hidden",    // 入力のエレメントID
+        "repository_suggest_list_hidden", // 補完候補を表示するエリアのID
+        suggestContributorList,      // 補完候補の検索対象となる配列
+        {
+            dispMax: 0, 
+            interval: 1000, 
+            wekoBlockId: '<{$block_id}>', 
+            hookBeforeSearch: function() {
+                suggestContributor.suggestArea.innerHTML = '<div style="text-align: center"><img src="' + _nc_core_base_url + '/images/common/indicator.gif"/></div>';
+                
+                var url = "<{$smarty.const.BASE_URL}>/index.php";
+                var pars = "";
+                pars += 'action=repository_action_main_item_fillcontributor';
+                pars += '&page_id=<{$page_id}>';
+                pars += '&block_id=<{$block_id}>';
+                pars += '&handle='+$('item_contributor_handle_<{$id}>').value;
+                pars += '&name='+$('item_contributor_name_<{$id}>').value;
+                pars += '&email='+$('item_contributor_email_<{$id}>').value;
+                var myAjax = new Ajax.Request(
+                    url,
+                    {
+                        method: 'post',
+                        parameters: pars,
+                        onSuccess: function(req) {
+                            suggestContributor.candidateList = new Array();
+                            contributorList = eval("("+req.responseText+")");
+                            suggestContributor.candidateList = eval(contributorList.candidate);
+                            suggestContributor.contributorList = eval(contributorList.contributor);
+                            suggestContributor.candidateStr = req.responseText;
+                            
+                            suggestContributor.suggestArea.innerHTML = '';
+                        },
+                        onFailure: function(req) {
+                        },
+                        onComplete: function(req) {
+                        }
+                    }
+                );
+            }
+        }
+    );
+</script>
+
+<script class="nc_script" type="text/javascript">
+    initSuggestContributorList = function(inputElm) {
+        suggestContributor.input = inputElm;
+        suggestContributor.suggestArea = $("repository<{$id}>_contributorSuggest");
+        suggestContributor.candidateList = new Array();
+        suggestContributor.contributorList = new Array();
+        suggestContributor.candidateStr = "";
+        suggestContributor.inputBlur();
+        suggestContributor.checkLoop();
+    }
+    
+    suggestContributorListCrear = function() {
+        suggestContributor.inputBlur();
+    }
+</script>
+<{* Add Contributor(Posted agency) A.Suzuki 2011/12/13 --end-- *}>
+
+
+
+<{* Add JournalTitle List A.Jin 2013/4/3 --start-- *}>
+<script class="nc_script" type="text/javascript">
+    suggestJournalTitleList = new Array();
+    var suggestJournalTitleSurName = new SuggestJtitlePolicy.Local(
+        "repository_suggest_JournalTitle_input_hidden",    // 入力のエレメントID
+        "repository_suggest_JournalTitle_list_hidden", // 補完候補を表示するエリアのID
+        suggestJournalTitleList,      // 補完候補の検索対象となる配列
+        {   dispMax: 0,
+            interval: 1000,
+            wekoBlockId: '<{$block_id}>',
+            class_id: '<{$id}>',
+            page_id: '<{$page_id}>',
+            isCandidateExist: true,
+            hookBeforeSearch: function(iiCnt, jjCnt) {
+                
+                //通信開始時にフラグを設定
+                suggestJournalTitleSurName.isSearchStart = true;
+                
+                var url = "<{$smarty.const.BASE_URL}>/index.php";
+                var pars = "";
+                pars += 'action=repository_action_main_item_policy';
+                pars += '&page_id=<{$page_id}>';
+                pars += '&block_id=<{$block_id}>';
+                
+                if(this.lang == 'ja'){
+                    pars += '&jtitle='+encodeURIComponent($('item_attr_biblio_name_'+iiCnt+'_'+jjCnt).value);
+                }else{
+                    pars += '&jtitle='+encodeURIComponent($('item_attr_biblio_name_english_'+iiCnt+'_'+jjCnt).value);
+                }
+                pars += '&type='+'jtitle';
+                
+                ////Ajax通信を1つのみ許可する(ブラウザはその間使用可能)
+                ////var cnt = Ajax.activeRequestCount;
+                ////if(cnt > 0){
+                ////   displayLoadingImage<{$id}>(iiCnt, jjCnt, suggestJournalTitleSurName.lang);
+                ////   return;
+                ////}
+                
+                var myAjax = new Ajax.Request(
+                    url,
+                    {
+                        method: 'post',
+                        parameters: pars,
+                        onSuccess: function(request) {
+                            suggestJournalTitleSurName.candidateList = new Array();
+                            journalTitleList = eval("("+request.responseText+")");
+                            suggestJournalTitleSurName.candidateList = eval(journalTitleList.Candidate);
+                            suggestJournalTitleSurName.jtitleCandidateList = eval(journalTitleList.JtitleCandidate);
+                            suggestJournalTitleSurName.candidateStr = request.responseText;
+                            suggestJournalTitleSurName.parentElementId = $("repositoryPolicyPopupWindow<{$id}>_"+iiCnt+"_"+jjCnt);
+                            suggestJournalTitleSurName.suggestArea.innerHTML = '';
+                            
+                            suggestJournalTitleSurName.isCandidateExist = true;
+                            //検索結果が0件
+                            if(suggestJournalTitleSurName.candidateList == null || suggestJournalTitleSurName.candidateList.length == 0){
+                                suggestJournalTitleSurName.isCandidateExist = false;
+                            }
+                        },
+                        onFailure: function(request) {
+                        },
+                        onComplete: function(request) {
+                        }
+                    }
+                );
+                
+            }
+        }
+    );
+</script>
+
+<script class="nc_script" type="text/javascript">
+    // onFocusで呼び出し
+    suggestJournalTitleList<{$id}> = function(ii, jj, ii_cnt, jj_cnt, inputElm, lang) {
+        var offset = $("item_attr_biblio_name_"+ii+"_"+jj).offsetWidth - 2;
+        $("repository<{$id}>_suggest_jtitle_"+ii+"_"+jj).style.width = offset+"px";
+        
+        //前回表示した雑誌名サジェストを消す Add jin 2013/4/12
+        if(suggestJournalTitleSurName.suggestArea != null && suggestJournalTitleSurName.suggestArea != '')
+        {
+            suggestJournalTitleSurName.suggestArea.style.display = 'none';
+        }
+        
+        //前回表示したポップアップを消す Add jin 2013/4/12
+        if(suggestJournalTitleSurName.parentElementId != null && suggestJournalTitleSurName.parentElementId != '')
+        {
+            suggestJournalTitleSurName.parentElementId.style.display = 'none';
+        }
+        
+        suggestJournalTitleSurName.input = inputElm;
+        suggestJournalTitleSurName.suggestArea = $("repository<{$id}>_suggest_jtitle_"+ii+"_"+jj);
+        suggestJournalTitleSurName.candidateList = new Array();
+        suggestJournalTitleSurName.jtitleCandidateList = new Array();
+        suggestJournalTitleSurName.candidateStr = "";
+        suggestJournalTitleSurName.iiCnt = ii;
+        suggestJournalTitleSurName.jjCnt = jj;
+        suggestJournalTitleSurName.lang = lang;
+        suggestJournalTitleSurName.inputBlur();
+        suggestJournalTitleSurName.checkLoop();
+        
+    }
+    //自分のリストクリア onBlurで呼び出し
+    suggestJournalTitleListCrear<{$id}> = function(ii, jj) {
+        //サジェストリセット
+        suggestJournalTitleSurName.inputBlur();
+    }
+    
+    //待ち画像を表示しない
+    hideLoadingImage<{$id}> = function(ii, jj){
+        $("repository<{$id}>_suggest_loading_"+ii+"_"+jj).style.display = "none";
+    }
+    //待ち画像を表示する
+    displayLoadingImage<{$id}> = function(ii, jj, lang){
+       if(lang == 'jp' && $('item_attr_biblio_name_'+ii+'_'+jj).value == ''){
+           return;
+       }else if(lang == 'en' && $('item_attr_biblio_name_english_'+ii+'_'+jj).value == ''){
+           return;
+       }
+        
+       $("repository<{$id}>_suggest_jtitle_"+ii+"_"+jj).style.display = "none";
+       var offset = $("item_attr_biblio_name_"+ii+"_"+jj).offsetWidth - 2;
+       $("repository<{$id}>_suggest_loading_"+ii+"_"+jj).style.width = offset+"px";
+       $("repository<{$id}>_suggest_loading_"+ii+"_"+jj).style.display = "";
+       $("repository<{$id}>_suggest_loading_"+ii+"_"+jj).innerHTML = '<div class="repositoryWideLoadingImg"><img src="' + _nc_core_base_url + '/images/common/indicator.gif"/></div>';
+    }
+</script>
+
+<script class="nc_script" type="text/javascript">
+	repositoryPolicyPopupWindow_<{$id}> = function(page_id, block_id, parentElementId, jtitle_id, issn, acquiring) {
+		
+		var pars="action=repository_action_main_item_policy";
+		pars += '&page_id='+page_id;
+		pars += '&block_id='+block_id;
+		pars += '&type='+'color';
+		pars += '&acquiring='+acquiring;
+		if(acquiring == 'SCPJ'){
+			pars += '&id_str='+jtitle_id;
+		}else{
+			pars += '&issn='+issn;
+		}
+		
+		loadingPolicyHtml<{$id}>(acquiring, parentElementId);
+		
+		var url = _nc_base_url + "/index.php";
+		var myAjax = new Ajax.Request
+					(
+						url,
+						{
+							method: 'post',
+							parameters: pars, 
+							onFailure : function(){
+							},
+							onSuccess : function(response){
+								
+								createPolicyHtml<{$id}>(response, parentElementId);
+								
+								//フォーカスをポップアップに移動する
+								$("detail_<{$id}>").focus();
+							},
+							onComplete: function(res) {
+							}
+						}
+					);
+	}
+	
+	//待ち用表示
+	loadingPolicyHtml<{$id}> = function(acquiring, parentElementId){
+		var htmlStr = '';
+		
+		htmlStr += '<div class="policyColor">';
+
+		if(acquiring == 'SCPJ'){
+			htmlStr += '<div><font><b><{$lang.repository_scpj_name}></b></font></div>';
+			htmlStr += '<div class="pd05 policyUnselectColor"><nobr><img src="images/repository/default/icon_green.jpg" alt="green"><font><b>Green</b></font></nobr></br>';
+			htmlStr += "<{$lang.repository_scpj_policy_green}>";
+			htmlStr += '</div>';
+			htmlStr += '<div class="pd05 policyUnselectColor"><nobr><img src="images/repository/default/icon_blue.jpg" alt="blue"><font><b>Blue</b></font></nobr></br>';
+			htmlStr += "<{$lang.repository_scpj_policy_blue}>";
+			htmlStr += '</div>';
+			htmlStr += '<div class="pd05 policyUnselectColor"><nobr><img src="images/repository/default/icon_yellow.jpg" alt="yellow"><font><b>Yellow</b></font></nobr></br>';
+			htmlStr += "<{$lang.repository_scpj_policy_yellow}>";
+			htmlStr += '</div>';
+			htmlStr += '<div class="pd05 policyUnselectColor"><nobr><img src="images/repository/default/icon_white.jpg" alt="white"><font><b>White</b></font></nobr></br>';
+			htmlStr += "<{$lang.repository_scpj_policy_white}>";
+			htmlStr += '</div>';
+			htmlStr += '<div class="pd05 policyUnselectColor"><nobr><img src="images/repository/default/icon_gray.jpg" alt="gray"><font><b>Gray</b></font></nobr></br>';
+		    htmlStr += "<{$lang.repository_scpj_policy_gray}>";
+		    htmlStr += '</div>';
+		    
+		}else if(acquiring == 'Romeo'){
+			htmlStr += '<div><font><b><{$lang.repository_romeo_name}></b></font></div>';
+			htmlStr += '<div class="pd05 policyUnselectColor"><nobr><img src="images/repository/default/icon_green.jpg" alt="green"><font><b>Green</b></font></nobr></br>';
+			htmlStr += "<{$lang.repository_romeo_policy_green}>";
+			htmlStr += '</div>';
+			htmlStr += '<div class="pd05 policyUnselectColor"><nobr><img src="images/repository/default/icon_blue.jpg" alt="blue"><font><b>Blue</b></font></nobr></br>';
+			htmlStr += "<{$lang.repository_romeo_policy_blue}>";
+			htmlStr += '</div>';
+			htmlStr += '<div class="pd05 policyUnselectColor"><nobr><img src="images/repository/default/icon_yellow.jpg" alt="yellow"><font><b>Yellow</b></font></nobr></br>';
+			htmlStr += "<{$lang.repository_romeo_policy_yellow}>";
+			htmlStr += '</div>';
+			htmlStr += '<div class="pd05 policyUnselectColor"><nobr><img src="images/repository/default/icon_white.jpg" alt="white"><font><b>White</b></font></nobr></br>';
+			htmlStr += "<{$lang.repository_romeo_policy_white}>";
+			htmlStr += '</div>';
+			htmlStr += '<div class="pd05 policyUnselectColor"><nobr><img src="images/repository/default/icon_gray.jpg" alt="other"><font><b>Other</b></font></nobr></br>';
+			htmlStr += "<{$lang.repository_romeo_policy_other}>";
+			htmlStr += '</div>';
+		}
+		
+		//待ち画像
+		htmlStr += '<div class="policyLoading" >';
+		htmlStr += '<img broder="0" align="middle" src="<{$smarty.const.CORE_BASE_URL}>/images/common/indicator.gif" />';
+		htmlStr += '</div>';
+		
+		htmlStr += '</div>';
+		
+		// display
+		var element = $(parentElementId);
+		element.innerHTML = htmlStr;
+		element.style.display = 'inline';
+		element.style.opacity = 2.0;
+	}
+	
+	//ポリシー表示処理
+	createPolicyHtml<{$id}> = function(response, parentElementId){
+		var policyJson = response.responseText;
+		if( policyJson.length > 0)
+		{
+			var policyObj = eval( "("+policyJson+")");
+			
+			var htmlStr = '';
+			htmlStr += '<div class="policyColor">';
+			htmlStr += '<div><div onclick="repositoryCls[';
+			htmlStr += "'"+'<{$id}>'+"'";
+			htmlStr += '].repositoryPopupClose(';
+			htmlStr += "$("+"'"+parentElementId.id+"'"+")";
+			htmlStr += ');">';
+			if(policyObj.acquiring == 'SCPJ'){
+				htmlStr += '<font><b><{$lang.repository_scpj_name}></b></font>';
+			}else if(policyObj.acquiring == 'Romeo'){
+				htmlStr += '<font><b><{$lang.repository_romeo_name}></b></font>';
+			}
+			htmlStr += '<img align="right" src="images/repository/default/close.png" alt="close"></div>';
+			htmlStr += '</div>';
+			if(policyObj.isPolicyExist == '1')
+			{
+				var existPolicyStr = createExistPolicy<{$id}>(policyObj);
+				htmlStr += existPolicyStr;
+			}else{
+				
+				var unknownStr = createUnkownPolicy<{$id}>(policyObj);
+				htmlStr += unknownStr;
+			}
+			htmlStr += '</div>';
+			
+			// display
+			var element = $(parentElementId);
+			element.innerHTML = htmlStr;
+			element.style.display = 'inline';
+			element.style.opacity = 2.0;
+			
+			// set fead out timmer
+			setTimeout(function(){ repositoryCls['<{$id}>'].repositoryFadeOut('<{$id}>', $(parentElementId) ) }, 3000);
+			
+			suggestJournalTitleListCrear<{$id}>();
+		}
+	}
+	
+	//ポリシーが存在する場合
+	createExistPolicy<{$id}> = function(policyObj){
+		var htmlStr = '';
+		
+		if(policyObj.policycolour == 'green'){
+		    htmlStr += '<div class="pd05 policySelectColor">';
+		}else{
+		    htmlStr += '<div class="pd05 policyUnselectColor">';
+		}
+		htmlStr += '<nobr><img src="images/repository/default/icon_green.jpg" alt="green"><font><b>Green</b></font></nobr></br>';
+		if(policyObj.acquiring == 'SCPJ'){
+			htmlStr += "<{$lang.repository_scpj_policy_green}>";
+		}else if(policyObj.acquiring == 'Romeo'){
+			htmlStr += "<{$lang.repository_romeo_policy_green}>";
+		}
+		if(policyObj.policycolour == 'green'){
+			htmlStr += '[ <a target="_blank" href="'+policyObj.policyJournalUrl+'" id="detail_<{$id}>">detail</a> ]';
+		}
+		htmlStr += '</div>';
+		
+		if(policyObj.policycolour == 'blue'){
+		    htmlStr += '<div class="pd05 policySelectColor">';
+		}else{
+		    htmlStr += '<div class="pd05 policyUnselectColor">';
+		}
+		htmlStr += '<nobr><img src="images/repository/default/icon_blue.jpg" alt="blue"><font><b>Blue</b></font></nobr></br>';
+		if(policyObj.acquiring == 'SCPJ'){
+			htmlStr += "<{$lang.repository_scpj_policy_blue}>";
+		}else if(policyObj.acquiring == 'Romeo'){
+			htmlStr += "<{$lang.repository_romeo_policy_blue}>";
+		}
+		if(policyObj.policycolour == 'blue'){
+			htmlStr += '[ <a target="_blank" href="'+policyObj.policyJournalUrl+'" id="detail_<{$id}>">detail</a> ]';
+		}
+		htmlStr += '</div>';
+		
+		if(policyObj.policycolour == 'yellow'){
+		    htmlStr += '<div class="pd05 policySelectColor">';
+		}else{
+		    htmlStr += '<div class="pd05 policyUnselectColor">';
+		}
+		htmlStr += '<nobr><img src="images/repository/default/icon_yellow.jpg" alt="yellow"><font><b>Yellow</b></font></nobr></br>';
+		if(policyObj.acquiring == 'SCPJ'){
+			htmlStr += "<{$lang.repository_scpj_policy_yellow}>";
+		}else if(policyObj.acquiring == 'Romeo'){
+			htmlStr += "<{$lang.repository_romeo_policy_yellow}>";
+		}
+		if(policyObj.policycolour == 'yellow'){
+			htmlStr += '[ <a target="_blank" href="'+policyObj.policyJournalUrl+'" id="detail_<{$id}>">detail</a> ]';
+		}
+		htmlStr += '</div>';
+		
+		if(policyObj.policycolour == 'white'){
+		    htmlStr += '<div class="pd05 policySelectColor">';
+		}else{
+		    htmlStr += '<div class="pd05 policyUnselectColor">';
+		}
+		htmlStr += '<nobr><img src="images/repository/default/icon_white.jpg" alt="white"><font><b>White</b></font></nobr></br>';
+		if(policyObj.acquiring == 'SCPJ'){
+			htmlStr += "<{$lang.repository_scpj_policy_white}>";
+		}else if(policyObj.acquiring == 'Romeo'){
+			htmlStr += "<{$lang.repository_romeo_policy_white}>";
+		}
+		if(policyObj.policycolour == 'white'){
+			htmlStr += '[ <a target="_blank" href="'+policyObj.policyJournalUrl+'" id="detail_<{$id}>">detail</a> ]';
+		}
+		htmlStr += '</div>';
+		
+		
+		if(policyObj.acquiring == 'SCPJ'){
+			if(policyObj.policycolour == 'gray'){
+			    htmlStr += '<div class="pd05 policySelectColor">';
+			}else{
+			    htmlStr += '<div class="pd05 policyUnselectColor">';
+			}
+		    htmlStr += '<nobr><img src="images/repository/default/icon_gray.jpg" alt="gray"><font><b>Gray</b></font></nobr></br>';
+		    htmlStr += "<{$lang.repository_scpj_policy_gray}>";
+			if(policyObj.policycolour == 'gray'){
+				htmlStr += '[ <a target="_blank" href="'+policyObj.policyJournalUrl+'" id="detail_<{$id}>">detail</a> ]';
+			}
+		    htmlStr += '</div>';
+		    
+		    htmlStr += '<div class="scpjLink" align="right">';
+		    htmlStr += '<a target="_blank" href="mailto:scpj@tulips.tsukuba.ac.jp?subject=';
+		    htmlStr += policyObj.jtitle;
+		    htmlStr += '&amp;body=">';
+		    htmlStr += '<{$lang.repository_policy_feedbackmail_linkname}>';
+		    htmlStr += '</a>';
+		    htmlStr += '</div>';
+		}else if(policyObj.acquiring == 'Romeo'){
+			//どの色でもない場合
+			if((policyObj.policycolour != 'green')&&(policyObj.policycolour != 'blue')&&(policyObj.policycolour != 'yellow')&&(policyObj.policycolour != 'white')){
+				htmlStr += '<div class="pd05 policySelectColor">';
+				htmlStr += '<nobr><img src="images/repository/default/icon_gray.jpg" alt="other"><font><b>Other</b></font></nobr></br>';
+				htmlStr += "<{$lang.repository_romeo_policy_other}>";
+				htmlStr += '[ <a target="_blank" href="'+policyObj.policyJournalUrl+'" id="detail_<{$id}>">detail</a> ]';
+				htmlStr += '</div>';
+			}else{
+				htmlStr += '<div class="pd05 policyUnselectColor">';
+				htmlStr += '<nobr><img src="images/repository/default/icon_gray.jpg" alt="other"><font><b>Other</b></font></nobr></br>';
+				htmlStr += "<{$lang.repository_romeo_policy_other}>";
+				htmlStr += '</div>';
+			}
+		}
+		
+		return htmlStr;
+	}
+	
+	//ポリシーが存在しない場合
+	createUnkownPolicy<{$id}> = function(policyObj){
+		var htmlStr = '';
+		
+		htmlStr += '<{$lang.repository_policy_unkown_message}>';
+		htmlStr += '</br>'
+		htmlStr += '<{$lang.repository_policy_unkown_detail_url_message}>';
+		if(policyObj.acquiring == 'Romeo'){
+			htmlStr += '<div class="pd05 policyUnselectColor">';
+			htmlStr += '<nobr><font><b>Romeo</b></font>'
+			htmlStr += '[ <a target="_blank" href="'+policyObj.policyJournalUrl+'" id="detail_<{$id}>">detail</a> ]';
+			htmlStr += '</nobr>';
+			htmlStr += '</div>';
+		}
+		else if(policyObj.acquiring == 'SCPJ'){
+			htmlStr += '<div class="pd05 policyUnselectColor">';
+			htmlStr += '<nobr><font><b>SCPJ</b></font>'
+			htmlStr += '[ <a target="_blank" href="'+policyObj.policyJournalUrl+'" id="detail_<{$id}>">detail</a> ]';
+			htmlStr += '</nobr>';
+			htmlStr += '</div>';
+		}
+		
+		return htmlStr;
+	}
+	
+</script>
+<{* Add JournalTitle List A.Jin 2013/4/3  --end-- *}>
+<{* Add Sent Feedback Mail R.Matsuura 2013/11/11 --start-- *}>
+<script class="nc_script" type="text/javascript">
+    addFeedbackMailAddress<{$id}> = function() {
+        var feedback_mail_suggest_id = "feedback_mail_suggest_id<{$id}>";
+        var send_feedback_mail_address_id = "send_feedback_mail_address_id<{$id}>";
+        var send_feedback_mail_address_mailaddresses_id = "send_feedback_mail_address_mailaddresses_id<{$id}>";
+        var send_feedback_mail_address_author_id = "send_feedback_mail_address_author_id<{$id}>";
+        
+        var feedback_mail_suggest = $(feedback_mail_suggest_id);
+        var send_feedback_mail_address = $(send_feedback_mail_address_id);
+        var send_feedback_mail_address_mailaddresses = $(send_feedback_mail_address_mailaddresses_id);
+        var send_feedback_mail_address_author = $(send_feedback_mail_address_author_id);
+        
+        for(var cnt=0; cnt<feedback_mail_suggest.length; cnt++){
+            if(feedback_mail_suggest.options[cnt].selected) {
+                isSameAddressExist = false;
+                for(var ii=0; ii<send_feedback_mail_address.length; ii++) {
+                    if(send_feedback_mail_address.options[ii].text == feedback_mail_suggest.options[cnt].text) {
+                        isSameAddressExist = true;
+                    }
+                }
+                if(isSameAddressExist == false) {
+                    send_feedback_mail_address.length++;
+                    send_feedback_mail_address.options[send_feedback_mail_address.length-1].text = feedback_mail_suggest.options[cnt].text;
+                    send_feedback_mail_address.options[send_feedback_mail_address.length-1].value = feedback_mail_suggest.options[cnt].value;
+                }
+            }
+        }
+        var tmpArrayMail = new Array();
+        var tmpArrayAuthor = new Array();
+        for(var cnt=0; cnt<send_feedback_mail_address.length; cnt++) {
+            tmpArrayMail[cnt] = send_feedback_mail_address.options[cnt].value;
+            tmpArrayAuthor[cnt] = send_feedback_mail_address.options[cnt].text;
+        }
+        send_feedback_mail_address_mailaddresses.value = tmpArrayMail.toString();
+        send_feedback_mail_address_author.value = tmpArrayAuthor.toString();
+    }
+</script>
+<script class="nc_script" type="text/javascript">
+    deleteFeedbackmail<{$id}> = function() {
+        var send_feedback_mail_address_id = "send_feedback_mail_address_id<{$id}>";
+        var send_feedback_mail_address_mailaddresses_id = "send_feedback_mail_address_mailaddresses_id<{$id}>";
+        var send_feedback_mail_address_author_id = "send_feedback_mail_address_author_id<{$id}>";
+        
+        var send_feedback_mail_address = $(send_feedback_mail_address_id);
+        var send_feedback_mail_address_mailaddresses = $(send_feedback_mail_address_mailaddresses_id);
+        var send_feedback_mail_address_author = $(send_feedback_mail_address_author_id);
+        
+        var newCnt = 0;
+        var deleteFlag = false;
+        for(var cnt=0; cnt<send_feedback_mail_address.length; cnt++){
+            if(!send_feedback_mail_address.options[cnt].selected) {
+                send_feedback_mail_address.options[newCnt].text = send_feedback_mail_address.options[cnt].text;
+                send_feedback_mail_address.options[newCnt].value = send_feedback_mail_address.options[cnt].value;
+                newCnt++;
+            }
+            else
+            {
+            	deleteFlag = true;
+            }
+        }
+        if (deleteFlag == true)
+        {
+            send_feedback_mail_address.length--;
+        }
+        var tmpArrayMail = new Array();
+        var tmpArrayAuthor = new Array();
+        for(var cnt=0; cnt<send_feedback_mail_address.length; cnt++) {
+            tmpArrayMail[cnt] = send_feedback_mail_address.options[cnt].value;
+            tmpArrayAuthor[cnt] = send_feedback_mail_address.options[cnt].text;
+        }
+        send_feedback_mail_address_mailaddresses.value = tmpArrayMail.toString();
+        send_feedback_mail_address_author.value = tmpArrayAuthor.toString();
+    }
+</script>
+<script class="nc_script" type="text/javascript">
+    suggestFeedbackMail<{$id}> = function() {
+        // Modify Directory specification BASE_URL K.Matsuo 2011/9/2
+        var url = "<{$smarty.const.BASE_URL}>/index.php";
+        var pars = "";
+        pars += 'action=repository_action_main_item_fillauthor';
+        pars += '&page_id=<{$page_id}>';
+        pars += '&block_id=<{$block_id}>';
+        pars += '&surName='+$('feedback_mail_suggest_name_family<{$id}>').value;
+        pars += '&givenName='+$('feedback_mail_suggest_name_given<{$id}>').value;
+        pars += '&surNameRuby='+$('feedback_mail_suggest_name_family_ruby<{$id}>').value;
+        pars += '&givenNameRuby='+$('feedback_mail_suggest_name_given_ruby<{$id}>').value;
+        pars += '&emailAddress='+$('feedback_mail_suggest_name_email<{$id}>').value;
+        pars += '&externalAuthorID='+$('feedback_mail_suggest_name_author_id_suffix<{$id}>').value;
+        pars += '&attrId=0';
+        pars += '&attrNo=0';
+        var myAjax = new Ajax.Request(
+            url,
+            {
+                method: 'post',
+                parameters: pars,
+                onSuccess: function(req) {
+                    var feedbackMailSuggest = $('feedback_mail_suggest_id<{$id}>');
+                    if(req.responseText.length < 1)
+                    {
+                        feedbackMailSuggest.length = 0;
+                    }
+                    authorList = eval("("+req.responseText+")");
+                    var wekoAuthorList = eval(authorList.authorList);
+                    var cnt = 0;
+                    feedbackMailSuggest.length = 0;
+                    for(cnt = 0; cnt < wekoAuthorList.length; cnt++)
+                    {
+                        feedbackMailSuggest.length++;
+                        feedbackMailSuggest.options[cnt].value = wekoAuthorList[cnt].emailAddress;
+                        feedbackMailSuggest.options[cnt].text = wekoAuthorList[cnt].surName + " " + wekoAuthorList[cnt].givenName + " " + wekoAuthorList[cnt].emailAddress;
+                    }
+                },
+                onFailure: function(req) {
+                },
+                onComplete: function(req) {
+                }
+            }
+        );
+    }
+</script>
+<{* Add Sent Feedback Mail R.Matsuura 2013/11/11 --end-- *}>
+<{include file="repository_script.html"}>
+<{/if}>

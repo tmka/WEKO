@@ -1,0 +1,31 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_charge.html 12845 2011-11-09 10:45:05Z yuko_nakao $      -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{* charge info *}>
+<div>
+ <table align="center" width="700px">
+  <tr>
+    <th style="text-align:left;"><div class="th_repos text_color"><{$lang.repository_workflow_chrage}></div></th>
+  </tr>
+ </table>
+</div>
+
+<div class="paging">
+  <table align="center" width="700px">
+    <tr>
+      <td>
+        <iframe src="<{$action.charge_url}>" name="disp_name" id="disp_id" frameborder="0" scrolling="auto" style="height: 500px; width: 700px;"></iframe>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<{include file="repository_script.html"}>

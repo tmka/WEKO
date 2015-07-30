@@ -1,0 +1,193 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_item_type_setting.html 22981 2013-05-30 05:43:08Z ayumi_jin $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<div class="mt10">
+<{* エラー表示 *}>
+<{if $smarty.session.error_code!=""}>
+ <div class="paging" style="color: #ff0000;">
+ <{if $smarty.session.error_code=="1"}><{$lang.db_repeat_error}><{/if}>
+ <{if $smarty.session.error_code=="2"}><{$lang.db_itemtype_notthing_error}><{/if}>
+ <{if $smarty.session.error_code=="6"}><{$lang.itemtype_null_error}><{/if}>
+ <{if $smarty.session.error_code=="7"}><{$lang.itemtype_update_error}><{/if}>
+ <{if $smarty.session.error_code=="9"}><{$lang.db_itemtype_itemname_error}><{/if}>
+ </div>
+<{/if}>
+<{if $action.error_msg!=""}>
+ <div class="paging" style="color: #ff0000;">
+  <{$action.error_msg}>
+ </div>
+<{/if}>
+
+<{*make item type*}>
+<div class="ac">
+ <table class="w800px tb00 box_center mb20">
+	<{*ヘルプ*}>
+	<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+		<tr>
+			<td align="right" class="ptb10">
+				<a href="#" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'itemtype_making'); return false;" style="cursor: help;">
+					<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" align="right" alt="help">
+				</a>
+			</td>
+		</tr>
+	<{/if}>
+  <tr>
+   <th><div align="left" class="th_repos_title_bar"><{$lang.repository_itemtype_create}></div></th>
+  </tr>
+  <tr>
+   <td class="ranking_list_paging ac">
+    <input type="button" class="btn_white" value="<{$lang.repository_itemtype_new}>" onclick="javascript: makeitemtype(1);"/><{*create*}>
+    <input type="button" class="btn_white" value="<{$lang.repository_itemtype_edit_import}>" onclick="javascript: makeitemtype(2);"/><{*import*}>
+   </td>
+  </tr>
+ </table>
+
+ <!-- アイテムタイプ選択 -->
+
+ <table id="create" class="w800px tb00 box_center mb20" style="display:none;">
+  <tr>
+   <td class="ranking_list_paging ac">
+	 <{if $smarty.session._lang == "japanese"}>
+		<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_type_settings9.png" />
+	 <{else}>
+		<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_type_settings9_eng.png" />
+	 <{/if}>
+   </td>
+  </tr>
+  <tr>
+   <td class="ranking_list_paging ac">
+    <table class="box_center ac">
+     <tr>
+      <td class="ranking_list_paging" colspan="2">
+       <{$lang.repository_itemtype_input_itemtype_name}>
+      </td>
+     </tr>
+     <tr>
+      <td class="w500px">
+       <form action="./Createitem_type_Edit_1.html" id="itemtype_create" method="post" class="mr05">
+       <input type="text" name="dummy" style="position:absolute;visibility:hidden"><!-- エンターキーはじく処理 -->
+       <input type="Text" name="item_type_name" value="" class="full">
+       </form>
+      </td>
+      <td>
+       <input type="button" class="btn_next" value="<{$lang.repository_page_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemTypeCreate(); return false;">
+      </td>
+     </tr>
+    </table>
+   </td>
+  </tr>
+ </table>
+
+ <{* Item type Import *}>
+ <!-- アイテムタイプ読み込み -->
+ <table id="import" style="display:none;" class="w800px tb00 box_center mtb20">
+  <tr>
+   <td class="ranking_list_paging ac">
+	 <{if $smarty.session._lang == "japanese"}>
+		<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_type_settings7.png" />
+	 <{else}>
+		<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_type_settings7_eng.png" />
+	 <{/if}>
+   </td>
+  </tr>
+  <tr>
+   <td class="ranking_list_paging ac">
+     <div class="ranking_list_paging">
+      <{$lang.repository_itemtype_select_import_file}>
+     </div>
+     <form id="attachment_form<{$id}>" target="attachment_form<{$id}>" enctype="multipart/form-data">
+      <div class="nowrap">
+       <input type="file" name="upload[]" size=50 class="upload"/>
+      </div>
+     </form>
+     <div class="ranking_list_paging ac">
+     <input type="button" class="btn_white" value="<{$lang.repository_itemtype_edit_import}>" onclick="repositoryCls['<{$id}>'].repositoryImportItemtypeFileUpload(); return false;">
+    </div>
+   </td>
+  </tr>
+ </table>
+</div>
+
+<{if $smarty.session.item_type_edit_flag==0 && count($action.itemtype_data)>$smarty.session.def_item_type_num}>
+<div class="paging" style="text-align:center; color:#ff0000;">
+ <b><{$lang.repository_itemtype_mapping}></b>
+</div>
+<{/if}>
+
+<{* アイテムタイプ管理 *}>
+<!-- アイテムタイプ管理 -->
+<form action="./Createitem_type_Edit_1.html" id="itemtype_setting" method="post">
+<div class="th_classic_content content text_color ac">
+ <table class="w800px tb00 box_center mb20">
+  <tr>
+   <th><div class="th_repos_title_bar al" ><{$lang.repository_itemtype_setting}></div></th>
+  </tr>
+  <tr>
+   <td class="ranking_list_paging ac">
+	 <{if $smarty.session._lang == "japanese"}>
+		<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_type_settings1.png" />
+	 <{else}>
+		<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_type_settings1_eng.png" />
+	 <{/if}>
+   </td>
+  </tr>
+  <tr>
+   <td class="ranking_list_paging" style="text-align: center;">
+    <div class="ranking_list_paging" style="text-align: center;">
+     <select name="item_type_id" class="w500px">
+      <!-- アイテムタイプ一覧をスクリプトで登録。valueは主キー, 表示はアイテムタイプ名 -->
+      <{foreach from=$action.itemtype_data item=item_type}>
+       <option value="<{$item_type[0]}>" <{if $smarty.session.item_type_edit_flag==0 && count($action.itemtype_data)>12}>SELECTED<{/if}>><{$item_type[1]}></option>
+      <{/foreach}>
+     </select>
+    </div>
+    <div class="ranking_list_paging" style="text-align: center;">
+     <input type="button" class="btn_white" value="<{$lang.repository_itemtype_edit_metadata}>" onclick="repositoryCls['<{$id}>'].repositoryItemTypeEdit(); return false;">
+     <input type="button" class="btn_white" value="<{$lang.repository_itemtype_edit_mapping}>" style="color:#000000;" id="mapping_btn" <{if $smarty.session.item_type_edit_flag==0 && count($action.itemtype_data)>12}> onload="setInterval('blinkButton()',1000);" <{/if}> onclick="repositoryCls['<{$id}>'].repositoryItemTypeMapping(); return false;">
+     <input type="button" class="btn_white" value="<{$lang.repository_itemtype_edit_export}>" onclick="repositoryCls['<{$id}>'].repositoryItemTypeExport(); return false;">
+     <input type="button" class="btn_white" value="<{$lang.repository_itemtype_copy}>" onclick="repositoryCls['<{$id}>'].repositoryItemTypeCopy(); return false;">
+     <{*アイテムタイプ(論理)削除, 実装済みだが削除時の影響大。*}>
+     <{*実際は論理削除せず、アイテムタイプ編集およびこの削除されたアイテムタイプの新規作成ができなくなる*}>
+     <input type="button" class="btn_delete" value="<{$lang.repository_delete}>" onclick="if(!commonCls.confirm('<{$lang.repository_confimation_delete}>'))return false; repositoryCls['<{$id}>'].repositoryItemTypeDelete(); return false;">
+    </div>
+   </td>
+  </tr>
+ </table>
+</div>
+    <input type="hidden" id="page_id" value="<{$page_id}>">
+    <input type="hidden" id="block_id" value="<{$block_id}>">
+</form>
+</div>
+<{include file="repository_script.html"}>
+
+
+<script class="nc_script" type="text/javascript">
+	makeitemtype = function(make_type){
+		if(make_type == "1"){
+			$('create').style.display = "";
+			$('import').style.display = "none";
+		} else if(make_type == "2"){
+			$('create').style.display = "none";
+			$('import').style.display = "";
+		}
+	}
+</script>
+
+<script class="nc_script" type="text/javascript">
+	blinkButton = function(){
+		if($('mapping_btn').style.color == ''){
+			$('mapping_btn').style.color = '#ff0000';
+		} else {
+			$('mapping_btn').style.color = '#000000';
+		}
+	}
+</script>
+

@@ -1,0 +1,592 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_item_type_edit.html 36229 2014-05-26 05:49:55Z satoshi_arata $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{*repositoryアイテムタイプ編集*}>
+<div class="ac mtb10">
+	
+	<table class="box_center">
+		<{*ヘルプ*}>
+		<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+			<tr>
+				<td align="right" class="ptb10">
+					<div>
+						<a href="#" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'itemtype_edit'); return false;" style="cursor: help;">
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" align="right" alt="help">
+						</a>
+					</div>
+				</td>
+			</tr>
+		<{/if}>
+		<tr>
+			<td>
+				<{if $smarty.session._lang == "japanese"}>
+					<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_type_settings2.png" />
+				<{else}>
+					<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_type_settings2_eng.png" />
+				<{/if}>
+			</td>
+		</tr>
+	</table>
+	
+</div>
+
+<{if $smarty.session.error_code!=""}>
+  <div class="paging" style="color: #ff0000;">
+     <{if $smarty.session.error_code=="1"}><{$lang.db_repeat_error}><{/if}>
+     <{if $smarty.session.error_code=="2"}><{$lang.db_itemtype_notthing_error}><{/if}>
+     <{if $smarty.session.error_code=="3"}><{$lang.db_itemtype_name_error}><{/if}>
+     <{if $smarty.session.error_code=="4"}><{$lang.db_itemtype_candidate_error}><{/if}>
+     <{if $smarty.session.error_code=="5"}><{$lang.db_itemtype_candidate_null_error}><{/if}>
+     <{if $smarty.session.error_code=="6"}><{$lang.itemtype_null_error}><{/if}>
+     <{if $smarty.session.error_code=="7"}><{$lang.repository_itemtype_lost_info}><{/if}>
+  </div>
+<{/if}>
+
+<div class="paging text_color" align="center">
+<form action="./Confirm_ItemType.html" method="post" id="item_edit_text">
+<table class="wide tb00 box_center mb20">
+ <tr>
+  <td class="al">
+    <select class="w45" name="item_type_id" size="1"
+            <{if $smarty.session.item_type_id >= 20001}>disabled="disabled"<{/if}>>
+     <!-- アイテムタイプ一覧をスクリプトで登録。valueは主キー, 表示はアイテムタイプ名 -->
+     <{foreach from=$action.itemtype_data item=item_type}>
+      <option value="<{$item_type[0]}>"><{$item_type[1]}></option>
+     <{/foreach}>
+    </select>
+    <input type="button" class="btn_white" value="<{$lang.repository_itemtype_load}>" onclick="repositoryCls['<{$id}>'].repositoryItemTypeLoad(); return false;"
+           <{if $smarty.session.item_type_id >= 20001}>disabled="disabled"<{/if}> />
+  </td>
+ </tr>
+ <tr>
+  <td class="ranking_list_paging ac bold pt15">
+   <!-- セッション情報からアイテムタイプを取得し、表示 -->
+   <{if $smarty.session.item_type_id >= 20001}>
+    <input type="hidden" name="item_type_name" value="<{$smarty.session.item_type_name}>"/>
+   <{/if}>
+   <{$lang.repository_itemtype}> : <input class="w45" type="text" value="<{$smarty.session.item_type_name}>"<{if $smarty.session.item_type_id >= 20001}>disabled="disabled"<{else}>name="item_type_name"<{/if}>>
+  </td>
+ </tr>
+ <tr>
+  <td>
+    <table name="table" class="tb01 box_center full">
+     <tr>
+      <th class="item_edit_list w20"><{$lang.repository_attribute_name}></th>
+      <th class="item_edit_list w20"><{$lang.repository_attribute}></th>
+      <th class="item_edit_list w30"><{$lang.repository_opption}></th>
+      <th class="item_edit_list w10"><{$lang.repository_shuffle}></th>
+      <th class="item_edit_list w20"><{$lang.repository_delete}></th>
+     </tr>
+     <{* タイトル *}>
+     <tr>
+      <td class="item_edit_list al"><{$lang.repository_title}></td>
+      <td class="item_edit_list al"><{$lang.repository_text}></td>
+      <td class="item_edit_list al pr30">
+       <label><input type="checkbox" name="required_1" value="<{$lang.repository_requier}>" checked disabled="disabled"><{$lang.repository_requier}></label><br />
+       <label><input type="checkbox" name="snippet_1" value="<{$lang.repository_plural}>" disabled="disabled"><{$lang.repository_plural}></label><br />
+       <label><input type="checkbox" name="snippet_1" value="<{$lang.repository_listview}>" checked disabled="disabled"><{$lang.repository_listview}></label><br />
+       <label><input type="checkbox" name="" value="<{$lang.repository_newline}>" checked disabled="disabled"><{$lang.repository_newline}></label><br />
+       <label><input type="checkbox" name="" value="<{$lang.repository_hidden}>" disabled="disabled"><{$lang.repository_hidden}></label>
+      </td>
+      <{* 行入れ替え用 *}>
+      <td class="item_edit_list ac"></td>
+      <td class="item_edit_list ac"></td>
+     </tr>
+     <{* タイトル(英) *}>
+     <tr>
+      <td class="item_edit_list al"><{$lang.repository_title_english}></td>
+      <td class="item_edit_list al"><{$lang.repository_text}></td>
+      <td class="item_edit_list al pr30">
+       <label><input type="checkbox" name="required_1" value="<{$lang.repository_requier}>" checked disabled="disabled"><{$lang.repository_requier}></label><br />
+       <label><input type="checkbox" name="snippet_1" value="<{$lang.repository_plural}>" disabled="disabled"><{$lang.repository_plural}></label><br />
+       <label><input type="checkbox" name="snippet_1" value="<{$lang.repository_listview}>" checked disabled="disabled"><{$lang.repository_listview}></label><br />
+       <label><input type="checkbox" name="" value="<{$lang.repository_newline}>" checked disabled="disabled"><{$lang.repository_newline}></label><br />
+       <label><input type="checkbox" name="" value="<{$lang.repository_hidden}>" disabled="disabled"><{$lang.repository_hidden}></label>
+      </td>
+      <{* 行入れ替え用 *}>
+      <td class="item_edit_list ac"></td>
+      <td class="item_edit_list ac"></td>
+     </tr>
+     <{* 言語 *}>
+     <tr>
+      <td class="item_edit_list al"><{$lang.repository_language}></td>
+      <td class="item_edit_list al"><{$lang.repository_text}></td>
+      <td class="item_edit_list al pr30">
+       <{* 必須 *}>
+       <label><input type="checkbox" name="required_2" checked="true" value="<{$lang.repository_requier}>" disabled="disabled"><{$lang.repository_requier}></label><br />
+       <{* 複数可否 *}>
+       <label><input type="checkbox" name="" value="<{$lang.repository_plural}>" disabled="disabled"><{$lang.repository_plural}></label><br />
+       <{* 一覧表示 *}>
+       <label><input type="checkbox" name="snippet_2" value="<{$lang.repository_listview}>" disabled="disabled"><{$lang.repository_listview}></label><br />
+       <{* 改行指定 *}>
+       <label><input type="checkbox" name="" value="<{$lang.repository_newline}>" disabled="disabled"><{$lang.repository_newline}></label><br />
+       <{* 非表示指定 *}>
+       <label><input type="checkbox" name="" value="<{$lang.repository_hidden}>" disabled="disabled"><{$lang.repository_hidden}></label>
+      </td>
+      <{* 行入れ替え用 *}>
+      <td class="item_edit_list" width="30px"></td>
+      <td class="item_edit_list" ></td>
+     </tr>
+     <{*公開日*}>
+     <tr>
+      <td class="item_edit_list al"><{$lang.repository_pub_date}></td>
+      <td class="item_edit_list al"><{$lang.repository_attribute_type_date}></td>
+      <td class="item_edit_list al pr30">
+       <{* 必須 *}>
+       <label><input type="checkbox" name="required_2" checked="true" value="<{$lang.repository_requier}>" disabled="disabled"><{$lang.repository_requier}></label><br />
+       <{* 複数可否 *}>
+       <label><input type="checkbox" name="" value="<{$lang.repository_plural}>" disabled="disabled"><{$lang.repository_plural}></label><br />
+       <{* 一覧表示 *}>
+       <label><input type="checkbox" name="snippet_2" value="<{$lang.repository_listview}>" disabled="disabled"><{$lang.repository_listview}></label><br />
+       <{* 改行指定 *}>
+       <label><input type="checkbox" name="" value="<{$lang.repository_newline}>" disabled="disabled"><{$lang.repository_newline}></label><br />
+       <{* 非表示指定 *}>
+       <label><input type="checkbox" name="" value="<{$lang.repository_hidden}>" disabled="disabled"><{$lang.repository_hidden}></label>
+      </td>
+      <{* 行入れ替え用 *}>
+      <td class="item_edit_list ac"></td>
+      <td class="item_edit_list ac" ></td>
+     </tr>
+     <{* キーワード *}>
+     <tr>
+      <td class="item_edit_list al"><{$lang.repository_keyword}></td>
+      <td class="item_edit_list al"><{$lang.repository_text}></td>
+      <td class="item_edit_list al pr30">
+       <!-- Add id server connect check for "file_price" 2009/04/01 Y.Nakao --start-- -->
+       <input type="hidden" id="chk_fileprice" value=""/>
+       <!-- Add id server connect check for "file_price" 2009/04/01 Y.Nakao --end-- -->
+       <!-- Add id server connect check for "supple" 2009/08/12 K.Ito --start-- -->
+       <input type="hidden" id="chk_supple" value=""/>
+       <!-- Add id server connect check for "supple" 2009/08/12 K.Ito --end-- -->
+       <!-- Add contents page 2010/07/02 Y.Nakao --start-- -->
+       <input type="hidden" id="chk_heading" value=""/>
+       <!-- Add contents page 2010/07/02 Y.Nakao --end-- -->
+       
+       <{* 必須 *}>
+       <label><input type="checkbox" name="required_2" value="<{$lang.repository_requier}>" disabled="disabled"><{$lang.repository_requier}></label><br />
+       <{* 複数可否 *}>
+       <label><input type="checkbox" name="" value="<{$lang.repository_plural}>" disabled="disabled"><{$lang.repository_plural}></label><br />
+       <{* 一覧表示 *}>
+       <label><input type="checkbox" name="snippet_2" value="<{$lang.repository_listview}>" disabled="disabled"><{$lang.repository_listview}></label><br />
+       <{* 改行指定 *}>
+       <label><input type="checkbox" name="" value="<{$lang.repository_newline}>" disabled="disabled"><{$lang.repository_newline}></label><br />
+       <label><{* 非表示指定 *}>
+       <input type="checkbox" name="" value="<{$lang.repository_hidden}>" disabled="disabled"><{$lang.repository_hidden}></label>
+      </td>
+      <{* 行入れ替え用 *}>
+      <td class="item_edit_list"></td>
+      <td class="item_edit_list"></td>
+     </tr>
+     <{* キーワード(英) *}>
+     <tr>
+      <td class="item_edit_list al"><{$lang.repository_keyword_english}></td>
+      <td class="item_edit_list al"><{$lang.repository_text}></td>
+      <td class="item_edit_list al pr30">
+       <!-- Add id server connect check for "file_price" 2009/04/01 Y.Nakao --start-- -->
+       <input type="hidden" id="chk_fileprice" value=""/>
+       <!-- Add id server connect check for "file_price" 2009/04/01 Y.Nakao --end-- -->
+       
+       <!-- Add id server connect check for "supple" 2009/08/12 K.Ito --start-- -->
+       <input type="hidden" id="chk_supple" value=""/>
+       <!-- Add id server connect check for "supple" 2009/08/12 K.Ito --end-- -->
+       
+       <{* 必須 *}>
+       <label><input type="checkbox" name="required_2" value="<{$lang.repository_requier}>" disabled="disabled"><{$lang.repository_requier}></label><br />
+       <{* 複数可否 *}>
+       <label><input type="checkbox" name="" value="<{$lang.repository_plural}>" disabled="disabled"><{$lang.repository_plural}></label><br />
+       <{* 一覧表示 *}>
+       <label><input type="checkbox" name="snippet_2" value="<{$lang.repository_listview}>" disabled="disabled"><{$lang.repository_listview}></label><br />
+       <{* 改行指定 *}>
+       <label><input type="checkbox" name="" value="<{$lang.repository_newline}>" disabled="disabled"><{$lang.repository_newline}></label><br />
+       <{* 非表示指定 *}>
+       <label><input type="checkbox" name="" value="<{$lang.repository_hidden}>" disabled="disabled"><{$lang.repository_hidden}></label>
+      </td>
+      <{* 行入れ替え用 *}>
+      <td class="item_edit_list ac"></td>
+      <td class="item_edit_list ac"></td>
+     </tr>
+     
+    <!--
+       解説しよう。まずループ対象の配列(array)をアクションのメンバに持っておく。
+       foreachはfromで指定した配列の要素数だけループ。ループごとの配列要素名はitemで指定する。
+       次行のassignではloop_numに現在のループ数を割り当てている。
+       これで、以下にloop_num番目の配列要素metadataに対する処理を書き込めばよい。
+       ※name="XXX[]"とすると、配列XXXがリクエストパラメタとしてわたる。
+       maple.iniではXXXでバリデート。actionメソッドではXXX[0], XXX[1]等で参照することができる。
+    -->
+
+     <{* メタデータ情報書き出し actionクラスメンバから *}>
+     <{foreach from=$action.metadata_array item=metadata name=meta}>
+      <!-- ↓ 2008/02/26-->
+      <!--<{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}>-->
+      <{assign var="loop_num" value=$smarty.foreach.meta.iteration-1}> 
+      <tr>
+       <td class="item_edit_list al">
+        <{if ($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
+             ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
+             ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
+             ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) ||
+		($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) }>
+         <input type="hidden" name="metadata_title[]" value="<{$metadata[0]}>"/>
+        <{/if}>
+        
+        <{if ($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
+             ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
+             ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
+             ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) }>
+            <{$metadata[0]}>
+            <{* add multi language 2013/07/23 K.Matsuo --start *}>
+            <div align="right" style="min-width:100px">
+                <a href="#" nowrap onclick="repositoryCls['<{$id}>'].repositoryShowItemTypeMultiLanguagePopup(event,'<{$loop_num}>', false, '<{$page_id}>','<{$block_id}>'); return false;" ><{$lang.repository_itemtype_multi_setting}></a>
+            </div>
+            <{* add multi language 2013/07/23 K.Matsuo --end *}>
+        <{else}>
+            <input type="text" id="textbox<{$loop_num}>" value="<{$metadata[0]}>" name="metadata_title[]">
+            <{* add multi language 2013/07/23 K.Matsuo --start *}>
+            <div align="right" style="min-width:100px">
+                <a href="#" nowrap onclick="repositoryCls['<{$id}>'].repositoryShowItemTypeMultiLanguagePopup(event,'<{$loop_num}>', true, '<{$page_id}>','<{$block_id}>'); return false;" ><{$lang.repository_itemtype_multi_setting}></a>
+            </div>
+            <{* add multi language 2013/07/23 K.Matsuo --end *}>
+        <{/if}>
+       </td>
+       
+       <td class="item_edit_list al">
+        <{if ($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
+             ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
+             ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
+             ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) }>
+         <input type="hidden" name="metadata_type[]" value="<{$metadata[1]}>"/>
+        <{/if}>
+
+        <{if ($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
+             ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
+             ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
+             ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) }>
+            <{* metadata *}>
+            <{if $metadata[1]=="text"}><{$lang.repository_attribute_type_text}><{/if}>
+            <{if $metadata[1]=="textarea"}><{$lang.repository_attribute_type_textarea}><{/if}>
+            <{if $metadata[1]=="link"}><{$lang.repository_attribute_type_link}><{/if}>
+            <{if $metadata[1]=="checkbox"}><{$lang.repository_attribute_type_checkbox}><{/if}>
+            <{if $metadata[1]=="radio"}><{$lang.repository_attribute_type_radio}><{/if}>
+            <{if $metadata[1]=="select"}><{$lang.repository_attribute_type_pulldown}><{/if}>
+            <{if $metadata[1]=="name"}><{$lang.repository_attribute_type_name}><{/if}>
+            <{if $metadata[1]=="thumbnail"}><{$lang.repository_attribute_type_image}><{/if}>
+            <{if $metadata[1]=="file"}><{$lang.repository_attribute_type_file}><{/if}>
+            <{if $metadata[1]=="biblio_info"}><{$lang.repository_attribute_type_biblio}><{/if}>
+            <{if $metadata[1]=="date"}><{$lang.repository_attribute_type_date}><{/if}>
+            <{if $metadata[1]=="heading"}><{$lang.repository_attribute_type_heading}><{/if}>
+            <{if $metadata[1]=="supple"}><{$lang.repository_attribute_type_supple}><{/if}>
+            <{if $metadata[1]=="file_price"}><{$lang.repository_attribute_type_fileprice}><{/if}>
+        <{* アイテムタイプ編集時、登録されているメタデータの属性によって選択肢が制限されるように変更 2013/09/11 T.Ichikawa --start-- *}>
+        <{elseif ($smarty.session.item_type_edit_flag == 1 && $smarty.session.attribute_id[$loop_num] >= 1)}>
+            <{* テキスト・テキストエリア・リンク・チェックボックス・ラジオボタン・プルダウン・日付・見出し *}>
+            <{if $metadata[1]=="text" || $metadata[1]=="textarea" || $metadata[1]=="link" || $metadata[1]=="date" || $metadata[1]=="heading" || $metadata[1]=="checkbox" || $metadata[1]=="radio" || $metadata[1]=="select"}>
+            <select id="type<{$loop_num}>" onChange="repositoryCls['<{$id}>'].setSelectItemEditVisible(this.selectedIndex,<{$loop_num}>, createErrorMsg())" name="metadata_type[]">
+                <option value="text" <{if $metadata[1]=="text"}>SELECTED<{/if}>><{$lang.repository_attribute_type_text}></option>
+                <option value="textarea" <{if $metadata[1]=="textarea"}>SELECTED<{/if}>><{$lang.repository_attribute_type_textarea}></option>
+                <option value="link" <{if $metadata[1]=="link"}>SELECTED<{/if}>><{$lang.repository_attribute_type_link}></option>
+                <option value="checkbox" <{if $metadata[1]=="checkbox"}>SELECTED<{/if}>><{$lang.repository_attribute_type_checkbox}></option>
+                <option value="radio" <{if $metadata[1]=="radio"}>SELECTED<{/if}>><{$lang.repository_attribute_type_radio}></option>
+                <option value="select" <{if $metadata[1]=="select"}>SELECTED<{/if}>><{$lang.repository_attribute_type_pulldown}></option>
+                <option value="date" <{if $metadata[1]=="date"}>SELECTED<{/if}>><{$lang.repository_attribute_type_date}></option>
+                <option value="heading" <{if $metadata[1]=="heading"}>SELECTED<{/if}>><{$lang.repository_attribute_type_heading}></option>
+                <{if $metadata[1]=="heading"}>
+                <script class="nc_script" type="text/javascript">
+                        var elm = document.getElementById('chk_heading');
+                        elm.value = '<{$loop_num}>';
+                    </script>
+                <{/if}>
+            </select>
+            <{* ファイル・課金ファイル *}>
+            <{elseif $metadata[1]=="file" || $metadata[1]=="file_price"}>
+            <select id="type<{$loop_num}>" onChange="repositoryCls['<{$id}>'].setSelectFileVisible(this.selectedIndex,<{$loop_num}>, createErrorMsg())" name="metadata_type[]">
+                <option value="file" <{if $metadata[1]=="file"}>SELECTED<{/if}>><{$lang.repository_attribute_type_file}></option>
+                <{if $smarty.session.id_server == "true"}>
+                <option value="file_price" <{if $metadata[1]=="file_price"}>SELECTED<{/if}>><{$lang.repository_attribute_type_fileprice}></option>
+                    <{if $metadata[1]=="file_price"}>
+                    <script class="nc_script" type="text/javascript">
+                        var elm = document.getElementById('chk_fileprice');
+                        elm.value = '<{$loop_num}>';
+                    </script>
+                    <{/if}>
+                <{/if}>
+            </select>
+            <{* 独立したDBを持っている属性は属性の変更が一切不可 *}>
+            <{else}>
+            <label>
+                <{if $metadata[1]=="name"}><{$lang.repository_attribute_type_name}><{/if}>
+                <{if $metadata[1]=="thumbnail"}><{$lang.repository_attribute_type_image}><{/if}>
+                <{if $metadata[1]=="biblio_info"}><{$lang.repository_attribute_type_biblio}><{/if}>
+                <{if $metadata[1]=="heading"}><{$lang.repository_attribute_type_heading}><{/if}>
+                <{if $metadata[1]=="supple"}><{$lang.repository_attribute_type_supple}><{/if}>
+            </label>
+            <{if $metadata[1]=="supple"}>
+                <script class="nc_script" type="text/javascript">
+                    var elm = document.getElementById('chk_supple');
+                    elm.value = '<{$loop_num}>';
+                </script>
+            <{/if}>
+            <input type="hidden" name="metadata_type[]" value="<{$metadata[1]}>"/>
+            <{/if}>
+        <{* アイテムタイプ編集時、登録されているメタデータの属性によって選択肢が制限されるように変更 2013/09/11 T.Ichikawa --end-- *}>
+        <{else}>
+        <select id="type<{$loop_num}>" onChange="repositoryCls['<{$id}>'].setSelectItemVisible(this.selectedIndex,<{$loop_num}>, createErrorMsg())" name="metadata_type[]">
+          <option value="text" <{if $metadata[1]=="text"}>SELECTED<{/if}>><{$lang.repository_attribute_type_text}></option>
+          <option value="textarea" <{if $metadata[1]=="textarea"}>SELECTED<{/if}>><{$lang.repository_attribute_type_textarea}></option>
+          <option value="link" <{if $metadata[1]=="link"}>SELECTED<{/if}>><{$lang.repository_attribute_type_link}></option>
+          <option value="checkbox" <{if $metadata[1]=="checkbox"}>SELECTED<{/if}>><{$lang.repository_attribute_type_checkbox}></option>
+          <option value="radio" <{if $metadata[1]=="radio"}>SELECTED<{/if}>><{$lang.repository_attribute_type_radio}></option>
+          <option value="select" <{if $metadata[1]=="select"}>SELECTED<{/if}>><{$lang.repository_attribute_type_pulldown}></option>
+          <option value="name" <{if $metadata[1]=="name"}>SELECTED<{/if}>><{$lang.repository_attribute_type_name}></option>
+          <option value="thumbnail" <{if $metadata[1]=="thumbnail"}>SELECTED<{/if}>><{$lang.repository_attribute_type_image}></option>
+          <option value="file" <{if $metadata[1]=="file"}>SELECTED<{/if}>><{$lang.repository_attribute_type_file}></option>
+          <option value="biblio_info" <{if $metadata[1]=="biblio_info"}>SELECTED<{/if}>><{$lang.repository_attribute_type_biblio}></option>
+          <{* アイテム属性タイプ：日付を追加 2008/10/10 A.Suzuki --start-- *}>
+          <option value="date" <{if $metadata[1]=="date"}>SELECTED<{/if}>><{$lang.repository_attribute_type_date}></option>
+          <{* アイテム属性タイプ：日付を追加 2008/10/10 A.Suzuki --end-- *}>
+          
+          <{* Add item attr type : heading, Add contents page 2010/07/02 Y.Nakao --start-- *}>
+          <option value="heading" <{if $metadata[1]=="heading"}>SELECTED<{/if}>><{$lang.repository_attribute_type_heading}></option>
+          <{if $metadata[1]=="heading"}>
+              <script class="nc_script" type="text/javascript">
+                var elm = document.getElementById('chk_heading');
+                elm.value = '<{$loop_num}>';
+              </script>
+            <{/if}>
+          <{* Add item attr type : heading, Add contents page 2010/07/02 Y.Nakao --end-- *}>
+          
+          <{* アイテム属性タイプ：サプリを追加 2009/08/12 K.Ito --start-- *}>
+          <option value="supple" <{if $metadata[1]=="supple"}>SELECTED<{/if}>><{$lang.repository_attribute_type_supple}></option>
+          <{if $metadata[1]=="supple"}>
+              <script class="nc_script" type="text/javascript">
+                var elm = document.getElementById('chk_supple');
+                elm.value = '<{$loop_num}>';
+              </script>
+           <{/if}>
+          <{* アイテム属性タイプ：サプリを追加 2009/08/12 K.Ito --end-- *}>
+
+          <{if $smarty.session.id_server == "true"}>
+            <option value="file_price" <{if $metadata[1]=="file_price"}>SELECTED<{/if}>><{$lang.repository_attribute_type_fileprice}></option>
+            <{if $metadata[1]=="file_price"}>
+              <script class="nc_script" type="text/javascript">
+                var elm = document.getElementById('chk_fileprice');
+                elm.value = '<{$loop_num}>';
+              </script>
+            <{/if}>
+          <{/if}>
+        <!-- 2008/02/27 選択された属性によって選択肢入力欄を表示 nakao -->
+        <!-- nextSiblingが次のノードとして や\tなどベタ書きテキストもノードとして取得してくるため、下記はすべてつなげて記述している nextSiblingは<{* if～ *}>をnextノードとして認識しない -->
+        <!-- 上記をidにて特定するように修正 2008/08/11 Y.Nakao -->
+        </select>
+        
+        <{/if}>
+        
+         <div id="candidate_<{$loop_num}>" <{if $metadata[1]=="checkbox" || $metadata[1]=="radio" || $metadata[1]=="select" }>  <{else}> style="display:none;" <{/if}>>
+          <{if ($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
+               ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
+               ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
+               ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) }>
+             <div style="padding: 2px;"><{$lang.repository_candidate}></div>
+          <{else}>
+             <div style="padding: 2px;"><{$lang.repository_selitem_explanation}></div>
+          <{/if}>
+          
+           <div style="padding: 2px;">
+            <{if ($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
+                 ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
+                 ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
+                 ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) }>
+             <input type="hidden" name="metadata_candidate[]" value="<{if $smarty.session.metadata_candidate[$loop_num]==""}> <{else}><{$smarty.session.metadata_candidate[$loop_num]}><{/if}>"/>
+            <{/if}>
+            <{if ($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
+                 ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
+                 ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
+                 ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) }>
+                <{$smarty.session.metadata_candidate[$loop_num]}>
+            <{else}>
+                <input value="<{$smarty.session.metadata_candidate[$loop_num]}>" type="text" class="full" name="metadata_candidate[]">
+           <{/if}>
+           
+           </div>
+         </div>
+        <!-- 2008/02/27 nakao -->
+       </td>	
+		<td class="item_edit_list al pr30">
+			<{* 必須 *}>
+			<label for="required<{$loop_num}>">
+             <{if $metadata[2]==1 && (($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
+                  ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
+                  ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
+                  ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) )}>
+                 <input type="hidden" name="metadata_required[]" value="<{$metadata[7]}>"/>
+             <{/if}>
+             <input type="checkbox" id="required<{$loop_num}>" value="<{$metadata[7]}>" <{if $metadata[1]== "supple"}>disabled="disabled"<{/if}> <{if $metadata[2]==1 && $metadata[1]!= "supple"}>CHECKED<{/if}>
+              <{if ($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
+                   ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
+                   ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
+                   ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) }>
+               disabled="disabled"
+              <{else}>
+               name="metadata_required[]"
+              <{/if}>
+             ><{$lang.repository_requier}>
+            </label><br />
+			<{* 複数可否 *}>
+			<span id="plural_display<{$loop_num}>" <{if $metadata[1]=="supple"}>style="display:none;"<{/if}>>
+             <label for="plural<{$loop_num}>">
+              <{if $metadata[4]==1 && (($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
+                   ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
+                   ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
+                   ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) )}>
+                  <input type="hidden" name="metadata_plural[]" value="<{$metadata[7]}>"/>
+              <{/if}>
+              <input type="checkbox" id="plural<{$loop_num}>" value="<{$metadata[7]}>" <{if ($metadata[4]==1 && $metadata[1]!="checkbox" && $metadata[1]!="radio" && $metadata[1]!="select" && $metadata[1]!="biblio_info" && $metadata[1]!="file_price") || $metadata[1]== "supple"}>CHECKED<{/if}> <{if $metadata[1]=="checkbox" || $metadata[1]=="radio" || $metadata[1]=="select" || $metadata[1]=="biblio_info" || $metadata[1]=="file_price" || $metadata[1]=="heading"}>disabled="disabled"<{/if}>
+               <{if ($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
+                    ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
+                    ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
+                    ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) }>
+                disabled="disabled"
+               <{else}>
+                name="metadata_plural[]"
+               <{/if}>
+              ><{$lang.repository_plural}>
+             </label>
+            </span>
+			<{* 複数可否ダミー:チェックON *}>
+			<span id="plural_dummy<{$loop_num}>" <{if $metadata[1]!="supple"}>style="display:none"<{/if}>>
+             <input type="checkbox" value="" CHECKED disabled="disabled"><{$lang.repository_plural}>
+            </span><br />
+			<{* 一覧表示 *}>
+			<label for="disp<{$loop_num}>">
+             <{if $metadata[3]==1 && (($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
+                  ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
+                  ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
+                  ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) )}>
+              <input type="hidden" name="metadata_disp[]" value="<{$metadata[7]}>"/>
+             <{/if}>
+             <input type="checkbox" id="disp<{$loop_num}>" value="<{$metadata[7]}>" <{if $metadata[3]==1 && $metadata[6]!=1 && $metadata[1]!= "supple"}>CHECKED<{/if}> <{if $metadata[6]==1 || $metadata[1]== "supple"}>disabled="disabled"<{/if}>
+              <{if ($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
+                   ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
+                   ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
+                   ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) }>
+               disabled="disabled"
+              <{else}>
+               name="metadata_disp[]"
+              <{/if}>
+             ><{$lang.repository_listview}>
+            </label><br />
+			<{* 改行指定 *}>
+			<{* Add show thumbnail in search result 2012/02/10 T.Koyasu -start- *}>
+			<{* Add metadata[input_type]=="thumbnail" to 'if' *}>
+			<span id="newline_display<{$loop_num}>" <{if ($metadata[1]=="file" || $metadata[1]=="file_price" || $metadata[1]=="thumbnail") && $metadata[6]!=1}>style="display:none;"<{/if}>>
+             <label for="newline<{$loop_num}>">
+              <{if $metadata[5]==1 && (($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
+                   ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
+                   ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
+                   ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) )}>
+               <input type="hidden" name="metadata_newline[]" value="<{$metadata[7]}>"/>
+              <{/if}>
+              <input type="checkbox" id="newline<{$loop_num}>" name="metadata_newline[]" value="<{$metadata[7]}>" <{if ($metadata[5]==1 || $metadata[1]=="file" || $metadata[1]=="file_price" || $metadata[1]=="thumbnail") && ($metadata[6]!=1 && $metadata[1]!= "supple")}>CHECKED<{/if}> <{if $metadata[6]==1 || $metadata[1]== "supple"}>disabled="disabled"<{/if}>
+               <{if ($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
+                    ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
+                    ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
+                    ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) }>
+                disabled="disabled"
+               <{else}>
+                name="metadata_newline[]"
+               <{/if}>
+              ><{$lang.repository_newline}>
+             </label>
+            </span>
+			<{* 改行指定ダミー:チェックON *}>
+			<{* Add metadata[input_type]!="thumbnail" to 'if' *}>
+			<span id="newline_dummy<{$loop_num}>" <{if ($metadata[1]!="file" && $metadata[1]!="file_price" && $metadata[1]!="thumbnail") || $metadata[6]==1}>style="display:none"<{/if}>>
+             <input type="checkbox" value="" CHECKED disabled="disabled"><{$lang.repository_newline}>
+            </span><br />
+			<{* Add show thumbnail in search result 2012/02/10 T.Koyasu -start- *}>
+			<{* 非表示指定 *}>
+			<label for="hidden<{$loop_num}>">
+             <{if $metadata[6]==1 && (($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
+                  ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
+                  ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
+                  ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) )}>
+              <input type="hidden" name="metadata_hidden[]" value="<{$metadata[7]}>"/>
+             <{/if}>
+             <input type="checkbox" id="hidden<{$loop_num}>" name="metadata_hidden[]" value="<{$metadata[7]}>" <{if $metadata[6]==1}>CHECKED<{/if}> onclick="repositoryCls['<{$id}>'].checkSelectHidden(<{$loop_num}>);"
+              <{if ($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
+                   ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
+                   ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
+                   ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) }>
+               disabled="disabled"
+              <{else}>
+               name="metadata_hidden[]"
+              <{/if}>
+             ><{$lang.repository_hidden}>
+            </label>
+		</td>
+      <{* 行入れ替え用 *}>
+      <td class="item_edit_list ac">
+       <{if !(($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
+            ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
+            ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
+             ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) )}>
+        <input type="button" class="btn_white" value="<{$lang.repository_up}>"
+               onclick="repositoryCls['<{$id}>'].repositoryShuffleUp(<{$loop_num}>); return false;"
+               <{if $loop_num==0 || ($smarty.session.item_type_id == 20001 && $loop_num==17) || (($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015) && $loop_num==61) || ($smarty.session.item_type_id == 20016 && $loop_num==86) || ($smarty.session.item_type_id == 20017 && $loop_num==37)}>
+                disabled="disabled"
+               <{/if}>
+        ><br/>
+        <input type="button" class="btn_white" value="<{$lang.repository_dw}>"
+               onclick="repositoryCls['<{$id}>'].repositoryShuffleDown(<{$loop_num}>); return false;"
+               <{if $loop_num==count($action.metadata_array)-1}>disabled="disabled"<{/if}>
+        >
+       <{/if}>
+      </td>
+       <!-- ↓ 2008/02/26 削除ボタンから新たなactionを呼ぶ nakao -->
+      <td class="item_edit_list ac" >
+       <{if !(($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
+            ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
+            ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
+             ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) )}>
+        <input type="button" class="btn_delete" value="<{$lang.repository_delete}>" onclick="repositoryCls['<{$id}>'].repositoryItemTypeEditDellmetadata(<{$loop_num}>); return false;">
+       <{/if}>
+      </td>
+       <!-- ↑ 2008/02/26 -->
+      </tr>
+     <{/foreach}>
+    </table>
+  <td>
+ </tr>
+ <tr>
+  <td>
+   <div class="clear mt10 al"><a href="" class="btn_white white ml00" onclick="repositoryCls['<{$id}>'].repositoryItemTypeEditAddmetadata(); return false;"><{$lang.repository_add_metadata}></a></div>
+  </td>
+ </tr>
+</table>
+</form>
+
+</div>
+<div align=center class="paging">
+ <{*2008/02/27 新規作成で入った場合と既存編集の場合で戻る画面を分岐*}>
+ <{*2008/09/01 アイテムタイプ操作タブ統合化により、戻る画面は統一*}>
+ <input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="repositoryCls['<{$id}>'].repositoryItemTypeSetting(); return false;">
+ <input type="button" class="btn_next" value="<{$lang.repository_page_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemTypeConfirm(); return false;">
+</div>
+<!--
+ <P>menba = <{$action.menba}><P>
+ <P>menba_session = <{$smarty.session.create_menba1}><P>
+ -->
+<script class="nc_script" type="text/javascript">
+	createErrorMsg = function(){
+		return new Array("<{$lang.repository_itemtype_check_fileprice}>","<{$lang.repository_itemtype_check_supple}>", "<{$lang.repository_itemtype_check_heading}>");
+	}
+</script>
+<{include file="repository_script.html"}>

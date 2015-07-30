@@ -1,0 +1,120 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_search_script.html 43295 2014-10-28 11:06:42Z tomohiro_ichikawa $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{* for Author Search --start-- *}>
+<script class="nc_script" type="text/javascript">
+	redirectAuthorSearch<{$id}> = function(authorLinkId) {
+		var elm = $(authorLinkId);
+		var keyword = encodeURIComponent(elm.text);
+		keyword = keyword.replace("%C2%A0", " ");
+		if(keyword != "undefined" && keyword != null && keyword != "")
+		{
+			var sort_order = 0;
+			sort_order = "<{$smarty.session.sort_order}>";
+		    location.href = "<{$smarty.const.BASE_URL}>" + "/?action=pages_view_main&active_action=repository_view_main_item_snippet"
+		    				+ "&creator=" + keyword
+		    				+ "&count=" + "<{$smarty.session.list_view_num}>"
+		    				+ "&order=" + sort_order
+		    				+ "&pn=1"
+	    					+ "&page_id=<{$page_id}>&block_id=<{$block_id}>";
+		}
+		return false;
+	}
+</script>
+<{* for Author Search --end-- *}>
+<script class="nc_script" type="text/javascript">
+	redirctSearchKeyword<{$id}> = function() {
+        <{* Bug Fix WEKO-2014-042 2014/07/18 T.Koyasu --start-- *}>
+        var keywordObj = document.getElementById('id_search_keyword<{$id}>');
+		var keyword = encodeURIComponent(keywordObj.value);
+		
+		<{* Add when keyword is empty, it does not transmit 2009/12/14 K.Ando --start-- *}>
+		if(keyword != "undefined" && keyword != null && keyword != "")
+		{
+			var sort_order = 0;
+			var preSearchObj = document.getElementById('id_pre_search_keyword<{$id}>');
+			
+			if(preSearchObj.value != null && preSearchObj.value != "")
+			{
+				preSearchObj.value = keyword;
+				sort_order = "<{$smarty.session.sort_order}>";
+			}
+			
+			var searchRequest = "all";
+			var searchTypeObj = document.getElementById('search_type_hidden<{$id}>');
+			
+			if(searchTypeObj.value == "simple"){
+				searchRequest = "meta";
+			}
+			<{* Add parameters 2009/12/11 K.Ando --start-- *}>
+			location.href = "<{$smarty.const.BASE_URL}>" + "/?action=pages_view_main&active_action=repository_view_main_item_snippet"
+							+ "&" + searchRequest + "=" + keyword
+							+ "&count=" + "<{$smarty.session.list_view_num}>"
+							+ "&order=" + sort_order
+							+ "&pn=1"
+							+ "&st=1"
+							+ "&page_id=<{$page_id}>&block_id=<{$block_id}>";
+			<{* Add parameters 2009/12/11 K.Ando --end-- *}>
+		}
+		<{* Add when keyword is empty, it does not transmit 2009/12/14 K.Ando --end-- *}>
+        <{* Bug Fix WEKO-2014-042 2014/07/18 T.Koyasu --start-- *}>
+		return false;
+	}
+</script>
+<{* 検索処理 *}>
+<script class="nc_script" type="text/javascript">
+	redirectDetailSearch<{$id}> = function() {
+		if(!setAllDate<{$id}>()){
+			return false;
+		}
+		var url = "<{$smarty.const.BASE_URL}>" + "/?action=pages_view_main&active_action=repository_view_main_item_snippet";
+		var sort_order = "<{$smarty.session.sort_order}>";
+		
+		var keyword = encodeURIComponent($('id_search_keyword<{$id}>').value);
+		if($('id_pre_search_keyword<{$id}>').value != null && $('id_pre_search_keyword<{$id}>').value != "")
+		{
+			$('id_pre_search_keyword<{$id}>').value = keyword;
+		}
+		var searchRequest = "all";
+		if($('search_type_hidden<{$id}>').value == "simple"){
+			searchRequest = "meta";
+		}
+		location.href = url
+					  + "&" + searchRequest + "=" + keyword
+					  + "&" + Form.serialize($('form_detail<{$id}>'))
+					  + "&count=" + "<{$smarty.session.list_view_num}>"
+					  + "&order=" + sort_order
+					  + "&pn=1"
+    				  + "&page_id=<{$page_id}>&block_id=<{$block_id}>";
+	return false;
+	}
+</script>
+<script class="nc_script" type="text/javascript">
+	redirctParameterChange<{$id}> = function(page_no, list_view_num, sort_order) {
+		var redirect_url = "<{$smarty.const.BASE_URL}>" + "/?action=repository_opensearch";
+		
+		<{section name=num loop=$action.search_requestparameter_list}>
+			redirect_url += "&" + "<{$action.search_requestparameter_list[num].param}>"
+			              + "=" + "<{$action.search_requestparameter_list[num].value}>";
+		<{/section}>
+		redirect_url += "&order=" + sort_order;
+		<{* Add page_no, list_view_num 2009/12/11 K.Ando --start-- *}>
+		redirect_url += "&pn=" + page_no;
+		redirect_url += "&count=" + list_view_num;
+		<{* Add page_no, list_view_num 2009/12/11 K.Ando --end-- *}>
+		<{* Add search type for Advanced Search 2013/12/04 T.Ichikawa --start-- *}>
+		redirect_url += "&st=1";
+		<{* Add search type for Advanced Search 2013/12/04 T.Ichikawa --end-- *}>
+		document.write(redirect_url);
+		location.href = redirect_url;
+		return false;
+	}
+</script>

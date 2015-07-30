@@ -1,0 +1,2299 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_edit_tree.html 39149 2014-07-28 08:37:06Z rei_matsuura $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{strip}>
+
+<div id="repo_main_content">
+
+	<{* make index tree 2008/12/04 Y.Nakao --start-- *}>
+	<{* tree bar *}>
+	<div id="repo_side_navi" class="fl">
+		<div id="repository_index_tree">
+		<h3 class="th_repos_title_bar nc_block_title c"><span class="pl05"><{$lang.repository_index_tree}></span></h3>
+		<div class="plr05 ptb10">
+			<{* new or del *}>
+			<div class="line_edit_tree padding ac mb10">
+				<{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 --start-- *}>
+				<a class="btn_white" href="javascript: insertNode();"><img class="branch_repos" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/tree/insert.png"><{$lang.repository_edittree_newnode}></a>
+				<a class="btn_white" href="#" onclick="javascript: deleteNodeConfirm(event);"><img class="branch_repos" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/tree/delete.png"><{$lang.repository_edittree_delnode}></a>
+				<{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 --end-- *}>
+			</div>
+			
+			<{* index tree *}>
+			<div class="th_classic_content content" id="editTree<{$id}>panel" style="width: <{$smarty.const._SNIPPET_WIDTH}>px; overflow:auto;"></div>
+			<{include file="repository_item_search_tree.html"}>
+			<{* make index tree 2008/12/04 Y.Nakao --end-- *}>
+		</div>
+	</div>
+</div>
+
+<div id="_repository_right_col<{$id}>" class="repository_right_header">
+	<div id="right_block" align="right">
+		<h3 class="th_repos_title_bar text_color mb10">
+			<{$lang.repository_edittree_editnode}>
+			<{*ヘルプ*}>
+			<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+				<div class="fr c pl10">
+					<{if $smarty.session.MyPrivateTreeRootId == ""}>
+						<a href="#" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'edittree'); return false;" style="cursor: help;">
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" alt="help">
+						</a>
+					<{else}>
+						<a href="#" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'editprivatetree'); return false;" style="cursor: help;">
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" alt="help">
+						</a>
+					<{/if}>
+				</div>
+			<{/if}>
+		</h3>
+		
+		<{if $action.tree_error_msg != null}>
+			<div class="error_msg al">
+				<{$action.tree_error_msg}>
+			</div>
+		<{/if}>
+		
+		<{* edit index info --start--*}>
+			<table class="full tb01">
+				<tr>
+					<th class="item_edit_list4 vt al ptb04 plr08" rowspan="2"><{$lang.repository_edittree_index}><font color="red">*</font></th>
+					<td class="item_edit_list4 vam ar ptb04 plr08 w20"><{$lang.repository_language_ja}></td>
+					<td class="item_edit_list4" colspan="2"><input type="text" id="index_name_repos<{$id}>" class="full al" disabled/></td>
+				</tr>
+				<tr>
+					<td class="item_edit_list4 vam ar ptb04 plr08 w20"><{$lang.repository_language_en}><font color="red">*</font></td>
+					<td class="item_edit_list4" colspan="2"><input type="text" id="index_name_repos<{$id}>_english" class="full al" disabled/></td>
+				</tr>
+				<tr>
+					<th class="item_edit_list4 vt al ptb04 plr08"><{$lang.repository_edittree_comment}></th>
+					<td class="item_edit_list4" colspan="3"><textarea  rows=5 cols=40 wrap=hard id="index_comment<{$id}>" class="full al" disabled></textarea></td>
+				</tr>
+				<tr class="paging">
+						<th class="item_edit_list4 vt al ptb04 plr08"><{$lang.repository_edittree_publish}></th>
+						<td class="item_edit_list4 al" colspan="3">
+							<label for="publish_repos<{$id}>">
+								<input type="checkbox" id="publish_repos<{$id}>" onclick="if(this.checked==true){$('input_date_repos').style.display='block';}else{$('input_date_repos').style.display='none';}" disabled/>
+									<{$lang.repository_edittree_show}><span style="color: #8a8;"><{$lang.repository_edittree_setpubdate}></span>
+							</label>
+							<div style="display: none;" id="input_date_repos" >
+								<input type="text" id="pubyear_repos<{$id}>" style="width: 40px;" onchange="javascript: treePubDateCheck();"/><{$lang.repository_edittree_year}>
+								<select id="pubmonth_repos<{$id}>" onchange="javascript: treePubDateCheck();">
+								<option value="01">1</option>
+								<option value="02">2</option>
+								<option value="03">3</option>
+								<option value="04">4</option>
+								<option value="05">5</option>
+								<option value="06">6</option>
+								<option value="07">7</option>
+								<option value="08">8</option>
+								<option value="09">9</option>
+								<option value="10">10</option>
+								<option value="11">11</option>
+								<option value="12">12</option>
+								</select><{$lang.repository_edittree_month}>
+								<select id="pubday_repos<{$id}>" onchange="javascript: treePubDateCheck();">
+								<option value="01">1</option>
+								<option value="02">2</option>
+								<option value="03">3</option>
+								<option value="04">4</option>
+								<option value="05">5</option>
+								<option value="06">6</option>
+								<option value="07">7</option>
+								<option value="08">8</option>
+								<option value="09">9</option>
+								<option value="10">10</option>
+								<option value="11">11</option>
+								<option value="12">12</option>
+								<option value="13">13</option>
+								<option value="14">14</option>
+								<option value="15">15</option>
+								<option value="16">16</option>
+								<option value="17">17</option>
+								<option value="18">18</option>
+								<option value="19">19</option>
+								<option value="20">20</option>
+								<option value="21">21</option>
+								<option value="22">22</option>
+								<option value="23">23</option>
+								<option value="24">24</option>
+								<option value="25">25</option>
+								<option value="26">26</option>
+								<option value="27">27</option>
+								<option value="28">28</option>
+								<option value="29">29</option>
+								<option value="30">30</option>
+								<option value="31">31</option>
+								</select><{$lang.repository_edittree_day}>
+							</div>
+							<input type="hidden" id="hid_pubyear_repos<{$id}>" />
+							<input type="hidden" id="hid_pubmonth_repos<{$id}>" />
+							<input type="hidden" id="hid_pubday_repos<{$id}>" />
+						</td>
+					</tr>
+					<{* Add child index display more 2009/01/16 Y.Nakao --start-- *}>
+					<tr>
+						<th class="item_edit_list4 vt al ptb04 plr08"><{$lang.repository_edittree_display_range}></th>
+						<td class="item_edit_list4 al" colspan="3">
+							<label for="display_more<{$id}>">
+								<input type="checkbox" id="display_more<{$id}>" onclick="if(this.checked==true){$('input_display_more').style.display='block';}else{$('input_display_more').style.display='none';}" disabled/><{$lang.repository_edittree_display_more}>
+							</label>
+							<br/>
+							<div id="input_display_more" style="display: none;">
+								<{$lang.repository_edittree_display_num}><br/>
+								<input type="text" id="display_more_num<{$id}>" onkeypress="return chkNum(event);" class="ime_disabled ar w10 plr02" disabled/>
+							</div>
+						</td>
+					</tr>
+					<{* Add child index display more 2009/01/16 Y.Nakao --end-- *}>
+					
+					<{* Add new items RSS icon display select 2009/07/06 A.Suzuki --start-- *}>
+					<tr>
+						<th class="item_edit_list4 vt al ptb04 plr08"><{$lang.repository_edittree_rss_icon}></th>
+						<td class="item_edit_list4 al" colspan="3">
+							<label for="rss_display<{$id}>">
+								<input type="checkbox" id="rss_display<{$id}>" disabled/><{$lang.repository_edittree_display}><br/>
+							</label>
+						</td>
+					</tr>
+					<{* Add new items RSS icon display select 2009/07/06 A.Suzuki --end-- *}>
+                    <{* Add PDF cover page setting 2013/01/29 A.Suzuki --start-- *}>
+                    <tr>
+                        <th class="item_edit_list4 vt al ptb04 plr08"><{$lang.repository_edittree_pdf_cover_setting}></th>
+                        <td class="item_edit_list4 al" colspan="3">
+                            <label for="create_cover_flag<{$id}>">
+                                <input type="checkbox" id="create_cover_flag<{$id}>" disabled="disabled"/><{$lang.repository_edittree_pdf_cover_create}><br/>
+                            </label>
+                        </td>
+                    </tr>
+                    <{* Add PDF cover page setting 2013/01/29 A.Suzuki --end-- *}>
+                    <{* Add harvest public flag 2013/07/04 K.Matsuo --start-- *}>
+                    <tr class="tree_access_control">
+                        <th class="item_edit_list4 vt al ptb04 plr08"><{$lang.repository_edittree_harvest_public}></th>
+                        <td class="item_edit_list4 al" colspan="3">
+                            <label for="harvest_public_state<{$id}>">
+                                <input type="checkbox" id="harvest_public_state<{$id}>" disabled="disabled"/><{$lang.repository_edittree_show}><br/>
+                            </label>
+                            <div class="red"><{$lang.repository_edittree_harvest_public_warning1}><br><{$lang.repository_edittree_harvest_public_warning2}></div>
+                        </td>
+                    </tr>
+                    <{* Add harvest public flag 2013/07/04 K.Matsuo --end-- *}>
+                    <{* Add ISSN and biblio flag 2014/04/15 T.Ichikawa --start-- *}>
+                    <tr class="issn_setting">
+                        <th class="item_edit_list4 vt al ptb04 plr08"><{$lang.repository_edittree_online_issn}></th>
+                        <td class="item_edit_list4 al" colspan="3">
+                            <div>
+                                <input type="text" class="full" name="online_issn<{$id}>" id="online_issn<{$id}>" value="" disabled /><br/>
+                                <label for="biblio_flag<{$id}>">
+                                    <input type="checkbox" id="biblio_flag<{$id}>" disabled="disabled"/><{$lang.repository_edittree_post_sitelicense_user}><br/>
+                                </label>
+                                <div class="red"><{$lang.repository_edittree_online_issn_warning}>
+                            </div>
+                        </td>
+                    </tr>
+                    <{* Add ISSN adn biblio flag 2014/04/15 T.Ichikawa --end-- *}>
+					<{* Add contents page 2010/07/02 Y.Nakao --start-- *}>
+					<tr>
+						<th class="item_edit_list4 vt al ptb04 plr08"><{$lang.repository_edittree_display_type}></th>
+						<td class="item_edit_list4 al" colspan="3">
+							<label for="display_type_0">
+								<input type="radio" name="display_type" id="display_type_0" value="0" disabled/><{$lang.repository_edittree_display_type_0}>
+							</label>
+							<label for="display_type_1">
+								<input type="radio" name="display_type" id="display_type_1" value="1" disabled/><{$lang.repository_edittree_display_type_1}>
+							</label>
+						</td>
+					</tr>
+
+					<{* Add index list 2011/04/5 S.Abe --start-- *}>
+					<tr>
+						<th class="item_edit_list4 vt al ptb04 plr08" rowspan="3" nowrap><{$lang.repository_admin_select_index_list}></th>
+						<td class="item_edit_list4 vam ar ptb04 plr08"><{$lang.repository_admin_ranking_disp_setting}></td>
+						<td class="item_edit_list4 al" colspan="2">
+							<label for="select_index_list_display_0">
+								<input type="radio" name="select_index_list_display" id="select_index_list_display_0" value="1" onclick="inputIndexListName(1);" disabled /><{$lang.repository_admin_sort_disp}>
+							</label>
+							<label for="select_index_list_display_1">
+								<input type="radio" name="select_index_list_display" id="select_index_list_display_1" value="0" onclick="inputIndexListName(0);" disabled /><{$lang.repository_admin_sort_not_disp}>
+							</label>
+	                    </td>
+                    </tr>
+                    <tr>
+                        <td class="item_edit_list4" align="right"><{$lang.repository_edittree_select_list_display_name}></td>
+                        <td class="item_edit_list4">
+                            <input type="text" class="full" name="select_index_list_name" id = "select_index_list_name" value="" disabled /><br/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="item_edit_list4" align="right"><{$lang.repository_edittree_select_list_display_name_en}></td>
+                        <td class="item_edit_list4">
+                            <input type="text" class="full"name="select_index_list_name_english" id = "select_index_list_name_english" value="" disabled /><br/>
+                        </td>
+                    </tr>
+                    <{* Add index list 2011/04/5 S.Abe --end-- *}>
+					
+					<{* Add contents page 2010/07/02 Y.Nakao --end-- *}>
+					
+					<{* Add tree access control list 2011/12/28 Y.Nakao --start-- *}>
+					<tr class="tree_access_control" >
+						<th class="item_edit_list4 vt al ptb04 plr08 nobr" rowspan="6"><{$lang.repository_edittree_acl}></th>
+						<th class="ranking_repos ranking_paging al item_edit_list4" colspan="2"><{$lang.repository_access_role}>(<{$lang.repository_authority_base}>)</th>
+					</tr>
+					<{* access role *}>
+					<tr class="tree_access_control">
+						<td colspan="2" class="pt00 pb00 pr00 pl00 item_edit_list4">
+							<table class="tb00 full">
+								<tr>
+									<td class="ptb04 plr08 w45 al">
+										<{$lang.repository_edittree_acl_OFF}><br/>
+										<select multiple id="exclusive_acl_role_name<{$id}>" class="full h10em" disabled></select>
+										<input type="hidden" id="exclusive_acl_role_id<{$id}>" value=""/>
+										<input type="hidden" id="exclusive_acl_user_auth_id<{$id}>" value=""/>
+									</td>
+									<td class="ptb04 plr08 w10 ac" valign="middle">
+										<br/>
+										<input type="button" class="btn_white" value="&gt;&gt;" id="acl_add_auth_btn" onclick="javascript: addACLRole();" disabled/><br/>
+										<br/>
+										<input type="button" class="btn_white" value="&lt;&lt;" id="acl_del_auth_btn" onclick="javascript: delACLRole();" disabled/>
+										<br/>
+									</td>
+									<td class="ptb04 plr08 w45 al">
+										<{$lang.repository_edittree_acl_ON}><br/>
+										<select multiple id="acl_role_name<{$id}>" class="full h10em" disabled></select>
+										<input type="hidden" id="acl_role_id<{$id}>" value=""/>
+										<input type="hidden" id="acl_user_auth_id<{$id}>" value=""/>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr class="tree_access_control">
+						<th class="ranking_repos ranking_paging al item_edit_list4" colspan="2"><{$lang.repository_access_role}>(<{$lang.repository_authority_room}>)</th>
+					</tr>
+					<tr class="tree_access_control">
+						<td colspan="2">
+							<table class="tb00 full">
+								<tr>
+									<td class="al" colspan="3">
+										<{$lang.repository_edittree_acl_ON}>
+										</br>
+										<label>
+											<input checked="checked" type="checkbox" disabled>
+											<{$smarty.const._AUTH_CHIEF_NAME}>
+										</label>
+										<label for="acl_room_auth<{$smarty.const._AUTH_MODERATE}><{$id}>">
+											<input id="acl_room_auth<{$smarty.const._AUTH_MODERATE}><{$id}>" value="<{$smarty.const._ON}>" onclick="commonCls.changeAuthority(this, '<{$id}>');" type="checkbox" disabled>
+											<{$smarty.const._AUTH_MODERATE_NAME}>
+										</label>
+										<label for="acl_room_auth<{$smarty.const._AUTH_GENERAL}><{$id}>">
+											<input id="acl_room_auth<{$smarty.const._AUTH_GENERAL}><{$id}>" value="<{$smarty.const._ON}>" onclick="commonCls.changeAuthority(this, '<{$id}>');" type="checkbox" disabled>
+											<{$smarty.const._AUTH_GENERAL_NAME}>
+										</label>
+										<label for="acl_room_auth<{$smarty.const._AUTH_GUEST}><{$id}>">
+											<input id="acl_room_auth<{$smarty.const._AUTH_GUEST}><{$id}>" value="<{$smarty.const._ON}>" onclick="commonCls.changeAuthority(this, '<{$id}>');" type="checkbox" disabled>
+											<{$smarty.const._AUTH_GUEST_NAME}>
+										</label>
+										<label for="acl_room_auth0<{$id}>">
+											<input id="acl_room_auth0<{$id}>" value="<{$smarty.const._ON}>" onclick="commonCls.changeAuthority(this, '<{$id}>');" type="checkbox" disabled>
+											<{$lang.repository_edittree_logout}>
+										</label>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr class="tree_access_control">
+						<th class="ranking_repos ranking_paging al item_edit_list4" colspan="2"><{$lang.repository_access_group}></th>
+					</tr>
+					<tr class="tree_access_control">
+						<td colspan="2" class="pt00 pb00 pr00 pl00 item_edit_list4">
+							<table class="tb00 full">
+								<tr>
+									<td class="ptb04 plr08 w45 al">
+										<{$lang.repository_edittree_acl_OFF}><br/>
+										<select multiple id="exclusive_acl_group_name<{$id}>" class="full h10em" disabled></select>
+										<input type="hidden" id="exclusive_acl_group_id<{$id}>" value=""/>
+									</td>
+									<td class="ptb04 plr08 w10 ac">
+										<br/>
+										<input type="button" class="btn_white" value="&gt;&gt;" id="acl_add_group_btn" onclick="javascript: addACLGroup();" disabled/><br/>
+										<br/>
+										<input type="button" class="btn_white" value="&lt;&lt;" id="acl_del_group_btn" onclick="javascript: delACLGroup();" disabled/>
+										<br/>
+									</td>
+									<td class="ptb04 plr08 w45 al">
+										<{$lang.repository_edittree_acl_ON}><br/>
+										<select multiple id="acl_group_name<{$id}>" class="full h10em" disabled></select>
+										<input type="hidden" id="acl_group_id<{$id}>" value=""/>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<{* Add tree access control list 2011/12/28 Y.Nakao --end-- *}>
+					
+					<tr class="tree_access_control">
+						<th class="item_edit_list4 vt al ptb04 plr08 nobr" rowspan="6"><{$lang.repository_access_level}></th>
+						<th class="ranking_repos ranking_paging al item_edit_list4" colspan="2"><{$lang.repository_access_role}>(<{$lang.repository_authority_base}>)</th>
+					</tr>
+					<tr class="tree_access_control">
+						<td colspan="2" class="pt00 pb00 pr00 pl00 item_edit_list4">
+							<table class="tb00 full">
+								<tr>
+									<td class="ptb04 plr08 w45 al">
+										<{$lang.repository_edittree_insert_OFF}><br/>
+										<select multiple id="not_access_role_name<{$id}>" class="full h10em" disabled>
+										</select>
+										<input type="hidden" id="not_access_role_id<{$id}>" value=""/>
+									</td>
+									<td class="ptb04 plr08 w10 ac">
+										<br/>
+										<input type="button" class="btn_white" value="&gt;&gt;" id="add_auth" onclick="javascript: addAccessAuth();" disabled/><br/>
+										<br/>
+										<input type="button" class="btn_white" value="&lt;&lt;" id="del_auth" onclick="javascript: delAccessAuth();" disabled/>
+										<br/>
+									</td>
+									<td class="ptb04 plr08 w45 al">
+										<{$lang.repository_edittree_insert_ON}><br/>
+										<select multiple id="access_role_name<{$id}>" class="full h10em" disabled>
+										</select>
+										<input type="hidden" id="access_role_id<{$id}>" value=""/>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr class="tree_access_control">
+						<th class="ranking_repos ranking_paging al item_edit_list4" colspan="2"><{$lang.repository_access_role}>(<{$lang.repository_authority_room}>)</th>
+					</tr>
+					<tr class="tree_access_control">
+						<td colspan="2">
+							<table class="tb00 full">
+								<tr>
+									<td class="al" colspan="3">
+										<{$lang.repository_edittree_insert_ON}>
+										</br>
+										<label>
+											<input checked="checked" type="checkbox" disabled>
+											<{$smarty.const._AUTH_CHIEF_NAME}>
+										</label>
+										<label for="tree_room_auth<{$smarty.const._AUTH_MODERATE}><{$id}>">
+											<input id="tree_room_auth<{$smarty.const._AUTH_MODERATE}><{$id}>" name="room_authority[<{$smarty.const._AUTH_MODERATE}>]" value="<{$smarty.const._ON}>" onclick="commonCls.changeAuthority(this, '<{$id}>');" type="checkbox" disabled>
+											<{$smarty.const._AUTH_MODERATE_NAME}>
+										</label>
+										<label for="tree_room_auth<{$smarty.const._AUTH_GENERAL}><{$id}>">
+											<input id="tree_room_auth<{$smarty.const._AUTH_GENERAL}><{$id}>" name="room_authority[<{$smarty.const._AUTH_MODERATE}>]" value="<{$smarty.const._ON}>" onclick="commonCls.changeAuthority(this, '<{$id}>');" type="checkbox" disabled>
+											<{$smarty.const._AUTH_GENERAL_NAME}>
+										</label>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr class="tree_access_control">
+						<th class="ranking_repos ranking_paging al item_edit_list4" colspan="2"><{$lang.repository_access_group}></th>
+					</tr>
+					<tr class="tree_access_control">
+						<td colspan="2" class="pt00 pb00 pr00 pl00 item_edit_list4">
+							<table class="tb00 full">
+								<tr>
+									<td class="ptb04 plr08 w45 al">
+										<{$lang.repository_edittree_insert_OFF}><br/>
+										<select multiple id="not_access_group_name<{$id}>" class="full h10em" disabled>
+										</select>
+										<input type="hidden" id="not_access_group_id<{$id}>" value=""/>
+									</td>
+									<td class="ptb04 plr08 w10 ac">
+										<br/>
+										<input type="button" class="btn_white" value="&gt;&gt;" id="add_group" onclick="javascript: addAccessGroup();" disabled/><br/>
+										<br/>
+										<input type="button" class="btn_white" value="&lt;&lt;" id="del_group" onclick="javascript: delAccessGroup();" disabled/>
+										<br/>
+										<input type="hidden" id="index_pid<{$id}>" style="width:50px;"/>
+										<input type="hidden" id="mod_date<{$id}>" style="width:50px;"/>
+										<input type="hidden" id="show_order<{$id}>" style="width:50px;"/>
+									</td>
+									<td class="ptb04 plr08 w45 al">
+										<{$lang.repository_edittree_insert_ON}><br/>
+										<select multiple id="access_group_name<{$id}>" class="full h10em" disabled>
+										</select>
+										<input type="hidden" id="access_group_id<{$id}>" value=""/>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					
+					<{* Add OpenSearch URI 2010/05/10 A.Suzuki --start-- *}>
+					<tr>
+						<th class="item_edit_list4 vt al ptb04 plr08"><{$lang.repository_edittree_opensearch_uri}></th>
+						<td class="item_edit_list4 al" colspan="3">
+							<input type="text" class="full al" id="opensearch_uri<{$id}>" value="" onclick="this.select(); return false;" disabled readonly><br/>
+						</td>
+					</tr>
+					<{* Add OpenSearch URI 2010/05/10 A.Suzuki --end-- *}>
+					<{* Add index thumbnail 2010/08/20 Y.Nakao --start-- *}>
+					<tr>
+						<th class="item_edit_list4 vt al ptb04 plr08"><{$lang.repository_edittree_thumbnail}></th>
+						<td class="item_edit_list4 al" colspan="3" >
+				 			<div>
+				 				<{$lang.repository_edit_tree_upload_file_attention|smarty:nodefaults}>
+				 			</div>
+							<div id="thumbnail_input">
+								<form id="attachment_form<{$id}>" target="attachment_form<{$id}>" enctype="multipart/form-data">
+			 						<input type="file" id="thumbnail_file" disabled name="upload[]" size="30" />
+				 				</form>
+				 			</div>
+							<div style="display: none;" id="thumbnail_edit">
+								<div class="pd10"><img src="" id="thumbnail_disp" alt="" /></div>
+								<input type="button" class="btn_white mr10" value="<{$lang.repository_change}>" onclick="javascript: editThumbnail();"/>
+								<input type="button" class="btn_delete" value="<{$lang.repository_delete}>" onclick="javascript: editThumbnail();"/>
+				 			</div>
+						</td>
+					</tr>
+					<{* Add index thumbnail 2010/08/20 Y.Nakao --end-- *}>
+			</table>
+			
+			<div id="send_alert" class="pt20 red ac" style="display: none;"><{$lang.repository_edittree_attention}></div>
+			<div class="pt10 pb10 ac">
+				<input type="button" class="btn_blue" id="send_button" value="<{$lang.repository_send}>" onclick="submitEditTree();" disabled/>
+			</div>
+		<{* edit index info --end-- *}>
+	</div>
+	<div id="cursor" class="dragImage" style="position:absolute; display='none'; height=20px;"></div>
+</div>
+
+
+
+<{include file="repository_script.html"}>
+<{/strip}>
+
+<{* Bugfix input scrutiny Y.Nakao 2011/06/17 --start-- *}>
+<script class="nc_script" type="text/javascript">
+	treePubDateCheck = function() {
+		if(pub_year.value.length == 0 || pub_month.value.length == 0 || pub_day.value.length==0){
+			alert('<{$lang.repository_edittree_dayerror}>');
+			pub_year.value = hid_pub_year.value;
+			pub_month.value = hid_pub_month.value;
+			pub_day.value = hid_pub_day.value;
+			return;
+		}
+		
+		// Regular expression check
+		if(pub_year.value.search(/[^0-9]+/) != -1) {
+			alert('<{$lang.repository_edittree_dayerror}>');
+			pub_year.value = hid_pub_year.value;
+			pub_month.value = hid_pub_month.value;
+			pub_day.value = hid_pub_day.value;
+			return;
+		}
+
+		if(pub_year.value != "" && pub_month.value != " " && pub_day.value != " "){
+			var dt = new Date(pub_year.value, pub_month.value - 1, pub_day.value);
+			if(dt == null || dt.getFullYear() != pub_year.value || dt.getMonth() + 1 != pub_month.value || dt.getDate() != pub_day.value) {
+				alert('<{$lang.repository_edittree_dayerror}>');
+				pub_year.value = hid_pub_year.value;
+				pub_month.value = hid_pub_month.value;
+				pub_day.value = hid_pub_day.value;
+				return;
+			}
+		}
+	}
+</script>
+<{* Bugfix input scrutiny Y.Nakao 2011/06/17 --end-- *}>
+
+<{* make index tree 2008/12/04 Y.Nakao --start-- *}>
+<script class="nc_script" type="text/javascript">
+	// click index
+	// Add rollback bug of #292 2012/01/12 T.Koyasu -start-
+	// modify init value of edit_id ''->0
+	var edit_id = 0;
+	// Add rollback bug of #292 2012/01/12 T.Koyasu -end-
+	// drag index
+	var drag_id = "";
+	document.onmouseup = function(e){	
+		if($('tree_nodelabel'+drag_id)!=null){
+			var elm_name = $('tree_nodelabel'+drag_id);
+			elm_name.className = "nodelabel_repos";
+		}
+		if($('tree_nodeblock'+drag_id)!=null){
+			var elm_name = $('tree_nodeblock'+drag_id);
+			elm_name.className = "indexLineSelect";
+		}
+		drag_id="";
+	}
+	// element
+	var idx_name = $('index_name_repos<{$id}>');					// name of japanese
+	var idx_name_en = $('index_name_repos<{$id}>_english');			// name of english
+	var idx_comment = $('index_comment<{$id}>');					// comment of index
+	var pid = $('index_pid<{$id}>');								// parent_index_id
+	var mod_date = $('mod_date<{$id}>');							// mod_date
+	var show_order = $('show_order<{$id}>');						// show_order
+	var pub_chk = $('publish_repos<{$id}>');						// public or not
+	var pub_year = $('pubyear_repos<{$id}>');						// pub year
+	var pub_month = $('pubmonth_repos<{$id}>');						// pub month
+	var pub_day = $('pubday_repos<{$id}>');							// pub day
+	var access_group_id = $('access_group_id<{$id}>');				// access OK groups id
+	var access_group_name = $('access_group_name<{$id}>');			// access OK groups name
+	var not_access_group_id = $('not_access_group_id<{$id}>');		// access NG groups id
+	var not_access_group_name = $('not_access_group_name<{$id}>');	// access NG groups name
+	var add_group = $('add_group');									// add access group button
+	var del_group = $('del_group');									// del access group button
+	var access_role_id = $('access_role_id<{$id}>');				// access OK authorities id
+	var access_role_name = $('access_role_name<{$id}>');			// access OK authorities name
+	var not_access_role_id = $('not_access_role_id<{$id}>');		// access NG authorities id
+	var not_access_role_name = $('not_access_role_name<{$id}>');	// access NG authorities name
+	var add_auth = $('add_auth');									// add access group button
+	var del_auth = $('del_auth');									// del access group button
+	var send_alert = $('send_alert');								// send alert
+	var send_button = $('send_button');								// send button
+	// Add child index display more 2009/01/16 Y.Nakao --start--
+	var display_more = $('display_more<{$id}>');					// display more
+	var display_more_num = $('display_more_num<{$id}>');			// display more num
+	// Add child index display more 2009/01/16 Y.Nakao --end--
+	var rss_display = $('rss_display<{$id}>');						// RSS display
+	// Add config management authority 2010/02/23 Y.Nakao --start--
+	var room_auth_moderate = $('tree_room_auth<{$smarty.const._AUTH_MODERATE}><{$id}>');				// access OK room authorityes for moderate
+	var room_auth_general = $('tree_room_auth<{$smarty.const._AUTH_GENERAL}><{$id}>');					// access OK room authorityes for general
+	// Add config management authority 2010/02/23 Y.Nakao --end--
+	// Add OpenSearch URI 2010/05/10 A.Suzuki --start--
+	var opensearch_uri = $('opensearch_uri<{$id}>');				// OpenSearch URI
+	// Add OpenSearch URI 2010/05/10 A.Suzuki --end--
+	
+	// Add contents page 2010/07/02 Y.Nakao --start--
+	var display_type_0 = $('display_type_0');						// display type (list)
+	var display_type_1 = $('display_type_1');						// display type (contents)
+	// Add contents page 2010/07/02 Y.Nakao --end--
+	// Add index list 2011/04/6 S.Abe --start--
+	var select_index_list_display_0 = $('select_index_list_display_0');
+	var select_index_list_display_1 = $('select_index_list_display_1');
+	var select_index_list_name = $('select_index_list_name');
+	var select_index_list_name_english = $('select_index_list_name_english');
+	// Add index list 2011/04/6 S.Abe --end--
+	// Add tree thumbnail 2010/08/20 Y.Nakao --start--
+	var thumbnail_input = $('thumbnail_input');
+	var thumbnail_edit = $('thumbnail_edit');
+	var thumbnail_disp = $('thumbnail_disp');
+	var thumbnail_file = $('thumbnail_file');
+	var thumbnail_del = 0;
+	// Add tree thumbnail 2010/08/20 Y.Nakao --end--
+	
+	// Bugfix input scrutiny Y.Nakao 2011/06/17 --start--
+	var hid_pub_year = $('hid_pubyear_repos<{$id}>');						// hid_pub year
+	var hid_pub_month = $('hid_pubmonth_repos<{$id}>');						// hid_pub month
+	var hid_pub_day = $('hid_pubday_repos<{$id}>');							// hid_pub day
+	// Bugfix input scrutiny Y.Nakao 2011/06/17 --end--
+	
+	<{* Add tree access control list 2011/12/28 Y.Nakao --start-- *}>
+	var exclusive_acl_role_name = $('exclusive_acl_role_name<{$id}>');
+	var exclusive_acl_role_id = $('exclusive_acl_role_id<{$id}>');
+    <{* Add tree access control list 2012/03/02 T.Koyasu -start- *}>
+    var exclusive_acl_user_auth_id = $('exclusive_acl_user_auth_id<{$id}>');
+    <{* Add tree access control list 2012/03/02 T.Koyasu -end- *}>
+	var acl_add_auth_btn = $('acl_add_auth_btn');
+	var acl_del_auth_btn = $('acl_del_auth_btn');
+	var acl_role_name = $('acl_role_name<{$id}>');
+	var acl_role_id = $('acl_role_id<{$id}>');
+    <{* Add tree access control list 2012/03/02 T.Koyasu -start- *}>
+    var acl_user_auth_id = $('acl_user_auth_id<{$id}>');
+    <{* Add tree access control list 2012/03/02 T.Koyasu -end- *}>
+	var exclusive_acl_group_name = $('exclusive_acl_group_name<{$id}>');
+	var exclusive_acl_group_id = $('exclusive_acl_group_id<{$id}>');
+	var acl_add_group_btn = $('acl_add_group_btn');
+	var acl_del_group_btn = $('acl_del_group_btn');
+	var acl_group_name = $('acl_group_name<{$id}>');
+	var acl_group_id = $('acl_group_id<{$id}>');
+	var acl_room_auth_moderate = $('acl_room_auth<{$smarty.const._AUTH_MODERATE}><{$id}>');
+	var acl_room_auth_general = $('acl_room_auth<{$smarty.const._AUTH_GENERAL}><{$id}>');
+	var acl_room_auth_guest = $('acl_room_auth<{$smarty.const._AUTH_GUEST}><{$id}>');
+	var acl_room_auth_logout = $('acl_room_auth0<{$id}>');
+	<{* Add tree access control list 2011/12/28 Y.Nakao --end-- *}>
+
+    var create_cover_flag = $('create_cover_flag<{$id}>');  // PDF cover page setting
+	var harvest_public_state = $('harvest_public_state<{$id}>');
+	
+    <{* Add issn and biblio flag 2014/04/16 T.Ichikawa --start-- *}>
+    var online_issn = $('online_issn<{$id}>');
+    var biblio_flag = $('biblio_flag<{$id}>');
+    <{* Add issn and biblio flag 2014/04/16 T.Ichikawa --end-- *}>
+	// init
+	if('<{$smarty.session.MyPrivateTreeRootId}>' != ""){
+        repositoryInitTree<{$id}>('editTree<{$id}>panel','<{$id}>', 'editPrivatetree');
+	} else {
+        repositoryInitTree<{$id}>('editTree<{$id}>panel','<{$id}>', 'edit');
+	}
+	var hei = $('right_block').offsetHeight;
+	if(hei > <{$smarty.const._SNIPPET_HEIGHT}>){
+		$('editTree<{$id}>panel').style.height = hei+"px";
+	} else {
+		$('editTree<{$id}>panel').style.height = <{$smarty.const._SNIPPET_HEIGHT}>+"px";
+	}
+	
+	// update OK or not
+	if('<{$action.view_popup}>' == "delete"){
+		alert('<{$lang.repository_edittree_delete}>');
+	} else if('<{$action.view_popup}>' == "move"){
+		alert('<{$lang.repository_edittree_move}>');
+	} else if('<{$action.view_popup}>' == "pubdate_error"){
+		alert('<{$lang.repository_edittree_pubdate_error}>');
+	}
+	
+</script>
+
+<script class="nc_script" type="text/javascript">
+    repositoryClickTreeSelect<{$id}> = function(id){
+		// Add index thumbnail 2010/08/20 Y.Nakao --start--
+		thumbnail_del = 0;
+		thumbnail_edit.style.display = 'none';
+		thumbnail_input.style.display = 'block';
+		thumbnail_file.disabled = "";
+		thumbnail_disp.src = "";
+		thumbnail_disp.width = "";
+		thumbnail_disp.height= "";
+		// Add index thumbnail 2010/08/20 Y.Nakao --end--
+		/////////// set focus /////////////
+		if(edit_id != ""){
+			if($('tree_nodelabel'+edit_id)!=null){
+				$('tree_nodelabel'+edit_id).className = "nodelabel_repos";
+			}
+			if($('tree_nodeblock'+edit_id)!=null){
+				$('tree_nodeblock'+edit_id).className = "indexLine";
+			}
+		}
+		// Modify when insert index and select root index, new node is not create under root index 2012/01/04 T.Koyasu -start-
+		if(id=="0")
+		{
+			// Add rollback bug of #292 2012/01/12 T.Koyasu -start-
+			outSelect();
+			// Add rollback bug of #292 2012/01/12 T.Koyasu -end-
+			edit_id = id;
+		}
+		edit_id = id;
+		// Modify when insert index and select root index, new node is not create under root index 2012/01/04 T.Koyasu -end-
+		var elm_name = $('tree_nodelabel'+id);
+		elm_name.className = "nodelabel_s_repos";
+		$('tree_nodeblock'+id).className = "indexLineSelect";
+		var pars="";
+		if('<{$smarty.session.MyPrivateTreeRootId}>' != ""){
+			pars =  'action=repository_action_main_privatetree';
+		} else {
+			pars =  'action=repository_action_edit_tree';
+		}
+		pars += '&edit_id='+id+
+				'&page_id='+<{$page_id}>+
+				'&block_id='+<{$block_id}>;
+		var url = "<{$smarty.const.BASE_URL}>/index.php";	// Modify Directory specification BASE_URL K.Matsuo 2011/9/2
+		var myAjax = new Ajax.Request(
+						url,
+						{
+							method: 'get',
+							parameters: pars, 
+							onComplete: function(req) {
+								fillEditData(req.responseText);
+							}
+						}
+					);
+	}
+</script>
+<script class="nc_script" type="text/javascript">
+	fillEditData = function(edit_data){
+		/////////// eval JSON data /////////////
+		var idx_data = eval("(" + edit_data + ")");
+		// has click id
+		/////////// set edit data /////////////
+		///// name of japanese /////
+		idx_name.value = this.decodeHtmlSpecialChars(idx_data.name_jp);
+		if(edit_id=="0"){
+			idx_name.disabled = "true";
+		} else {
+			idx_name.disabled = "";
+		}
+		///// name of english /////
+		idx_name_en.value = this.decodeHtmlSpecialChars(idx_data.name_en);
+		if(edit_id=="0"){
+			idx_name_en.disabled = "true";
+		} else {
+			idx_name_en.disabled = "";
+		}
+		///// comment of index /////
+		idx_comment.value = this.decodeHtmlSpecialChars(idx_data.comment);
+		if(edit_id=="0"){
+			idx_comment.disabled = "true";
+		} else {
+			idx_comment.disabled = "";
+		}
+		///// parent_index_id /////
+		pid.value = idx_data.pid;
+		///// mod_date /////
+		mod_date.value = idx_data.mod_date;
+		///// show_order /////
+		show_order.value = idx_data.show_order;
+		///// public or not /////
+		if(idx_data.public_state == "true"){
+			pub_chk.checked = "true";
+			/// open pub date space ///
+			$('input_date_repos').style.display='block';
+		} else {
+			pub_chk.checked = "";
+			/// close pub date space ///
+			$('input_date_repos').style.display='none';
+		}
+		if(edit_id=="0"){
+			pub_chk.disabled = "true";
+		} else {
+			pub_chk.disabled = "";
+		}
+		///// pub date /////
+		pub_year.value = idx_data.pub_year;
+		pub_month.value = idx_data.pub_month;
+		pub_day.value = idx_data.pub_day;
+		
+		// Bugfix input scrutiny Y.Nakao 2011/06/17 --start--
+		///// hidden pub date /////
+		hid_pub_year.value = idx_data.pub_year;
+		hid_pub_month.value = idx_data.pub_month;
+		hid_pub_day.value = idx_data.pub_day;
+		// Bugfix input scrutiny Y.Nakao 2011/06/17 --end--
+		
+		///// access OK group /////
+		access_group_id.value = idx_data.access_group_id;
+		if(edit_id=="0"){
+			access_group_name.disabled = "true";
+		} else {
+			access_group_name.disabled = "";
+		}
+		// Add child index display more 2009/01/16 Y.Nakao --start--
+		///// display more /////
+		if(idx_data.has_child == "true"){
+			// has child index
+			if(idx_data.display_more != ""){
+				display_more.checked = "true";
+				$('input_display_more').style.display = "block";
+				display_more_num.value = idx_data.display_more;
+			} else {
+				display_more.checked = "";
+				$('input_display_more').style.display = "none";
+				display_more_num.value = "5";
+			}
+			display_more.disabled = "";
+			display_more_num.disabled = "";
+		} else {
+			// not has child index
+			display_more.checked = "";
+			display_more.disabled = "true";
+			display_more_num.value = "5";
+			display_more_num.disabled = "true";
+			$('input_display_more').style.display = "none";
+		}
+		// Add child index display more 2009/01/16 Y.Nakao --end--
+		
+		// Add new items RSS icon display select 2009/07/06 A.Suzuki --start--
+		if(idx_data.rss_display == "true"){
+			rss_display.checked = "true";
+		} else {
+			rss_display.checked = "";
+		}
+		if(edit_id=="0"){
+			rss_display.disabled = "true";
+		} else {
+			rss_display.disabled = "";
+		}
+		// Add new items RSS icon display select 2009/07/06 A.Suzuki --end--
+		
+		
+		<{* Add tree access control list 2011/12/28 Y.Nakao --start-- *}>
+		
+		//------------------------------------------
+		// setting Exclusive ACL role list
+		//------------------------------------------
+		exclusive_acl_role_id.value = idx_data.exclusive_acl_role_id;
+        <{* Add tree access control list 2012/03/02 T.Koyasu -start- *}>
+        exclusive_acl_user_auth_id.value = idx_data.exclusive_acl_user_auth_id;
+        <{* Add tree access control list 2012/03/02 T.Koyasu -end- *}>
+		
+		// remove list
+		var cnt = exclusive_acl_role_name.length;
+		for(ii=0; ii<cnt; ii++)
+		{
+			var jj = exclusive_acl_role_name.length--;
+			exclusive_acl_role_name.options[ jj - 1 ] = null;
+		}
+		
+		// setting list
+		var list = idx_data.exclusive_acl_role_name;
+		var cnt = list.length;
+		if(exclusive_acl_role_id.value!=""){
+			for(ii=0; ii<cnt; ii++){
+				var jj = ++exclusive_acl_role_name.length;
+				if(list[ii] == '_AUTH_SYSADMIN_NAME'){
+					exclusive_acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_SYSADMIN_NAME}>';
+				} else if(list[ii] == '_AUTH_ADMIN_NAME'){
+					exclusive_acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_ADMIN_NAME}>';
+				} else if(list[ii] == '_AUTH_CHIEF_NAME'){
+					exclusive_acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_CHIEF_NAME}>';
+				} else if(list[ii] == '_AUTH_MODERATE_NAME'){
+					exclusive_acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_MODERATE_NAME}>';
+				} else if(list[ii] == '_AUTH_GENERAL_NAME'){
+					exclusive_acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GENERAL_NAME}>';
+				} else if(list[ii] == '_AUTH_GUEST_NAME'){
+					exclusive_acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GUEST_NAME}>';
+				} else if(list[ii] != '') {
+					exclusive_acl_role_name.options[ jj - 1 ].text = list[ii];
+				}
+			}
+		}
+		// unlock disabled
+		if(edit_id=="0"){
+			exclusive_acl_role_name.disabled = "true";
+		} else {
+			exclusive_acl_role_name.disabled = "";
+		}
+		
+		//------------------------------------------
+		// setting ACL role list
+		//------------------------------------------
+		acl_role_id.value = idx_data.acl_role_id;
+        <{* Add tree access control list 2012/03/02 T.Koyasu -start- *}>
+        acl_user_auth_id.value = idx_data.acl_user_auth_id;
+        <{* Add tree access control list 2012/03/02 T.Koyasu -end- *}>
+		
+		// remove list
+		var cnt = acl_role_name.length;
+		for(ii=0; ii<cnt; ii++)
+		{
+			var jj = acl_role_name.length--;
+			acl_role_name.options[ jj - 1 ] = null;
+		}
+		
+		// setting list
+		var list = idx_data.acl_role_name;
+		var cnt = list.length;
+		if(acl_role_id.value!=""){
+			for(ii=0; ii<cnt; ii++){
+				var jj = ++acl_role_name.length;
+                // Add tree access control list 2012/02/22 T.Koyasu -start-
+				if(list[ii] == '_AUTH_SYSADMIN_NAME'){
+					acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_SYSADMIN_NAME}>';
+                    acl_role_name.options[ jj - 1 ].disabled = "true";
+                    //acl_role_name.options[ jj - 1 ].style.color = "#000";
+				} else if(list[ii] == '_AUTH_ADMIN_NAME'){
+					acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_ADMIN_NAME}>';
+				} else if(list[ii] == '_AUTH_CHIEF_NAME'){
+					acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_CHIEF_NAME}>';
+				} else if(list[ii] == '_AUTH_MODERATE_NAME'){
+					acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_MODERATE_NAME}>';
+				} else if(list[ii] == '_AUTH_GENERAL_NAME'){
+					acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GENERAL_NAME}>';
+				} else if(list[ii] == '_AUTH_GUEST_NAME'){
+					acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GUEST_NAME}>';
+                } else if(list[ii] == '管理者'){
+                    acl_role_name.options[ jj - 1 ].text = list[ii];
+                    acl_role_name.options[ jj - 1 ].disabled = "true";
+                    //acl_role_name.options[ jj - 1 ].style.color = "#000";
+				} else if(list[ii] != '') {
+					acl_role_name.options[ jj - 1 ].text = list[ii];
+				}
+                // Add tree access control list 2012/02/22 T.Koyasu -end-
+			}
+		}
+		// unlock disabled
+		if(edit_id=="0"){
+			acl_role_name.disabled = "true";
+		} else {
+			acl_role_name.disabled = "";
+		}
+		
+		//------------------------------------------
+		// setting Exclusive ACL group list
+		//------------------------------------------
+		exclusive_acl_group_id.value = idx_data.exclusive_acl_group_id;
+		
+		// remove list
+		var cnt = exclusive_acl_group_name.length;
+		for(ii=0; ii<cnt; ii++)
+		{
+			var jj = exclusive_acl_group_name.length--;
+			exclusive_acl_group_name.options[ jj - 1 ] = null;
+		}
+		
+		// setting list
+		var list = idx_data.exclusive_acl_group_name;
+		var cnt = list.length;
+		if(exclusive_acl_group_id.value!=""){
+			for(ii=0; ii<cnt; ii++){
+				var jj = ++exclusive_acl_group_name.length;
+				if(list[ii] == '_AUTH_SYSADMIN_NAME'){
+					exclusive_acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_SYSADMIN_NAME}>';
+				} else if(list[ii] == '_AUTH_ADMIN_NAME'){
+					exclusive_acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_ADMIN_NAME}>';
+				} else if(list[ii] == '_AUTH_CHIEF_NAME'){
+					exclusive_acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_CHIEF_NAME}>';
+				} else if(list[ii] == '_AUTH_MODERATE_NAME'){
+					exclusive_acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_MODERATE_NAME}>';
+				} else if(list[ii] == '_AUTH_GENERAL_NAME'){
+					exclusive_acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GENERAL_NAME}>';
+				} else if(list[ii] == '_AUTH_GUEST_NAME'){
+					exclusive_acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GUEST_NAME}>';
+				} else if(list[ii] != '') {
+					exclusive_acl_group_name.options[ jj - 1 ].text = list[ii];
+				}
+			}
+		}
+		// unlock disabled
+		if(edit_id=="0"){
+			exclusive_acl_group_name.disabled = "true";
+		} else {
+			exclusive_acl_group_name.disabled = "";
+		}
+		
+		//------------------------------------------
+		// setting ACL group list
+		//------------------------------------------
+		acl_group_id.value = idx_data.acl_group_id;
+		
+		// remove list
+		var cnt = acl_group_name.length;
+		for(ii=0; ii<cnt; ii++)
+		{
+			var jj = acl_group_name.length--;
+			acl_group_name.options[ jj - 1 ] = null;
+		}
+		
+		// setting list
+		var list = idx_data.acl_group_name;
+		var cnt = list.length;
+		if(acl_group_id.value!=""){
+			for(ii=0; ii<cnt; ii++){
+				var jj = ++acl_group_name.length;
+				if(list[ii] == '_AUTH_SYSADMIN_NAME'){
+					acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_SYSADMIN_NAME}>';
+				} else if(list[ii] == '_AUTH_ADMIN_NAME'){
+					acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_ADMIN_NAME}>';
+				} else if(list[ii] == '_AUTH_CHIEF_NAME'){
+					acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_CHIEF_NAME}>';
+				} else if(list[ii] == '_AUTH_MODERATE_NAME'){
+					acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_MODERATE_NAME}>';
+				} else if(list[ii] == '_AUTH_GENERAL_NAME'){
+					acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GENERAL_NAME}>';
+				} else if(list[ii] == '_AUTH_GUEST_NAME'){
+					acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GUEST_NAME}>';
+				} else if(list[ii] != '') {
+					acl_group_name.options[ jj - 1 ].text = list[ii];
+				}
+			}
+		}
+		// unlock disabled
+		if(edit_id=="0"){
+			acl_group_name.disabled = "true";
+		} else {
+			acl_group_name.disabled = "";
+		}
+		
+		//------------------------------------------
+		// setting ACL room authority
+		//------------------------------------------
+		if(idx_data.acl_room_auth_moderate == "true"){
+			acl_room_auth_moderate.checked = "true";
+		} else {
+			acl_room_auth_moderate.checked = "";
+		}
+		if(idx_data.acl_room_auth_general == "true"){
+			acl_room_auth_general.checked = "true";
+		} else {
+			acl_room_auth_general.checked = "";
+		}
+		if(idx_data.acl_room_auth_guest == "true"){
+			acl_room_auth_guest.checked = "true";
+		} else {
+			acl_room_auth_guest.checked = "";
+		}
+		if(idx_data.acl_room_auth_logout == "true"){
+			acl_room_auth_logout.checked = "true";
+		} else {
+			acl_room_auth_logout.checked = "";
+		}
+		if(edit_id=="0"){
+			acl_room_auth_moderate.disabled = "true";
+			acl_room_auth_general.disabled = "true";
+			acl_room_auth_guest.disabled = "true";
+			acl_room_auth_logout.disabled = "true";
+		} else {
+			acl_room_auth_moderate.disabled = "";
+			acl_room_auth_general.disabled = "";
+			acl_room_auth_guest.disabled = "";
+			acl_room_auth_logout.disabled = "";
+		}
+		
+		<{* Add tree access control list 2011/12/28 Y.Nakao --end-- *}>
+		
+		///// remove list /////
+		var group = idx_data.access_group_name;
+		cnt = access_group_name.length;
+		for(ii=0; ii<cnt; ii++){
+			var jj = access_group_name.length--;
+			access_group_name.options[ jj - 1 ] = null;
+		}
+		if(access_group_id.value!=""){
+			cnt = group.length;
+			for(ii=0; ii<cnt; ii++){
+				var jj = ++access_group_name.length;
+				access_group_name.options[ jj - 1 ].text = group[ii];
+			}
+		}
+		///// access NG group /////
+		not_access_group_id.value = idx_data.not_access_group_id;
+		if(edit_id=="0"){
+			not_access_group_name.disabled = "true";
+		} else {
+			not_access_group_name.disabled = "";
+		}
+		///// remove list /////
+		cnt = not_access_group_name.length;
+		for(ii=0; ii<cnt; ii++){
+			var jj = not_access_group_name.length--;
+			not_access_group_name.options[ jj - 1 ] = null;
+		}
+		var group = idx_data.not_access_group_name;
+		if(not_access_group_id.value!=""){
+			var cnt = group.length;
+			for(ii=0; ii<cnt; ii++){
+				var jj = ++not_access_group_name.length;
+				not_access_group_name.options[ jj - 1 ].text = group[ii];
+			}
+		}
+		
+		///// access OK authorities /////
+		access_role_id.value = idx_data.access_role_id;
+		if(edit_id=="0"){
+			access_role_name.disabled = "true";
+		} else {
+			access_role_name.disabled = "";
+		}
+		///// remove list /////
+		access_role_name.length = 0;
+		var auth = idx_data.access_role_name;
+		var cnt = access_role_name.length;
+		for(ii=0; ii<cnt; ii++){
+			var jj = access_role_name.length--;
+			access_role_name.options[ jj - 1 ] = null;
+		}
+		if(access_role_id.value!=""){
+			var cnt = auth.length;
+			for(ii=0; ii<cnt; ii++){
+				var jj = ++access_role_name.length;
+				if(auth[ii] == '_AUTH_SYSADMIN_NAME'){
+					access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_SYSADMIN_NAME}>';
+				} else if(auth[ii] == '_AUTH_ADMIN_NAME'){
+					access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_ADMIN_NAME}>';
+				} else if(auth[ii] == '_AUTH_CHIEF_NAME'){
+					access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_CHIEF_NAME}>';
+				} else if(auth[ii] == '_AUTH_MODERATE_NAME'){
+					access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_MODERATE_NAME}>';
+				} else if(auth[ii] == '_AUTH_GENERAL_NAME'){
+					access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GENERAL_NAME}>';
+				} else if(auth[ii] == '_AUTH_GUEST_NAME'){
+					access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GUEST_NAME}>';
+				} else if(auth[ii] != '') {
+					access_role_name.options[ jj - 1 ].text = auth[ii];
+				}
+			}
+		}
+		///// access NG authorities /////
+		not_access_role_id.value = idx_data.not_access_role_id;
+		if(edit_id=="0"){
+			not_access_role_name.disabled = "true";
+		} else {
+			not_access_role_name.disabled = "";
+		}
+		///// remove list /////
+		var cnt = not_access_role_name.length;
+		for(ii=0; ii<cnt; ii++){
+			var jj = not_access_role_name.length--;
+			not_access_role_name.options[ jj - 1 ] = null;
+		}
+		var auth = idx_data.not_access_role_name;
+		if(not_access_role_id.value!=""){
+			var cnt = auth.length;
+			for(ii=0; ii<cnt; ii++){
+				var jj = ++not_access_role_name.length;
+				if(auth[ii] == '_AUTH_SYSADMIN_NAME'){
+					not_access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_SYSADMIN_NAME}>';
+				} else if(auth[ii] == '_AUTH_ADMIN_NAME'){
+					not_access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_ADMIN_NAME}>';
+				} else if(auth[ii] == '_AUTH_CHIEF_NAME'){
+					not_access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_CHIEF_NAME}>';
+				} else if(auth[ii] == '_AUTH_MODERATE_NAME'){
+					not_access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_MODERATE_NAME}>';
+				} else if(auth[ii] == '_AUTH_GENERAL_NAME'){
+					not_access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GENERAL_NAME}>';
+				} else if(auth[ii] == '_AUTH_GUEST_NAME'){
+					not_access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GUEST_NAME}>';
+				} else if(auth[ii] != '') {
+					not_access_role_name.options[ jj - 1 ].text = auth[ii];
+				}
+			}
+		}
+		
+		<{* Add tree access control list 2011/12/28 Y.Nakao --start-- *}>
+		///// move group button /////
+		if(edit_id=="0"){
+			add_group.disabled = "true";
+			del_group.disabled = "true";
+			acl_add_group_btn.disabled = "true";
+			acl_del_group_btn.disabled = "true";
+		} else {
+			add_group.disabled = "";
+			del_group.disabled = "";
+			acl_add_group_btn.disabled = "";
+			acl_del_group_btn.disabled = "";
+		}
+		///// move auth button /////
+		if(edit_id=="0"){
+			add_auth.disabled = "true";
+			del_auth.disabled = "true";
+			acl_add_auth_btn.disabled = "true";
+			acl_del_auth_btn.disabled = "true";
+		} else {
+			add_auth.disabled = "";
+			del_auth.disabled = "";
+			acl_add_auth_btn.disabled = "";
+			acl_del_auth_btn.disabled = "";
+		}
+		<{* Add tree access control list 2011/12/28 Y.Nakao --end-- *}>
+		
+		///// send alert and button view /////
+		if(edit_id=="0"){
+			send_alert.style.display = 'none';
+			send_button.disabled = "true";
+		} else {
+			send_alert.style.display = 'block';
+			send_button.disabled = "";
+		}
+		
+        // Add config management authority 2010/02/23 Y.Nakao --start--
+        ///// room authority /////
+        if(idx_data.room_auth_moderate == "true"){
+            room_auth_moderate.checked = "true";
+        } else {
+            room_auth_moderate.checked = "";
+        }
+        if(idx_data.room_auth_general == "true"){
+            room_auth_general.checked = "true";
+        } else {
+            room_auth_general.checked = "";
+        }
+        if(edit_id=="0"){
+            room_auth_moderate.disabled = "true";
+            room_auth_general.disabled = "true";
+        } else {
+            room_auth_moderate.disabled = "";
+            room_auth_general.disabled = "";
+        }
+        // Add config management authority 2010/02/23 Y.Nakao --end--
+
+		// Add OpenSearch URI 2010/05/10 A.Suzuki --start--
+		opensearch_uri.value = idx_data.opensearch_uri;
+		opensearch_uri.disabled = "";
+		// Add OpenSearch URI 2010/05/10 A.Suzuki --end--
+		
+		// Add contents page 2010/07/02 Y.Nakao --start--
+		if(edit_id == "0"){
+			display_type_0.disabled = "true";
+			display_type_1.disabled = "true";
+		} else {
+			display_type_0.disabled = "";
+			display_type_1.disabled = "";
+			if(idx_data.display_type == "1"){
+				display_type_0.checked = "";
+				display_type_1.checked = "true";
+			} else {
+				display_type_0.checked = "true";
+				display_type_1.checked = "";
+			}
+		}
+		// Add contents page 2010/07/02 Y.Nakao --end--
+		// Add index list 2011/04/6 S.Abe --start--
+		///// display index list name /////
+		select_index_list_name.value = this.decodeHtmlSpecialChars(idx_data.select_index_list_name);
+		select_index_list_name_english.value = this.decodeHtmlSpecialChars(idx_data.select_index_list_name_english);
+		if(idx_data.select_index_list_display == 1) {
+		    select_index_list_display_0.disabled = "";
+		    select_index_list_display_0.checked = true;
+		    select_index_list_display_1.checked = false;
+		    select_index_list_display_1.disabled = "";
+		    select_index_list_name.disabled = false;
+		    select_index_list_name_english.disabled = false;  
+		}else{
+		    select_index_list_display_0.checked = false;
+		    select_index_list_display_0.disabled = "";
+            select_index_list_display_1.checked = true;
+            select_index_list_display_1.disabled = "";
+            select_index_list_name.disabled = true;
+            select_index_list_name.value = "";
+            select_index_list_name_english.disabled = true;
+            select_index_list_name_english.value = "";
+		}
+		// Add index list 2011/04/6 S.Abe --end--
+		// Add index thumbnail 2010/08/20 Y.Nakao --start--
+		if(idx_data.thumbnail == "true"){
+			thumbnail_disp.src = "<{$smarty.const.BASE_URL}>/?action=repository_action_common_download&index_id="+edit_id;	// Modify Directory specification BASE_URL K.Matsuo 2011/9/2
+			thumbnail_disp.onload = function(){
+				// get image size
+				var w = thumbnail_disp.width;
+				var h = thumbnail_disp.height;
+				// get original image size
+				if (thumbnail_disp.naturalWidth != null && thumbnail_disp.naturalWidth != 'undefined' ) {
+					// for Firefox, Safari, Chrome
+					w = thumbnail_disp.naturalWidth;
+					h = thumbnail_disp.naturalHeight;
+				} else if (thumbnail_disp.runtimeStyle != null && thumbnail_disp.runtimeStyle !== 'undefined' ) {
+					// for IE
+					w = thumbnail_disp.width;
+					h = thumbnail_disp.height;
+				} else {
+					// for Opera
+					thumbnail_disp.removeAttribute("width");
+					thumbnail_disp.removeAttribute("height");
+					w = thumbnail_disp.width;
+					h = thumbnail_disp.height;
+				}
+				// image resize
+				if(h < w){
+					if(w>280){
+						thumbnail_disp.height=280*h/w;
+						thumbnail_disp.width=280;
+					}
+				} else {
+					if(h>200){
+						thumbnail_disp.width=200*w/h;
+						thumbnail_disp.height=200;
+					}
+				}
+				thumbnail_input.style.display = "none";
+				thumbnail_edit.style.display = "block";
+			}
+		} else {
+			thumbnail_edit.style.display = 'none';
+			thumbnail_input.style.display = 'block';
+			thumbnail_file.disabled = "";
+			thumbnail_disp.src = "";
+			thumbnail_disp.width="";
+			thumbnail_disp.height="";
+		}
+		// Add index thumbnail 2010/08/20 Y.Nakao --end--
+
+        // Add PDF cover page setting 2013/01/29 A.Suzuki --start--
+        if(idx_data.create_cover_flag == "true"){
+            create_cover_flag.checked = "true";
+        } else {
+            create_cover_flag.checked = "";
+        }
+        if(edit_id=="0"){
+            create_cover_flag.disabled = "true";
+        } else {
+            create_cover_flag.disabled = "";
+        }
+        // Add PDF cover page setting 2013/01/29 A.Suzuki --end--
+        // Add harvest public flag 2013/07/04 K.Matsuo --start--
+        if(idx_data.harvest_public_state == "true"){
+            harvest_public_state.checked = "true";
+        } else {
+            harvest_public_state.checked = "";
+        }
+        if(edit_id=="0"){
+            harvest_public_state.disabled = "true";
+        } else {
+            harvest_public_state.disabled = "";
+        }
+        // Add harvest public flag 2013/07/04 K.Matsuo --end--
+        // Add privatetree check 2013/04/19 K.Matsuo --start--
+        if(idx_data.owner_user_id == ""){
+        	showHideTreeAccessControl(true);
+        } else {
+        	showHideTreeAccessControl(false);
+        }
+        // Add privatetree check 2013/04/19 K.Matsuo --end--
+        // Add issn and biblio flag 2014/04/16 --start--
+        if(edit_id=="0" || idx_data.disable_biblio_flag == "true"){
+            online_issn.disabled = "true";
+            biblio_flag.disabled = "true";
+        } else {
+            online_issn.disabled = "";
+            biblio_flag.disabled = "";
+        }
+        if(idx_data.online_issn != "" && idx_data.online_issn != null){
+            online_issn.value = idx_data.online_issn;
+        } else {
+            online_issn.value = "";
+        }
+        if(idx_data.biblio_flag == "1"){
+            biblio_flag.checked = "true";
+        } else {
+            biblio_flag.checked = "";
+        }
+        // Add issn and biblio flag 2014/04/16 --end--
+	}
+</script>
+
+<{* make index tree 2008/12/04 Y.Nakao --end-- *}>
+
+<{* set access group 2008/12/09 Y.Nakao --start-- *}>
+<script class="nc_script" type="text/javascript">
+	addAccessGroup = function(){
+		if(not_access_group_name.selectedIndex != -1){
+			var access_group_id_txt = access_group_id.value.split(",");
+			var not_access_group_id_txt = not_access_group_id.value.split(",");
+			var cnt = not_access_group_name.length
+			for (ii=cnt-1; ii>=0; ii--) {
+				var elm = not_access_group_name.options[ii];
+				if (elm.selected) {
+					var jj = ++access_group_name.length;
+					access_group_name.options[ jj-1 ].text = elm.text;
+					not_access_group_name.options[ii] = null;
+					access_group_id_txt.push(not_access_group_id_txt[ii]);
+					not_access_group_id_txt.splice(ii,1);
+				}
+			}
+			if(access_group_id.value == ""){
+				access_group_id.value = access_group_id_txt.toString().substring(1);
+			} else {
+				access_group_id.value = access_group_id_txt.toString();
+			}
+			if(not_access_group_id.value == ""){
+				not_access_group_id.value = not_access_group_id_txt.toString().substring(1);
+			} else {
+				not_access_group_id.value = not_access_group_id_txt.toString();
+			}
+		}
+	}
+</script>
+
+<script class="nc_script" type="text/javascript">
+	delAccessGroup = function(){
+		if(access_group_name.selectedIndex != -1){
+			var access_group_id_txt = access_group_id.value.split(",");
+			var not_access_group_id_txt = not_access_group_id.value.split(",");
+			var cnt = access_group_name.length;
+			for (ii=cnt-1; ii>=0; ii--) {
+				var elm = access_group_name.options[ii];
+				if (elm.selected) {
+					var jj = ++not_access_group_name.length;
+					not_access_group_name.options[ jj-1 ].text = elm.text;
+					access_group_name.options[ii] = null;
+					not_access_group_id_txt.push(access_group_id_txt[ii]);
+					access_group_id_txt.splice(ii,1);
+				}
+			}
+			if(access_group_id.value == ""){
+				access_group_id.value = access_group_id_txt.toString().substring(1);
+			} else {
+				access_group_id.value = access_group_id_txt.toString();
+			}
+			if(not_access_group_id.value == ""){
+				not_access_group_id.value = not_access_group_id_txt.toString().substring(1);
+			} else {
+				not_access_group_id.value = not_access_group_id_txt.toString();
+			}
+		}
+	}
+</script>
+<{* set access group 2008/12/09 Y.Nakao --end-- *}>
+
+<{* set access auth 2008/12/22 Y.Nakao --start-- *}>
+<script class="nc_script" type="text/javascript">
+	addAccessAuth = function(){
+		if(not_access_role_name.selectedIndex != -1){
+			var access_role_id_txt = access_role_id.value.split(",");
+			var not_access_role_id_txt = not_access_role_id.value.split(",");
+			var cnt = not_access_role_name.length
+			for (ii=cnt-1; ii>=0; ii--) {
+				var elm = not_access_role_name.options[ii];
+				if (elm.selected) {
+					var jj = ++access_role_name.length;
+					access_role_name.options[ jj-1 ].text = elm.text;
+					not_access_role_name.options[ii] = null;
+					access_role_id_txt.push(not_access_role_id_txt[ii]);
+					not_access_role_id_txt.splice(ii,1);
+				}
+			}
+			if(access_role_id.value == ""){
+				access_role_id.value = access_role_id_txt.toString().substring(1);
+			} else {
+				access_role_id.value = access_role_id_txt.toString();
+			}
+			if(not_access_role_id.value == ""){
+				not_access_role_id.value = not_access_role_id_txt.toString().substring(1);
+			} else {
+				not_access_role_id.value = not_access_role_id_txt.toString();
+			}
+		}
+	}
+</script>
+
+<script class="nc_script" type="text/javascript">
+	delAccessAuth = function(){
+		if(access_role_name.selectedIndex != -1){
+			var access_role_id_txt = access_role_id.value.split(",");
+			var not_access_role_id_txt = not_access_role_id.value.split(",");
+			var cnt = access_role_name.length;
+			for (ii=cnt-1; ii>=0; ii--) {
+				var elm = access_role_name.options[ii];
+				if (elm.selected) {
+					var jj = ++not_access_role_name.length;
+					not_access_role_name.options[ jj-1 ].text = elm.text;
+					access_role_name.options[ii] = null;
+					not_access_role_id_txt.push(access_role_id_txt[ii]);
+					access_role_id_txt.splice(ii,1);
+				}
+			}
+			if(access_role_id.value == ""){
+				access_role_id.value = access_role_id_txt.toString().substring(1);
+			} else {
+				access_role_id.value = access_role_id_txt.toString();
+			}
+			if(not_access_role_id.value == ""){
+				not_access_role_id.value = not_access_role_id_txt.toString().substring(1);
+			} else {
+				not_access_role_id.value = not_access_role_id_txt.toString();
+			}
+		}
+	}
+</script>
+<{* set access auth 2008/12/22 Y.Nakao --end-- *}>
+
+<{* make new index and del index 2008/12/09 Y.Nakao --start-- *}>
+<script class="nc_script" type="text/javascript">
+	insertNode = function(){
+		if(edit_id == ""){
+			if('<{$smarty.session.MyPrivateTreeRootId}>' != ""){
+				edit_id = '<{$smarty.session.MyPrivateTreeRootId}>';
+			} else {
+				edit_id = "0";
+			}
+		}
+		var pars="";
+		if('<{$smarty.session.MyPrivateTreeRootId}>' != ""){
+			pars =  'action=repository_action_main_privatetree';
+		} else {
+			pars =  'action=repository_action_edit_tree';
+		}
+		pars +=	'&edit_mode=insert'+
+				'&edit_id='+encodeURIComponent(edit_id)+
+				'&name_jp='+encodeURIComponent(idx_name.value)+
+				'&name_en='+encodeURIComponent(idx_name_en.value)+
+				'&comment='+encodeURIComponent(idx_comment.value)+
+				'&pid='+encodeURIComponent(pid.value)+
+				'&mod_date='+encodeURIComponent(mod_date.value)+
+				'&show_order='+encodeURIComponent(show_order.value)+
+				'&pub_chk='+encodeURIComponent(pub_chk.checked)+
+				'&pub_year='+encodeURIComponent(pub_year.value)+
+				'&pub_month='+encodeURIComponent(pub_month.value)+
+				'&pub_day='+encodeURIComponent(pub_day.value)+
+				'&access_group_ids='+encodeURIComponent(access_group_id.value)+
+				'&not_access_group_ids='+encodeURIComponent(not_access_group_id.value)+
+				'&access_role_ids='+encodeURIComponent(access_role_id.value)+
+				'&not_access_role_ids='+encodeURIComponent(not_access_role_id.value)+
+				'&page_id='+<{$page_id}>+
+				'&block_id='+<{$block_id}>;
+		var url = "<{$smarty.const.BASE_URL}>/index.php";	// Modify Directory specification BASE_URL K.Matsuo 2011/9/2
+		var myAjax = new Ajax.Request(
+						url,
+						{
+							method: 'get',
+							parameters: pars, 
+							onComplete: function(req) {
+								if('<{$smarty.session.MyPrivateTreeRootId}>' == ""){
+                                    repositoryAddTree<{$id}>(edit_id, 'tree_node'+edit_id, 'edit');
+								} else {
+                                    repositoryAddTree<{$id}>(edit_id, 'tree_node'+edit_id, 'editPrivatetree');
+								}
+								var idx_data = eval("(" + req.responseText + ")");
+								// has click id
+								edit_id = idx_data.id;
+								fillEditData(req.responseText);
+							}
+						}
+					);
+	}
+</script>
+
+<script class="nc_script" type="text/javascript">
+	deleteNodeConfirm = function(event){
+	
+		if('<{$smarty.session.MyPrivateTreeRootId}>' != ""){
+			if(edit_id == '<{$smarty.session.MyPrivateTreeRootId}>' || edit_id ==""){
+				alert("<{$lang.repository_privatetree_root_delete}>");
+				return;
+			}
+		}
+		var pars="";
+		if('<{$smarty.session.MyPrivateTreeRootId}>' != ""){
+			pars =  'action=repository_action_main_privatetree';
+		} else {
+			pars =  'action=repository_action_edit_tree';
+		}
+		pars +=  '&edit_mode=delete'+
+				'&edit_id='+encodeURIComponent(edit_id)+
+				'&name_jp='+encodeURIComponent(idx_name.value)+
+				'&name_en='+encodeURIComponent(idx_name_en.value)+
+				'&comment='+encodeURIComponent(idx_comment.value)+
+				'&pid='+encodeURIComponent(pid.value)+
+				'&mod_date='+encodeURIComponent(mod_date.value)+
+				'&show_order='+encodeURIComponent(show_order.value)+
+				'&pub_chk='+encodeURIComponent(pub_chk.checked)+
+				'&pub_year='+encodeURIComponent(pub_year.value)+
+				'&pub_month='+encodeURIComponent(pub_month.value)+
+				'&pub_day='+encodeURIComponent(pub_day.value)+
+				'&access_group_ids='+encodeURIComponent(access_group_id.value)+
+				'&not_access_group_ids='+encodeURIComponent(not_access_group_id.value)+
+				'&access_role_ids='+encodeURIComponent(access_role_id.value)+
+				'&not_access_role_ids='+encodeURIComponent(not_access_role_id.value)+
+				'&block_id='+<{$block_id}>;
+		var url = "<{$smarty.const.BASE_URL}>/index.php";	// Modify Directory specification BASE_URL K.Matsuo 2011/9/2
+		var myAjax = new Ajax.Request(
+						url,
+						{
+							method: 'get',
+							parameters: pars, 
+							onComplete: function(req) {
+								// eval JSON data
+								var idx_data = eval("(" + req.responseText + ")");
+								if(idx_data.del_flg=="true"){
+									if('<{$smarty.session.MyPrivateTreeRootId}>' == ""){
+                                        repositoryUpdateTree<{$id}>(idx_data.pid, 'tree_node'+idx_data.pid, 'edit');
+									} else {
+                                        repositoryUpdateTree<{$id}>(idx_data.pid, 'tree_node'+idx_data.pid, 'editPrivatetree');
+									}
+								} else {
+									repositoryCls['<{$id}>'].repositoryIndexDeleteConfirm(idx_data.pid, idx_data.id, encodeURIComponent(idx_data.name), event);
+								}
+								<{* Add rollback bug of #292 2012/01/12 T.Koyasu -start- *}>
+								<{* when execute cansel of delete_all and open child indexes, unselect edit_index *}>
+								if(edit_id != ""){
+									if($('tree_nodelabel'+edit_id)!=null){
+										var elm_name = $('tree_nodelabel'+edit_id);
+										elm_name.className = "nodelabel_repos";
+									}
+									if($('tree_nodeblock'+edit_id)!=null){
+										$('tree_nodeblock'+edit_id).className = "indexLine";
+									}
+								}
+								<{* Add rollback bug of #292 2012/01/12 T.Koyasu -end- *}>
+								outSelect();
+							}
+						}
+					);
+	}
+</script>
+
+<script class="nc_script" type="text/javascript">
+	outSelect = function(){
+		/////////// remove focus /////////////
+		if(edit_id!="" && edit_id!="0"){
+			var elm_name = 'tree_nodelabel'+edit_id;
+			$(elm_name).className = "nodelabel_repos";
+			$('tree_nodeblock'+edit_id).className = "indexLine";
+		}
+		edit_id = "";
+		/////////// remove edit data /////////////
+		/// name of japanese ///
+		idx_name.value = "";
+		idx_name.disabled = "true";
+		/// name of english ///
+		idx_name_en.value = "";
+		idx_name_en.disabled = "true";
+		/// comment of index ///
+		idx_comment.value = "";
+		idx_comment.disabled = "true";
+		/// parent index id ///
+		pid.value = "";
+		/// mod date ///
+		mod_date.value = "";
+		/// show order ///
+		show_order.value = "";
+		/// public or not ///
+		pub_chk.checked = "";
+		/// open pub date space ///
+		$('input_date_repos').style.display='none';
+		pub_chk.disabled = "true";
+		/// pub date ///
+		pub_year.value = "";
+		pub_month.value = "";
+		pub_day.value = "";
+		// Bugfix input scrutiny Y.Nakao 2011/06/17 --start--
+		/// hidden pub date ///
+		hid_pub_year.value = "";
+		hid_pub_month.value = "";
+		hid_pub_day.value = "";
+		// Bugfix input scrutiny Y.Nakao 2011/06/17 --end--
+		
+		/// access OK group ///
+		var cnt = access_group_name.length;
+		for(ii=0; ii<cnt; ii++){
+			var jj = access_group_name.length--;
+			access_group_name.options[ jj - 1 ] = null;
+		}
+		access_group_name.disabled = "true";
+		access_group_id.value = "";
+		/// access NG group ///
+		var cnt = not_access_group_name.length;
+		for(ii=0; ii<cnt; ii++){
+			var jj = not_access_group_name.length--;
+			not_access_group_name.options[ jj - 1 ] = null;
+		}
+		not_access_group_name.disabled = "true";
+		not_access_group_id.value = "";
+		/// move group button ///
+		add_group.disabled = "true";
+		del_group.disabled = "true";
+		/// access OK authorities ///
+		var cnt = access_role_name.length;
+		for(ii=0; ii<cnt; ii++){
+			var jj = access_role_name.length--;
+			access_role_name.options[ jj - 1 ] = null;
+		}
+		access_role_name.disabled = "true";
+		access_role_id.value = "";
+		/// access NG group ///
+		var cnt = not_access_role_name.length;
+		for(ii=0; ii<cnt; ii++){
+			var jj = not_access_role_name.length--;
+			not_access_role_name.options[ jj - 1 ] = null;
+		}
+		not_access_role_name.disabled = "true";
+		not_access_role_id.value = "";
+		/// move group button ///
+		add_auth.disabled = "true";
+		del_auth.disabled = "true";
+		///// send alert and button view /////
+		send_alert.style.display = 'none';
+		send_button.disabled = "true";
+		// RSS display
+		rss_display.checked = "";
+		rss_display.disabled = "true";
+		// OpenSearch URI
+		opensearch_uri.value = "";
+		opensearch_uri.disabled = "true";
+		
+        // Add tree access control list 2012/02/22 T.Koyasu -start-
+        // no disabled tag, when deletes node
+        // search result display type
+        display_type_0.disabled = "true";
+        display_type_1.disabled = "true";
+        // index list
+        select_index_list_display_0.disabled = "true";
+        select_index_list_display_1.disabled = "true";
+        select_index_list_name.value = "";
+        select_index_list_name.disabled = "true";
+        select_index_list_name_english.value = "";
+        select_index_list_name_english.disabled = "true";
+        // thumbnail
+        thumbnail_file.disabled = "true";
+        thumbnail_file.value = "";
+        thumbnail_edit.style.display = "none";
+        // insert groups(room authorities)
+        room_auth_moderate.disabled = "true";
+        room_auth_moderate.checked = false;
+        room_auth_general.disabled = "true";
+        room_auth_general.checked = false;
+        
+        // tree access control //
+        // base authority
+        exclusive_acl_role_name.disabled = "true";
+        cnt = exclusive_acl_role_name.length;
+        for(ii=0; ii<cnt; ii++){
+            jj = exclusive_acl_role_name.length--;
+            exclusive_acl_role_name.options[ jj - 1 ] = null;
+        }
+        exclusive_acl_role_id.value = "";
+        
+        acl_add_auth_btn.disabled = "true";
+        acl_del_auth_btn.disabled = "true";
+        
+        acl_role_name.disabled = "true";
+        cnt = acl_role_name.length;
+        for(ii=0; ii<cnt; ii++){
+            jj = acl_role_name.length--;
+            acl_role_name.options[ jj - 1 ] = null;
+        }
+        acl_role_id.value = "";
+        
+        // group
+        exclusive_acl_group_name.disabled = "true";
+        cnt = exclusive_acl_group_name.length;
+        for(ii=0; ii<cnt; ii++){
+            jj = exclusive_acl_group_name.length--;
+            exclusive_acl_group_name.options[ jj - 1 ] = null;
+        }
+        exclusive_acl_group_id.value = "";
+        acl_add_group_btn.disabled = "true";
+        acl_del_group_btn.disabled = "true";
+        acl_group_name.disabled = "true";
+        cnt = acl_group_name.length;
+        for(ii=0; ii<cnt; ii++){
+            jj = acl_group_name.length--;
+            acl_group_name.options[ jj - 1 ] = null;
+        }
+        acl_group_id.value = "";
+        
+        // room authority
+        acl_room_auth_moderate.disabled = "true";
+        acl_room_auth_moderate.checked = false;
+        acl_room_auth_general.disabled = "true";
+        acl_room_auth_general.checked = false;
+        acl_room_auth_guest.disabled = "true";
+        acl_room_auth_guest.checked = false;
+        acl_room_auth_logout.disabled = "true";
+        acl_room_auth_logout.checked = false;
+        // Add tree access control list 2012/02/22 T.Koyasu -end-
+        
+        // Add bug fix 2013/12/14 K.Matsuo -start-
+        $('input_display_more').style.display = "none";
+        display_more_num.value = "5";
+        display_more.disabled = "true";
+        display_more.checked = false;
+        create_cover_flag.disabled = "true";
+        create_cover_flag.checked = false;
+        harvest_public_state.disabled = "true";
+        harvest_public_state.checked = false;
+        // Add bug fix 2013/12/14 K.Matsuo -end-
+        // Add issn and biblio flag 2014/04/16 T.Ichikawa --start--
+        online_issn.value = "";
+        biblio_flag.checked = "";
+        online_issn.disabled = "true";
+        biblio_flag.disabled = "true";
+        // Add issn and biblio flag 2014/04/16 T.Ichikawa --end--
+	}
+</script>
+<{* make new index and del index 2008/12/09 Y.Nakao --end-- *}>
+
+<{* update edit tree info to DB 2008/12/12 Y.Nakao --start-- *}>
+<script class="nc_script" type="text/javascript">
+
+    submitEditTree = function () {
+        if (display_more.checked == true) {
+            if (parseInt(display_more_num.value) == 0 || display_more_num.value == '') {
+				alert('<{$lang.repository_edittree_error_display_more}>');
+				return;
+			}
+		}
+
+		// Add not make tag use K.Matsuo 2011/09/08 --start--
+		var name_jp = idx_name.value.replace("<", "");
+		name_jp = name_jp.replace(">", "");
+		var name_en = idx_name_en.value.replace("<", "");
+		name_en = name_en.replace(">", "");
+		var name_comment = idx_comment.value.replace("<", "");
+		name_comment = name_comment.replace(">", "");
+		// Add not make tag use K.Matsuo 2011/09/08 --end--
+        var pars = '&edit_mode=update' +
+					'&edit_id=' + encodeURIComponent(edit_id) +
+					// Modify not make tag use K.Matsuo 2011/09/08 --start--
+					'&name_jp=' + encodeURIComponent(name_jp) +
+					'&name_en=' + encodeURIComponent(name_en) +
+					'&comment=' + encodeURIComponent(name_comment) +
+					// Modify not make tag use K.Matsuo 2011/09/08 --endt--
+					'&pid=' + encodeURIComponent(pid.value) +
+					'&mod_date=' + encodeURIComponent(mod_date.value) +
+					'&show_order=' + encodeURIComponent(show_order.value) +
+					'&pub_chk=' + encodeURIComponent(pub_chk.checked) +
+					'&pub_year=' + encodeURIComponent(pub_year.value) +
+					'&pub_month=' + encodeURIComponent(pub_month.value) +
+					'&pub_day=' + encodeURIComponent(pub_day.value) +
+					'&display_more=' + encodeURIComponent(display_more.checked) +
+					'&display_more_num=' + encodeURIComponent(display_more_num.value) +
+					'&access_group_ids=' + encodeURIComponent(access_group_id.value) +
+					'&not_access_group_ids=' + encodeURIComponent(not_access_group_id.value) +
+					'&access_role_ids=' + encodeURIComponent(access_role_id.value) +
+					'&not_access_role_ids=' + encodeURIComponent(not_access_role_id.value) +
+					'&rss_display=' + encodeURIComponent(rss_display.checked);
+		// Add config management authority 2010/02/23 Y.Nakao --start--
+        if (room_auth_general.checked) {
+			pars += '&access_role_room=<{$smarty.const._AUTH_GENERAL}>';
+        } else if (room_auth_moderate.checked) {
+			pars += '&access_role_room=<{$smarty.const._AUTH_MODERATE}>';
+		} else {
+			pars += '&access_role_room=<{$smarty.const._AUTH_CHIEF}>';
+		}
+		// Add config management authority 2010/02/23 Y.Nakao --end--
+        // Add tree access control list 2012/02/22 T.Koyasu -start-
+        // room authority
+        if (acl_room_auth_logout.checked) {
+            pars += '&exclusiveAclRoomAuth=-1';
+        } else if (acl_room_auth_guest.checked) {
+            pars += '&exclusiveAclRoomAuth=<{$smarty.const._AUTH_OTHER}>';
+        } else if (acl_room_auth_general.checked) {
+            pars += '&exclusiveAclRoomAuth=<{$smarty.const._AUTH_GUEST}>';
+        } else if (acl_room_auth_moderate.checked) {
+            pars += '&exclusiveAclRoomAuth=<{$smarty.const._AUTH_GENERAL}>';
+        } else {
+            pars += '&exclusiveAclRoomAuth=<{$smarty.const._AUTH_MODERATE}>'
+        }
+        // base authority
+        var exclusive_acl_user_auth_id_txt = exclusive_acl_user_auth_id.value.split(',');
+        var maxUserAuthId = '';
+        for (ii = 0; ii < exclusive_acl_user_auth_id_txt.length; ii++) {
+            if (exclusive_acl_user_auth_id_txt[ii] > maxUserAuthId) {
+                maxUserAuthId = exclusive_acl_user_auth_id_txt[ii];
+            }
+        }
+        pars += '&exclusiveAclRoleIds=' + encodeURIComponent(maxUserAuthId);
+        // group
+        pars += '&exclusiveAclGroupIds=' + encodeURIComponent(exclusive_acl_group_id.value);
+
+        // Add tree access control list 2012/02/22 T.Koyasu -end-
+		// Add contents page Y.Nakao --start--
+        if (display_type_0.checked) {
+			pars += '&display_type=0';
+		} else {
+			pars += '&display_type=1';
+		}
+		// Add contents page Y.Nakao --end--
+		// Add index list 2011/04/6 S.Abe --start--
+        if (select_index_list_display_0.checked) {
+		    pars += '&select_index_list_display=1';
+        } else {
+		    pars += '&select_index_list_display=0';
+		}
+        // Add issn and biblio flag 2014/04/16 T.Ichikawa --start--
+        pars += '&online_issn=' + encodeURIComponent(online_issn.value);
+        if(biblio_flag.checked) {
+            pars += '&biblio_flag=1';
+        } else {
+            pars += '&biblio_flag=0';
+        }
+        // Add issn and biblio flag 2014/04/16 T.Ichikawa --end--
+        pars += '&select_index_list_name=' + encodeURIComponent(select_index_list_name.value);
+        pars += '&select_index_list_name_english=' + encodeURIComponent(select_index_list_name_english.value);
+		// Add index list 2011/04/6 S.Abe --end--
+		// Add index thumbnail 2010/08/20 Y.Nakao --start--
+		//repositoryCls['<{$id}>'].onSubmitEdittree_repos(pars);
+        pars += '&thumbnail_del=' + thumbnail_del;
+        pars += '&create_cover_flag=' + encodeURIComponent(create_cover_flag.checked);
+        pars += '&harvest_public_state=' + encodeURIComponent(harvest_public_state.checked);
+        if ('<{$smarty.session.MyPrivateTreeRootId}>' != "") {
+			repositoryCls['<{$id}>'].repositoryIndexThumbnailFileUpload(pars, "privateTree");
+		} else {
+			repositoryCls['<{$id}>'].repositoryIndexThumbnailFileUpload(pars, "editTree");
+		}
+		// Add index thumbnail 2010/08/20 Y.Nakao --end--
+	}
+
+</script>
+<{* update edit tree info to DB 2008/12/12 Y.Nakao --end-- *}>
+
+<{* mouse drag drop action 2008/12/16 Y.Nakao --start-- *}>
+<script class="nc_script" type="text/javascript">
+	var cursorObjStyle=$('cursor').style;
+	makeDraggable = function(item, id){
+		if(!item && id==""){
+			drag_id = "";
+			return;
+		}
+		item.onmousedown = function(ev){
+			drag_id = id;
+			if(ev){
+				cursorObjStyle.left =  (ev.pageX-24)+"px";
+				cursorObjStyle.top =  (ev.pageY-24)+"px";
+			} else {
+				cursorObjStyle.left =  (event.x-24 + document.body.scrollLeft) + "px";
+				cursorObjStyle.top =  (event.y-24 + document.body.scrollTop) + "px";
+			}
+			cursorObjStyle.display="block";
+			var innerText = $('tree_nodelabel'+id).innerHTML;
+			var imgTagPos = innerText.indexOf('<img class="draganddrop"');
+			var imgTagEndPos = innerText.indexOf('>', imgTagPos);
+			var frontText = innerText.substring(0, imgTagPos); 
+			var backText = innerText.substring(imgTagEndPos+1);
+			var myObj=document.getElementById("cursor");
+			myObj.innerHTML = frontText + backText;
+			if(edit_id!=""){
+				$('tree_nodelabel'+edit_id).className = 'nodelabel_repos';
+				$('tree_nodeblock'+edit_id).className = "indexLine";
+			}
+			$('tree_nodelabel'+id).className = 'nodelabel_s_repos';
+			$('tree_nodeblock'+id).className = "indexLineSelect";
+			return false;
+		}
+	}
+	
+	dragMouseUp = function(drop_id, drop_index){
+		if(drag_id && drag_id!="" && drop_id!=drag_id){
+			var pars =  '&edit_mode=sort'+
+						'&drag_id='+drag_id+
+						'&drop_id='+drop_id+
+						'&drop_index='+drop_index;
+			if('<{$smarty.session.MyPrivateTreeRootId}>' != ""){
+				repositoryCls['<{$id}>'].onSubmitEdittree_repos(pars, "privateTree");
+			} else {
+				repositoryCls['<{$id}>'].onSubmitEdittree_repos(pars, "editTree");
+			}
+		}
+		if(drag_id!="" && drag_id != edit_id){
+			$('tree_nodelabel'+drag_id).className = 'nodelabel_repos';
+			$('tree_nodeblock'+drag_id).className = "indexLine";
+		}
+		cursorObjStyle.display="none";
+		drag_id = "";
+	}
+</script>
+<script class="nc_script" type="text/javascript">
+	var cursorObjStyle=$('cursor').style;
+	document.onmousemove = function(ev){
+		if(drag_id && drag_id!=""){
+			if(ev){
+				cursorObjStyle.left =  (ev.pageX-24)+"px";
+				cursorObjStyle.top =  (ev.pageY-24)+"px";
+			} else {
+				cursorObjStyle.left =  (event.x-24 + document.body.scrollLeft) + "px";
+				cursorObjStyle.top =  (event.y-24 + document.body.scrollTop) + "px";
+			}
+		} else {
+			if(cursorObjStyle){
+				cursorObjStyle.display="none";
+			}
+		}
+	}
+	dragOver = function(id){
+		if(drag_id && drag_id!="" && drag_id!=id){
+			$('tree_nodeblock'+id).className = 'indexLine_H';
+		}
+	}
+	dragOut = function(id){
+		if(drag_id && drag_id!="" && drag_id!=id){
+			$('tree_nodeblock'+id).className = 'indexLine';
+		}
+	}
+	dragSentryOver = function(id){
+		if(drag_id && drag_id!="" && drag_id!=id){
+			$('tree_sentry'+id).className = 'sentryH_repos';
+		}
+	}
+	dragSentryOut = function(id){
+		if(drag_id && drag_id!="" && drag_id!=id){
+			$('tree_sentry'+id).className = 'sentry_repos';
+		}
+	}
+	dragSentryPOver = function(id){
+		if(drag_id && drag_id!="" && drag_id!=id){
+			$('tree_sentryP'+id).className = 'sentryPH_repos';
+		}
+	}
+	dragSentryPOut = function(id){
+		if(drag_id && drag_id!="" && drag_id!=id){
+			$('tree_sentryP'+id).className = 'sentryP_repos';
+		}
+	}
+</script>
+<script class="nc_script" type="text/javascript">
+	chkNum = function(event){
+		var code = 0;
+		var char = "";
+		if (event.charCode === 0) {	// Firefox, Safari control code
+			code = 0;
+		} else if (!event.keyCode && event.charCode) {	// Firefox
+			code = event.charCode;
+		} else if (event.keyCode && !event.charCode) {	// IE
+			code = event.keyCode;
+		} else if (event.keyCode == event.charCode) {	// Safari
+			code = event.keyCode;
+		}
+		if (32 <= code && code <= 126) {	// ASCII文字の範囲内
+			char =  String.fromCharCode(code);
+		}
+		if (char && !char.match(/\d/)) {
+			return false;
+		}
+	}
+</script>
+<{* mouse drag drop action 2008/12/16 Y.Nakao --end-- *}>
+
+<{* Add index thumbnail 2010/08/20 Y.Nakao --start-- *}>
+<script class="nc_script" type="text/javascript">
+	editThumbnail = function(){
+		thumbnail_edit.style.display = 'none';
+		thumbnail_input.style.display = 'block';
+		thumbnail_file.disabled = "";
+		thumbnail_disp.src = "";
+		if (thumbnail_disp.runtimeStyle != null && thumbnail_disp.runtimeStyle !== 'undefined' ) {
+			// for IE
+			var run = thumbnail_disp.runtimeStyle;
+			run.width  = "auto";
+			run.height = "auto";
+		}
+		thumbnail_del = 1;
+	}
+</script>
+<{* Add index thumbnail 2010/08/20  Y.Nakao --end-- *}>
+<{* Add index list 2011/04/6 S.Abe --start-- *}>
+<script class="nc_script" type="text/javascript">
+    inputIndexListName = function(num){
+        if(num == 1) {
+            $('select_index_list_name').disabled = false;
+            $('select_index_list_name_english').disabled = false;
+        }else{
+            $('select_index_list_name').disabled = true;
+            $('select_index_list_name').value = "";
+            $('select_index_list_name_english').disabled = true;
+            $('select_index_list_name_english').value = "";
+        }
+    }
+</script>
+<{* Add index list 2011/04/6 S.Abe --end-- *}>
+
+<{* Add decodeHtmlSpecialChars 2011/05/31 A.Suzuki --start-- *}>
+<script class="nc_script" type="text/javascript">
+    decodeHtmlSpecialChars = function(str){
+        str = str.replace(/&amp;/g,"&");
+        str = str.replace(/&quot;/g,"\"");
+        str = str.replace(/&#039;/g,"'");
+        str = str.replace(/&lt;/g,"<");
+        str = str.replace(/&gt;/g,">");
+        // Bugfix input scrutiny Y.Nakao 2011/06/17 --start--
+        str = str.replace(/\\/g,"\\");
+        // Bugfix input scrutiny Y.Nakao 2011/06/17 --end--
+        return str;
+    }
+</script>
+<{* Add decodeHtmlSpecialChars 2011/05/31 A.Suzuki --end-- *}>
+
+<{* Add tree access control list 2011/12/28 Y.Nakao --start-- *}>
+<script class="nc_script" type="text/javascript">
+	addACLRole = function(){
+		if(exclusive_acl_role_name.selectedIndex != -1){
+			var acl_role_id_txt = acl_role_id.value.split(",");
+			var exclusive_acl_role_id_txt = exclusive_acl_role_id.value.split(",");
+			var cnt = exclusive_acl_role_name.length
+            // Add tree access control list 2012/03/02 T.Koyasu -start-
+            var acl_user_auth_id_txt = acl_user_auth_id.value.split(",");
+            var exclusive_acl_user_auth_id_txt = exclusive_acl_user_auth_id.value.split(",");
+            // the min user_authority
+            var minAuth = 100;
+            for (ii=cnt-1; ii>=0; ii--) {
+                var tmpElm = exclusive_acl_role_name.options[ii];
+                if(tmpElm.selected) {
+                    if(minAuth > exclusive_acl_user_auth_id_txt[ii]) {
+                        minAuth = exclusive_acl_user_auth_id_txt[ii];
+                    }
+                }
+            }
+			for (ii=cnt-1; ii>=0; ii--) {
+				var elm = exclusive_acl_role_name.options[ii];
+				if (elm.selected || exclusive_acl_user_auth_id_txt[ii] >= minAuth) {
+					var jj = ++acl_role_name.length;
+					acl_role_name.options[ jj-1 ].text = elm.text;
+					exclusive_acl_role_name.options[ii] = null;
+					acl_role_id_txt.push(exclusive_acl_role_id_txt[ii]);
+                    acl_user_auth_id_txt.push(exclusive_acl_user_auth_id_txt[ii]);
+					exclusive_acl_role_id_txt.splice(ii,1);
+                    exclusive_acl_user_auth_id_txt.splice(ii,1);
+				}
+			}
+            // Add tree access control list 2012/03/02 T.Koyasu -end-
+			if(acl_role_id.value == ""){
+				acl_role_id.value = acl_role_id_txt.toString().substring(1);
+			} else {
+				acl_role_id.value = acl_role_id_txt.toString();
+			}
+			if(exclusive_acl_role_id.value == ""){
+				exclusive_acl_role_id.value = exclusive_acl_role_id_txt.toString().substring(1);
+			} else {
+				exclusive_acl_role_id.value = exclusive_acl_role_id_txt.toString();
+			}
+            // Add tree access control list 2012/03/02 T.Koyasu -start-
+            if(acl_user_auth_id.value == "") {
+                acl_user_auth_id.value = acl_user_auth_id_txt.toString().substring(1);
+            } else {
+                acl_user_auth_id.value = acl_user_auth_id_txt.toString();
+            }
+            if(exclusive_acl_user_auth_id.value == "") {
+                exclusive_acl_user_auth_id.value = exclusive_acl_user_auth_id_txt.toString().substring(1);
+            } else {
+                exclusive_acl_user_auth_id.value = exclusive_acl_user_auth_id_txt.toString();
+            }
+            /*
+            // from selected base auth, checkbox of room auth set or not
+            switch(minAuth) {
+            case 1:
+                // guest and log out checkbox is able and checked
+                acl_room_auth_logout.checked = true;
+                acl_room_auth_logout.disable = "";
+                acl_room_auth_guest.checked = true;
+                acl_room_auth_guest.disable = "";
+            case 2:
+                // general checkbox is able and checked
+                acl_room_auth_general.checked = true;
+            case 3:
+                // moderator checkbox is able and checked
+            default:
+                break;
+            }*/
+            // Add tree access control list 2012/03/02 T.Koyasu -end-
+		}
+	}
+</script>
+<script class="nc_script" type="text/javascript">
+	delACLRole = function(){
+		if(acl_role_name.selectedIndex != -1){
+			var acl_role_id_txt = acl_role_id.value.split(",");
+			var exclusive_acl_role_id_txt = exclusive_acl_role_id.value.split(",");
+			var cnt = acl_role_name.length;
+            // Add tree access control list 2012/03/02 T.Koyasu -start-
+            var acl_user_auth_id_txt = acl_user_auth_id.value.split(",");
+            var exclusive_acl_user_auth_id_txt = exclusive_acl_user_auth_id.value.split(",");
+            // the max user_authority
+            var maxAuth = 0;
+            for (ii=cnt-1; ii>=0; ii--) {
+                var tmpElm = acl_role_name.options[ii];
+                if(tmpElm.selected) {
+                    if(maxAuth < acl_user_auth_id_txt[ii]) {
+                        maxAuth = acl_user_auth_id_txt[ii];
+                    }
+                }
+            }
+			for (ii=cnt-1; ii>=0; ii--) {
+				var elm = acl_role_name.options[ii];
+				if (elm.selected || acl_user_auth_id_txt[ii] <= maxAuth) {
+					var jj = ++exclusive_acl_role_name.length;
+					exclusive_acl_role_name.options[ jj-1 ].text = elm.text;
+					acl_role_name.options[ii] = null;
+					exclusive_acl_role_id_txt.push(acl_role_id_txt[ii]);
+                    exclusive_acl_user_auth_id_txt.push(acl_user_auth_id_txt[ii]);
+					acl_role_id_txt.splice(ii,1);
+                    acl_user_auth_id_txt.splice(ii,1);
+				}
+			}
+            // Add tree access control list 2012/03/02 T.Koyasu -end-
+			if(acl_role_id.value == ""){
+				acl_role_id.value = acl_role_id_txt.toString().substring(1);
+			} else {
+				acl_role_id.value = acl_role_id_txt.toString();
+			}
+			if(exclusive_acl_role_id.value == ""){
+				exclusive_acl_role_id.value = exclusive_acl_role_id_txt.toString().substring(1);
+			} else {
+				exclusive_acl_role_id.value = exclusive_acl_role_id_txt.toString();
+			}
+            // Add tree access control list 2012/03/02 T.Koyasu -start-
+            if(acl_user_auth_id.value == "") {
+                acl_user_auth_id.value = acl_user_auth_id_txt.toString().substring(1);
+            } else {
+                acl_user_auth_id.value = acl_user_auth_id_txt.toString();
+            }
+            if(exclusive_acl_user_auth_id.value == "") {
+                exclusive_acl_user_auth_id.value = exclusive_acl_user_auth_id_txt.toString().substring(1);
+            } else {
+                exclusive_acl_user_auth_id.value = exclusive_acl_user_auth_id_txt.toString();
+            }
+            // Add tree access control list 2012/03/02 T.Koyasu -end-
+		}
+	}
+</script>
+<script class="nc_script" type="text/javascript">
+	addACLGroup = function(){
+		if(exclusive_acl_group_name.selectedIndex != -1){
+			var acl_group_id_txt = acl_group_id.value.split(",");
+			var exclusive_acl_group_id_txt = exclusive_acl_group_id.value.split(",");
+			var cnt = exclusive_acl_group_name.length
+			for (ii=cnt-1; ii>=0; ii--) {
+				var elm = exclusive_acl_group_name.options[ii];
+				if (elm.selected) {
+					var jj = ++acl_group_name.length;
+					acl_group_name.options[ jj-1 ].text = elm.text;
+					exclusive_acl_group_name.options[ii] = null;
+					acl_group_id_txt.push(exclusive_acl_group_id_txt[ii]);
+					exclusive_acl_group_id_txt.splice(ii,1);
+				}
+			}
+			if(acl_group_id.value == ""){
+				acl_group_id.value = acl_group_id_txt.toString().substring(1);
+			} else {
+				acl_group_id.value = acl_group_id_txt.toString();
+			}
+			if(exclusive_acl_group_id.value == ""){
+				exclusive_acl_group_id.value = exclusive_acl_group_id_txt.toString().substring(1);
+			} else {
+				exclusive_acl_group_id.value = exclusive_acl_group_id_txt.toString();
+			}
+		}
+	}
+</script>
+
+<script class="nc_script" type="text/javascript">
+	delACLGroup = function(){
+		if(acl_group_name.selectedIndex != -1){
+			var acl_group_id_txt = acl_group_id.value.split(",");
+			var exclusive_acl_group_id_txt = exclusive_acl_group_id.value.split(",");
+			var cnt = acl_group_name.length;
+			for (ii=cnt-1; ii>=0; ii--) {
+				var elm = acl_group_name.options[ii];
+				if (elm.selected) {
+					var jj = ++exclusive_acl_group_name.length;
+					exclusive_acl_group_name.options[ jj-1 ].text = elm.text;
+					acl_group_name.options[ii] = null;
+					exclusive_acl_group_id_txt.push(acl_group_id_txt[ii]);
+					acl_group_id_txt.splice(ii,1);
+				}
+			}
+			if(acl_group_id.value == ""){
+				acl_group_id.value = acl_group_id_txt.toString().substring(1);
+			} else {
+				acl_group_id.value = acl_group_id_txt.toString();
+			}
+			if(exclusive_acl_group_id.value == ""){
+				exclusive_acl_group_id.value = exclusive_acl_group_id_txt.toString().substring(1);
+			} else {
+				exclusive_acl_group_id.value = exclusive_acl_group_id_txt.toString();
+			}
+		}
+	}
+</script>
+
+<{* Add tree access control list 2011/12/28 Y.Nakao --end-- *}>
+
+<{* Add hide tree access control list 2013/04/19 K.Matsuo --start-- *}>
+<script class="nc_script" type="text/javascript">
+	
+	showHideTreeAccessControl = function(flag){
+//		var elements = document.getElementsByClassName('tree_access_control');
+//		for (i = 0; i < elements.length; i++) {
+//			elements[i].style.display = 'none';
+//		}
+		if (document.all){
+			var allElements = document.all;
+		}
+		else {
+			var allElements = document.getElementsByTagName("*");
+		}
+		for (i = 0; i < allElements.length; i++) {
+			if (allElements[i].className == 'tree_access_control' || allElements[i].className == 'paging' || allElements[i].className == 'jalc_setting' || allElements[i].className == 'issn_setting') {
+				if(flag){
+					allElements[i].style.display = '';
+				} else {
+					allElements[i].style.display = 'none';
+				}
+			}
+		}
+		var hei = $('right_block').offsetHeight;
+		if(hei > <{$smarty.const._SNIPPET_HEIGHT}>){
+			$('editTree<{$id}>panel').style.height = hei+"px";
+		} else {
+			$('editTree<{$id}>panel').style.height = <{$smarty.const._SNIPPET_HEIGHT}>+"px";
+		}
+
+	}
+	
+	if('<{$smarty.session.MyPrivateTreeRootId}>' != ""){
+		showHideTreeAccessControl(false);
+	}
+
+	
+</script>
+<{* Add hide tree access control list 2013/04/19 K.Matsuo --end-- *}>

@@ -1,0 +1,161 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: privatetree_edit.html 18555 2012-07-12 03:39:15Z tatsuya_koyasu $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+	<HTML>
+		<HEAD>
+			<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+			<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+			<link rel="stylesheet" href="./css/style.css" type="text/css">
+			<TITLE>editprivatetree</TITLE>
+		</HEAD>
+	<BODY>
+		<div class="main_body">
+			<h2>プライベートツリー編集</h2>
+			<div class="page_list">
+				「プライベートツリー編集」タブをクリックするとプライベートツリー編集画面が表示されます。<br/>
+				プライベートツリーの新規作成、編集、移動、削除を行うことができます。<br/>
+				<br/>
+				<center><img src="./img/privatetree_edit_01.png" alt="プライベートツリー編集" border="0"/></center>
+				<br/>
+				<h3><a name="top">新規作成</a></h3>
+				<div class="page_list">
+					インデックスを新規作成します。<br/>
+					「新規」をクリックするとルートプライベートツリー(インデックスツリー)直下に新規インデックスが作成されます。<br/>
+					<br/>
+					<center><img src="./img/privatetree_edit_03.png" alt="新規インデックス作成" border="0"/></center>
+					<br/>
+					任意のインデックスをクリックして選択し、「新規」をクリックすると任意のインデックス直下にインデックスが新規作成されます。<br/>
+					<br/>
+					<center><img src="./img/privatetree_edit_05.png" alt="新規インデックス作成" border="0"/></center>
+					<br/>
+				<h3><a name="privatetree_edit">編集</a></h3>
+				<div class="page_list">
+					インデックスの情報を編集します。<br/>
+					インデックスの情報を編集し、「送信」ボタンをクリックすると編集内容が反映されます。<br/>
+					<br/>
+					<center><img src="./img/privatetree_edit_21.png" alt="インデックス編集" border="0"/></center>
+					<br/>
+					インデックスの情報は下記のとおりです。<br/>
+					<br/>
+					<table class="table_border" border="0" align="center" cellspacing="0">
+						<tr>
+							<th nowrap>項目名</th>
+							<th nowrap>概要</th>
+						</tr>
+						<tr>
+							<td nowrap>インデックス</td>
+							<td>
+								インデックス名を設定します。<br/>
+								日本語：サイトの表示言語が日本語の時に表示されます。<br/>
+								英語：サイトの表示言語が日本語以外の時に表示されます。<br/>
+							</td>
+						</tr>
+						<tr>
+							<td nowrap>コメント</td>
+							<td>
+								インデックスにコメントを設定します。<br/>
+								コメントは「インデックスリスト」に表示されます。<br/>
+							</td>
+						</tr>
+						<tr>
+							<td nowrap>表示範囲</td>
+							<td>親インデックスに子インデックスの初回表示個数を設定することができます。</td>
+						</tr>
+						<tr>
+							<td nowrap>RSSアイコン</td>
+							<td>
+								「インデックスリスト」に表示するRSSアイコンの表示/非表示を設定します。<br/>
+								「表示する」にチェックがある場合、インデックスリストに「RSSアイコン」が表示されます。
+							</td>
+						</tr>
+						<tr>
+							<td nowrap>検索結果表示形式</td>
+							<td>
+								検索結果の表示形式を選択します。<br/>
+								「一覧形式」<br/>
+								　検索結果をアイテムの一覧で表示します。通常はこの形式で設定されています。<br/>
+								「目次形式」<br/>
+								　検索結果を見出しの一覧で表示します。<br/>
+							</td>
+						</tr>
+						<tr>
+							<td nowrap>インデックス一覧</td>
+							<td>
+								トップページのインデックス簡易アクセスUIへの表示を設定します。<br/>
+								「一覧表示名」、「一覧表示名(英語)」<br/>
+								　インデックス簡易アクセスUIに表示させるインデックス名を設定することができます。<br/>
+								　未入力の場合はインデックス名が表示されます。<br/>
+							</td>
+						</tr>
+						<tr>
+							<td nowrap>OpenSearch URI</td>
+							<td>
+								インデックス検索結果表示用URL。<br/>
+							</td>
+						</tr>
+						<tr>
+							<td nowrap>サムネイル</td>
+							<td>
+								インデックスのサムネイルを設定する。<br/>
+								検索結果の表示形式が目次形式の場合にサムネイルが表示されます。<br/>
+								また、検索結果の表示は<a href="./search.html#index_Finding">インデックス検索結果画面</a>をご参照下さい。<br/>
+							</td>
+						</tr>
+					</table>
+					<br/>
+					<br/>
+					【注意事項】
+					<ul>
+						<li>インデックスの英語名は必須入力です。</li>
+						<li>編集内容は「送信」ボタンをクリックしない限り反映されません。</li>
+					</ul>
+				</div>
+				<h3>移動</h3>
+				<div class="page_list">
+					インデックスのドラッグ&ドロップでインデックスを移動することができます。<br/>
+					インデックスの移動では子インデックスも一緒に移動されます。<br/>
+					<br/>
+					<center><img src="./img/privatetree_edit_43.png" alt="インデックス移動" border="0"/></center>
+					<br/>
+				</div>
+				<h3>削除</h3>
+				<div class="page_list">
+					インデックスを削除することができます。<br/>
+					ルートプライベートツリーは削除することができません。<br/>
+					任意のインデックスをクリックして選択し、「削除」をクリックすると任意のインデックスが削除されます。<br/>
+					<br/>
+					<center><img src="./img/privatetree_edit_07.png" alt="インデックス削除" border="0"/></center>
+					<br/>
+					選択したインデックスに所属するアイテムまたは子インデックスが存在する場合、「削除」をクリックすると所属アイテムおよび子インデックスの処理について確認画面が表示されます。<br/>
+					<br/>
+					<center><img src="./img/privatetree_edit_09.png" alt="インデックス削除" border="0"/></center>
+					<br/>
+					「すべて削除」を選択すると削除確認ダイアログが表示され、「OK」ボタンをクリックすると子インデックスおよびアイテムがすべて削除されます。<br/>
+					<br/>
+					<center><img src="./img/privatetree_edit_19.png" alt="削除処理選択" border="0"/></center>
+					<br/>
+					<center><img src="./img/privatetree_edit_16.png" alt="処理結果" border="0"/></center>
+					<br/>
+					「親インデックスへ移動」をクリックすると、所属アイテムおよび子インデックスが親インデックス以下に移動されます。<br/>
+					ただし、「親インデックスへ移動」は選択インデックスがルートインデックス直下の場合は表示されません。<br/>
+					<br/>
+					<center><img src="./img/privatetree_edit_18.png" alt="削除処理選択" border="0"/></center>
+					<br/>
+					<br/>
+					<center><img src="./img/privatetree_edit_15.png" alt="処理結果" border="0"/></center>
+					<br/>
+				</div>
+			</div>
+			<p align="center"><font size="2"><a href="./../index.html" target="_top">WEKO Help Top</a></font></p>
+		</div>
+	</BODY>
+</HTML>

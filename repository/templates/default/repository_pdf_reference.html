@@ -1,0 +1,173 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_pdf_reference.html 27451 2013-10-23 09:10:00Z shota_suzuki $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+
+<div id="repositoryReference">
+	<div class="th_repos_title_bar text_color c ptb04">
+		<{$lang.repository_reference}>
+	</div>
+	
+	<div class="pl10">
+		<table class="full">
+			<{section name=i loop=$action.fileName}>
+			<{assign var="referenceNumber" value=$smarty.section.i.index}>
+				<tr>
+					<th class="al th_col_repos">
+						<{*参考文献ヘッダ*}>
+						<{$action.fileName[i]}>
+					</th>
+				</tr>
+				<tr>
+					<td>
+						<div class="pl10" id="repository<{$referenceNumber}>">
+							<{*参考文献データ*}>
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/common/indicator.gif">
+							<{$lang.repository_loading}>
+						</div>
+					</td>
+				</tr>
+			<{/section}>
+		</table>
+	</div>
+</div>
+
+<{*show reference table S.Suzuki 2013/10/11 --start--*}>
+<script class="nc_script" type="text/javascript">
+	<{section name=i loop=$action.fileName}>
+		<{assign var="number" value=$smarty.section.i.index}>
+		showReferenceRow('<{$smarty.const.CORE_BASE_URL}>' + 
+						 "/?action=repository_action_common_crossdomainproxy&ajaxRequest=" + 
+						 encodeURIComponent('<{$action.fileURL[i]}>')
+						 , <{$number}>);
+	<{/section}>
+</script>
+<{*show reference table S.Suzuki 2013/10/11 --start--*}>
+
+<{*show row of reference table S.Suzuki 2013/10/22 --start--*}>
+<script class="nc_script" type="text/javascript">
+function showReferenceRow(url, number) {
+	var myAjax = new Ajax.Request(
+		url,
+		{
+			method: 'get',
+			onFailure : ajaxFailure(number),
+			onException: ajaxFailure(number),
+			onSuccess : function(res){
+				showReferenceData(res.responseText, number);
+			},
+			onComplete: function(res) {}
+		}
+	);
+}
+</script>
+<{*show row of reference table S.Suzuki 2013/10/22 --end--*}>
+
+<{*Ajax protocol error S.Suzuki 2013/10/15 --start--*}>
+<script class="nc_script" type="text/javascript">
+function ajaxFailure(number) {
+	// 通信エラー communication error
+	
+	// ロード中メッセージを消去 delete loading message
+	var tableHeader = document.getElementById("repository" + number);
+	while (tableHeader.hasChildNodes()) {
+		tableHeader.removeChild(tableHeader.firstChild);
+	}
+	
+	// エラーメッセージの設定 set error message
+	var errorMessage = document.createTextNode("<{$lang.repository_loading_error}>");
+	tableHeader.appendChild(errorMessage);
+}
+</script>
+<{*Ajax failure of protocol table S.Suzuki 2013/10/15 --end--*}>
+
+<{*show data of reference table S.Suzuki 2013/10/11 --start--*}>
+<script class="nc_script" type="text/javascript">
+function showReferenceData(json, number){
+	var referenceData = eval("(" + json + ")");
+	
+	// ロード中メッセージを消去 delete loading message
+	var tableData = document.getElementById("repository" + number);
+	
+	while (tableData.hasChildNodes()) {
+		tableData.removeChild(tableData.firstChild);
+	}
+	
+	// 引用情報を表示するエリアを設定 set reference data area
+	var referenceTable = document.createElement('table');
+	tableData.appendChild(referenceTable);
+		
+	if ((json == "{}") == 0) {
+		// JSONの中身がある場合
+		
+		// JSONデータをテーブルの行に追加 add JSON data to table row
+		for (var ii = 0; ii < referenceData.bibrefs.length; ii++) {
+			// テーブルの行を作成 create table row
+			var referenceTableRow = document.createElement('tr')
+			referenceTable.appendChild(referenceTableRow);
+			
+			// テーブルの色を設定 set row color
+			if (ii % 2 != 0) {
+				referenceTableRow.setAttribute('bgcolor', '#EEEEEE');
+			} else {
+				referenceTableRow.setAttribute('bgcolor', '#FCFCFC');
+			}
+			
+			// テーブルのデータを作成 create table data
+			var  referenceTableData = document.createElement('td')
+			referenceTableRow.appendChild(referenceTableData);
+			
+			// データをパディング padding data
+			var referenceString = document.createElement('div')
+			referenceString.setAttribute('class', 'pd05');
+			referenceTableData.appendChild(referenceString);
+			
+			// テーブルにstringのデータを追加 add string data to table 
+			var string = document.createTextNode(referenceData.bibrefs[ii].string);
+			referenceString.appendChild(string);
+			
+			// テーブルにsameAsのデータを追加 add sameAs data to table 
+			for (jj = 0; jj < referenceData.bibrefs[ii].sameAs.length; jj++) {
+				// テーブルにurlのデータを追加 add url data to table 
+				var urlLink = document.createElement('a');
+				urlLink.setAttribute('target','_blank');
+				urlLink.setAttribute('href', referenceData.bibrefs[ii].sameAs[jj].url);
+				
+				// テーブルにiconのデータを追加 add icon data to table 
+				var img1 = document.createElement('img');
+				if ( (referenceData.bibrefs[ii].sameAs[jj].annotator).match("cinii") ) {
+					// CiNiiの場合 case of Cinii
+					img1.setAttribute('src', '<{$smarty.const.CORE_BASE_URL}>/images/repository/default/iconCiNii.png');
+				} else if ( (referenceData.bibrefs[ii].sameAs[jj].annotator).match("webcat") ) {
+					// webcatの場合 case of webcat
+					img1.setAttribute('src', '<{$smarty.const.CORE_BASE_URL}>/images/repository/default/iconWebcat.png');
+				} else {
+					// crossrefの場合 case of crossref
+					img1.setAttribute('src', '<{$smarty.const.CORE_BASE_URL}>/images/repository/default/iconCrossref.png');
+				}
+				urlLink.appendChild(img1);
+				referenceString.appendChild(urlLink);
+			}
+		}
+	} else {
+		// JSONの中身がない場合 no JSON data case
+		
+		// 引用情報がない場合のメッセージを表示 show no reference message
+		var referenceRow = document.createElement("tr");
+		var referenceData = document.createElement("td");
+		var noReferenceMessage = document.createTextNode("<{$lang.repository_no_reference_data}>");
+		tableData.setAttribute('class', 'ml10 al');
+		referenceTable.appendChild(referenceRow);
+		referenceRow.appendChild(referenceData);
+		referenceData.appendChild(noReferenceMessage);
+	}
+}
+</script>
+<{*show data of reference table S.Suzuki 2013/10/11 --end--*}>

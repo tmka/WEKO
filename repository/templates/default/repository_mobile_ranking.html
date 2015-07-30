@@ -1,0 +1,416 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_mobile_ranking.html 22981 2013-05-30 05:43:08Z ayumi_jin $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{*repository ランキング*}>
+    <{* refer ranking *}>
+    <{if count($action.refer_ranking)>0}>
+        <div style="margin-bottom: 10px;">
+            <table style="width:100%;" border="0" cellspacing="0">
+                <{* タイトル *}>
+                <tr style="background:#fdfcf0;">
+                  <td colspan="3">
+                   <div class="ui-bar-<{$smartphone_theme_color}>">
+                       <p class="ui-title"><{$lang.repository_rank_refer_top}></p>
+                   </div>
+                  </td>
+                </tr>
+                <{foreach from=$action.refer_ranking item=metadata name=loop}>
+                <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}>
+                <{if $loop_num < 3}>
+                    <tr <{if $loop_num==0}>style="background:#fdfcf0;"<{else}>style="background:#f7fafd;"<{/if}>>
+                        <td width="50">
+                            <p style="position: relative;margin :0px; height:60px;">
+                                <{if $action.refer_ranking[$loop_num][2] != null}>
+                                    <em <{if $loop_num==0}>style="position:absolute;top:2px;left:5px;width:40px;text-align:center;color:#fff;"<{else}>style="position:absolute;top:2px;left:5px;width:40px;text-align:center;"<{/if}>><{$action.refer_ranking[$loop_num][2]}></em>
+                                <{/if}>
+                                <{if $loop_num == 0}>
+                                    <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank1_bk.gif" />
+                                <{elseif $loop_num == 1}>
+                                    <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank2_bk.gif" />
+                                <{elseif $loop_num == 2}>
+                                    <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank3_bk.gif" />
+                                <{/if}>
+                            </p>
+                        </td>
+                        <td <{if $loop_num==0}>style="border: solid 1px #ECDA91;"<{else}>style="border: solid 1px #C4D9EC;"<{/if}>>
+                                <{assign var="targetName" value=$action.refer_ranking[$loop_num][1]|truncate:25:"..."}> 
+                            <a style="margin:0px 10px 0px; 0px;<{if $loop_num==0}>color:#E06506;<{/if}>" href="<{$smarty.const.BASE_URL}>/?action=repository_uri&item_id=<{$action.refer_ranking[$loop_num][3]}>" target="_top"><{$targetName|smarty:nodefaults}></a>
+                        </td>
+                    </tr>
+                <{/if}>
+                <{/foreach}>
+            </table>
+            <{* ４位以下表示用ボタン *}>
+            <{if $action.count_refer > 3}>
+                <div>
+                    <table style="width:100%;" border="0" cellspacing="0">
+                        <{foreach from=$action.refer_ranking item=metadata name=loop}>
+                        <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}>
+                        <{if $loop_num >= 3}>
+                            <tr style="background:#f7fafd;">
+                                <td width="51">
+                                    <p style="position: relative;margin :0px; height:60px;">
+                                        <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank_bk.gif">
+                                        <{if $action.refer_ranking[$loop_num][2] != null}>
+                                            <em style="position:absolute;top:2px;left:5px;width:40px;text-align:center;"><{$action.refer_ranking[$loop_num][2]}></em>
+                                        <{/if}>
+                                        <em style="position:absolute;top:28px;left:5px;width:40px;text-align:center;color:black;"><{$action.refer_ranking[$loop_num][0]}><{$lang.repository_rank_rank}></em>
+                                    </p>
+                                </td>
+                                <td style="border: solid 1px #C4D9EC;">
+                                    <{assign var="targetName" value=$action.refer_ranking[$loop_num][1]|truncate:25:"..."}> 
+                                    <a style="margin:0px 10px 0px; 0px;" href="<{$smarty.const.BASE_URL}>/?action=repository_uri&item_id=<{$action.refer_ranking[$loop_num][3]}>" target="_top"><{$targetName|smarty:nodefaults}></a>
+                                </td>
+                            </tr>
+                        <{/if}>
+                        <{/foreach}>
+                    </table>
+                </div>
+                <div class="accordion_head">
+                    <a href="#" class="ui-btn ui-btn-up-<{$smartphone_theme_color}>" style="margin: 0px;">
+                        <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/down_displayseq.png" style="cursor : pointer;vertical-align:middle;">
+                    </a>
+                </div>
+            <{/if}>
+        </div>
+    <{/if}>
+
+    <{* download ranking *}>
+    <{if count($action.download_ranking)>0}>
+        <div style="margin-bottom: 10px;">
+            <table style="width:100%;" border="0" cellspacing="0">
+                <{* タイトル *}>
+                <tr style="background:#fdfcf0;">
+                  <td colspan="3">
+                    <div class="ui-bar-<{$smartphone_theme_color}>">
+                        <p class="ui-title"><{$lang.repository_rank_download_top}></p>
+                    </div>
+                  </td>
+                </tr>
+                
+                <{foreach from=$action.download_ranking item=metadata name=loop}>
+                <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}>
+                <{if $loop_num < 3}>
+                    <tr <{if $loop_num==0}>style="background:#fdfcf0;"<{else}>style="background:#f7fafd;"<{/if}>>
+                        <td width="51">
+                            <p style="position: relative;margin :0px; height:60px;">
+                            <{if $action.download_ranking[$loop_num][2] != null}>
+                                <em <{if $loop_num==0}>style="position:absolute;top:2px;left:5px;width:40px;text-align:center;color:#fff;"<{else}>style="position:absolute;top:2px;left:5px;width:40px;text-align:center;"<{/if}>>
+                                <{$action.download_ranking[$loop_num][2]}>
+                                </em>
+                            <{/if}>
+                            <{if $loop_num == 0}>
+                                <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank1_bk.gif" />
+                            <{elseif $loop_num == 1}>
+                                <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank2_bk.gif" />
+                            <{elseif $loop_num == 2}>
+                                <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank3_bk.gif" />
+                            <{/if}>
+                        </td>
+                        <td <{if $loop_num==0}>style="border: solid 1px #ECDA91;"<{else}>style="border: solid 1px #C4D9EC;"<{/if}>>
+                            <{assign var="targetName" value=$action.download_ranking[$loop_num][1]|truncate:25:"..."}>
+                            <a style="margin:0px 10px 0px; 0px;<{if $loop_num==0}>color:#E06506;<{/if}>" href="<{$smarty.const.BASE_URL}>/?action=repository_uri&item_id=<{$action.download_ranking[$loop_num][3]}>" target="_top"><{$targetName|smarty:nodefaults}></a>  
+                        </td>
+                    </tr>
+               <{/if}>
+               <{/foreach}>
+            </table>
+            <{* ４位以下表示用ボタン *}>
+            <{if $action.count_download > 3}>
+                <div>
+                    <table style="width:100%;" border="0" cellspacing="0">
+                        <{foreach from=$action.download_ranking item=metadata name=loop}>
+                        <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}>
+                        <{if $loop_num >= 3}>
+                            <tr style="background:#f7fafd;">
+                                <td width="51">
+                                    <p style="position: relative;margin :0px; height:60px;">
+                                        <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank_bk.gif">
+                                        <{if $action.download_ranking[$loop_num][2] != null}>
+                                            <em style="position:absolute;top:2px;left:5px;width:40px;text-align:center;"><{$action.download_ranking[$loop_num][2]}></em>
+                                        <{/if}>
+                                        <em style="position:absolute;top:28px;left:5px;width:40px;text-align:center;color:black;"><{$action.download_ranking[$loop_num][0]}><{$lang.repository_rank_rank}></em>
+                                    </p>
+                                </td>
+                                <td style="border: solid 1px #C4D9EC;">
+                                    <{assign var="targetName" value=$action.download_ranking[$loop_num][1]|truncate:25:"..."}>
+                                    <a style="margin:0px 10px 0px; 0px;" href="<{$smarty.const.BASE_URL}>/?action=repository_uri&item_id=<{$action.refer_ranking[$loop_num][3]}>" target="_top"><{$targetName|smarty:nodefaults}></a>
+                                </td>
+                            </tr>
+                        <{/if}>
+                        <{/foreach}>
+                    </table>
+                </div>
+                <{* ４位以下表示用ボタン ここに移動!! *}>
+                <div class="accordion_head">
+                    <a href="#" class="ui-btn ui-btn-up-<{$smartphone_theme_color}>" style="margin: 0px;">
+                        <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/down_displayseq.png" style="cursor : pointer;vertical-align:middle;">
+                    </a>
+                </div>
+            <{/if}>
+        </div>
+    <{/if}>
+        
+    <{* user ranking *}>
+    <{if count($action.user_ranking)>0}>
+        <div style="margin-bottom: 10px;">
+            <table style="width:100%;" border="0" cellspacing="0">
+                <{* タイトル *}>
+                <tr style="background:#fdfcf0;">
+                  <td colspan="3">
+                    <div class="ui-bar-<{$smartphone_theme_color}>">
+                        <p class="ui-title"><{$lang.repository_rank_regitem_top}></p>
+                    </div>
+                  </td>
+                </tr>
+                <{foreach from=$action.user_ranking item=metadata name=loop}>
+                <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}>
+                <{if $loop_num < 3}>
+                    <tr <{if $loop_num==0}>style="background:#fdfcf0;"<{else}>style="background:#f7fafd;"<{/if}>>
+                        <td width="51">
+                            <p style="position: relative;margin :0px; height:60px;">
+                                <{if $action.user_ranking[$loop_num][2] != null}>
+                                    <em <{if $loop_num==0}>style="position:absolute;top:2px;left:5px;width:40px;text-align:center;color:#fff;"<{else}>style="position:absolute;top:2px;left:5px;width:40px;text-align:center;"<{/if}>><{$action.user_ranking[$loop_num][2]}></em>
+                                <{/if}>
+                                <{if $loop_num == 0}>
+                                    <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank1_bk.gif" />
+                                <{elseif $loop_num == 1}>
+                                    <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank2_bk.gif" />
+                                <{elseif $loop_num == 2}>
+                                    <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank3_bk.gif" />
+                                <{/if}>
+                            </p>
+                        </td>
+                        <td <{if $loop_num==0}>style="border: solid 1px #ECDA91;"<{else}>style="border: solid 1px #C4D9EC;"<{/if}>>
+                            <{assign var="targetName" value=$action.user_ranking[$loop_num][1]|truncate:25:"..."}>
+                            <span style="margin:0px 10px 0px; 0px;<{if $loop_num==0}>color:#E06506;<{/if}>"><{$targetName|smarty:nodefaults}></span>
+                        </td>
+                    </tr>
+                <{/if}>
+                <{/foreach}>
+            </table>
+            <{* 4位以下表示ボタン *}>
+            <{if count($action.user_ranking) > 3}>
+                <div>
+                    <table style="width:100%;" border="0" cellspacing="0">
+                    <{foreach from=$action.user_ranking item=metadata name=loop}>
+                    <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}>
+                    <{if $loop_num >= 3}>
+                        <tr style="background:#f7fafd;">
+                            <td width="51">
+                                <p style="position: relative;margin :0px; height:60px;">
+                                    <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank_bk.gif">
+                                    <{if $action.user_ranking[$loop_num][2] != null}>
+                                        <em style="position:absolute;top:2px;left:5px;width:40px;text-align:center;"><{$action.user_ranking[$loop_num][2]}></em>
+                                    <{/if}>
+                                    <em style="position:absolute;top:28px;left:5px;width:40px;text-align:center;color:black;"><{$action.user_ranking[$loop_num][0]}><{$lang.repository_rank_rank}></em>
+                                </p>
+                            </td>
+                            <td style="border: solid 1px #C4D9EC;">
+                                <{assign var="targetName" value=$action.user_ranking[$loop_num][1]|truncate:25:"..."}>
+                                <span style="margin:0px 10px 0px; 0px;"><{$targetName|smarty:nodefaults}></span>
+                            </td>
+                        </tr>
+                     <{/if}>
+                     <{/foreach}>
+                    </table>
+                </div>
+                <div class="accordion_head">
+                    <a href="#" class="ui-btn ui-btn-up-<{$smartphone_theme_color}>" style="margin: 0px;">
+                        <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/down_displayseq.png" style="cursor : pointer;vertical-align:middle;">
+                    </a>
+                </div>
+            <{/if}>
+        </div>
+    <{/if}>
+    
+    
+    <{* keyword ranking *}>
+    <{if count($action.keyword_ranking)>0}>
+        <div style="margin-bottom: 10px;">
+            <table style="width:100%;" border="0" cellspacing="0">
+                <{* タイトル *}>
+                <tr style="background:#fdfcf0;">
+                  <td colspan="3">
+                    <div class="ui-bar-<{$smartphone_theme_color}>">
+                        <p class="ui-title"><{$lang.repository_rank_search_top}></p>
+                    </div>
+                  </td>
+                </tr>
+                
+                <{foreach from=$action.keyword_ranking item=metadata name=loop}>
+                <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> 
+                <{if $loop_num < 3}>
+                    <tr <{if $loop_num==0}>style="background:#fdfcf0;"<{else}>style="background:#f7fafd;"<{/if}>>
+                        <td width="51">
+                            <p style="position: relative;margin :0px; height:60px;">
+                                <{if $action.keyword_ranking[$loop_num][2] != null}>
+                                    <em <{if $loop_num==0}>style="position:absolute;top:2px;left:5px;width:40px;text-align:center;color:#fff;"<{else}>style="position:absolute;top:2px;left:5px;width:40px;text-align:center;"<{/if}>>
+                                    <{$action.keyword_ranking[$loop_num][2]}>
+                                    </em>
+                                <{/if}>
+                                <{if $loop_num == 0}>
+                                    <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank1_bk.gif" />
+                                <{elseif $loop_num == 1}>
+                                    <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank2_bk.gif" />
+                                <{elseif $loop_num == 2}>
+                                    <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank3_bk.gif" />
+                                <{/if}>
+                            </p>
+                        </td>
+                        <td <{if $loop_num==0}>style="border: solid 1px #ECDA91;"<{else}>style="border: solid 1px #C4D9EC;"<{/if}>>
+                            <{assign var="targetName" value=$action.keyword_ranking[$loop_num][1]|truncate:25:"..."}> 
+                            <a style="margin:0px 10px 0px; 0px;<{if $loop_num==0}>color:#E06506;<{/if}>" href="<{$action.keyword_ranking[$loop_num][3]}>" target="_top"><{$targetName|smarty:nodefaults}></a>
+                        </td>
+                    </tr>
+                <{/if}>
+                <{/foreach}>
+            </table>
+            <{* ４位以下表示用ボタン *}>
+            <{if $action.count_keyword > 3}>
+                <div>
+                    <table style="width:100%;" border="0" cellspacing="0">
+                        <{foreach from=$action.keyword_ranking item=metadata name=loop}>
+                        <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> 
+                        <{if $loop_num >= 3}>
+                            <tr style="background:#f7fafd;">
+                                <td width="51">
+                                    <p style="position: relative;margin :0px; height:60px;">
+                                        <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank_bk.gif">
+                                        <{if $action.keyword_ranking[$loop_num][2] != null}>
+                                            <em style="position:absolute;top:2px;left:5px;width:40px;text-align:center;"><{$action.keyword_ranking[$loop_num][2]}></em>
+                                        <{/if}>
+                                        <em style="position:absolute;top:28px;left:5px;width:40px;text-align:center;color:black;"><{$action.keyword_ranking[$loop_num][0]}><{$lang.repository_rank_rank}></em>
+                                    </p>
+                                </td>
+                                <td style="border: solid 1px #C4D9EC;">
+                                    <{assign var="targetName" value=$action.keyword_ranking[$loop_num][1]|truncate:25:"..."}>
+                                    <a style="margin:0px 10px 0px; 0px;" href="<{$action.keyword_ranking[$loop_num][3]}>" target="_top"><{$targetName|smarty:nodefaults}></a>
+                                </td>
+                            </tr>
+                        <{/if}>
+                        <{/foreach}>
+                    </table>
+                </div>
+                <div class="accordion_head">
+                    <a href="#" class="ui-btn ui-btn-up-<{$smartphone_theme_color}>" style="margin: 0px;">
+                        <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/down_displayseq.png" style="cursor : pointer;vertical-align:middle;">
+                    </a>
+                </div>
+            <{/if}>
+        </div>
+    <{/if}>
+    
+    <{* recent ranking *}>
+    <{if count($action.newitem_ranking)>0}>
+        <div style="margin-bottom: 10px;">
+            <table style="width:100%;" border="0" cellspacing="0">
+                <{* タイトル *}>
+                <tr style="background:#fdfcf0;">
+                  <td colspan="3">
+                    <div class="ui-bar-<{$smartphone_theme_color}>">
+                        <p class="ui-title"><{$lang.repository_rank_newitem}></p>
+                    </div>
+                  </td>
+                </tr>
+                <{foreach from=$action.newitem_ranking item=metadata name=loop}>
+                <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}>
+                <{if $loop_num < 3}>
+                    <tr <{if $loop_num==0}>style="background:#fdfcf0;"<{else}>style="background:#f7fafd;"<{/if}>>
+                        <td width="51" style="background:url('<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank_bk.gif') no-repeat;">
+                            <p style="position: relative;margin :0px; height:60px;">
+                                <em <{if $loop_num == 0}>style="position:absolute;left:5px;width:40px;text-align:center;color:#fff;"<{else}>style="position:absolute;left:5px;width:40px;text-align:center;"<{/if}>>new</em>
+                                <{if $loop_num == 0}>
+                                    <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank4_bk.gif" />
+                                <{else}>
+                                    <img width="32" height="32" style="margin-top: 22px;margin-left: 10px;" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/star.png" />
+                                <{/if}>
+                            </p>
+                        </td>
+                        <td style="padding-left:5px; <{if $loop_num==0}>border: solid 1px #ECDA91;<{else}>border: solid 1px #C4D9EC;<{/if}>">
+                            <{if $action.newitem_ranking[$loop_num][2] != null}>
+                                <em><{$action.newitem_ranking[$loop_num][2]}></em>
+                            <{/if}>
+                            <div style="font-size:100%;">
+                                <{assign var="targetName" value=$action.newitem_ranking[$loop_num][1]|truncate:25:"..."}> 
+                                <a style="margin:0px 10px 0px; 0px;<{if $loop_num==0}>color:#E06506;<{/if}>" href="<{$smarty.const.BASE_URL}>/?action=repository_uri&item_id=<{$action.newitem_ranking[$loop_num][3]}>" target="_top"><{$targetName|smarty:nodefaults}></a>
+                            </div>
+                        </td>
+                    </tr>
+               <{/if}>
+               <{/foreach}>
+            </table>
+            <{* ４位以下表示用ボタン *}>
+            <{if $action.count_recent > 3}>
+                <div>
+                    <table style="width:100%;" border="0" cellspacing="0">
+                        <{foreach from=$action.newitem_ranking item=metadata name=loop}>
+                        <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}>
+                        <{if $loop_num >= 3}>
+                            <tr style="background:#f7fafd;">
+                                <td width="51" style="background:url('<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank_bk.gif') no-repeat;">
+                                    <p style="position: relative;margin :0px; height:60px;">
+                                        <em style="position:absolute;left:5px;width:40px;text-align:center;">new</em>
+                                        <img width="32" height="32" style="margin-top: 20px;margin-left: 10px;" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/star.png" />
+                                    </p>
+                                </td>
+                                <td style="padding-left:5px; border: solid 1px #C4D9EC;">
+                                    <{if $action.newitem_ranking[$loop_num][2] != null}>
+                                        <em><{$action.newitem_ranking[$loop_num][2]}></em>
+                                    <{/if}>
+                                    <div style="font-size:100%;">
+                                        <{if $smarty.session._lang=="japanese"}>
+                                            <{assign var="targetName" value=$action.newitem_ranking[$loop_num][1]|truncate:42:"..."}> 
+                                        <{else}>
+                                            <{assign var="targetName" value=$action.newitem_ranking[$loop_num][1]|truncate:25:"..."}> 
+                                        <{/if}>
+                                        <a style="margin:0px 10px 0px; 0px;" href="<{$smarty.const.BASE_URL}>/?action=repository_uri&item_id=<{$action.newitem_ranking[$loop_num][3]}>" target="_top"><{$targetName|smarty:nodefaults}></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        <{/if}>
+                        <{/foreach}>
+                    </table>
+                </div>
+                <div class="accordion_head">
+                    <a href="#" class="ui-btn ui-btn-up-<{$smartphone_theme_color}>" style="margin: 0px;">
+                        <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/down_displayseq.png" style="cursor : pointer;vertical-align:middle;">
+                    </a>
+                </div>
+            <{/if}>
+        </div>
+    <{/if}>
+
+<{if count($action.newitem_ranking) <= 0 && count($action.keyword_ranking) <= 0 && count($action.user_ranking) <= 0 && count($action.download_ranking ) <= 0 && count($action.refer_ranking) <= 0 }>
+<div class="pb10 ac">
+    <{$lang.repository_ranking_no_data}>
+</div>
+<{/if}>
+
+<{* jquery *}>
+<script class="nc_script" type="text/javascript">
+    $(document).ready(function(){
+        $('.accordion_head').click(function() {
+            $(this).prev().slideToggle('slow');
+            var srcStr = $("a img", this).attr("src");
+            if(srcStr.indexOf("down_displayseq") > 0)
+            {
+                srcStr = srcStr.replace("down_displayseq.png","up_displayseq.png");
+            }
+            else
+            {
+                srcStr = srcStr.replace("up_displayseq.png","down_displayseq.png");
+            }
+            $("a img", this).attr("src", srcStr);
+        }).prev().hide();
+        
+    });
+</script>

@@ -1,0 +1,168 @@
+	<{if $smarty.session.child_index != ""}>
+		<{* index list *}>
+		<div class="ofx_auto min-w630px">
+			<div class="th_repos_title_bar text_color">
+				<table cellspacing="0">
+					<tr>
+						<td align="left" class="vat w10em nowrap">
+							<{$lang.repository_search_indexlist}>
+						</td>
+						<{* index pankuzu --start-- *}>
+						<{if $smarty.session.index_data != null}>
+							<{assign var="index_data" value=$smarty.session.index_data}>
+							<td align="left" valign="top">
+								<{strip}>
+								<div class="small">
+									<{* upper index name *}>
+									<{if $smarty.session.parent_index_data != null}>
+										<{assign var="parent_index" value=$smarty.session.parent_index_data}>
+										<{section name=i loop=$parent_index}>
+											<{* Add parameter (list_view_num, sort_order, page_no) 2009/12/11 K.Ando ---start--- *}>
+											<{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 *}>
+											<{strip}>
+												<a href="<{$smarty.const.BASE_URL}>/?action=repository_opensearch&index_id=<{$parent_index[i].index_id}>&count=<{$smarty.session.list_view_num}>&order=<{$smarty.session.sort_order}>&pn=1">
+													<{* Add parameter (list_view_num, sort_order, page_no) 2009/12/11 K.Ando ---end--- *}>
+													<{if $smarty.session._lang=="japanese"}>
+														<{if $parent_index[i].index_name != "" && $parent_index[i].index_name != null}>
+															<{$parent_index[i].index_name}>
+														<{else}>
+															<{$parent_index[i].index_name_english}>
+														<{/if}>
+													<{else}>
+														<{if $parent_index[i].index_name_english != "" && $parent_index[i].index_name_english != null}>
+															<{$parent_index[i].index_name_english}>
+														<{else}>
+															<{$parent_index[i].index_name}>
+														<{/if}>
+													<{/if}>
+												</a>
+											<{/strip}>
+											<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/page_next.gif" class="plr10 vam" border="0" />
+										<{/section}>
+									<{/if}>
+									
+									<b>
+										<{if $smarty.session._lang=="japanese"}>
+											<{if $index_data.index_name != "" && $index_data.index_name != null}>
+												<{$index_data.index_name|smarty:nodefaults}>
+											<{else}>
+												<{$index_data.index_name_english|smarty:nodefaults}>
+											<{/if}>
+										<{else}>
+											<{if $index_data.index_name_english != "" && $index_data.index_name_english != null}>
+												<{$index_data.index_name_english|smarty:nodefaults}>
+											<{else}>
+												<{$index_data.index_name|smarty:nodefaults}>
+											<{/if}>
+										<{/if}>
+									</b>
+								</div>
+								<{/strip}>
+							</td>
+						<{/if}>
+						<{* index pankuzu --end-- *}>
+					</tr>
+				</table>
+			</div>
+			<div class="paging_bottom" style="overflow: auto;">
+				<table class="list_table">
+					<{foreach from=$smarty.session.child_index item=data name=loop}>
+						<{assign var="iCnt" value=$smarty.foreach.loop.iteration-1}>
+						<{if $iCnt%2==0}>
+							<tr class="list_line_repos1">
+						<{else}>
+							<tr class="list_line_repos2">
+						<{/if}>
+							<{strip}>
+								<td class="pl10 pt15 vat w035em">
+									<a href="<{$smarty.session.child_index[$iCnt].permalink}>">
+										<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/tree/folderclose.png" />
+									</a>
+								</td>
+								<td class="pl10 pt10 vat" width="100%">
+									<span>
+										<a href="<{$smarty.session.child_index[$iCnt].permalink}>">
+											<{if $smarty.session._lang=="japanese"}>
+                                                <{if $smarty.session.child_index[$iCnt].index_name != "" && $smarty.session.child_index[$iCnt].index_name != null}>
+                                                    <{$smarty.session.child_index[$iCnt].index_name}>
+                                                <{else}>
+                                                    <{$smarty.session.child_index[$iCnt].index_name_english}>
+                                                <{/if}>
+											<{else}>
+                                                <{if $smarty.session.child_index[$iCnt].index_name_english != "" && $smarty.session.child_index[$iCnt].index_name_english != null}>
+                                                    <{$smarty.session.child_index[$iCnt].index_name_english}>
+                                                <{else}>
+                                                    <{$smarty.session.child_index[$iCnt].index_name}>
+                                                <{/if}>
+											<{/if}>
+										</a>
+										<wbr />
+										<span class="text_color">&nbsp;[<{$smarty.session.child_index[$iCnt].contents}><{$lang.repository_search_item_count}></span>
+										<{if $smarty.session.child_index[$iCnt].show_private_contents && $smarty.session.child_index[$iCnt].private_contents > 0}>
+											<span class="text_color">&nbsp;(<{$lang.repository_search_private}><{$smarty.session.child_index[$iCnt].private_contents}><{$lang.repository_search_item_count}>)&nbsp;</span>
+										<{/if}>
+										<span class="text_color">]&nbsp;</span>
+									</span>
+								</td>
+							<{/strip}>
+							<td class="vat ar pt15 w035em">
+								<{if $smarty.session.child_index[$iCnt].rss!=""}>
+									<div class="pl10 pr05">
+										<a href="<{$smarty.session.child_index[$iCnt].rss}>" target="_blank"><img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rss.png" alt="RSS"/></a>
+									</div>
+								<{/if}>
+							</td>
+							<td class="vat ar pt15 w035em">
+								<{if $action.oaiore_icon_display == "1" && $smarty.session.child_index[$iCnt].oaiore_uri!=""}>
+									<div class="pl05 pr05">
+										<a href="<{$smarty.session.child_index[$iCnt].oaiore_uri}>" target="_blank"><img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/oai_ore.png" alt="OAI-ORE"/></a>
+									</div>
+								<{/if}>
+							</td>
+						</tr>
+						<{if $iCnt%2==0}>
+							<tr class="list_line_comment1">
+						<{else}>
+							<tr class="list_line_comment2">
+						<{/if}>
+							<td></td>
+							<td colspan="3" class="pb10">
+								<{if $smarty.session.child_index[$iCnt].comment!=""}>
+									<div class="cursordef pl10 pr05" 
+										onclick="if($('idxCommentMore<{$id}>_<{$iCnt}>')==null){return false;}
+												if($('idxCommentMore<{$id}>_<{$iCnt}>').style.display=='none'){
+													$('idxCommentMore<{$id}>_<{$iCnt}>').style.display='';
+												}else{
+													$('idxCommentMore<{$id}>_<{$iCnt}>').style.display='none';
+												}
+												if($('idxComment<{$id}>_<{$iCnt}>')==null){return false;}
+												if($('idxComment<{$id}>_<{$iCnt}>').style.display=='none'){
+													$('idxComment<{$id}>_<{$iCnt}>').style.display='';
+												}else{
+													$('idxComment<{$id}>_<{$iCnt}>').style.display='none';
+												}">
+										<{foreach from=$smarty.session.child_index[$iCnt].comment_array item=comment_array name=idxComment}>
+											<{assign var="lineCnt" value=$smarty.foreach.idxComment.iteration}>
+											<{if $lineCnt==3}>
+												<span id="idxComment<{$id}>_<{$iCnt}>" style="display: none;">
+											<{/if}>
+											<{$comment_array|smarty:nodefaults}>
+											
+											<{if $lineCnt==2 && count($smarty.session.child_index[$iCnt].comment_array)>2}>
+												<span id="idxCommentMore<{$id}>_<{$iCnt}>">...</span>
+											<{/if}>
+											<br />
+										<{/foreach}>
+										<{if $lineCnt>=3}>
+											</span>
+										<{/if}>
+									</div>
+									<{* index comment show space *}>
+								<{/if}>
+							</td>
+						</tr>
+					<{/foreach}>
+				</table>
+			</div>
+		</div>
+	<{/if}>

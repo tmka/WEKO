@@ -1,0 +1,456 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_item_edit_files_license.html 39149 2014-07-28 08:37:06Z rei_matsuura $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+
+<div class="mt10">
+	<div>
+		<table align="center">
+			<{* HELP *}>
+			<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+				<tr>
+					<td align="right" class="ptb10">
+						<a href="#" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'entry_file_lisence'); return false;" style="cursor: help;">
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" align="right" alt="help">
+						</a>
+					</td>
+				</tr>
+			<{/if}>
+			
+			<{* FLOW *}>
+			<tr>
+				<td align="center">
+					<{if $smarty.session._lang == "japanese"}>
+						<{if $smarty.session.doi_itemtype_flag == true}>
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_2.png" alt="" />
+						<{else}>
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_2.png" alt="" />
+						<{/if}>
+					<{else}>
+						<{if $smarty.session.doi_itemtype_flag == true}>
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_2_eng.png" alt="" />
+						<{else}>
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_2_eng.png" alt=""/>
+						<{/if}>
+					<{/if}>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+<div align="center" class="text_color">
+	
+	<div class="mt10" align=center class="paging">
+		<input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_main_item_editfiles'); return false;"/>
+		<input type="button" class="btn_blue" value="<{$lang.repository_save}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditTexts('stay'); return false;"/>
+		<input type="button" class="btn_next" value="<{$lang.repository_page_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditTexts(); return false;" />
+	</div>
+  <div class="paging">
+   <b><{$lang.repository_itemtype}> : <{$smarty.session.item_type_all.item_type_name}></b>
+  </div>
+	
+	<{if $action.error_msg != null}>
+		<div class="error_msg al">
+			<{section name=i loop=$action.error_msg}>
+				<{$action.error_msg[i]}><br />
+			<{/section}>
+		</div>
+	<{/if}>
+  
+  <form id="attachment_form<{$id}>" target="attachment_form<{$id}>" enctype="multipart/form-data">
+  
+  <div class="item_edit_texts_frame w80">
+  
+   <table class="tb01 w80 al">
+    <{section name=i loop=$smarty.session.item_attr_type}>
+    <{assign var="attr_type" value=$smarty.session.item_attr_type}>
+    <{assign var="item_attr" value=$smarty.session.item_attr}>
+    <{assign var="num_attr" value=$smarty.session.item_num_attr}>
+    <{assign var="license_master" value=$smarty.session.license_master}>
+    <{assign var="cnt1" value=$smarty.section.i.index}>
+    <{*アイテム属性値の表示 : file*}>
+    <{*アイテム属性値の表示 : file_price追加*}>
+    <{*ファイルメタデータが未入力の場合、未入力というrowを出す*}>
+    <{if ($attr_type[i].input_type == 'file' || $attr_type[i].input_type == 'file_price') && $item_attr[i][0].upload == null }>
+     <tr>
+      <th class="th_col_repos ranking_paging" colspan=2><b><{$attr_type[i].attribute_name}></b><{if $attr_type[i].is_required == 1}><font color="red">*</font><{/if}></th>
+     </tr>
+     <tr>
+      <td class="ranking_paging" colspan=2>
+       <{$lang.repository_item_file_not_input}>
+      </td>
+     </tr>
+    <{/if}>
+    <{if ($attr_type[i].input_type == 'file' || $attr_type[i].input_type == 'file_price') && $item_attr[i][0].upload != null }>
+     <{* メタデータ名表示 *}>
+     <tr>
+      <th class="th_col_repos ranking_paging" colspan=2><b><{$attr_type[i].attribute_name}></b><{if $attr_type[i].is_required == 1}><font color="red">*</font><{/if}></th>
+     </tr>
+     <{*全ファイル属性に関するループ*}>
+     <{section name=j loop=$item_attr[i]}>
+     <{assign var="cnt2" value=$smarty.section.j.index}>
+      <{*1行目 アップロードファイル名表示*}>
+      <tr>
+       <th class="ranking_repos ranking_paging" colspan=2>
+        <{if $attr_type[i].plural_enable==1}><{$smarty.section.j.index_next}>.<{/if}><{$item_attr[i][j].upload.file_name}>
+        <input type="hidden" id="file_<{$cnt1}>_<{$cnt2}>" name="input_ids_file[]" value="TILL" >
+       </th>
+      </tr>
+      <{*2列目 表示項目*}>
+      <tr>
+       <td class="ranking_list_paging al"><{$lang.repository_item_file_display_setting}></td>
+       <td class="item_edit_list al">
+        <div class="pd02">
+        <{* 表示形式, 本文へのリンク名設定 *}>
+        <{$lang.repository_item_file_display_type}>:
+        <input id="display_type_detail_<{$cnt1}>_<{$cnt2}>" 
+               name="display_type_<{$cnt1}>_<{$cnt2}>"
+               type="radio"
+               value="dummy"
+               onclick="$('display_type_select_<{$cnt1}>_<{$cnt2}>').value='detail'; 
+                        $('file_embargo_<{$cnt1}>_<{$cnt2}>').rowSpan=2;
+                        $('flash_embargo1_<{$cnt1}>_<{$cnt2}>').style.display='none';
+                        $('flash_embargo2_<{$cnt1}>_<{$cnt2}>').style.display='none';
+                        <{if $action.flash_convertible[i][j]=='true'}>
+                            $('no_download_<{$cnt1}>_<{$cnt2}>').style.display='none';
+                            if($('embargo_flag_4_<{$cnt1}>_<{$cnt2}>').checked){
+                                 $('embargo_flag_4_<{$cnt1}>_<{$cnt2}>').checked='';
+                                 $('embargo_flag_1_<{$cnt1}>_<{$cnt2}>').checked='true';
+                                 <{*embargo_flag_1_<{$cnt1}>_<{$cnt2}> onclick ivent*}>
+                                  $('embargo_<{$cnt1}>_flag_<{$cnt2}>').value='1';
+                                  $('span_embargo_<{$cnt1}>_<{$cnt2}>').style.display='none';
+                                  if($('set_price_<{$cnt1}>_<{$cnt2}>')){
+                                      $('set_price_<{$cnt1}>_<{$cnt2}>').style.display='none';
+                                      $('not_set_price_<{$cnt1}>_<{$cnt2}>').style.display='block';
+                                      $('set_price_no_download_<{$cnt1}>_<{$cnt2}>').style.display='none';
+                                  }
+                            }
+                        <{/if}>"
+                        <{if $item_attr[i][j].display_type==0 || 
+                            ($item_attr[i][j].display_type==2 && $action.flash_convertible[i][j]!="true")}>CHECKED<{/if}>
+        ><label for="display_type_detail_<{$cnt1}>_<{$cnt2}>"><{$lang.repository_item_file_display_type_detail}></label>&nbsp;
+        <input id="display_type_simple_<{$cnt1}>_<{$cnt2}>"
+               name="display_type_<{$cnt1}>_<{$cnt2}>"
+               type="radio"
+               value="dummy"
+               onclick="$('display_type_select_<{$cnt1}>_<{$cnt2}>').value='simple';
+                        $('file_embargo_<{$cnt1}>_<{$cnt2}>').rowSpan=2;
+                        $('flash_embargo1_<{$cnt1}>_<{$cnt2}>').style.display='none';
+                        $('flash_embargo2_<{$cnt1}>_<{$cnt2}>').style.display='none';
+                        <{if $action.flash_convertible[i][j]=='true'}>
+                            $('no_download_<{$cnt1}>_<{$cnt2}>').style.display='none';
+                            if($('embargo_flag_4_<{$cnt1}>_<{$cnt2}>').checked){
+                                $('embargo_flag_4_<{$cnt1}>_<{$cnt2}>').checked='';
+                                $('embargo_flag_1_<{$cnt1}>_<{$cnt2}>').checked='true';
+                                <{*embargo_flag_1_<{$cnt1}>_<{$cnt2}> onclick ivent*}>
+                                 $('embargo_<{$cnt1}>_flag_<{$cnt2}>').value='1';
+                                 $('span_embargo_<{$cnt1}>_<{$cnt2}>').style.display='none';
+                                 if($('set_price_<{$cnt1}>_<{$cnt2}>')){
+                                     $('set_price_<{$cnt1}>_<{$cnt2}>').style.display='none';
+                                     $('not_set_price_<{$cnt1}>_<{$cnt2}>').style.display='block';
+                                     $('set_price_no_download_<{$cnt1}>_<{$cnt2}>').style.display='none';
+                                 }
+                            }
+                        <{/if}>"
+                        <{if $item_attr[i][j].display_type==1}>CHECKED<{/if}>
+        ><label for="display_type_simple_<{$cnt1}>_<{$cnt2}>"><{$lang.repository_item_file_display_type_simple}></label>&nbsp;
+        <{if $action.flash_convertible[i][j]=="true"}>
+         <input id="display_type_flash_<{$cnt1}>_<{$cnt2}>" 
+                name="display_type_<{$cnt1}>_<{$cnt2}>"
+                type="radio"
+                value="dummy"
+                onclick="$('display_type_select_<{$cnt1}>_<{$cnt2}>').value='flash';
+                         $('file_embargo_<{$cnt1}>_<{$cnt2}>').rowSpan=4;
+                         $('flash_embargo1_<{$cnt1}>_<{$cnt2}>').style.display='';
+                         $('flash_embargo2_<{$cnt1}>_<{$cnt2}>').style.display='';
+                         $('no_download_<{$cnt1}>_<{$cnt2}>').style.display='';"
+                         <{if $item_attr[i][j].display_type==2}>CHECKED<{/if}>
+         ><label for="display_type_flash_<{$cnt1}>_<{$cnt2}>"><{$lang.repository_item_file_display_type_flash}></label>
+        <{/if}>
+        <input id="display_type_select_<{$cnt1}>_<{$cnt2}>" name="display_type[]" type="hidden" value="<{if $item_attr[i][j].display_type==1}>simple<{elseif $item_attr[i][j].display_type==2 && $action.flash_convertible[i][j]=="true"}>flash<{else}>detail<{/if}>" >
+        <br/>
+        </div>
+        <div class="nobr pd02">
+        <table class="tb00 al nobr">
+        <tr>
+        <td class="pl00">
+        <{$lang.repository_item_file_display_name}>:
+        </td>
+        <td class="full">
+        <input type="text" id="display_name_<{$cnt1}>_<{$cnt2}>" name="display_name[]" value="<{$item_attr[i][j].display_name}>" class="full ml05">
+        </td>
+        </tr>
+        </table>
+        </div>
+        <div class="pd02">
+        <{*ライセンス入力*}> 
+        <{$lang.repository_licence}>:
+        <select onchange="repositoryCls['<{$id}>'].setLicenceVisible(<{$cnt1}>,<{$cnt2}>,this.value)" id="licence_<{$cnt1}>_<{$cnt2}>" name="licence[]" >
+         <{*最初に自由記述欄を入れる*}>
+         <option value="licence_free" <{if $item_attr[i][j].licence == "licence_free"}>SELECTED<{/if}> ><{$lang.repository_licence_free}></option>
+         <{*ライセンスマスタに登録されている分だけライセンスをプルダウンメニューに入れる*}>
+         <{section name=k loop=$license_master}>
+          <option value="<{$smarty.section.k.index}>" <{if $item_attr[i][j].licence == $smarty.section.k.index}>SELECTED<{/if}> ><{$license_master[k].license_notation}></option>
+         <{/section}>
+        </select>
+        <span style="<{if $item_attr[i][j].licence == "licence_free"}>display:block<{else}>display:none<{/if}>" id="span_<{$cnt1}>_<{$cnt2}>">
+         <{$lang.repository_item_file_free_licence}>
+        </span>
+        <textarea class="full" style="<{if $item_attr[i][j].licence == "licence_free"}>display:block<{else}>display:none<{/if}>" id="licence_free_<{$cnt1}>_<{$cnt2}>" name="freeword[]" rows=5 cols=40 wrap=hard ><{$item_attr[i][j].freeword}></textarea>
+        </div>
+       </td>
+      </tr>
+      <{*3-6列目 アクセス項目*}>
+      <tr>
+       <td class="ranking_list_paging" id="file_embargo_<{$cnt1}>_<{$cnt2}>" <{if $item_attr[i][j].display_type==2}>rowspan=4<{else}>rowspan=2<{/if}>><{$lang.repository_item_file_access_setting}></td>
+       <td class="ranking_repos ranking_paging al">ファイル</td>
+      </tr>
+      <tr class="al">
+       <td class="item_edit_list al">
+        <{*エンバーゴ入力*}>
+        <input id="embargo_flag_1_<{$cnt1}>_<{$cnt2}>" name="embargo_flag_<{$cnt1}>_<{$cnt2}>" type="radio" onclick="$('embargo_<{$cnt1}>_flag_<{$cnt2}>').value='1'; $('span_embargo_<{$cnt1}>_<{$cnt2}>').style.display='none'; if($('set_price_<{$cnt1}>_<{$cnt2}>')){$('set_price_<{$cnt1}>_<{$cnt2}>').style.display='none';$('not_set_price_<{$cnt1}>_<{$cnt2}>').style.display='block';$('set_price_no_download_<{$cnt1}>_<{$cnt2}>').style.display='none';}" value="dummy" <{if $item_attr[i][j].embargo_flag==1 || ($item_attr[i][j].embargo_flag==4 && $item_attr[i][j].display_type!=2)}>CHECKED<{/if}>><label for="embargo_flag_1_<{$cnt1}>_<{$cnt2}>"><{$lang.repository_item_embargo_candidate1}></label><br/>
+        <input id="embargo_flag_2_<{$cnt1}>_<{$cnt2}>" name="embargo_flag_<{$cnt1}>_<{$cnt2}>" type="radio" onclick="$('embargo_<{$cnt1}>_flag_<{$cnt2}>').value='2'; $('span_embargo_<{$cnt1}>_<{$cnt2}>').style.display='block'; if($('set_price_<{$cnt1}>_<{$cnt2}>')){$('set_price_<{$cnt1}>_<{$cnt2}>').style.display='block';$('not_set_price_<{$cnt1}>_<{$cnt2}>').style.display='none';$('set_price_no_download_<{$cnt1}>_<{$cnt2}>').style.display='none';}" value="dummy" <{if $item_attr[i][j].embargo_flag==2}>CHECKED<{/if}>><label for="embargo_flag_2_<{$cnt1}>_<{$cnt2}>"><{$lang.repository_item_embargo_candidate2}></label><br/>
+         <span style="<{if $item_attr[i][j].embargo_flag==2}>display:block<{else}>display:none<{/if}>" id="span_embargo_<{$cnt1}>_<{$cnt2}>">
+         <input type="text" class="w40px" size="4" id="year_<{$cnt1}>_<{$cnt2}>" name="embargo_year[]" value="<{$item_attr[i][j].embargo_year}>" onchange="javascript: dateCheck('year_<{$cnt1}>_<{$cnt2}>', 'month_<{$cnt1}>_<{$cnt2}>', 'day_<{$cnt1}>_<{$cnt2}>');">
+         <{$lang.repository_year}>
+         <select id="month_<{$cnt1}>_<{$cnt2}>" name="embargo_month[]" onchange="javascript: dateCheck('year_<{$cnt1}>_<{$cnt2}>', 'month_<{$cnt1}>_<{$cnt2}>', 'day_<{$cnt1}>_<{$cnt2}>');">
+           <{*option value="00" <{if $item_attr[i][j].embargo_month == "00"}>SELECTED<{/if}> ><{$lang.repository_month_Unspecified*}></option*}>
+           <option value="1" <{if $item_attr[i][j].embargo_month == "01"}>SELECTED<{/if}> >1</option>
+           <option value="2" <{if $item_attr[i][j].embargo_month == "02"}>SELECTED<{/if}> >2</option>
+           <option value="3" <{if $item_attr[i][j].embargo_month == "03"}>SELECTED<{/if}> >3</option>
+           <option value="4" <{if $item_attr[i][j].embargo_month == "04"}>SELECTED<{/if}> >4</option>
+           <option value="5" <{if $item_attr[i][j].embargo_month == "05"}>SELECTED<{/if}> >5</option>
+           <option value="6" <{if $item_attr[i][j].embargo_month == "06"}>SELECTED<{/if}> >6</option>
+           <option value="7" <{if $item_attr[i][j].embargo_month == "07"}>SELECTED<{/if}> >7</option>
+           <option value="8" <{if $item_attr[i][j].embargo_month == "08"}>SELECTED<{/if}> >8</option>
+           <option value="9" <{if $item_attr[i][j].embargo_month == "09"}>SELECTED<{/if}> >9</option>
+           <option value="10" <{if $item_attr[i][j].embargo_month == "10"}>SELECTED<{/if}> >10</option>
+           <option value="11" <{if $item_attr[i][j].embargo_month == "11"}>SELECTED<{/if}> >11</option>
+           <option value="12" <{if $item_attr[i][j].embargo_month == "12"}>SELECTED<{/if}> >12</option>
+         </select>
+         <{$lang.repository_month}>
+         <select id="day_<{$cnt1}>_<{$cnt2}>" name="embargo_day[]" onchange="javascript: dateCheck('year_<{$cnt1}>_<{$cnt2}>', 'month_<{$cnt1}>_<{$cnt2}>', 'day_<{$cnt1}>_<{$cnt2}>');">
+           <{*option value="00" <{if $item_attr[i][j].embargo_day == "00"}>SELECTED<{/if}> >?</option*}>
+           <option value="1" <{if $item_attr[i][j].embargo_day == "01"}>SELECTED<{/if}> >1</option>
+           <option value="2" <{if $item_attr[i][j].embargo_day == "02"}>SELECTED<{/if}> >2</option>
+           <option value="3" <{if $item_attr[i][j].embargo_day == "03"}>SELECTED<{/if}> >3</option>
+           <option value="4" <{if $item_attr[i][j].embargo_day == "04"}>SELECTED<{/if}> >4</option>
+           <option value="5" <{if $item_attr[i][j].embargo_day == "05"}>SELECTED<{/if}> >5</option>
+           <option value="6" <{if $item_attr[i][j].embargo_day == "06"}>SELECTED<{/if}> >6</option>
+           <option value="7" <{if $item_attr[i][j].embargo_day == "07"}>SELECTED<{/if}> >7</option>
+           <option value="8" <{if $item_attr[i][j].embargo_day == "08"}>SELECTED<{/if}> >8</option>
+           <option value="9" <{if $item_attr[i][j].embargo_day == "09"}>SELECTED<{/if}> >9</option>
+           <option value="10" <{if $item_attr[i][j].embargo_day == "10"}>SELECTED<{/if}> >10</option>
+           <option value="11" <{if $item_attr[i][j].embargo_day == "11"}>SELECTED<{/if}> >11</option>
+           <option value="12" <{if $item_attr[i][j].embargo_day == "12"}>SELECTED<{/if}> >12</option>
+           <option value="13" <{if $item_attr[i][j].embargo_day == "13"}>SELECTED<{/if}> >13</option>
+           <option value="14" <{if $item_attr[i][j].embargo_day == "14"}>SELECTED<{/if}> >14</option>
+           <option value="15" <{if $item_attr[i][j].embargo_day == "15"}>SELECTED<{/if}> >15</option>
+           <option value="16" <{if $item_attr[i][j].embargo_day == "16"}>SELECTED<{/if}> >16</option>
+           <option value="17" <{if $item_attr[i][j].embargo_day == "17"}>SELECTED<{/if}> >17</option>
+           <option value="18" <{if $item_attr[i][j].embargo_day == "18"}>SELECTED<{/if}> >18</option>
+           <option value="19" <{if $item_attr[i][j].embargo_day == "19"}>SELECTED<{/if}> >19</option>
+           <option value="20" <{if $item_attr[i][j].embargo_day == "20"}>SELECTED<{/if}> >20</option>
+           <option value="21" <{if $item_attr[i][j].embargo_day == "21"}>SELECTED<{/if}> >21</option>
+           <option value="22" <{if $item_attr[i][j].embargo_day == "22"}>SELECTED<{/if}> >22</option>
+           <option value="23" <{if $item_attr[i][j].embargo_day == "23"}>SELECTED<{/if}> >23</option>
+           <option value="24" <{if $item_attr[i][j].embargo_day == "24"}>SELECTED<{/if}> >24</option>
+           <option value="25" <{if $item_attr[i][j].embargo_day == "25"}>SELECTED<{/if}> >25</option>
+           <option value="26" <{if $item_attr[i][j].embargo_day == "26"}>SELECTED<{/if}> >26</option>
+           <option value="27" <{if $item_attr[i][j].embargo_day == "27"}>SELECTED<{/if}> >27</option>
+           <option value="28" <{if $item_attr[i][j].embargo_day == "28"}>SELECTED<{/if}> >28</option>
+           <option value="29" <{if $item_attr[i][j].embargo_day == "29"}>SELECTED<{/if}> >29</option>
+           <option value="30" <{if $item_attr[i][j].embargo_day == "30"}>SELECTED<{/if}> >30</option>
+           <option value="31" <{if $item_attr[i][j].embargo_day == "31"}>SELECTED<{/if}> >31</option>
+         </select>
+         <{$lang.repository_day}>
+         <br/>
+         </span>
+        <input id="embargo_flag_3_<{$cnt1}>_<{$cnt2}>" name="embargo_flag_<{$cnt1}>_<{$cnt2}>" type="radio" onclick="$('embargo_<{$cnt1}>_flag_<{$cnt2}>').value='3'; $('span_embargo_<{$cnt1}>_<{$cnt2}>').style.display='none'; if($('set_price_<{$cnt1}>_<{$cnt2}>')){$('set_price_<{$cnt1}>_<{$cnt2}>').style.display='block';$('not_set_price_<{$cnt1}>_<{$cnt2}>').style.display='none';$('set_price_no_download_<{$cnt1}>_<{$cnt2}>').style.display='none';}" value="dummy" <{if $item_attr[i][j].embargo_flag==3}>CHECKED<{/if}>><label for="embargo_flag_3_<{$cnt1}>_<{$cnt2}>"><{$lang.repository_item_embargo_candidate3}></label><br/>
+        <{if $action.flash_convertible[i][j]=="true"}>
+         <span id="no_download_<{$cnt1}>_<{$cnt2}>" style="<{if $item_attr[i][j].display_type==2}>display:<{else}>display:none<{/if}>">
+          <input id="embargo_flag_4_<{$cnt1}>_<{$cnt2}>" name="embargo_flag_<{$cnt1}>_<{$cnt2}>" type="radio" onclick="$('embargo_<{$cnt1}>_flag_<{$cnt2}>').value='4'; $('span_embargo_<{$cnt1}>_<{$cnt2}>').style.display='none'; if($('set_price_<{$cnt1}>_<{$cnt2}>')){$('set_price_<{$cnt1}>_<{$cnt2}>').style.display='none';$('not_set_price_<{$cnt1}>_<{$cnt2}>').style.display='none';$('set_price_no_download_<{$cnt1}>_<{$cnt2}>').style.display='block';}" value="dummy" <{if $item_attr[i][j].embargo_flag==4 && $item_attr[i][j].display_type==2}>CHECKED<{/if}>><label for="embargo_flag_4_<{$cnt1}>_<{$cnt2}>"><{$lang.repository_item_embargo_candidate4}></label><br/>
+         </span>
+        <{/if}>
+        <input id="embargo_<{$cnt1}>_flag_<{$cnt2}>" name="embargo_flag[]" type="hidden" value="<{$item_attr[i][j].embargo_flag}>" >
+        <{if $attr_type[i].input_type == 'file_price'}>
+         <{if $item_attr[i][j].price_num>0}>
+          <div id="not_set_price_<{$cnt1}>_<{$cnt2}>" <{if $item_attr[i][j].embargo_flag==1}>style="display:block;"<{else}>style="display:none;"<{/if}>>
+           <div class="ranking_paging"><{$lang.repository_item_embargo_open}></div>
+          </div>
+          <div id="set_price_no_download_<{$cnt1}>_<{$cnt2}>" <{if $item_attr[i][j].display_type==2 && $item_attr[i][j].embargo_flag==4}>style="display:block;"<{else}>style="display:none;"<{/if}>>
+           <div class="ranking_paging"><{$lang.repository_item_embargo_no_download}></div>
+          </div>
+          <div id="set_price_<{$cnt1}>_<{$cnt2}>" <{if $item_attr[i][j].embargo_flag==1 || ($item_attr[i][j].display_type==2 && $item_attr[i][j].embargo_flag==4)}>style="display:none;"<{else}>style="display:block;"<{/if}>>
+           <div class="ranking_paging"><{$lang.repository_item_set_price}></div>
+           <div class="ranking_paging" style="color:#ff0000"><{$lang.repository_item_attention}></div>
+           <div class="ranking_paging">
+            <table>
+             <tr class="ranking_repos text_color">
+              <th class="item_edit_list" class="ac"><{$lang.repository_item_group_name}></th>
+              <th class="item_edit_list" class="ac"><{$lang.repository_item_price}></th>
+              <th class="item_edit_list" class="ac"><{$lang.repository_delete}></th>
+             </tr>
+             <{section name=p loop=$item_attr[i][j].price_num}>
+             <{assign var="price_cnt" value=$smarty.section.p.index}>
+              <tr>
+               <td class="item_edit_list">
+                <select name="room_ids[]">
+                 <option value="0" <{if $item_attr[i][j].room_id[p]==0}>SELECTED<{/if}>><{$lang.repository_item_gest}></option>
+                 <{* NC2に存在するグループ分 *}>
+                 <{section name=k loop=$smarty.session.all_group}>
+                 <{assign var="all_group" value=$smarty.session.all_group}>
+                  <option value="<{$all_group[k].room_id}>" <{if $item_attr[i][j].room_id[p]==$all_group[k].room_id}>SELECTED<{/if}>><{$all_group[k].page_name}></option>
+                 <{/section}>
+                </select>
+               </td>
+               <td class="item_edit_list">
+                <input type="text" class="ar" value="<{$item_attr[i][j].price_value[p]}>" name="price_value[]" />
+               </td>
+               <td class="item_edit_list">
+                <input type="button" class="btn_delete ar" value="<{$lang.repository_delete}>" 
+                 onclick="javascript: repositoryCls['<{$id}>'].repositorySetPrice(2, <{$cnt1}>, <{$cnt2}>, <{$price_cnt}>); return false;"
+                />
+               </td>
+              </tr>
+             <{/section}>
+            </table>
+           </div>
+           <{if $item_attr[i][j].price_num!=(count($smarty.session.all_group)+1)}>
+            <div class="ranking_paging">
+             <input type="button" class="btn_white" value="<{$lang.repository_item_add_group}>" onclick="javascript: repositoryCls['<{$id}>'].repositorySetPrice(1, <{$cnt1}>, <{$cnt2}>); return false;"/>
+            </div>
+           <{/if}>
+          </div>
+         <{else}>
+          <div id="not_set_price_<{$cnt1}>_<{$cnt2}>" <{if $item_attr[i][j].embargo_flag==1}>style="display:block;"<{else}>style="display:none;"<{/if}>>
+           <div class="ranking_paging"><{$lang.repository_item_embargo_open}></div>
+          </div>
+          <div id="set_price_<{$cnt1}>_<{$cnt2}>" <{if $item_attr[i][j].embargo_flag==1}>style="display:none;"<{else}>style="display:block;"<{/if}>>
+           <input type="button" class="btn_white" value="<{$lang.repository_item_add_price}>" onclick="javascript: repositoryCls['<{$id}>'].repositorySetPrice(1, <{$cnt1}>, <{$cnt2}>); return false;"/>
+          </div>
+         <{/if}>
+        <{/if}>
+       </td>
+      </tr>
+      <tr style="<{if $item_attr[i][j].display_type==2}>display:<{else}>display:none<{/if}>;" id="flash_embargo1_<{$cnt1}>_<{$cnt2}>">
+       <td class="ranking_repos ranking_paging al">flash</td>
+      </tr>
+      <tr style="<{if $item_attr[i][j].display_type==2}>display:<{else}>display:none<{/if}>;" id="flash_embargo2_<{$cnt1}>_<{$cnt2}>">
+       <td class="item_edit_list al">
+        <{*エンバーゴ入力*}>
+        <input id="flash_embargo_flag_1_<{$cnt1}>_<{$cnt2}>" name="flash_embargo_flag_<{$cnt1}>_<{$cnt2}>" type="radio" onclick="$('flash_embargo_<{$cnt1}>_flag_<{$cnt2}>').value='1'; $('span_flash_embargo_<{$cnt1}>_<{$cnt2}>').style.display='none';" value="dummy" <{if $item_attr[i][j].flash_embargo_flag==1}>CHECKED<{/if}>><label for="flash_embargo_flag_1_<{$cnt1}>_<{$cnt2}>"><{$lang.repository_item_embargo_candidate1}></label><br/>
+        <input id="flash_embargo_flag_2_<{$cnt1}>_<{$cnt2}>" name="flash_embargo_flag_<{$cnt1}>_<{$cnt2}>" type="radio" onclick="$('flash_embargo_<{$cnt1}>_flag_<{$cnt2}>').value='2'; $('span_flash_embargo_<{$cnt1}>_<{$cnt2}>').style.display='block';" value="dummy" <{if $item_attr[i][j].flash_embargo_flag==2}>CHECKED<{/if}>><label for="flash_embargo_flag_2_<{$cnt1}>_<{$cnt2}>"><{$lang.repository_item_embargo_candidate2}></label><br/>
+        <span style="<{if $item_attr[i][j].flash_embargo_flag==2}>display:block<{else}>display:none<{/if}>" id="span_flash_embargo_<{$cnt1}>_<{$cnt2}>">
+         <input type="text" class="w40px" size="4" id="flash_year_<{$cnt1}>_<{$cnt2}>" name="flash_embargo_year[]" value="<{$item_attr[i][j].flash_embargo_year}>" onchange="javascript: dateCheck('flash_year_<{$cnt1}>_<{$cnt2}>', 'flash_month_<{$cnt1}>_<{$cnt2}>', 'flash_day_<{$cnt1}>_<{$cnt2}>');">
+         <{$lang.repository_year}>
+         <select id="flash_month_<{$cnt1}>_<{$cnt2}>" name="flash_embargo_month[]" onchange="javascript: dateCheck('flash_year_<{$cnt1}>_<{$cnt2}>', 'flash_month_<{$cnt1}>_<{$cnt2}>', 'flash_day_<{$cnt1}>_<{$cnt2}>');">
+          <option value="1" <{if $item_attr[i][j].flash_embargo_month == "01"}>SELECTED<{/if}> >1</option>
+          <option value="2" <{if $item_attr[i][j].flash_embargo_month == "02"}>SELECTED<{/if}> >2</option>
+          <option value="3" <{if $item_attr[i][j].flash_embargo_month == "03"}>SELECTED<{/if}> >3</option>
+          <option value="4" <{if $item_attr[i][j].flash_embargo_month == "04"}>SELECTED<{/if}> >4</option>
+          <option value="5" <{if $item_attr[i][j].flash_embargo_month == "05"}>SELECTED<{/if}> >5</option>
+          <option value="6" <{if $item_attr[i][j].flash_embargo_month == "06"}>SELECTED<{/if}> >6</option>
+          <option value="7" <{if $item_attr[i][j].flash_embargo_month == "07"}>SELECTED<{/if}> >7</option>
+          <option value="8" <{if $item_attr[i][j].flash_embargo_month == "08"}>SELECTED<{/if}> >8</option>
+          <option value="9" <{if $item_attr[i][j].flash_embargo_month == "09"}>SELECTED<{/if}> >9</option>
+          <option value="10" <{if $item_attr[i][j].flash_embargo_month == "10"}>SELECTED<{/if}> >10</option>
+          <option value="11" <{if $item_attr[i][j].flash_embargo_month == "11"}>SELECTED<{/if}> >11</option>
+          <option value="12" <{if $item_attr[i][j].flash_embargo_month == "12"}>SELECTED<{/if}> >12</option>
+         </select>
+         <{$lang.repository_month}>
+         <select id="flash_day_<{$cnt1}>_<{$cnt2}>" name="flash_embargo_day[]" onchange="javascript: dateCheck('flash_year_<{$cnt1}>_<{$cnt2}>', 'flash_month_<{$cnt1}>_<{$cnt2}>', 'flash_day_<{$cnt1}>_<{$cnt2}>');">
+          <option value="1" <{if $item_attr[i][j].flash_embargo_day == "01"}>SELECTED<{/if}> >1</option>
+          <option value="2" <{if $item_attr[i][j].flash_embargo_day == "02"}>SELECTED<{/if}> >2</option>
+          <option value="3" <{if $item_attr[i][j].flash_embargo_day == "03"}>SELECTED<{/if}> >3</option>
+          <option value="4" <{if $item_attr[i][j].flash_embargo_day == "04"}>SELECTED<{/if}> >4</option>
+          <option value="5" <{if $item_attr[i][j].flash_embargo_day == "05"}>SELECTED<{/if}> >5</option>
+          <option value="6" <{if $item_attr[i][j].flash_embargo_day == "06"}>SELECTED<{/if}> >6</option>
+          <option value="7" <{if $item_attr[i][j].flash_embargo_day == "07"}>SELECTED<{/if}> >7</option>
+          <option value="8" <{if $item_attr[i][j].flash_embargo_day == "08"}>SELECTED<{/if}> >8</option>
+          <option value="9" <{if $item_attr[i][j].flash_embargo_day == "09"}>SELECTED<{/if}> >9</option>
+          <option value="10" <{if $item_attr[i][j].flash_embargo_day == "10"}>SELECTED<{/if}> >10</option>
+          <option value="11" <{if $item_attr[i][j].flash_embargo_day == "11"}>SELECTED<{/if}> >11</option>
+          <option value="12" <{if $item_attr[i][j].flash_embargo_day == "12"}>SELECTED<{/if}> >12</option>
+          <option value="13" <{if $item_attr[i][j].flash_embargo_day == "13"}>SELECTED<{/if}> >13</option>
+          <option value="14" <{if $item_attr[i][j].flash_embargo_day == "14"}>SELECTED<{/if}> >14</option>
+          <option value="15" <{if $item_attr[i][j].flash_embargo_day == "15"}>SELECTED<{/if}> >15</option>
+          <option value="16" <{if $item_attr[i][j].flash_embargo_day == "16"}>SELECTED<{/if}> >16</option>
+          <option value="17" <{if $item_attr[i][j].flash_embargo_day == "17"}>SELECTED<{/if}> >17</option>
+          <option value="18" <{if $item_attr[i][j].flash_embargo_day == "18"}>SELECTED<{/if}> >18</option>
+          <option value="19" <{if $item_attr[i][j].flash_embargo_day == "19"}>SELECTED<{/if}> >19</option>
+          <option value="20" <{if $item_attr[i][j].flash_embargo_day == "20"}>SELECTED<{/if}> >20</option>
+          <option value="21" <{if $item_attr[i][j].flash_embargo_day == "21"}>SELECTED<{/if}> >21</option>
+          <option value="22" <{if $item_attr[i][j].flash_embargo_day == "22"}>SELECTED<{/if}> >22</option>
+          <option value="23" <{if $item_attr[i][j].flash_embargo_day == "23"}>SELECTED<{/if}> >23</option>
+          <option value="24" <{if $item_attr[i][j].flash_embargo_day == "24"}>SELECTED<{/if}> >24</option>
+          <option value="25" <{if $item_attr[i][j].flash_embargo_day == "25"}>SELECTED<{/if}> >25</option>
+          <option value="26" <{if $item_attr[i][j].flash_embargo_day == "26"}>SELECTED<{/if}> >26</option>
+          <option value="27" <{if $item_attr[i][j].flash_embargo_day == "27"}>SELECTED<{/if}> >27</option>
+          <option value="28" <{if $item_attr[i][j].flash_embargo_day == "28"}>SELECTED<{/if}> >28</option>
+          <option value="29" <{if $item_attr[i][j].flash_embargo_day == "29"}>SELECTED<{/if}> >29</option>
+          <option value="30" <{if $item_attr[i][j].flash_embargo_day == "30"}>SELECTED<{/if}> >30</option>
+          <option value="31" <{if $item_attr[i][j].flash_embargo_day == "31"}>SELECTED<{/if}> >31</option>
+         </select>
+         <{$lang.repository_day}>
+         <br/>
+        </span>
+        <input id="flash_embargo_flag_3_<{$cnt1}>_<{$cnt2}>" name="flash_embargo_flag_<{$cnt1}>_<{$cnt2}>" type="radio" onclick="$('flash_embargo_<{$cnt1}>_flag_<{$cnt2}>').value='3'; $('span_flash_embargo_<{$cnt1}>_<{$cnt2}>').style.display='none';" value="dummy" <{if $item_attr[i][j].flash_embargo_flag==3}>CHECKED<{/if}>><label for="flash_embargo_flag_3_<{$cnt1}>_<{$cnt2}>"><{$lang.repository_item_embargo_candidate3}></label><br/>
+        <input id="flash_embargo_<{$cnt1}>_flag_<{$cnt2}>" name="flash_embargo_flag[]" type="hidden" value="<{$item_attr[i][j].flash_embargo_flag}>" >
+       </td>
+      </tr>
+     <{/section}>
+    <{/if}>
+    <{/section}>
+   </table>
+   </div>
+  </form>
+</div>
+
+<div align=center class="paging">
+	<input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_main_item_editfiles'); return false;"/>
+	<input type="button" class="btn_blue" value="<{$lang.repository_save}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditTexts('stay'); return false;"/>
+	<input type="button" class="btn_next" value="<{$lang.repository_page_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditTexts(); return false;" />
+</div>
+
+<{*Add check invalid date 2011/06/17 A.Suzuki --start--*}>
+<script class="nc_script" type="text/javascript">
+    dateCheck = function(year_id, month_id, day_id) {
+        if($(year_id) != null) {
+            year = ($(year_id).value).trim();
+        }
+        if($(month_id) != null) {
+            month = $(month_id).value;
+        }
+        if($(day_id) != null) {
+            day = $(day_id).value;
+        }
+        
+        // Regular expression check
+        if(year.search(/[^0-9]+/) != -1) {
+            alert('<{$lang.repository_item_date_error}>');
+            $(year_id).value = "";
+            return;
+        }
+
+        if(year != "" && month != " " && day != " "){
+            var dt = new Date(year, month - 1, day);
+            if(dt == null || dt.getFullYear() != year || dt.getMonth() + 1 != month || dt.getDate() != day) {
+                alert('<{$lang.repository_item_date_error}>');
+                $(month_id).selectedIndex = 0;
+                $(day_id).selectedIndex = 0;
+                return;
+            }
+        }
+    }
+</script>
+<{*Add check invalid date 2011/06/17 A.Suzuki --end--*}>
+
+<{include file="repository_script.html"}>

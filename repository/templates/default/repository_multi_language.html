@@ -1,0 +1,60 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_multi_language.html 17250 2012-04-20 05:10:31Z yuko_nakao $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<div class="redirect_body">
+	<div class="multiLanguageTable">
+		<form method="post" id="itemtype_multilang">
+			<input type="hidden" name="item_type_id" value="<{$smarty.session.item_type_id}>"/>
+			<table class="wide tb00 box_center mb05">
+				<tr>
+					<td nowrap style="padding:3px"><{$lang.repository_itemtype_multi_default}></td>
+					<td style="padding:3px">
+						<input type="text" value="<{$smarty.session.metadata_title[$action.edit_id]}>" name="metadata_defaulttitle"
+						 <{if $action.default_edit == "false"}>
+						  disabled="disabled"
+						 <{/if}>
+						>
+						<input type="hidden" value="<{$action.default_edit}>" name="default_edit_flag">
+					</td>
+				</tr>
+				<{foreach name="lang_list" key="lang_name" item="item_type_name" from=$smarty.session.metadata_multi_title[$action.edit_id]}>
+					<tr>
+						<td nowrap style="padding:3px"><{$smarty.session.lang_list[$lang_name]}></td>
+						<td style="padding:3px">
+							<input type="text" value="<{$item_type_name}>" name="metadata_multititle[<{$lang_name}>]">
+						</td>
+					</tr>
+				<{/foreach}>
+			</table>
+		</form>
+	</div>
+	<div align="right">
+		<{$lang.repository_itemtype_multi_uninputted}>
+	</div>
+	<div align="right">
+		<input type="button" class="btn_blue" style="width:100px; padding:3px;" value="<{$lang.repository_commit}>" onclick="repositoryClickOK<{$id}>(<{$action.edit_id}>);">
+		<input type="button" class="btn_white" style="width:100px; padding:3px;" value="<{$lang.repository_cancel}>" onclick="repositoryClickCancel<{$id}>();" >
+	</div>
+</div>
+
+<script class="nc_script" type="text/javascript">
+	repositoryClickOK<{$id}> = function(editId){
+		var form = $('itemtype_multilang');
+		var formText = Form.serialize(form);
+		commonCls.removeBlock('<{$id}>');
+		repositoryCls['<{$action.sel_node_pid}>'].repositorySetItemTypeMultiLang(editId, formText);
+	}	
+</script>
+<script class="nc_script" type="text/javascript">
+	repositoryClickCancel<{$id}> = function(){
+		commonCls.removeBlock('<{$id}>');
+	}
+</script>

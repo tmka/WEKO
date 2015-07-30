@@ -1,0 +1,191 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_export_detailconfirm.html 40423 2014-08-26 02:30:50Z tatsuya_koyasu $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{*添付ファイルのエクスポート選択画面*}>
+<div class="th_classic_content">
+
+<form name="export_detailconfirm" method="post">
+<div align="center">
+  <div class="w90 ofx_auto ofy_hidden pt10">
+  <table class="ac belt_repos text_color full fullh" cellspacing="1">
+   <tr class="list_line_repos2">
+	<th class="th_col_repos ranking_paging w25 vt al"><{$lang.repository_export_item}></th>
+	<td class="ranking_paging al vt tb01 w75">
+	 <{if $smarty.session._lang == "japanese"}>
+	  <{if $smarty.session.item_info.item[0].title != "" && $smarty.session.item_info.item[0].title != null}>
+	   <{$smarty.session.item_info.item[0].title}>
+	  <{else}>
+	   <{$smarty.session.item_info.item[0].title_english}>
+	  <{/if}>
+	 <{else}>
+	  <{if $smarty.session.item_info.item[0].title_english != "" && $smarty.session.item_info.item[0].title_english != null}>
+	   <{$smarty.session.item_info.item[0].title_english}>
+	  <{else}>
+	   <{$smarty.session.item_info.item[0].title}>
+	  <{/if}>
+	 <{/if}>
+	</td>
+   </tr>
+   <tr class="list_line_repos2">
+	 <th class="th_col_repos ranking_paging w25 vt al"><{$lang.repository_export_file}></th>
+	 <td class="ranking_paging al vt tb01 w75">
+	 <{if $smarty.session.license_num!="0"}>
+	  <input type=radio id="check_radio" value="this.checked" onClick="checkradio_t()"><label for="check_radio"><{$lang.repository_export_run}></label></input>
+	  <input type=radio id="no_export" value="2" onClick="checkradio_f()" ><label for="no_export"><{$lang.repository_export_no_run}></label></input>
+	 <{elseif $smarty.session.no_export=="true"}>
+	  <{$lang.repository_export_no_permit}><input type=radio id="check_radio" value="this.checked" style="display:none" />
+	 <{else}>
+	  <{$lang.repository_export_no_file}><input type=radio id="check_radio" value="this.checked" style="display:none" />
+	 <{/if}>
+	</td>
+   </tr>
+   
+	<{if $smarty.session.no_export!="true"}>
+	<tbody id="license" class="brdl01 brdr01 brdt01 brdb01">
+	<{foreach from=$smarty.session.files item=file_info name="lice"}>
+	<{assign var="loop_num" value=$smarty.foreach.lice.iteration-1}>
+	<{if $loop_num==0}>
+	 <th class="th_col_repos ranking_paging w25 al vt" rowspan="<{$smarty.session.license_num+1}>">
+	  <{$lang.repository_export_license}>
+	  <{if $smarty.session.license_num > 1}>
+	  <div style="font-weight:lighter;">
+	   <input id="all_check" type="checkbox" name="all_check" onClick="checkAll(this.checked)"><label for="all_check"><{$lang.repository_export_allagree}></label>
+	  </div>
+	  <{/if}>
+	 </th>
+	 <{/if}>
+	 <tr <{if $loop_num%2==0}>class="list_line_repos1"<{else}>class="list_line_repos2"<{/if}>>
+	    <td class=" al vt tb00 pd05 w75">
+	  	<{if $file_info.file_flag == "free"}>
+		 <input type="checkbox" id="<{$loop_num}>_license" name="license_check[]" value="<{$file_info.attribute_id}>_<{$file_info.file_no}>" onClick="checkNoAll(this.checked)"><label for="<{$loop_num}>_license"><{$lang.repository_export_agree}></label><br />
+		<{elseif $file_info.file_flag == "login"}>
+		 <input type="checkbox" id="<{$loop_num}>_license" name="license_check[]" value="<{$file_info.attribute_id}>_<{$file_info.file_no}>" onClick="checkNoAll(this.checked)" disabled><font color="red"><{$lang.repository_export_need_login}></font><br/>
+		<{elseif $file_info.file_flag == "paid"}>
+		 <input type="checkbox" id="<{$loop_num}>_license" name="license_check[]" value="<{$file_info.attribute_id}>_<{$file_info.file_no}>" onClick="checkNoAll(this.checked)" disabled><font color="red"><{$lang.repository_export_need_charge}></font><br/>
+		<{elseif $file_info.file_flag == "close"}>
+		 <input type="checkbox" id="<{$loop_num}>_license" name="license_check[]" value="<{$file_info.attribute_id}>_<{$file_info.file_no}>" onClick="checkNoAll(this.checked)" disabled><font color="red"><{$lang.repository_export_no_download}></font><br/>
+		<{/if}>
+		
+		<{$lang.repository_export_filename}> : <{$file_info.file_name}><br>
+		<{$file_info.license_notation}>
+		<{if $file_info.text_url!=""}>
+		<br /><a href="<{$file_info.text_url}>" target="_blank"><{$file_info.text_url}></a>
+		<img src="<{$file_info.img_url}>" />
+		<{/if}>
+		
+		<div class="mt05 mb05 ml05 mr05">
+         <{section name=i loop=$file_info.group_price}>
+         <{assign var="group_price" value=$file_info.group_price}>
+           <{if $group_price[i].name == "0"}>
+             <{$lang.repository_item_gest}>
+           <{else}>
+             <{$group_price[i].name}>
+           <{/if}>
+           : <{$smarty.session.money_unit|smarty:nodefaults}><{$group_price[i].price}>-
+           <{if $smarty.section.i.index!=count($file_info.group_price)-1}>
+           , 
+           <{/if}>
+         <{/section}>
+         </div>
+		
+	  </td>
+	 </tr>
+	<{/foreach}>
+	</tbody>
+	<{/if}>
+  </table>
+
+  </div>
+</div>
+</form>
+</div>
+
+<div class="paging nobor ac">
+<input class="btn_blue" type="button" value=<{$lang.repository_return}> onclick="redirctPrevPage(); return false;" />
+<input class="btn_blue" type="button" value=<{$lang.repository_export}> onclick="goExport()">
+</div>
+<{include file="repository_script.html"}>
+<{*最後にonload相当時に呼ぶスクリプトを書く*}>
+<script class="nc_script" type="text/javascript">
+
+	document.getElementById("check_radio").checked = true;
+
+	checkradio_t = function() {
+		document.getElementById("check_radio").checked = true;
+		document.getElementById("no_export").checked = false;
+		document.getElementById("license").style.display = "";
+	}
+   
+	checkradio_f = function() {
+		document.getElementById("check_radio").checked = false;
+		document.getElementById("no_export").checked = true;
+		document.getElementById("license").style.display = "none";
+		if(document.getElementById('all_check') != null){
+			document.getElementById('all_check').checked = false;
+		}
+		checkAll(false);
+	}
+   
+	checkAll = function(check_flg){
+		ii = 0;
+		str_id = ii + "_license";
+		while(document.getElementById(str_id) != null){
+			if(document.getElementById(str_id).disabled == ""){
+				document.getElementById(str_id).checked = check_flg;
+			}
+			ii++;
+			str_id = ii + "_license";
+		}
+	}
+
+	checkNoAll = function(chk_flg){
+		if(chk_flg == false){
+			if(document.getElementById('all_check') != null){
+				document.getElementById('all_check').checked = false;
+			}
+		}
+	}
+	
+	goExport = function(){
+		<{*Check License*}>
+		ii = 0;
+		str_id = ii + "_license";
+		str_license = "";
+		while(document.getElementById(str_id) != null){
+			if(document.getElementById(str_id).checked == true){
+				if(str_license != ""){
+					str_license = str_license + "_";
+				}
+				str_license = str_license + document.getElementById(str_id).value;
+			}
+			ii++;
+			str_id = ii + "_license";
+		}
+		
+		<{*Export*}>
+		str_href = "";
+		// Modify Directory specification BASE_URL K.Matsuo 2011/9/2
+		str_href = "<{$smarty.const.BASE_URL}>/?action=repository_action_main_export_detaildownload&item_id=<{$smarty.session.item_id_for_export}>&item_no=<{$smarty.session.item_no_for_export}>&check_radio=" + document.getElementById('check_radio').checked + "&license_check=" + str_license;
+		
+		<{*if (confirm(document.getElementById('check_radio').checked + str_license)==true)*}>
+		location.href = str_href;
+	}
+	
+</script>
+
+<script class="nc_script" type="text/javascript">
+	redirctPrevPage = function() {
+		var prev_page_uri = "";
+		prev_page_uri = "<{$smarty.const.BASE_URL}>/?action=repository_uri&item_id=<{$smarty.session.item_id_for_export}>";	// Modify Directory specification BASE_URL K.Matsuo 2011/9/2
+		location.href = prev_page_uri.replace(/&amp;/ig,"&");
+		return false;
+	}
+</script>

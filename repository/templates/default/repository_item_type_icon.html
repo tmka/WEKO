@@ -1,0 +1,140 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_item_type_icon.html 30442 2014-01-07 02:32:23Z shota_suzuki $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<div class="mt10">
+
+	<table class="box_center">
+		<{*ヘルプ*}>
+		<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+			<tr>
+				<td align="right" class="ptb10">
+					<div>
+						<a href="#" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'itemtype_icon'); return false;" style="cursor: help;">
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" align="right" alt="help">
+						</a>
+					</div>
+				</td>
+			</tr>
+		<{/if}>
+		<tr>
+			<td>
+				 <{if $smarty.session._lang == "japanese"}>
+					<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_type_settings3.png" />
+				 <{else}>
+					<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_type_settings3_eng.png" />
+				 <{/if}>
+			</td>
+		</tr>
+	</table>
+
+ <{if $smarty.session.Error_Msg!=""}>
+  <div class="paging" style="color: #ff0000;">
+   <{$smarty.session.Error_Msg}>
+  </div>
+ <{/if}>
+
+<div class="box_center">
+ <table class="wide box_center mb10">
+ 	<tr>
+ 		<td class="ranking_list_paging ac"><{$lang.repository_itemtype_select_icon}></td>
+ 	</tr>
+ 	<tr>
+ 		<td>
+ 			<center>
+ 				<{$lang.repository_item_type_icon_upload_file_attention|smarty:nodefaults}>
+			</center>
+ 		</td>
+ 	</tr>
+ 	<tr>
+ 		<td class="ptb04 plr08 ac">
+ 		<form id="attachment_form<{$id}>" target="attachment_form<{$id}>" enctype="multipart/form-data">
+
+ 		  <{if $smarty.session.icon_edit=="2"}>
+ 		  	<{* DB登録済み *}>
+ 		  	<div class="nowrap ac" style="display: block;" id="no_edit_icon">
+ 		  	  <{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 *}>
+ 		  	  <img vspace="0" hspace="0" width="16" height="16" id="db_icon" style="border: 0px solid rgb(204, 204, 204); margin-left:3px;margin-top:0px;margin-bottom:0px;margin-right:0px;" alt="" title="" src="<{$smarty.const.BASE_URL}>/index.php?action=repository_action_common_download&item_type_id=<{$smarty.session.item_type_id}>"/>
+ 		  	  <img vspace="0" hspace="0" width="16" height="16" id="item_icon" style="display: none; border: 0px solid rgb(204, 204, 204); margin-left:3px;margin-top:0px;margin-bottom:0px;margin-right:0px;" alt="" title="" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/tree/item.png" />
+ 		  	  <input type="button" class="btn_white" value="<{$lang.repository_edit}>" onclick="javascript: editIcon();" />
+ 		  	  <input type="button" id="del_btn" class="btn_delete" value="<{$lang.repository_delete}>" onclick="javascript: delIcon();" />
+ 		  	</div>
+ 		  	<div  class="nowrap ac" style="display: none;" id="edit_icon">
+ 		  	  <input type="file" name="upload[]" size=50 class="upload"/>
+ 		  	  <input type="hidden" value="0" id="del_icon_flg" name="del_icon_flg"/>
+ 		  	</div>
+ 		  <{elseif $smarty.session.icon_edit=="1"}>
+ 		  	<{* 共通リソース *}>
+ 		  	<div class="nowrap ac" style="display: block;" id="no_edit_icon">
+ 		  	  <{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 *}>
+ 		  	  <img vspace="0" hspace="0" width="16" height="16" style="border: 0px solid rgb(204, 204, 204); margin-left:3px;margin-top:0px;margin-bottom:0px;margin-right:0px;" alt="" title="" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/tree/item.png" />
+ 		  	  <input type="button" class="btn_white" value="<{$lang.repository_edit}>" onclick="javascript: editIcon();" />
+ 		  	</div>
+ 		  	<div  class="nowrap ac" style="display: none;" id="edit_icon">
+ 		  	  <input type="file" name="upload[]" size=50 class="upload"/>
+ 		  	</div>
+ 		  <{* Mod fix a glitch with upload icon is deleted when back from repository_item_type_confirm 2012/02/16 T.Koyasu -start- *}>
+ 		  <{elseif $smarty.session.icon_edit=="3"}>
+ 		    <{* add upload icon *}>
+            <div class="nowrap ac" style="display: block;" id="no_edit_icon">
+              <img vspace="0" hspace="0" width="16" height="16" id="db_icon" style="border: 0px solid rgb(204, 204, 204); margin-left:3px;margin-top:0px;margin-bottom:0px;margin-right:0px;" alt="" title="" src="<{$smarty.const.BASE_URL}>/index.php?action=common_download_main&upload_id=<{$smarty.session.upload_icon.upload.upload_id}>"/>
+              <{* is not create new itemtype *}>
+              <{if $smarty.session.item_type_edit_flag!=0}>
+                <img vspace="0" hspace="0" width="16" height="16" id="item_icon" style="display: none; border: 0px solid rgb(204, 204, 204); margin-left:3px;margin-top:0px;margin-bottom:0px;margin-right:0px;" alt="" title="" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/tree/item.png" />
+              <{/if}>
+              <input type="button" class="btn_white" value="<{$lang.repository_edit}>" onclick="javascript: editIcon();" />
+              <input type="button" id="del_btn" class="btn_delete" value="<{$lang.repository_delete}>" onclick="javascript: delIcon();" />
+            </div>
+            <div  class="nowrap ac" style="display: none;" id="edit_icon">
+                <input type="file" name="upload[]" size=50 class="upload"/>
+                <input type="hidden" value="0" id="del_icon_flg" name="del_icon_flg"/>
+            </div>
+          <{* Mod fix a glitch with upload icon is deleted when back from repository_item_type_confirm 2012/02/16 T.Koyasu -end- *}>
+ 		  <{else}>
+ 		  	<{* 新規作成、もしくは未登録 *}>
+ 		  	<div class="nowrap">
+ 		  	  <input type="file" name="upload[]" size=50 class="upload"/>
+ 		  	</div>
+ 		  <{/if}>
+ 		  
+ 		</form>
+ 		</td>
+ 	</tr>
+ </table>
+</div>
+
+<div align="center" class="paging">
+	<input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_edit_itemtype_edit'); return false;">
+	<input type="button" class="btn_next" value="<{$lang.repository_page_next}>" onclick="repositoryCls['<{$id}>'].repositorySetItemtypeIcon();return false;">
+</center>
+</div>
+</div>
+<{include file="repository_script.html"}>
+
+<script class="nc_script" type="text/javascript">
+  editIcon = function(){
+	$('no_edit_icon').style.display = "none";
+	$('edit_icon').style.display = "block";
+  }
+  
+  delIcon = function(){
+    <{if $smarty.session.item_type_edit_flag==0}>
+      $('no_edit_icon').style.display = "none";
+      $('edit_icon').style.display = "block";
+    <{else}>
+      $('item_icon').style.display = "";
+      $('db_icon').style.display = "none";
+      $('del_btn').style.display = "none";
+    <{/if}>
+	$('del_icon_flg').value = "1";
+  }
+
+</script>
+

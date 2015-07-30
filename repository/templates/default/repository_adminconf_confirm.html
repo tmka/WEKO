@@ -1,0 +1,125 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_adminconf_confirm.html 36507 2014-05-30 02:18:58Z tomohiro_ichikawa $  -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<form name="sitemap_login_form" id="sitemap_login_form" class="pd20">
+	<table class="pd10">
+		<tr>
+			<td colspan="2">
+				<{$lang.repository_admin_adminconf_login_comment}><br/>
+				<div id="error_msg" name="error_msg">
+					<{if $action.is_create_data=="false"}>
+						<div class="error_msg">
+							<{if $action.is_create_data == "false" && $action.adminconfirm_action == "sitemap"}>
+								<{$lang.repository_admin_sitemap_errorMsg}><br />
+							<{elseif $action.is_create_data == "false" && $action.adminconfirm_action == "ranking"}>
+								<{$lang.repository_admin_create_rank_Database_errorMsg}><br />
+							<{elseif $action.is_create_data == "false" && $action.adminconfirm_action == "filecleanup"}>
+								<{$lang.repository_admin_file_clean_up_errorMsg}><br />
+							<{elseif $action.is_create_data == "false" && $action.adminconfirm_action == "harvesting"}>
+								<{$lang.repository_admin_harvesting_process_errorMsg}><br />
+                            <{elseif $action.is_create_data == "false" && $action.adminconfirm_action == "usagestatistics"}>
+                                <{$lang.repository_admin_update_usage_statistics_errorMsg}><br />
+                            <{elseif $action.is_create_data == "false" && $action.adminconfirm_action == "sitelicensemail"}>
+                                <{$lang.repository_admin_sitelicense_send_mail_errorMsg}><br />
+                            <{elseif $action.is_create_data == "false" && $action.adminconfirm_action == "feedback"}>
+                                <{$lang.repository_admin_feedback_process_errorMsg}><br />
+                            <{elseif $action.is_create_data == "false" && $action.adminconfirm_action == "reconstructindexauth"}>
+                                <{$lang.repository_admin_reconstruct_index_browsing_authority_table_errorMsg}><br />
+                            <{elseif $action.is_create_data == "false" && $action.adminconfirm_action == "reconstructsearch"}>
+                                <{$lang.repository_admin_reconstruct_search_table_errorMsg}><br />
+                            <{elseif $action.is_create_data == "false" && $action.adminconfirm_action == "externalsearchstopword"}>
+                                <{$lang.repository_admin_referer_process_errorMsg}><br />
+							<{/if}>
+						</div>
+					<{/if}>
+				</div>
+                <{if $action.adminconfirm_action == "harvesting"}>
+                    <{if count($action.harvestWarningRepos) > 0}>
+                        <div class="pt05">
+                            <div class="warning_msg">
+                                <{$lang.repository_admin_harvesting_repository_warning}>
+                                <div class="pl20 normal">
+                                    <{foreach from=$action.harvestWarningRepos item=reposData}>
+                                        <li><{$reposData}></li>
+                                    <{/foreach}>
+                                </div>
+                            </div>
+                        </div>
+                    <{/if}>
+                <{/if}>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<{$lang.repository_admin_adminconf_login_id}>
+			</td>
+			<td>
+			<input type="text" maxlength="100" name="adminconf_login_id"
+				id="adminconf_login_id" value="" /></td>
+		</tr>
+		<tr>
+			<td>
+			<{$lang.repository_admin_adminconf_password}>
+			</td>
+			<td>
+			<input type="password" maxlength="100" name="adminconf_password" id="adminconf_password" value=""></td>
+		</tr>
+	</table>
+<div align=center>
+<input type="button" id="return_admin" class="btn_white" name="return_admin" value="<{$lang.repository_return}>" onclick="javascript:commonCls.sendView('<{$id}>', 'repository_view_edit_admin'); return false;" /> 
+<input type="button" id="create_data" class="btn_white" name="create_data" value="<{$lang.repository_execute}>" onclick="javascript:SendAdminconfData(); return false;" />
+</div>
+</form>
+
+
+<script class="nc_script" type="text/javascript">
+SendAdminconfData = function()
+{
+	var action = '<{$action.adminconfirm_action}>';
+	if(action == "sitemap")
+	{ 
+		document.getElementById('error_msg').innerHTML = '<{$lang.repository_admin_sitemap_info_comment}>';
+	}
+    else if(action == "ranking"){
+        document.getElementById('error_msg').innerHTML = '<{$lang.repository_admin_sitemap_rank_Database_info_comment}>';
+    }
+    else if(action == "filecleanup"){
+        document.getElementById('error_msg').innerHTML = '<{$lang.repository_admin_file_clean_up_comment}>';
+    }
+    else if(action == "harvesting"){
+        document.getElementById('error_msg').innerHTML = '<{$lang.repository_admin_harvesting_process_runing}>';
+    }
+    else if(action == "usagestatistics"){
+        document.getElementById('error_msg').innerHTML = '<{$lang.repository_admin_update_usage_statistics_comment}>';
+    }
+    else if(action == "sitelicensemail"){
+        document.getElementById('error_msg').innerHTML = '<{$lang.repository_admin_send_sitelicense_send_mail_running}>';
+    }
+    else if(action == "feedback"){
+        document.getElementById('error_msg').innerHTML = '<{$lang.repository_admin_feedback_process_runing}>';
+    }
+    else if(action == "reconstructindexauth"){
+        document.getElementById('error_msg').innerHTML = '<{$lang.repository_admin_reconstruct_index_browsing_authority_table_executing}>';
+    }
+    else if(action == "reconstructsearch"){
+        document.getElementById('error_msg').innerHTML = '<{$lang.repository_admin_reconstruct_search_table_executing}>';
+    }
+    else if(action == "externalsearchstopword"){
+        document.getElementById('error_msg').innerHTML = '<{$lang.repository_admin_referer_process_runing}>';
+    }
+	document.getElementById('return_admin').disabled = true;
+	document.getElementById('create_data').disabled = true;
+	repositoryCls['<{$id}>'].repositoryAdminConf('<{$page_id}>','<{$block_id}>', action);
+}
+
+</script>
+<{include file="repository_script.html"}>
+

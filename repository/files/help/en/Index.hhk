@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<OBJECT type="text/site properties">
+	<param name="FrameName" value="right">
+</OBJECT>
+<UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="インデックス検索">
+		<param name="Name" value="search">
+		<param name="Local" value="html\search.html#index">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="キーワード検索">
+		<param name="Name" value="search">
+		<param name="Local" value="html\search.html#keyword">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="アイテム詳細">
+		<param name="Name" value="item_detail">
+		<param name="Local" value="html\item_detail.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="ランキング">
+		<param name="Name" value="ranking">
+		<param name="Local" value="html\ranking.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="アイテム登録">
+		<param name="Name" value="item_entry">
+		<param name="Local" value="html\item_entry.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="プライベートツリー編集">
+		<param name="Name" value="privatetree_edit">
+		<param name="Local" value="html\privatetree_edit.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="ワークフロー">
+		<param name="Name" value="workflow">
+		<param name="Local" value="html\workflow.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="サプリメンタルコンテンツ">
+		<param name="Name" value="workflow_supple">
+		<param name="Local" value="html\workflow_supple.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="アイテムタイプ管理(作成/編集)">
+		<param name="Name" value="itemtype_metadata">
+		<param name="Local" value="html\itemtype_metadata.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="アイテムタイプ管理(OAI-PMHマップ)">
+		<param name="Name" value="itemtype_mapping">
+		<param name="Local" value="html\itemtype_mapping.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="アイテム管理">
+		<param name="Name" value="item_setting">
+		<param name="Local" value="html\item_setting.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="ツリー編集">
+		<param name="Name" value="tree_edit">
+		<param name="Local" value="html\tree_edit.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="査読/承認">
+		<param name="Local" value="html\review.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="インポート">
+		<param name="Name" value="import">
+		<param name="Local" value="html\import.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="ログ解析">
+		<param name="Name" value="log">
+		<param name="Local" value="html\log.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="WEKO管理">
+		<param name="Name" value="setting">
+		<param name="Local" value="html\setting.html">
+		</OBJECT>
+</UL>
+</BODY></HTML>

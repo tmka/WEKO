@@ -1,0 +1,155 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_item_edit_editdoi.html 42605 2014-10-03 01:02:01Z keiya_sugimoto $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<div class="mt10">
+	<div>
+		<table align="center">
+			<{* HELP *}>
+			<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+				<tr>
+					<td align="right" class="ptb10">
+						<a href="#" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'edit_doi');return false;" style="cursor: help;">
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" align="right" alt="help">
+						</a>
+					</td>
+				</tr>
+			<{/if}>
+			
+			<{* FLOW *}>
+			<tr>
+				<td align="center">
+					<{if $smarty.session._lang == "japanese"}>
+						<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_6.png" alt="" />
+					<{else}>
+						<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_6_eng.png" alt="" />
+					<{/if}>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<div class="mt10" align=center>
+		<input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>','repository_view_main_item_editlinks'); return false;">
+		<input type="button" class="btn_blue" value="<{$lang.repository_save}>" onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('stay');return false;" />
+		<input type="button" class="btn_next" value="<{$lang.repository_page_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('next');return false;" />
+	</div>
+
+ <div align="center" class="text_color">
+  <form>
+   <div class="paging">
+    <{if $action.doi_status == '0' && $action.displays_doi_grant == true}>
+     <{if strlen($action.prefix_jalcdoi) > 0}>
+      <div class="paging" style="margin-left:28%" align="left">
+        <input type="checkbox" id="id_entry_jalcdoi_checkbox" name="entry_jalcdoi_checkbox" value="<{$action.suffix}>" align="center" onclick="javascript: changeJalcdoiCheckbox()" ><label for="id_entry_jalcdoi_checkbox"><{$lang.repository_item_enter_jalcdoi}></label>
+        &nbsp;&nbsp;<span>http://doi.org/<{$action.prefix_jalcdoi}>/<{$action.suffix}></span>
+        <input type="hidden" id="id_entry_jalcdoi_hidden" name="entry_jalcdoi_hidden" value="http://doi.org/<{$action.prefix_jalcdoi}>/<{$action.suffix}>">
+      </div>
+     <{/if}>
+     <{if strlen($action.prefix_crossref) > 0}>
+      <div class="paging" style="margin-left:28%" align="left">
+        <input type="checkbox" id="id_entry_crossref_checkbox" name="entry_crossref_checkbox" value="<{$action.suffix}>" align="center" onclick="javascript: changeCrossrefCheckbox()" ><label for="id_entry_crossref_checkbox"><{$lang.repository_item_enter_crossref}></label>
+        &nbsp;&nbsp;<span>http://doi.org/<{$action.prefix_crossref}>/<{$action.suffix}></span>
+        <input type="hidden" id="id_entry_crossref_hidden" name="entry_crossref_hidden" value="http://doi.org/<{$action.prefix_crossref}>/<{$action.suffix}>">
+      </div>
+     <{/if}>
+     <{if strlen($action.prefix_library_jalcdoi) > 0}>
+      <div class="paging" style="margin-left:28%" align="left">
+        <{$lang.repository_item_enter_library_jalcdoi}></br>
+        <input type="text" id="id_entry_library_jalcdoi_text" name="entry_library_jalcdoi_text" align="center" onfocus="javascript: focusLibraryJalcdoiText()" ><label for="id_entry_library_jalcdoi_text"></label>
+        <input type="hidden" id="id_entry_library_jalcdoi_hidden" name="entry_library_jalcdoi_hidden" value="http://doi.org/<{$action.prefix_library_jalcdoi}>/<{$action.suffix}>">
+      </div>
+     <{/if}>
+    <{elseif $action.doi_status == '1'}>
+     <div class="paging">
+       <input type="button" class="btn_delete ar" align="center" value="<{if $action.registed_library_jalcdoi == 1}><{$lang.repository_item_delete_library_jalcdoi}><{elseif $action.registed_doi == 1}><{$lang.repository_item_delete_jalcdoi}><{else}><{$lang.repository_item_delete_crossref}><{/if}>" onclick="if(!commonCls.confirm('<{$lang.repository_item_delete_jalcdoi_confirm}>'))return false; commonCls.sendView('<{$id}>', {'action':'repository_view_main_item_editdoi', 'drop_doi':'true'}); return false;" style="width:205px;" >
+     </div>
+    <{elseif $action.doi_status == '2'}>
+     <div class="paging">
+       <span><{$lang.repository_item_doi_droped}></span>
+     </div>
+    <{/if}>
+   </div>
+  </form>
+
+  <input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_main_item_editlinks');return false;">
+  <input type="button" class="btn_blue" value="<{$lang.repository_save}>" onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('stay');return false;" />
+  <input type="button" class="btn_next" value="<{$lang.repository_page_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('next');return false;" />
+ </div>
+
+</div>
+
+<script class="nc_script" type="text/javascript">
+    changeJalcdoiCheckbox = function()
+    {
+        if($(id_entry_jalcdoi_checkbox).checked == true)
+        {
+            var checkCrossRef = document.getElementById("id_entry_crossref_checkbox");
+            
+            if (checkCrossRef)
+            {
+                $(id_entry_crossref_checkbox).checked = false;
+            }
+            
+            var textLibraryJalcdoi = document.getElementById("id_entry_library_jalcdoi_text");
+            
+            if (textLibraryJalcdoi)
+            {
+                $(id_entry_library_jalcdoi_text).value = "";
+            }
+        }
+        
+        return false;
+    }
+</script>
+<script class="nc_script" type="text/javascript">
+    changeCrossrefCheckbox = function()
+    {
+        if($(id_entry_crossref_checkbox).checked == true)
+        {
+            var checkJalcdoi = document.getElementById("id_entry_jalcdoi_checkbox");
+            
+            if (checkJalcdoi)
+            {
+                $(id_entry_jalcdoi_checkbox).checked = false;
+            }
+            
+            var textLibraryJalcdoi = document.getElementById("id_entry_library_jalcdoi_text");
+            
+            if (textLibraryJalcdoi)
+            {
+                $(id_entry_library_jalcdoi_text).value = "";
+            }
+        }
+        
+        return false;
+    }
+</script>
+<script class="nc_script" type="text/javascript">
+    focusLibraryJalcdoiText = function()
+    {
+        var checkJalcdoi = document.getElementById("id_entry_jalcdoi_checkbox");
+            
+        if (checkJalcdoi)
+        {
+            $(id_entry_jalcdoi_checkbox).checked = false;
+        }
+        
+        var checkCrossRef = document.getElementById("id_entry_crossref_checkbox");
+            
+        if (checkCrossRef)
+        {
+            $(id_entry_crossref_checkbox).checked = false;
+        }
+        
+        return false;
+    }
+</script>
+<{include file="repository_script.html"}>

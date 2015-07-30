@@ -1,0 +1,307 @@
+<div class="plr20">
+    <{* Item title --start--*}>
+    <b>
+        <h2 class="item_detail_title" style="min-width:600px">
+            <{$action.title}>
+        </h2>
+    </b>
+    <{* Item title --end--*}>
+    
+    <{* Date list --start-- *}>
+    <div class="ptb10 ar">
+        <select id="yearMonth" onchange="reloadPopup(event); return false;">
+            <{foreach from=$action.dateList item=dateArray}>
+                <option value="<{$dateArray.value}>" <{if $dateArray.selected==true}>selected<{/if}>><{$dateArray.display}></option>
+            <{/foreach}>
+        </select>
+    </div>
+    <{* Date list --end-- *}>
+    
+    <{* Usage statistics space --start-- *}>
+    <div style="height: 400px; overflow-y: auto;">
+        
+        <{* Item views --start-- *}>
+        <div class="pb10">
+            <div class="th_repos_title_bar text_color mt05 mb05"><{$lang.repository_usagestatistics_views_title}></div>
+            <{if $action.usagesViews.total < 1}>
+                <div class="ml20"><{$lang.repository_usagestatistics_no_data_views}></div>
+            <{else}>
+                <{* total views --start-- *}>
+                <div class="mb05">
+                    <table cellpadding="0" class="ml20 brdb01">
+                        <tr class="tb01">
+                            <th align="left" colspan="2"><b><{$lang.repository_usagestatistics_total|replace:"%s":$action.displayDate}></b></th>
+                        </tr>
+                        <tr class="list_line_repos2">
+                            <td class="w10em" style="padding-left: 0.5em;"></td>
+                            <td>
+                                <table cellpadding="0">
+                                    <tr>
+                                        <td align="right" class="w05em"><{$action.usagesViews.total}></td>
+                                        <td class="td_graph_repos item_edit_list w400px">
+                                            <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/graph_bar.gif" style="width: 100%; height: 10px;"></td>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <{* total views --end-- *}>
+                
+                <{* By domain views --start-- *}>
+                <div class="mb05">
+                    <table cellpadding="0" class="ml20 <{if count($action.usagesViews.byDomain) < 6}>brdb01<{/if}>">
+                        <tr class="tb01">
+                            <th align="left" colspan="2"><b><{$lang.repository_usagestatistics_by_domain}></b></th>
+                        </tr>
+                        <{foreach from=$action.usagesViews.byDomain item=byDomain key=keyName name=loopDomain}>
+                            <{assign var="loop_num" value=$smarty.foreach.loopDomain.iteration-1}>
+                            <{if $loop_num == 5}>
+                               </table>
+                               <div id="view<{$id}>_<{$action.itemId}>_<{$action.itemNo}>_bottom" style="display: none; overflow: hidden;">
+                               <table cellpadding="0" class="ml20">
+                            <{/if}>
+                            <tr class="<{if $loop_num%2==1}>list_line_repos1<{else}>list_line_repos2<{/if}>">
+                                <td class="w10em" style="padding-left: 0.5em;">
+                                    <span><{$keyName}></span>
+                                    <{if $byDomain.img != ""}>
+                                        <img width="16px" height="16px" src="<{$byDomain.img}>" class="vam brd01">
+                                    <{/if}>
+                                </td>
+                                <td>
+                                    <table cellpadding="0">
+                                        <tr>
+                                            <td align="right" class="w05em"><{$byDomain.cnt}></td>
+                                            <td class="td_graph_repos item_edit_list w400px">
+                                                <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/graph_bar.gif" style="width: <{$byDomain.rate}>%; height: 10px;">
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        <{/foreach}>
+                    </table>
+                    <{if count($action.usagesViews.byDomain) > 5}>
+                        </div>
+                        <div class="list_line_repos1 ar ml20 brdb01" id="view<{$id}>_<{$action.itemId}>_<{$action.itemNo}>_button_line">
+                            <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/down_displayseq.png"
+                                 id="view<{$id}>_<{$action.itemId}>_<{$action.itemNo}>_button"
+                                 style="cursor : pointer;"
+                                 onclick="javascript: showBottomRank('view<{$id}>_<{$action.itemId}>_<{$action.itemNo}>', <{$action.usagesViews.byDomain|@count}>)">
+                        </div>
+                    <{/if}>
+                </div>
+                <{* By domain views --end-- *}>
+            <{/if}>
+        </div>
+        <{* Item views --end--*}>
+ 
+        <{* File downloads(loop for files) --start-- *}>
+        <{foreach from=$action.usagesDownloads item=downloadData}>
+            <{if $downloadData.display_name != ""}>
+                <{assign var="fileName" value=$downloadData.display_name|smarty:nodefaults }>
+            <{else}>
+                <{assign var="fileName" value=$downloadData.file_name|smarty:nodefaults }>
+            <{/if}>
+            <{assign var="usageData" value=$downloadData.usagestatistics }>
+            <div class="pb10">
+                <div class="th_repos_title_bar text_color mt05 mb05"><{$lang.repository_usagestatistics_downloads_title|replace:"%s":$fileName}></div>
+                <{if $usageData.total < 1}>
+                    <div class="ml20"><{$lang.repository_usagestatistics_no_data_downloads}></div>
+                <{else}>
+                    <{* total downloads of this file --start-- *}>
+                    <div class="mb05">
+                        <table cellpadding="0" class="ml20 brdb01">
+                            <tr class="tb01">
+                                <th align="left" colspan="2"><b><{$lang.repository_usagestatistics_total|replace:"%s":$action.displayDate}></b></th>
+                            </tr>
+                            <tr class="list_line_repos2">
+                                <td class="w10em" style="padding-left: 0.5em;"></td>
+                                <td>
+                                    <table cellpadding="0">
+                                        <tr>
+                                            <td align="right" class="w05em"><{$usageData.total}></td>
+                                            <td class="td_graph_repos item_edit_list w400px">
+                                                <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/graph_bar.gif" style="width: 100%; height: 10px;"></td>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <{* total downloads of this file --end-- *}>
+                    
+                    <{* By domain *}>
+                    <div class="mb05">
+                        <table cellpadding="0" class="ml20 <{if count($usageData.byDomain) < 6}>brdb01<{/if}>">
+                            <tr class="tb01">
+                                <th align="left" colspan="2"><b><{$lang.repository_usagestatistics_by_domain}></b></th>
+                            </tr>
+                            <{foreach from=$usageData.byDomain item=byDomain key=keyName name=loopDomainDL}>
+                                <{assign var="loop_num" value=$smarty.foreach.loopDomainDL.iteration-1}>
+                                <{if $loop_num == 5}>
+                                   </table>
+                                   <div id="download<{$id}>_<{$downloadData.item_id}>_<{$downloadData.item_no}>_<{$downloadData.attribute_id}>_<{$downloadData.file_no}>_bottom" style="display: none; overflow: hidden;">
+                                   <table cellpadding="0" class="ml20">
+                                <{/if}>
+                                <tr class="<{if $loop_num%2==1}>list_line_repos1<{else}>list_line_repos2<{/if}>">
+                                    <td class="w10em" style="padding-left: 0.5em;">
+                                        <span><{$keyName}></span>
+                                        <{if $byDomain.img != ""}>
+                                            <img width="16px" height="16px" src="<{$byDomain.img}>" class="vam brd01">
+                                        <{/if}>
+                                    </td>
+                                    <td>
+                                        <table cellpadding="0">
+                                            <tr>
+                                                <td align="right" class="w05em"><{$byDomain.cnt}></td>
+                                                <td class="td_graph_repos item_edit_list w400px">
+                                                    <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/graph_bar.gif" style="width: <{$byDomain.rate}>%; height: 10px;">
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            <{/foreach}>
+                        </table>
+                        <{if count($usageData.byDomain) > 5}>
+                            </div>
+                            <div class="list_line_repos1 ar ml20 brdb01" id="download<{$id}>_<{$downloadData.item_id}>_<{$downloadData.item_no}>_<{$downloadData.attribute_id}>_<{$downloadData.file_no}>_button_line">
+                                <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/down_displayseq.png"
+                                     id="download<{$id}>_<{$downloadData.item_id}>_<{$downloadData.item_no}>_<{$downloadData.attribute_id}>_<{$downloadData.file_no}>_button"
+                                     style="cursor : pointer;"
+                                     onclick="javascript: showBottomRank('download<{$id}>_<{$downloadData.item_id}>_<{$downloadData.item_no}>_<{$downloadData.attribute_id}>_<{$downloadData.file_no}>', <{$usageData.byDomain|@count}>)">
+                            </div>
+                        <{/if}>
+                    </div>
+                <{/if}>
+            </div>
+        <{/foreach}>
+        <{* File downloads(loop for files) --end-- *}>
+    </div>
+    <{* Usage statistics space --end-- *}>
+</div>
+
+<script class="nc_script" type="text/javascript">
+    reloadPopup = function(event)
+    {
+        var yearMonth = ($('yearMonth').value).split("-");
+        var year = yearMonth[0];
+        var month = yearMonth[1];
+        
+        var params = new Object();
+        params["action"] = "repository_view_common_usagestatistics";
+        params["itemId"] = <{$action.itemId}>;
+        params["itemNo"] = <{$action.itemNo}>;
+        params["year"] = year;
+        params["month"] = month;
+        commonCls.sendView('<{$id}>', params);
+        
+        return false;
+    }
+</script>
+
+<script class="nc_script" type="text/javascript">
+    showBottomRank = function(id, count)
+    {
+        var bottom_id = id + "_bottom";
+        var button_id = id + "_button";
+        
+        if($(bottom_id).style.display == "none"
+           && $(button_id).src.match("<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/down_displayseq.png") != null)
+        {
+            accordian_usagestatistics(id, count, "dw");
+        }
+        else if(($(bottom_id).style.display == "" || $(bottom_id).style.display == "block")
+                && $(button_id).src.match("<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/up_displayseq.png"))
+        {
+            $(button_id).src = "<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/down_displayseq.png";
+            accordian_usagestatistics(id, count, "up");
+        }
+        
+        return;
+    }
+</script>
+
+<script class="nc_script" type="text/javascript">
+    var usagestatistics_max_height = 0;
+    var max_height_view = 0;
+    var max_height_array = new Object();;
+    var usagestatistics_sl_timer = null;
+    var usagestatistics_speed = 6;
+    accordian_usagestatistics = function(id, count, focus){
+        var bottom_id = id + "_bottom";
+        
+        $(bottom_id).style.display = "";
+        
+        // 最大高さ保持
+        if(!(id in max_height_array))
+        {
+            max_height_array[id] = 0;
+        }
+        if(max_height_array[id] == 0){
+            max_height_array[id] = parseInt($(bottom_id).offsetHeight);
+        }
+        usagestatistics_max_height = max_height_array[id];
+        
+        if(focus == "dw"){
+            $(bottom_id).style.height='0px';
+        } else {
+            if(usagestatistics_max_height != parseInt($(bottom_id).offsetHeight)){
+                parseInt($(bottom_id).offsetHeight) = usagestatistics_max_height;
+            }
+        }
+        
+        //clearInterval(sl_timer);      // clear timer
+        usagestatistics_sl_timer = setInterval( 'slider_usagestatistics("'+id+'", "'+count+'", "'+focus+'")', 10); // set timer
+    }
+    
+    slider_usagestatistics = function(id, count, focus){
+        var bottom_id = id + "_bottom";
+        var line_id = id + "_button_line";
+        var button_id = id + "_button";
+        if(focus == "up"){
+            // 上方向に縮小 close for top
+            var now_height = parseInt($(bottom_id).offsetHeight);
+            if(now_height > 0){
+                var val = Math.round((now_height)/usagestatistics_speed);
+                val = (val<1) ? 1 : val;
+                val = now_height - val;
+                $(bottom_id).style.height = val+'px';
+            } else {
+                $(bottom_id).style.height = '0px';
+                $(bottom_id).style.display = "none";
+                $(button_id).src = "<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/down_displayseq.png";
+                $(line_id).className = "list_line_repos1 ar ml20 brdb01";
+                clearInterval(usagestatistics_sl_timer);
+            }
+        } else if(focus == "dw"){
+            // 下方向に展開 open for bottom
+            var now_height = parseInt($(bottom_id).offsetHeight);
+            if(usagestatistics_max_height > now_height){
+                var val = Math.round((usagestatistics_max_height-now_height)/usagestatistics_speed);
+                val = (val<1) ? 1 : val;
+                val = now_height + val;
+                $(bottom_id).style.height = val+'px';
+            }else{
+                $(bottom_id).style.height = usagestatistics_max_height + 'px';
+                $(bottom_id).style.display = "";
+                $(button_id).src = "<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/up_displayseq.png";
+                if(count%2 == 0)
+                {
+                    $(line_id).className = "list_line_repos2 ar ml20 brdb01";
+                }
+                else
+                {
+                    $(line_id).className = "list_line_repos1 ar ml20 brdb01";
+                }
+                clearInterval(usagestatistics_sl_timer);
+            }
+        } else {
+            // error
+            clearInterval(usagestatistics_sl_timer);
+        }
+    }
+</script>

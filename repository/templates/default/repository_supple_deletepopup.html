@@ -1,0 +1,51 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_supple_deletepopup.html 15261 2012-02-06 10:13:57Z yuko_nakao $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{* サプリコンテンツ削除用ポップアップ *}>
+<{* 削除方法選択 *}>
+<div style="text-align: center; margin: 15px 40px 20px;">
+ <div id="select_type">
+  <{$lang.repository_supple_select}><br/>
+  <div style="text-align: left; margin: 5px 0px;">
+   <font color="red"><{$lang.repository_supple_attention}></font><br/>
+  </div>
+  <br/>
+  <span style="margin: 5px;">
+   <input type="button" class="btn_delete" value="<{$lang.repository_supple_delete_item}>" onclick="javascript: redirectDetail(); return false;">
+  </span>
+  <span style="margin: 5px;">
+   <input type="button" class="btn_delete" value="<{$lang.repository_supple_delete_link}>" onclick="javascript: deleteSuppleLink(); return false;">
+  </span>
+  <span style="margin: 5px;">
+   <input type="button" class="btn_white" value="<{$lang.repository_cancel}>" onclick="commonCls.removeBlock('<{$id}>'); return false;">
+  </span>
+ </div>
+<div>
+<{include file="repository_script.html"}>
+<script class="nc_script" type="text/javascript">
+ redirectDetail = function(){
+ 	var location_str = '<{$action.supple_url}>';
+ 	location_str = decodeURI(location_str);
+	window.open(location_str.replace(/&amp;/ig,"&"), "_blank");
+	deleteSuppleLink();
+ }
+</script>
+
+<script class="nc_script" type="text/javascript">
+ deleteSuppleLink = function(){
+ 	var item_id = '<{$action.item_id}>';
+ 	var item_no = '<{$action.item_no}>';
+ 	var supple_no = '<{$action.supple_no}>';
+ 	var tab = '<{$action.supple_workflow_active_tab}>';
+ 	commonCls.removeBlock('<{$id}>');
+ 	repositoryCls['_<{$block_id}>'].repositorySuppleDeleteFromWorkFlow(item_id, item_no, supple_no, tab);
+ }
+</script>

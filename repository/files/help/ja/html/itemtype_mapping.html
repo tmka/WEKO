@@ -1,0 +1,1402 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: itemtype_mapping.html 36995 2014-06-10 00:48:11Z tomohiro_ichikawa $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+	<HTML>
+		<HEAD>
+			<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+			<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+			<link rel="stylesheet" href="./css/style.css" type="text/css">
+			<TITLE>itemtype_mapping</TITLE>
+		</HEAD>
+	<BODY>
+		<div class="main_body">
+			<h2>アイテムタイプ管理(OAI-PMHマップ)</h2>
+			<div class="page_list">
+				アイテムタイプ管理画面のセレクトボックスからアイテムタイプを選択し、「マッピング設定」ボタンをクリックするとアイテムタイプマッピング編集画面が表示されます。<br/>
+				<br/>
+				<center><img src="./img/itemtype_mapping_02.png" alt="アイテムタイプマッピング設定" border="0"/></center>
+				<br/>
+				<br/>
+				WEKOは
+				<a href="http://www.openarchives.org/" target="_blank">OAI-PMH</a>、
+				<a href="http://www.bibtex.org/" target="_blank">BIBTEX</a>、
+				<a href="http://ontoware.org/" target="_blank">SWRC</a>、
+				<a href="http://www.openarchives.org/ore/" target="_blank">OAI-ORE</a>
+				などのメタデータ・ハーベスティング・プロトコルを用い、メタデータを提供する機能を持っています。<br/>
+				アイテムのメタデータとプロトコルのエレメントを結びつけるためには、各メタデータがどのような意味を持つ情報であるかを把握する必要があります。<br/>
+				アイテムタイプOAI-PMHマップでは各メタデータ属性に
+				<a href="http://dublincore.org/" target="_blank">Dublin Core</a>、
+				<a href="http://www.nii.ac.jp/irp/archive/system/junii2.html" target="_blank">JuNii2</a>、
+				<a href="http://standards.ieee.org/develop/wg/LOMWG12.html" target="_blank">Learning Object Matadata</a>、
+				<a href="http://network.icom.museum/cidoc/working-groups/data-harvesting-and-interchange/what-is-lido/" target="_blank">LIDO</a>
+				の語彙との関連付けおよび言語を設定します。<br/>
+				メタデータ提供機能ではアイテムタイプのマッピング情報に基づき、コンテンツメタデータを出力します。<br/>
+				Dublin CoreおよびJuNii2、Learning Object Matadata、LIDOの詳細仕様については各公式サイトをご覧ください。<br/>
+				<h4>アイテム基本情報</h4>
+				<div class="page_list">
+					アイテム基本情報は下記の語彙に関連付けられており、変更や削除はできません。<br/>
+					<br/>
+					<center>
+					<table class="table_border" border="0" aglign="center" cellspacing="0">
+						<tr>
+							<th rowspan="2" nowrap>サイトの表示言語</th>
+							<th rowspan="2" nowrap>属性</th>
+							<th colspan="2" nowrap>Dublin Core(タグ名)</th>
+							<th colspan="2" nowrap>JuNii2(タグ名)</th>
+							<th colspan="2" nowrap>Learning Object Matadata(タグ名)</th>
+							<th colspan="2" nowrap>LIDO(タグ名)</th>
+							<th rowspan="2" nowrap>言語</th>
+						</tr>
+						<tr>
+							<th>語彙</th>
+							<th>エレメント</th>
+							<th>語彙</th>
+							<th>エレメント</th>
+							<th>語彙</th>
+							<th>エレメント</th>
+							<th>語彙</th>
+							<th>エレメント</th>
+						</tr>
+						<tr>
+							<td rowspan="7">日本語</td>
+							<td>タイトル</td>
+							<td>title</td>
+							<td>&lt;title lang="ja"&gt;</td>
+							<td>title</td>
+							<td>&lt;title lang="ja"&gt;</td>
+							<td>generalTitle</td>
+							<td>&lt;generalTitle language="ja"&gt;</td>
+							<td>titleWrap.titleSet.appellationValue</td>
+							<td>&lt;titleWrap&gt;&lt;titleSet&gt;&lt;appellationValue xml:lang="jp"&gt;</td>
+							<td>日本語</td>
+						</tr>
+						<tr>
+							<td>タイトル(英)</td>
+							<td>title</td>
+							<td>&lt;title lang="en"&gt;<br/>または<br/>&lt;dcterms:alternative&gt;</td>
+							<td>alternative</td>
+							<td>&lt;alternative&gt;</td>
+							<td>generalTitle</td>
+							<td>&lt;generalTitle language="en"&gt;</td>
+							<td>titleWrap.titleSet.appellationValue</td>
+							<td>&lt;titleWrap&gt;&lt;titleSet&gt;&lt;appellationValue xml:lang="en"&gt;</td>
+							<td>英語</td>
+						</tr>
+						<tr>
+							<td>言語</td>
+							<td>language</td>
+							<td>&lt;language&gt;</td>
+							<td>language</td>
+							<td>&lt;language&gt;</td>
+							<td>generalLanguage</td>
+							<td>&lt;generalLanguage&gt;</td>
+							<td>未設定</td>
+							<td>未設定</td>
+							<td>指定なし</td>
+						</tr>
+						<tr>
+							<td>公開日</td>
+							<td>date</td>
+							<td>&lt;shown_date&gt;</td>
+							<td>date</td>
+							<td>&lt;shown_date&gt;</td>
+							<td>lifeCycleContribute</td>
+							<td>&lt;lifeCycleContribute&gt;</td>
+							<td>未設定</td>
+							<td>未設定</td>
+							<td>指定なし</td>
+						</tr>
+						<tr>
+							<td>キーワード</td>
+							<td>subject</td>
+							<td>&lt;subject&gt;</td>
+							<td>subject</td>
+							<td>&lt;subject&gt;</td>
+							<td>generalKeyword</td>
+							<td>&lt;generalKeyword&gt;</td>
+							<td>subjectWrap.subjectSet.displaySubject</td>
+							<td>&lt;subjectWrap&gt;&lt;subjectSet&gt;&lt;displaySubject xml:lang="jp"&gt;</td>
+							<td>日本語</td>
+						</tr>
+						<tr>
+							<td>キーワード(英)</td>
+							<td>subject</td>
+							<td>&lt;subject&gt;</td>
+							<td>subject</td>
+							<td>&lt;subject&gt;</td>
+							<td>generalKeyword</td>
+							<td>&lt;generalKeyword&gt;</td>
+							<td>subjectWrap.subjectSet.displaySubject</td>
+							<td>&lt;subjectWrap&gt;&lt;subjectSet&gt;&lt;displaySubject xml:lang="jp"&gt;</td>
+							<td>英語</td>
+						</tr>
+						<tr>
+							<td>詳細画面へのURL</td>
+							<td>URI</td>
+							<td>&lt;URI&gt;</td>
+							<td>URI</td>
+							<td>&lt;URI&gt;</td>
+							<td>generalIdentifer</td>
+							<td>&lt;generalIdentifer&gt;</td>
+							<td>recordInfoSet.recordInfoLink</td>
+							<td>&lt;recordInfoSet&gt;&lt;recordInfoLink&gt;</td>
+							<td>指定なし</td>
+						</tr>
+						<tr>
+							<td rowspan="7">英語</td>
+							<td>タイトル</td>
+							<td>title</td>
+							<td>&lt;title lang="ja"&gt;<br/>または<br/>&lt;dcterms:alternative&gt;</td>
+							<td>alternative</td>
+							<td>&lt;alternative&gt;</td>
+							<td>generalTitle</td>
+							<td>&lt;generalTitle language="ja"&gt;</td>
+							<td>titleWrap.titleSet.appellationValue</td>
+							<td>&lt;titleWrap&gt;&lt;titleSet&gt;&lt;appellationValue xml:lang="jp"&gt;</td>
+							<td>日本語</td>
+						</tr>
+						<tr>
+							<td>タイトル(英)</td>
+							<td>title</td>
+							<td>&lt;title lang="en"&gt;</td>
+							<td>title</td>
+							<td>&lt;title lang="en"&gt;</td>
+							<td>generalTitle</td>
+							<td>&lt;generalTitle language="en"&gt;</td>
+							<td>titleWrap.titleSet.appellationValue</td>
+							<td>&lt;titleWrap&gt;&lt;titleSet&gt;&lt;appellationValue xml:lang="en"&gt;</td>
+							<td>英語</td>
+						</tr>
+						<tr>
+							<td>言語</td>
+							<td>language</td>
+							<td>&lt;language&gt;</td>
+							<td>language</td>
+							<td>&lt;language&gt;</td>
+							<td>generalLanguage</td>
+							<td>&lt;generalLanguage&gt;</td>
+							<td>未設定</td>
+							<td>未設定</td>
+							<td>指定なし</td>
+						</tr>
+						<tr>
+							<td>公開日</td>
+							<td>date</td>
+							<td>&lt;shown_date&gt;</td>
+							<td>date</td>
+							<td>&lt;shown_date&gt;</td>
+							<td>lifeCycleContribute</td>
+							<td>&lt;lifeCycleContribute&gt;</td>
+							<td>未設定</td>
+							<td>未設定</td>
+							<td>指定なし</td>
+						</tr>
+						<tr>
+							<td>キーワード</td>
+							<td>subject</td>
+							<td>&lt;subject&gt;</td>
+							<td>subject</td>
+							<td>&lt;subject&gt;</td>
+							<td>generalKeyword</td>
+							<td>&lt;generalKeyword&gt;</td>
+							<td>subjectWrap.subjectSet.displaySubject</td>
+							<td>&lt;subjectWrap&gt;&lt;subjectSet&gt;&lt;displaySubject xml:lang="jp"&gt;</td>
+							<td>日本語</td>
+						</tr>
+						<tr>
+							<td>キーワード(英)</td>
+							<td>subject</td>
+							<td>&lt;subject&gt;</td>
+							<td>subject</td>
+							<td>&lt;subject&gt;</td>
+							<td>generalKeyword</td>
+							<td>&lt;generalKeyword&gt;</td>
+							<td>subjectWrap.subjectSet.displaySubject</td>
+							<td>&lt;subjectWrap&gt;&lt;subjectSet&gt;&lt;displaySubject xml:lang="jp"&gt;</td>
+							<td>英語</td>
+						</tr>
+						<tr>
+							<td>詳細画面へのURL</td>
+							<td>URI</td>
+							<td>&lt;URI&gt;</td>
+							<td>URI</td>
+							<td>&lt;URI&gt;</td>
+							<td>generalIdentifer</td>
+							<td>&lt;generalIdentifer&gt;</td>
+							<td>recordInfoSet.recordInfoLink</td>
+							<td>&lt;recordInfoSet&gt;&lt;recordInfoLink&gt;</td>
+							<td>指定なし</td>
+						</tr>
+					</table>
+					</center>
+				</div>
+				<h4><a name="default_itemtype">デフォルトアイテムタイプのマッピング</a></h4>
+				<div class="page_list">
+					<table class="table_border" border="0" align="center" cellspacing="0">
+						<tr>
+							<th nowrap>アイテムタイプ名</th>
+							<th nowrap>項目名</th>
+							<th>Dublin Core</th>
+							<th>JuNii2</th>
+							<th>Learning Object Matadata</th>
+							<th>LIDO</th>
+							<th>表示言語</th>
+						</tr>
+						<tr>
+							<td rowspan="29" nowrap>
+								学術雑誌論文 / Journal Article<br/>
+								紀要論文 / Departmental Bulletin Paper<br/>
+								会議発表論文 / Conference Paper<br/>
+								一般雑誌記事 / Article<br/>
+								その他 / Others<br/>
+								<br/>
+								（同様のメタデータ構成を持つ<br/>
+								アイテムタイプが5種類存在する）<br/>
+							</td>
+							<td>その他(別言語等)のタイトル</td>
+							<td align="center">title</td>
+							<td align="center">alternative</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>著者</td>
+							<td align="center">creator</td>
+							<td align="center">creator</td>
+							<td align="center">lifeCycleContributeAuthor</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>著者別名</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>著者ID</td>
+							<td align="center">identifier</td>
+							<td align="center">identifier</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>抄録</td>
+							<td align="center">description</td>
+							<td align="center">description</td>
+							<td align="center">generalDescription</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>内容記述</td>
+							<td align="center">description</td>
+							<td align="center">description</td>
+							<td align="center">generalDescription</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>雑誌名</td>
+							<td align="center">identifier</td>
+							<td align="center">jtitle</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center">日本語</td>
+						</tr>
+						<tr>
+							<td>雑誌名(英)</td>
+							<td align="center">identifier</td>
+							<td align="center">jtitle</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center">英語</td>
+						</tr>
+						<tr>
+							<td>巻</td>
+							<td align="center">identifier</td>
+							<td align="center">volume</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>号</td>
+							<td align="center">identifier</td>
+							<td align="center">issue</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>開始ページ</td>
+							<td align="center">identifier</td>
+							<td align="center">spage</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>終了ページ</td>
+							<td align="center">identifier</td>
+							<td align="center">epage</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>発行年</td>
+							<td align="center">identifier</td>
+							<td align="center">dateofissued</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>出版者</td>
+							<td align="center">publisher</td>
+							<td align="center">publisher</td>
+							<td align="center">lifeCycleContributePublisher</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>ISSN</td>
+							<td align="center">identifier</td>
+							<td align="center">issn</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>ISBN</td>
+							<td align="center">identifier</td>
+							<td align="center">identifier</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>書誌レコードID</td>
+							<td align="center">identifier</td>
+							<td align="center">NCID</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>論文ID(NAID)</td>
+							<td align="center">identifier</td>
+							<td align="center">identifier</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>PubMed番号</td>
+							<td align="center">relation</td>
+							<td align="center">pmid</td>
+							<td align="center">relation</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>DOI</td>
+							<td align="center">relation</td>
+							<td align="center">doi</td>
+							<td align="center">relation</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>権利</td>
+							<td align="center">rights</td>
+							<td align="center">rights</td>
+							<td align="center">rightsDescription</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>情報源</td>
+							<td align="center">source</td>
+							<td align="center">source</td>
+							<td align="center">relationIsBasedOn</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>関連サイト</td>
+							<td align="center">source</td>
+							<td align="center">source</td>
+							<td align="center">relationIsBasedOn</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>他の資源との関係</td>
+							<td align="center">relation</td>
+							<td align="center">relation</td>
+							<td align="center">relation</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>フォーマット</td>
+							<td align="center">format</td>
+							<td align="center">format</td>
+							<td align="center">technicalFormat</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>著者版フラグ</td>
+							<td align="center"> - </td>
+							<td align="center">textversion</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>日本十進分類法</td>
+							<td align="center">subject</td>
+							<td align="center">NDC</td>
+							<td align="center">generalKeyword</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>コンテンツ本体</td>
+							<td align="center">identifier</td>
+							<td align="center">fullTextURL</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>見出し</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						
+						<tr>
+							<td rowspan="17" nowrap>会議発表用資料 / Presentation</td>
+							<td>その他(別言語等)のタイトル</td>
+							<td align="center">title</td>
+							<td align="center">alternative</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>著者</td>
+							<td align="center">creator</td>
+							<td align="center">creator</td>
+							<td align="center">lifeCycleContributeAuthor</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>著者別名</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>著者ID</td>
+							<td align="center">identifier</td>
+							<td align="center">identifier</td>
+							<td align="center">generalLanguage</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>抄録</td>
+							<td align="center">description</td>
+							<td align="center">description</td>
+							<td align="center">generalDescription</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>会議概要(会議名，開催地，会期，主催者等)</td>
+							<td align="center">description</td>
+							<td align="center">description</td>
+							<td align="center">generalDescription</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>発表年月日</td>
+							<td align="center">identifier</td>
+							<td align="center">dateofissued</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>公開者</td>
+							<td align="center">publisher</td>
+							<td align="center">publisher</td>
+							<td align="center">lifeCycleContributePublisher</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>権利</td>
+							<td align="center">rights</td>
+							<td align="center">rights</td>
+							<td align="center">rightsDescription</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>情報源</td>
+							<td align="center">source</td>
+							<td align="center">source</td>
+							<td align="center">relationIsBasedOn</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>関連サイト</td>
+							<td align="center">source</td>
+							<td align="center">source</td>
+							<td align="center">relationIsBasedOn</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>他の資源との関係</td>
+							<td align="center">relation</td>
+							<td align="center">relation</td>
+							<td align="center">relation</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>フォーマット</td>
+							<td align="center">format</td>
+							<td align="center">format</td>
+							<td align="center">technicalFormat</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>著者版フラグ</td>
+							<td align="center"> - </td>
+							<td align="center">textversion</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>日本十進分類法</td>
+							<td align="center">subject</td>
+							<td align="center">NDC</td>
+							<td align="center">generalKeyword</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>コンテンツ本体</td>
+							<td align="center">identifier</td>
+							<td align="center">fullTextURL</td>
+							<td align="center">generalKeyword</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>見出し</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						
+						<tr>
+							<td rowspan="21" nowrap>学位論文 / Thesis or Dissertation</td>
+							<td>その他(別言語等)のタイトル</td>
+							<td align="center">title</td>
+							<td align="center">alternative</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>著者</td>
+							<td align="center">creator</td>
+							<td align="center">creator</td>
+							<td align="center">lifeCycleContributeAuthor</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>著者別名</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>著者ID</td>
+							<td align="center">identifier</td>
+							<td align="center">identifier</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>公開者</td>
+							<td align="center">publisher</td>
+							<td align="center">publisher</td>
+							<td align="center">lifeCycleContributePublisher</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>寄与者</td>
+							<td align="center">contributor</td>
+							<td align="center">contributor</td>
+							<td align="center">lifeCycleContribute</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>抄録</td>
+							<td align="center">description</td>
+							<td align="center">description</td>
+							<td align="center">generalDescription</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>学位名</td>
+							<td align="center">type</td>
+							<td align="center">degreename</td>
+							<td align="center">educationalLearningResourceType</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>学位授与機関</td>
+							<td align="center">description</td>
+							<td align="center">grantor</td>
+							<td align="center">generalDescription</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>学位授与年度</td>
+							<td align="center">description</td>
+							<td align="center">description</td>
+							<td align="center">generalDescription</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>学位授与年月日</td>
+							<td align="center">identifier</td>
+							<td align="center">dateofgranted</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>学位授与番号</td>
+							<td align="center">identifier</td>
+							<td align="center">grantid</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>権利</td>
+							<td align="center">rights</td>
+							<td align="center">rights</td>
+							<td align="center">rightsDescription</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>情報源</td>
+							<td align="center">source</td>
+							<td align="center">source</td>
+							<td align="center">relationIsBasedOn</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>関連サイト</td>
+							<td align="center">source</td>
+							<td align="center">source</td>
+							<td align="center">relationIsBasedOn</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>他の資源との関係</td>
+							<td align="center">relation</td>
+							<td align="center">relation</td>
+							<td align="center">relation</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>フォーマット</td>
+							<td align="center">format</td>
+							<td align="center">format</td>
+							<td align="center">technicalFormat</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>著者版フラグ</td>
+							<td align="center"> - </td>
+							<td align="center">textversion</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>日本十進分類法</td>
+							<td align="center">subject</td>
+							<td align="center">NDC</td>
+							<td align="center">generalKeyword</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>コンテンツ本体</td>
+							<td align="center">identifier</td>
+							<td align="center">fullTextURL</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>見出し</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						
+						<tr>
+							<td rowspan="23" nowrap>報告書 / Research Paper</td>
+							<td>その他（別言語等）の研究課題名</td>
+							<td align="center">title</td>
+							<td align="center">alternative</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>研究代表者</td>
+							<td align="center">creator</td>
+							<td align="center">creator</td>
+							<td align="center">lifeCycleContributeAuthor</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>研究代表者別名</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>研究代表者ID</td>
+							<td align="center">identifier</td>
+							<td align="center">identifier</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>研究分担者</td>
+							<td align="center">contributor</td>
+							<td align="center">contributor</td>
+							<td align="center">lifeCycleContribute</td>
+							<td align="center"> - </td>
+							<td align="center">日本語</td>
+						</tr>
+						<tr>
+							<td>研究分担者別名</td>
+							<td align="center">contributor</td>
+							<td align="center">contributor</td>
+							<td align="center">lifeCycleContribute</td>
+							<td align="center"> - </td>
+							<td align="center">英語</td>
+						</tr>
+						<tr>
+							<td>研究分担者ID</td>
+							<td align="center">contributor</td>
+							<td align="center">contributor</td>
+							<td align="center">lifeCycleContribute</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>報告年度</td>
+							<td align="center">identifier</td>
+							<td align="center">dateofissued</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>研究課題番号</td>
+							<td align="center">identifier</td>
+							<td align="center">identifier</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>研究代表者番号</td>
+							<td align="center">identifier</td>
+							<td align="center">identifier</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>研究機関</td>
+							<td align="center">description</td>
+							<td align="center">description</td>
+							<td align="center">generalDescription</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>助成元</td>
+							<td align="center">contributor</td>
+							<td align="center">contributor</td>
+							<td align="center">lifeCycleContribute</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>抄録</td>
+							<td align="center">description</td>
+							<td align="center">description</td>
+							<td align="center">generalDescription</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>内容記述</td>
+							<td align="center">description</td>
+							<td align="center">description</td>
+							<td align="center">generalDescription</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>権利</td>
+							<td align="center">rights</td>
+							<td align="center">rights</td>
+							<td align="center">rightsDescription</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>情報源</td>
+							<td align="center">source</td>
+							<td align="center">source</td>
+							<td align="center">relationIsBasedOn</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>関連サイト</td>
+							<td align="center">source</td>
+							<td align="center">source</td>
+							<td align="center">relationIsBasedOn</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>他の資源との関係</td>
+							<td align="center">relation</td>
+							<td align="center">relation</td>
+							<td align="center">relation</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>フォーマット</td>
+							<td align="center">format</td>
+							<td align="center">format</td>
+							<td align="center">technicalFormat</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>著者版フラグ</td>
+							<td align="center"> - </td>
+							<td align="center">textversion</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>日本十進分類法</td>
+							<td align="center">subject</td>
+							<td align="center">NDC</td>
+							<td align="center">generalKeyword</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>コンテンツ本体</td>
+							<td align="center">identifier</td>
+							<td align="center">fullTextURL</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>見出し</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						
+						<tr>
+							<td rowspan="20" nowrap>図書 / Book</td>
+							<td>その他(別言語等)のタイトル</td>
+							<td align="center">title</td>
+							<td align="center">alternative</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>著者</td>
+							<td align="center">creator</td>
+							<td align="center">creator</td>
+							<td align="center">lifeCycleContributeAuthor</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>著者別名</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>著者ID</td>
+							<td align="center">identifier</td>
+							<td align="center">identifier</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>抄録</td>
+							<td align="center">description</td>
+							<td align="center">description</td>
+							<td align="center">generalDescription</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>内容記述</td>
+							<td align="center">description</td>
+							<td align="center">description</td>
+							<td align="center">generalDescription</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>出版者</td>
+							<td align="center">publisher</td>
+							<td align="center">publisher</td>
+							<td align="center">lifeCycleContributePublisher</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>出版年月日</td>
+							<td align="center">identifier</td>
+							<td align="center">dateofissued</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>ISSN</td>
+							<td align="center">identifier</td>
+							<td align="center">issn</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>ISBN</td>
+							<td align="center">identifier</td>
+							<td align="center">identifier</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>書誌レコードID</td>
+							<td align="center">identifier</td>
+							<td align="center">NCID</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>権利</td>
+							<td align="center">rights</td>
+							<td align="center">rights</td>
+							<td align="center">rightsDescription</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>情報源</td>
+							<td align="center">source</td>
+							<td align="center">source</td>
+							<td align="center">relationIsBasedOn</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>関連サイト</td>
+							<td align="center">source</td>
+							<td align="center">source</td>
+							<td align="center">relationIsBasedOn</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>他の資源との関係</td>
+							<td align="center">relation</td>
+							<td align="center">relation</td>
+							<td align="center">relation</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>フォーマット</td>
+							<td align="center">format</td>
+							<td align="center">format</td>
+							<td align="center">technicalFormat</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>著者版フラグ</td>
+							<td align="center"> - </td>
+							<td align="center">textversion</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>日本十進分類法</td>
+							<td align="center">subject</td>
+							<td align="center">NDC</td>
+							<td align="center">generalKeyword</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>コンテンツ本体</td>
+							<td align="center">identifier</td>
+							<td align="center">fullTextURL</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>見出し</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						
+						<tr>
+							<td rowspan="23" nowrap>図書の一部 / Book</td>
+							<td>その他(別言語等)のタイトル</td>
+							<td align="center">title</td>
+							<td align="center">alternative</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>著者</td>
+							<td align="center">creator</td>
+							<td align="center">creator</td>
+							<td align="center">lifeCycleContributeAuthor</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>著者別名</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>著者ID</td>
+							<td align="center">identifier</td>
+							<td align="center">identifier</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>抄録</td>
+							<td align="center">description</td>
+							<td align="center">description</td>
+							<td align="center">generalDescription</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>内容記述</td>
+							<td align="center">description</td>
+							<td align="center">description</td>
+							<td align="center">generalDescription</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>図書名</td>
+							<td align="center">identifier</td>
+							<td align="center">jtitle</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>出版者</td>
+							<td align="center">publisher</td>
+							<td align="center">publisher</td>
+							<td align="center">lifeCycleContributePublisher</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>開始ページ</td>
+							<td align="center">identifier</td>
+							<td align="center">spage</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>終了ページ</td>
+							<td align="center">identifier</td>
+							<td align="center">epage</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>出版年月日</td>
+							<td align="center">identifier</td>
+							<td align="center">dateofissued</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>ISSN</td>
+							<td align="center">identifier</td>
+							<td align="center">issn</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>ISBN</td>
+							<td align="center">identifier</td>
+							<td align="center">identifier</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>書誌レコードID</td>
+							<td align="center">identifier</td>
+							<td align="center">NCID</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>権利</td>
+							<td align="center">rights</td>
+							<td align="center">rights</td>
+							<td align="center">rightsDescription</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>情報源</td>
+							<td align="center">source</td>
+							<td align="center">source</td>
+							<td align="center">relationIsBasedOn</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>関連サイト</td>
+							<td align="center">source</td>
+							<td align="center">source</td>
+							<td align="center">relationIsBasedOn</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>他の資源との関係</td>
+							<td align="center">relation</td>
+							<td align="center">relation</td>
+							<td align="center">relation</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>フォーマット</td>
+							<td align="center">format</td>
+							<td align="center">format</td>
+							<td align="center">technicalFormat</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>著者版フラグ</td>
+							<td align="center"> - </td>
+							<td align="center">textversion</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>日本十進分類法</td>
+							<td align="center">subject</td>
+							<td align="center">NDC</td>
+							<td align="center">generalKeyword</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>コンテンツ本体</td>
+							<td align="center">identifier</td>
+							<td align="center">fullTextURL</td>
+							<td align="center">generalIdentifer</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+						<tr>
+							<td>見出し</td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+							<td align="center"> - </td>
+						</tr>
+					</table>
+				</div>
+				<h4><a name="mapping">マッピング設定</a></h4>
+				<div class="page_list">
+					アイテムタイプにJuNii2のNIItypeを設定することができます。<br/>
+					<br/>
+					セレクトボックスからJuNii2のNIItypeを選択すると、NIItypeが設定されます。<br/>
+					<br/>
+					<center><img src="./img/itemtype_mapping_04.png" alt="NIIType設定" border="0"/></center>
+					<br/>
+					各メタデータ属性にDublin CoreおよびJuNii2、Learning Object Matadata、LIDOの語彙を関連付けることができます。<br/>
+					セレクトボックスからDublin CoreまたはJuNii2、Learning Object Matadata、LIDOの語彙を選択すると、選択した語彙と関連付けされます。<br/>
+					ただし、メタデータ属性が書誌情報の場合Dublin CoreおよびJuNii2、Learning Object Matadata、LIDOの語彙が固定されており、変更や削除はできません。<br/>
+					<br/>
+					<center><img src="./img/itemtype_mapping_06.png" border="0"/></center>
+					<br/>
+					各メタデータ属性に言語情報を設定することができます。<br/>
+					メタデータ属性に設定できる言語は下記の通りです。<br/>
+					<br/>
+					<table class="table_border" border="0" align="center" cellspacing="0">
+						<tr>
+							<th>言語</th>
+							<th>概要</th>
+						<tr>
+						<tr>
+							<td>指定なし</td>
+							<td>メタデータに言語を設定しません</td>
+						</tr>
+						<tr>
+							<td>日本語</td>
+							<td>メタデータの言語を「日本語」に設定します</td>
+						</tr>
+						<tr>
+							<td>英語</td>
+							<td>メタデータの言語を「英語」に設定します</td>
+						</tr>
+					</table>
+					<br/>
+					セレクトボックスから言語を選択すると、言語が設定されます。<br/>
+					「次へ」ボタンをクリックすると、アイテムタイプマッピング設定確認画面が表示されます。<br/>
+					ただし、メタデータ属性が「書誌情報」、「日付」、「ファイル」、「サムネイル」、「サプリメンタルコンテンツ」の場合、言語が固定されており、変更や削除はできません。<br/>
+					サイトの表示言語に応じたメタデータ表示に関する設定については<a href="./setting.html#view_language">WEKOカスタム 言語表示設定</a>をご覧ください。<br/>
+					<br/>
+					<center><img src="./img/itemtype_mapping_10.png" border="0"/></center>
+					<br/>
+					<br/>
+					【注意事項】
+					<ul>
+						<li>アイテムタイプにNIItypeが設定されていない場合、OAI-PMH(JuNii2)、SWRCは出力されません。</li>
+					</ul>
+				</div>
+				<br/>
+				<h3><a name="confirm">マッピング設定確認画面</a></h3>
+				<div class="page_list">
+					アイテムタイプのマッピング設定を確認することができます。<br/>
+					「決定」ボタンをクリックするとアイテムタイプのマッピング設定が登録され、自動的にアイテムタイプ管理画面へ移動します。<br/>
+					<br/>
+					<center><img src="./img/itemtype_mappingconf_02.png" border="0"/></center>
+					<br/>
+				</div>
+			</div>
+			<p align="center"><font size="2"><a href="./../index.html" target="_top">WEKO Help Top</a></font></p>
+		</div>
+	</BODY>
+</HTML>

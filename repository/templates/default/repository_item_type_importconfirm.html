@@ -1,0 +1,31 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_item_type_importconfirm.html 4 2010-02-02 05:28:03Z atsushi_suzuki $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{*item type import comfirm(result)*}>
+  <P style="color: #ff0000;">
+   <{$smarty.session.Error_Msg}>
+  </P>
+
+  <table class="paging" align="center" width="600px" >
+   <tr>
+    <th class="th_col_repos"><{$lang.repository_itemtype_import_title}></th>
+   </tr>
+	<{foreach from=$smarty.session.import_item_type_info item=itemtype}>
+	 <tr class="list_line_repos2">
+      <td class="item_edit_list">
+      	<{$itemtype}><br>
+      </td>
+	 </tr>
+	<{/foreach}>
+  </table>
+  
+<{include file="repository_script.html"}>
+

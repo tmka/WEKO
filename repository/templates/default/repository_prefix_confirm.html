@@ -1,0 +1,31 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_prefix_confirm.html 18717 2012-07-24 06:43:22Z atsushi_suzuki $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<div class="text_color">
+ <{if $smarty.session.error_flg == "end"}>
+  <{$lang.repository_prefix_image_error}><br/>
+  <{$lang.repository_prefix_image_end}>
+ <{else}> 
+  <{$lang.repository_prefix_confirm_complete}><br/>
+  <b><{$lang.repository_prefix_confirm_id}><{$action.prefix}></b>
+ <{/if}>
+ <br/>
+ <div align=center>
+  <input type="button" class="btn_white" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_edit_admin'); return false;" />
+ </div>
+</div>
+
+<{include file="repository_script.html"}>
+
+<script class="nc_script" type="text/javascript">
+
+</script>
+

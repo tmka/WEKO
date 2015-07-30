@@ -1,0 +1,190 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_mobile_item_snippet.html 40393 2014-08-25 09:29:15Z tatsuya_koyasu $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+
+    <table border="0" width="100%">
+        <tr>
+            <td>
+                <{* keyword search *}>
+                <input class="keyword_text_sp ptb02"
+                       type="text" 
+                       id="id_search_keyword<{$id}>" 
+                       onkeypress="return clickSearch<{$id}>(event)" 
+                       name="search_keyword[]" 
+                       value="<{$smarty.session.searchkeyword}>" />
+                <input type="hidden" id="id_pre_search_keyword<{$id}>" value="<{$smarty.session.searchkeyword}>"/>
+            </td>
+            <td>
+                <{* keyword search button *}>
+                <input type="button" class="btn_blue mg00 keyword_btn_sp large" value="<{$lang.repository_search_start}>" onclick="redirctSearchKeyword<{$id}>(); return false;" />
+            </td>
+        </tr>
+    </table>
+    <table border="0" width="100%">
+        <tr>
+            <td>
+                <{* Search type *}>
+                <select id="search_type_hidden<{$id}>" class="snippet_header_selectbox_sp" name="search_type">
+                    <option value="simple" <{if $action.search_type=="simple"}>selected="selected"<{/if}>><{$lang.repository_search_type_simple}></option>
+                    <option value="detail" <{if $action.search_type!="simple"}>selected="selected"<{/if}>><{$lang.repository_search_type_detail}></option>
+                </select>
+            </td>
+            <{if $smarty.session.select_language == 1}>
+                <td>
+                    <{* Select language *}>
+                    <select id="select_lang<{$id}>" class="snippet_header_selectbox_sp" name="select_lang" onchange="redirctLanguage();">
+                        <{foreach name="lang_list" key="dirname" item="lang_name" from=$smarty.session.lang_list}>
+                            <option value="<{$dirname}>"<{if ($dirname == $smarty.session._lang) }> selected="selected"<{/if}>>
+                                <{$lang_name}>
+                            </option>
+                        <{/foreach}>
+                    </select>
+                </td>
+            <{/if}>
+        </tr>
+    </table>
+
+    <{* Include display html --start-- *}>
+    <{if $smarty.session.serach_screen=="0"}>
+        <{include file="repository_mobile_item_search_result.html"}>
+    <{elseif $smarty.session.serach_screen=="1"}>
+        <{include file="repository_mobile_item_detail.html"}>
+    <{elseif $smarty.session.serach_screen==2}>
+        <{include file="repository_mobile_ranking.html"}>
+    <{elseif $smarty.session.serach_screen==3}>
+        <{include file="repository_mobile_item_contents.html"}>
+    <{/if}>
+    <{* Include display html --end-- *}>
+    
+    <{* Script for indexSubTreeList Y.Nakao 2012/04/10 --start-- *}>
+    <div style="display:none;background-color: #fff;border: 1px solid #000;position: absolute;margin: -100px 5px 5px 0px;" id="_repository_subIndexPanel<{$id}>">
+        <div style="text-align:right;padding:2px;background-color:#eeeeee;" onclick="document.getElementById('_repository_subIndexPanel<{$id}>').style.display='none';">
+            <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/close.png" border="0" />
+        </div>
+        <div id="repository<{$id}>SubIndexTree" style="text-align:left;width:240px;overflow:auto;"></div>
+    </div>
+    <{* Script for indexSubTreeList Y.Nakao 2012/04/10 --end-- *}>
+
+<{* Script for search keyword --start-- *}>
+<script class="nc_script" type="text/javascript">
+    clickSearch<{$id}> = function(event) {
+        if ( event.keyCode == 13 ) {
+            // Pressed enter key
+            redirctSearchKeyword<{$id}>();
+            return false;
+        }
+    }
+</script>
+<{* Script for search keyword --end-- *}>
+
+<{* Script for change language --start-- *}>
+<script class="nc_script" type="text/javascript">
+    redirctLanguage = function()
+    {
+       location.href = "<{$smarty.const.BASE_URL}>/" + 
+                       "?action=repository_view_main_item_snippet" +
+                       "&select_lang=" + document.getElementById('select_lang<{$id}>').value;
+        return false;
+    }
+</script>
+<{* Script for change language --end-- *}>
+
+<{* Script for file download --start-- *}>
+<{if $action.detail_info=="not_access"}>
+    <script class="nc_script" type="text/javascript">
+        alert('<{$lang.repository_detail_not_view}>');
+        location.href="<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id="+<{$page_id}>;
+    </script>
+<{elseif $action.detail_info=="login"}>
+    <script class="nc_script" type="text/javascript">
+        alert('<{$lang.repository_detail_please_login}>');
+        location.href="<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id="+<{$page_id}>;
+    </script>
+<{elseif $action.detail_info=="login_index"}>
+  <script class="nc_script" type="text/javascript">
+        alert('<{$lang.repository_index_please_login}>');
+        location.href="<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id="+<{$page_id}>;
+  </script>
+<{elseif $action.detail_info=="del_item"}>
+    <script class="nc_script" type="text/javascript">
+        alert('<{$lang.repository_detail_item_del}>');
+        location.href="<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id="+<{$page_id}>;
+    </script>
+<{else}>
+    <{include file="repository_scriptFileDownload.html"}>
+<{/if}>
+
+<{if $action.uri_export!=null && $action.uri_export.status=="login"}>
+    <script class="nc_script" type="text/javascript">
+        alert('<{$lang.repository_snippet_please_login}>')
+    </script>
+<{elseif $action.uri_export!=null && $action.uri_export.status=="download"}>
+    <script class="nc_script" type="text/javascript">
+        location.href = '<{$smarty.const.BASE_URL}>/index.php?action=repository_action_main_export_filedownload'+
+                        '&item_id='+<{$action.uri_export.item_id}>+
+                        '&item_no='+<{$action.uri_export.item_no}>+
+                        '&attribute_id='+<{$action.uri_export.attribute_id}>+
+                        '&file_only=true';
+    </script>
+<{/if}>
+<{* Script for file download --end-- *}>
+
+<{* Script for indexSubTreeList --start-- *}>
+<script class="nc_script" type="text/javascript">
+    repository<{$id}>ShowSubIndexTree = function(event, panelId, headerTitle, indexId)
+    {
+        var subTreePanel =document.getElementById(panelId);
+        
+        var tmpHtml = '<div style="display:100%;" onclick="document.getElementById(\''+panelId+'\').style.display=\'none\';document.getElementById(\''+panelId+'\').innerHTML=\'\';">' + 
+                      '    <table bgcolor="#d3d3d3" border="0" width="100%">' + 
+                      '        <tr>' + 
+                      '            <td align="left">' + headerTitle + '</td>' + 
+                      '            <td align="right">' + 
+                      '                <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/close.png" border="0" />' + 
+                      '            </td>' + 
+                      '        </tr>' + 
+                      '    </table>' + 
+                      '</div>' + 
+                      '<div style="text-align:left;width:100%;overflow:auto;" id="repository<{$id}>SubIndexTree">' + 
+                      '    <div style="text-align:center;padding:4px;">' +
+                      '        <img src="<{$smarty.const.CORE_BASE_URL}>/images/common/indicator.gif" />' +
+                      '    </div>' +
+                      '</div>';
+        
+        subTreePanel.innerHTML = tmpHtml;
+        subTreePanel.style.display = 'block';
+        
+        var subTree =document.getElementById('repository<{$id}>SubIndexTree');
+        
+        // set tree HTML
+        $.ajax({
+           url: '<{$smarty.const.BASE_URL}>/index.php',
+           type: 'post',
+           dataType: 'html',
+           data: {
+               'action':'repository_action_main_tree',
+               'click_id':indexId,
+               'sel_mode':'subIndexList'
+           },
+           dataFilter: function(tree_html){
+               tree_html = tree_html.replace(/class="node_repos"/g, 'class="node_repos0"');
+               tree_html = tree_html.replace(/<a class="nodelabel_repos"/g, '<a target="_top" class="nodelabel_repos"');
+               return tree_html;
+           },
+           success: function(tree_html) {
+               //subTree.innerHTML = tree_html;
+               subTree.innerHTML = tree_html;
+           }
+       });
+    }
+</script>
+<{* Script for indexSubTreeList --end-- *}>
+<{include file="repository_search_script.html"}>

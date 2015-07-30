@@ -1,0 +1,522 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_item_confirm.html 39149 2014-07-28 08:37:06Z rei_matsuura $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+
+<div class="mt10">
+
+	<div>
+		<table align="center">
+			<{* HELP *}>
+			<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+				<tr>
+					<td align="right" class="ptb10">
+						<a href="#" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'confirm'); return false;" style="cursor: help;">
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" align="right" alt="help">
+						</a>
+					</td>
+				</tr>
+			<{/if}>
+			
+			<{* FLOW *}>
+			<tr>
+				<td align="center">
+					<{if $smarty.session._lang == "japanese"}>
+						<{if $smarty.session.attr_file_flg == 1 && $smarty.session.doi_itemtype_flag == true}>
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_5.png" alt="" />
+						<{elseif $smarty.session.attr_file_flg == 1}>
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_5.png" />
+						<{else}>
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_no_file_4.png" />
+						<{/if}>
+					<{else}>
+						<{if $smarty.session.attr_file_flg == 1 && $smarty.session.doi_itemtype_flag == true}>
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_5_eng.png" alt="" />
+						<{elseif $smarty.session.attr_file_flg == 1}>
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_5_eng.png" />
+						<{else}>
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_no_file_4_eng.png" />
+						<{/if}>
+					<{/if}>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+<div align="center" class="text_color">
+<form>
+ <div class="paging">
+  <div class="mt10 mb05 " align=center>
+   <form onsubmit="return false;">
+    <{if $smarty.session.edit_jalc_flag == "true"}>
+     <input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_main_item_editdoi'); return false;">
+    <{else}>
+     <input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_main_item_editlinks'); return false;">
+    <{/if}>
+    <input type="button" class="btn_next" value="<{$lang.repository_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemAdddb(); return false;">
+   </form>
+  </div>
+  <div class="paging">
+  <b><{$lang.repository_itemtype}>: <{$smarty.session.item_type_all.item_type_name}></b>
+  </div>
+
+	<{if $action.error_msg != null || $action.warning != ""}>
+		<{if count($action.error_msg) > 0}>
+		<div class="error_msg al">
+				<{section name=i loop=$action.error_msg}>
+					<{$action.error_msg[i]}><br />
+				<{/section}>
+			</div>
+		<{/if}>
+		<{if strlen($action.warning) > 0}>
+			<div class="warning_msg al">
+				<{$action.warning}>
+			</div>
+		<{/if}>
+	<{/if}>
+
+  
+  <div class="w80 item_edit_texts_frame">
+  <table class="tb01 w80">
+   <tr>
+    <th class="item_edit_list w175px">
+     <{$lang.repository_title}>
+    </th>
+    <td class="item_edit_list al">
+      <{$smarty.session.base_attr.title}>
+    </td>
+   </tr>
+   
+   <tr>
+    <th class="item_edit_list w175px">
+     <{$lang.repository_title_english}>
+    </th>
+    <td class="item_edit_list al">
+     <{$smarty.session.base_attr.title_english}>
+    </td>
+   </tr>
+   
+   <tr>
+    <th class="item_edit_list w175px">
+     <{$lang.repository_language}>
+    </th>
+    <td class="item_edit_list al">
+     <{if $smarty.session.base_attr.language=="ja"}><{$lang.repository_language_ja}><{/if}>
+     <{if $smarty.session.base_attr.language=="en"}><{$lang.repository_language_en}><{/if}>
+     <{if $smarty.session.base_attr.language=="fr"}><{$lang.repository_language_fr}><{/if}>
+     <{if $smarty.session.base_attr.language=="it"}><{$lang.repository_language_it}><{/if}>
+     <{if $smarty.session.base_attr.language=="de"}><{$lang.repository_language_de}><{/if}>
+     <{if $smarty.session.base_attr.language=="es"}><{$lang.repository_language_es}><{/if}>
+     <{if $smarty.session.base_attr.language=="zh"}><{$lang.repository_language_zh}><{/if}>
+     <{if $smarty.session.base_attr.language=="ru"}><{$lang.repository_language_ru}><{/if}>
+     <{if $smarty.session.base_attr.language=="la"}><{$lang.repository_language_la}><{/if}>
+     <{if $smarty.session.base_attr.language=="ms"}><{$lang.repository_language_ms}><{/if}>
+     <{if $smarty.session.base_attr.language=="eo"}><{$lang.repository_language_eo}><{/if}>
+     <{if $smarty.session.base_attr.language=="ar"}><{$lang.repository_language_ar}><{/if}>
+     <{if $smarty.session.base_attr.language=="el"}><{$lang.repository_language_el}><{/if}>
+     <{if $smarty.session.base_attr.language=="ko"}><{$lang.repository_language_ko}><{/if}>
+     <{if $smarty.session.base_attr.language=="otherlanguage"}><{$lang.repository_language_other}><{/if}>
+    </td>
+   </tr>
+   <tr>
+    <th class="item_edit_list w175px">
+     <{$lang.repository_pub_date}><font color="red">*</font>
+    </th>
+    <td class="item_edit_list al">
+     <{$smarty.session.item_pub_date.year}><{$lang.repository_log_year}>
+     <{$smarty.session.item_pub_date.month}><{$lang.repository_log_month}>
+     <{$smarty.session.item_pub_date.day}><{$lang.repository_log_day}>
+    </td> 
+   </tr>
+   <tr>
+    <th class="item_edit_list w175px">
+     <{$lang.repository_search_keyword}>
+    </th>
+    <td class="item_edit_list al">
+     <{$smarty.session.item_keyword}>
+    </td>
+   </tr>
+   
+   <tr>
+    <th class="item_edit_list w175px">
+     <{$lang.repository_keyword_english}>
+    </th>
+    <td class="item_edit_list al">
+     <{$smarty.session.item_keyword_english}>
+    </td>
+   </tr>
+   
+   <{*↑ここまで基本情報。↓ここからメタデータ*}>
+   <{section name=i loop=$smarty.session.item_attr_type}>
+   <{assign var="attr_type" value=$smarty.session.item_attr_type}>
+   <{assign var="item_attr" value=$smarty.session.item_attr}>
+   <{assign var="license_master" value=$smarty.session.license_master}>
+   <{assign var="num_attr" value=$smarty.session.item_num_attr}>
+    <tr>
+    <{*サプリの場合は一覧に表示せず  2009/08/12 K.Ito --stert--*}>
+	<{if $attr_type[i].input_type != 'supple'}>
+     <{*アイテム属性名の表示*}>
+     <th class="item_edit_list w175px">
+      <{$attr_type[i].attribute_name}>
+     </th>
+          
+     <{*空入力かnullの場合は表示せず*}>
+     <{if $item_attr[i][0] == null || $item_attr[i][0] == '' || ($attr_type[i].input_type == 'name' && $item_attr[i][0].family=='')}>
+     <td class="item_edit_list al">
+     </td>
+     <{else}>
+        
+     <{*アイテム属性値の表示 : text*}>
+     <{if $attr_type[i].input_type == 'text'}>
+      <td class="item_edit_list al pl00">
+       <{section name=j loop=$item_attr[i]}>
+        <{if $attr_type[i].plural_enable==1}><table><tr><td class="pr00" valign="top"><{$smarty.section.j.index_next}>.</td><td class="pl00 ws"><{/if}>
+        <{$item_attr[i][j]}>
+        <br>
+        <{if $attr_type[i].plural_enable==1}></td></tr></table><{/if}>
+       <{/section}>
+      </td>
+     <{*アイテム属性値の表示 : textarea*}>
+     <{elseif $attr_type[i].input_type == 'textarea'}>
+      <td class="item_edit_list al pl00">
+       <{section name=j loop=$action.textarea_data}>
+        <{if $action.textarea_data[j][0] == $smarty.section.i.index}>
+         <{section name=k loop=$action.textarea_data[j][1]}>
+          <{if $attr_type[i].plural_enable==1}><table><tr><td class="pr00" valign="top"><{$smarty.section.k.index_next}>.</td><td class="pl00 ws"><{/if}>
+          <{section name=l loop=$action.textarea_data[j][1][k]}>
+           <{$action.textarea_data[j][1][k][l]}>
+           <br>
+          <{/section}>
+          <{if $attr_type[i].plural_enable==1}></td></tr></table><{/if}>
+         <{/section}>
+         <{/if}>
+       <{/section}>
+      </td> 
+     <{*アイテム属性値の表示 : name*}>
+     <{elseif $attr_type[i].input_type == 'name'}>
+      <td class="item_edit_list al pl00">
+       <{*1属性3入力, 性、名、Emailとする。*}>
+       <{section name=j loop=$item_attr[i]}>
+       <{if $attr_type[i].plural_enable==1}><table class="tb00"><tr><td class="pr00" valign="top"><{$smarty.section.j.index_next}>.</td><td class="pl00 ws" style="padding-bottom:3px"><{/if}>
+       <font size="-1"><{$lang.repository_family}>:</font><{$item_attr[i][j].family}>&nbsp;
+       <font size="-1"><{$lang.repository_name}>:</font><{$item_attr[i][j].given}><br/>
+        <{if $attr_type[i].display_lang_type=="japanese"}>
+            <font size="-1"><{$lang.repository_family}>(<{$lang.repository_ruby}>):</font><{$item_attr[i][j].family_ruby}>&nbsp;
+            <font size="-1"><{$lang.repository_name}>(<{$lang.repository_ruby}>):</font><{$item_attr[i][j].given_ruby}><br/>
+        <{/if}>
+       <font size="-1"><{$lang.repository_email}>:</font><{$item_attr[i][j].email}>
+       
+       <table class="tb00 pl00">
+        <tr>
+         <td class="pl00" valign="top"><font size="-1"><{$lang.repository_author_id}>:</font></td>
+         <td class="pl00">
+          <{section name=k loop=$item_attr[i][j].external_author_id}>
+           <{if $item_attr[i][j].external_author_id[k].prefix_name!="" && $item_attr[i][j].external_author_id[k].suffix!=""}>
+            <{$item_attr[i][j].external_author_id[k].prefix_name}>&nbsp;<{$item_attr[i][j].external_author_id[k].suffix}><br/>
+           <{/if}>
+          <{/section}>
+         </td>
+        </tr>
+       </table>
+       <{if $attr_type[i].plural_enable==1}></td></tr></table><{/if}>
+       <{/section}>
+      </td>
+     <{*アイテム属性値の表示 : link*}>
+     <{elseif $attr_type[i].input_type == 'link'}>
+      <td class="item_edit_list al">
+       <{section name=j loop=$item_attr[i]}>
+       <{if $attr_type[i].plural_enable==1}><{$smarty.section.j.index_next}>.<{/if}>
+       <font size="-1"><{$lang.repository_item_attr_link_name}>:</font><{$action.link_data[i][j][1]}>&nbsp;
+       <font size="-1"><{$lang.repository_item_attr_link_url}>:</font><{$action.link_data[i][j][0]}>
+       <br>
+       <{/section}>
+      </td>
+     <{*アイテム属性値の表示 : select*}>
+     <{elseif $attr_type[i].input_type == 'select'}>
+      <td class="item_edit_list al">
+       <{$item_attr[i][0]}>
+      </td>
+     <{*アイテム属性値の表示 : checkbox*}>
+     <{elseif $attr_type[i].input_type == 'checkbox'}>
+      <td class="item_edit_list al">
+       <{section name=j loop=$smarty.session.option_data[i]}>
+       <{assign var="option" value=$smarty.session.option_data[i]}>
+       <{if $item_attr[i][j] == 1}>
+        <{$option[j]}>
+        <br>
+       <{/if}>
+       <{/section}>
+      </td>
+     <{*アイテム属性値の表示 : radio*}>
+     <{elseif $attr_type[i].input_type == 'radio'}>
+      <td class="item_edit_list al">
+       <{section name=j loop=$smarty.session.option_data[i]}>
+       <{assign var="option" value=$smarty.session.option_data[i]}>
+       <{if $item_attr[i][0] == $smarty.section.j.index }>
+        <{$option[j]}>
+       <{/if}>
+       <{/section}>
+      </td>
+     <{*アイテム属性値の表示 : file or file_price*}>
+     <{elseif $attr_type[i].input_type == 'file' || $attr_type[i].input_type == 'file_price'}>
+      <td class="item_edit_list al">
+       <{section name=j loop=$item_attr[i]}>
+       <{assign var="cnt_license" value=$item_attr[i][j].licence}>
+        <{if $item_attr[i][j].upload != null}>
+         <div>
+          <{if $attr_type[i].plural_enable==1}><{$smarty.section.j.index_next}>.<{/if}>
+          <{$item_attr[i][j].upload.file_name}><br>
+          <{$lang.repository_item_file_display_type}>:<{if $item_attr[i][j].display_type=="1"}><{$lang.repository_item_file_display_type_simple}><{elseif $item_attr[i][j].display_type=="2"}><{$lang.repository_item_file_display_type_flash}><{else}><{$lang.repository_item_file_display_type_detail}><{/if}><br>
+          <{$lang.repository_item_file_display_name}>:<{$item_attr[i][j].display_name}><br>
+          <{$lang.repository_pub_date}>:
+          <{*エンバーゴフラグによってオープンアクセス日表示が異なる*}>
+          <{if $item_attr[i][j].embargo_flag == 1}>
+           <{$lang.repository_item_embargo_candidate1}><br>  
+          <{elseif $item_attr[i][j].embargo_flag == 2}>
+           <{*2.オープンアクセス日を指定 = アイテム公開日と同じ*}>
+           <{$item_attr[i][j].embargo_year}><{$lang.repository_log_year}>
+           <{$item_attr[i][j].embargo_month}><{$lang.repository_log_month}>
+           <{$item_attr[i][j].embargo_day}><{$lang.repository_log_day}><br>
+          <{elseif $item_attr[i][j].embargo_flag == 3}>
+           <{*3.会員のみ = 9999/1/1*}>
+           <{$lang.repository_item_embargo_candidate3}><br>
+          <{elseif $item_attr[i][j].embargo_flag == 4}>
+           <{*4.公開しない = 9999/12/31*}>
+           <{$lang.repository_item_embargo_candidate4}><br>
+          <{else}>
+           <br/>
+          <{/if}>
+          <{* フラッシュ公開日 *}>
+          <{if $item_attr[i][j].display_type=="2"}>
+           <{$lang.repository_item_flash_pub_date}>:
+           <{*エンバーゴフラグによってオープンアクセス日表示が異なる*}>
+           <{if $item_attr[i][j].flash_embargo_flag == 1}>
+            <{$lang.repository_item_embargo_candidate1}><br>  
+           <{elseif $item_attr[i][j].flash_embargo_flag == 2}>
+            <{*2.オープンアクセス日を指定 = アイテム公開日と同じ*}>
+            <{$item_attr[i][j].flash_embargo_year}><{$lang.repository_log_year}>
+            <{$item_attr[i][j].flash_embargo_month}><{$lang.repository_log_month}>
+            <{$item_attr[i][j].flash_embargo_day}><{$lang.repository_log_day}><br>
+           <{elseif $item_attr[i][j].flash_embargo_flag == 3}>
+            <{*3.会員のみ = 9999/1/1*}>
+            <{$lang.repository_item_embargo_candidate3}><br>
+           <{else}>
+            <br/>
+           <{/if}>
+          <{/if}>
+          <{*自由記述の場合, 文言も記載*}>
+          <{$lang.repository_licence}>:
+          <{if $item_attr[i][j].licence == "licence_free"}>
+           <{$lang.repository_licence_free}><br>
+           <{$item_attr[i][j].freeword}>
+          <{else}>
+           <{*CreateiveCommonsの場合はnotation(帰属･･･とか)に加えて条文へのリンクと画像を配置*}>
+           <{$item_attr[i][j].license_notation}><br/>
+           <a href="<{$action.license_data[i][j].text_url}>" target="_blank" ><{$action.license_data[i][j].text_url}></a>
+           <a href="<{$action.license_data[i][j].text_url}>" target="_blank" ><img align="top" src="<{$action.license_data[i][j].img_url}>"></a>
+          <{/if}>
+        </div>
+        <{*アイテム属性値の表示 : file_price用価格登録編集IF*}>
+        <{if $attr_type[i].input_type == 'file_price'}>
+         <{if $item_attr[i][j].price_num>0 &&  ($item_attr[i][j].embargo_flag==2 ||  $item_attr[i][j].embargo_flag==3)}>
+          <div class="ranking_paging">
+           <table class="list_line_repos1 al">
+            <tr class="ranking_repos text_color">
+             <th class="item_edit_list ac"><{$lang.repository_item_group_name}></th>
+             <th class="item_edit_list ac"><{$lang.repository_item_price}></th>
+            </tr>
+            <{section name=p loop=$item_attr[i][j].price_num}>
+            <{assign var="price_cnt" value=$smarty.section.p.index}>
+              <tr>
+               <{* 課金設定グループ名 *}>
+               <td class="item_edit_list">
+                <{if $item_attr[i][j].room_id[p]==0}>
+                 <{$lang.repository_item_gest}>
+                <{else}>
+                  <{* NC2に存在するグループ分 *}>
+                  <{section name=k loop=$smarty.session.all_group}>
+                  <{assign var="all_group" value=$smarty.session.all_group}>
+                   <{if $item_attr[i][j].room_id[p]==$all_group[k].room_id}><{$all_group[k].page_name}><{/if}>
+                  <{/section}>
+                <{/if}>
+               </td>
+               <{* 価格 *}>
+               <td class="item_edit_list ar"><{$item_attr[i][j].price_value[p]}></td>
+              </tr>
+            <{/section}>
+           </table>
+          </div>
+         <{else}>
+          <div class="ranking_paging">
+           <{$lang.repository_item_no_setting_price}>
+          </div>
+         <{/if}>
+        <{/if}>
+        <br/>
+        <{/if}>
+       <{/section}>
+      </td>
+     <{*アイテム属性値の表示 : thumbnail*}>
+     <{elseif $attr_type[i].input_type == 'thumbnail'}>
+      <td class="item_edit_list al">
+       <{section name=j loop=$item_attr[i]}>
+        <{if $attr_type[i].plural_enable==1}><{$smarty.section.j.index_next}>.<{/if}>
+        <{if $item_attr[i][j] != null}>
+         <{*サムネイル表示*}>
+         <{$item_attr[i][j].upload.file_name}>
+         <br/>
+         <{*if $item_attr[i][j].is_db_exist == 1*}> 
+          <{*サムネイルテーブルに登録済み => サムネイルテーブルからメモリ展開して表示*}>
+          <{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 *}>
+          <img vspace="0" hspace="0" class="item_edit_confirm_img" alt="thumbnail"
+              <{if $item_attr[i][j].width >= $item_attr[i][j].height}>
+                  width="100px"
+              <{else}>
+                  height="100px"
+              <{/if}> 
+              src="<{$smarty.const.BASE_URL}>/?action=repository_action_common_download&item_id=<{$item_attr[i][j].item_id}>&item_no=<{$item_attr[i][j].item_no}>&attribute_id=<{$item_attr[i][j].attribute_id}>&file_no=<{$item_attr[i][j].file_no}>&img=true&<{$smarty.now}>"/>
+         <{*else*}>
+          <{*サムネイルテーブルに未登録 => アップロードテーブルから表示*}>
+          <{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 *}>
+          <{*img vspace="0" hspace="0" width="96px" style="border: 0px solid rgb(204, 204, 204); float: none;" alt="" title="" src="<{$smarty.const.BASE_URL}>/?action=common_download_main&upload_id=<{$item_attr[i][j].upload.upload_id}>"/*}>
+         <{*/if*}>
+         <br/>
+        <{/if}>
+       <{/section}>
+      </td>
+     <{*アイテム属性値の表示 : biblio*}>
+     <{elseif $attr_type[i].input_type == 'biblio_info'}>
+      <td class="item_edit_list al">
+       <{section name=j loop=$item_attr[i]}>
+       <{if $attr_type[i].plural_enable==1}><{$smarty.section.j.index_next}>.<br /><{/if}>
+       <font size="-1"><{$lang.repository_item_biblio_name}>:</font><{$item_attr[i][j].biblio_name}><br />
+       <font size="-1"><{$lang.repository_item_biblio_name_english}>:</font><{$item_attr[i][j].biblio_name_english}><br />
+       <font size="-1"><{$lang.repository_item_biblio_volume}>:</font><{$item_attr[i][j].volume}>,&nbsp;
+       <font size="-1"><{$lang.repository_item_biblio_issue}>:</font><{$item_attr[i][j].issue}>,&nbsp;
+       <font size="-1"><{$lang.repository_item_biblio_page}>:</font><{$item_attr[i][j].spage}>&nbsp;-&nbsp;<{$item_attr[i][j].epage}>,&nbsp;
+       <font size="-1"><{$lang.repository_item_biblio_dateofissued}>:</font><{$item_attr[i][j].date_of_issued}>
+       <br>
+       <{/section}>
+      </td>
+     <{*アイテム属性：date 追加  2008/10/14 A.Suzuki --stert--*}>
+     <{*アイテム属性値の表示 : date*}>
+     <{elseif $attr_type[i].input_type == 'date'}>
+      <td class="item_edit_list al">
+       <{section name=j loop=$item_attr[i]}>
+       <{if $attr_type[i].plural_enable==1}><{$smarty.section.j.index_next}>.<{/if}>
+       <{$item_attr[i][j].date}>
+       <br>
+       <{/section}>
+      </td>
+     <{*アイテム属性：date 追加  2008/10/14 A.Suzuki --end--*}>
+     <{* Add contents page Y.Nakao 2010/08/06 --start-- *}>
+     <{elseif $attr_type[i].input_type == 'heading'}>
+		<td class="item_edit_list al">
+			<{section name=j loop=$action.heading}>
+				<{$lang.repository_item_heading}> : <{$action.heading[j][0]}><br />
+				<{$lang.repository_item_heading_en}> : <{$action.heading[j][1]}><br />
+				<{$lang.repository_item_heading_sub}> : <{$action.heading[j][2]}><br />
+				<{$lang.repository_item_heading_sub_en}> : <{$action.heading[j][3]}><br />
+			<{/section}>
+		</td>
+     <{* Add contents page Y.Nakao 2010/08/06 --end-- *}>
+     <{/if}>
+     <{/if}>
+    </tr>
+    <{/if}>
+   <{/section}>
+   
+   <{* Add Contributor(Posted agency) A.Suzuki 2011/12/13 --start-- *}>
+   <{* Contributor *}>
+   <{if $smarty.session._user_auth_id >= $smarty.const._REPOSITORY_BASE_AUTH && $smarty.session._auth_id >= $smarty.const._REPOSITORY_ROOM_AUTH}>
+    <tr>
+     <th class="item_edit_list" width="175px"><{$lang.repository_item_contributor}></th>
+     <td class="item_edit_list al">
+      <{if $smarty.session.contributorErrorMsg == ""}>
+       <{if $smarty.session.contributorUserId == $smarty.session._user_id}>
+        <{$lang.repository_item_contributor_yourself|replace:"%s":$smarty.session._handle}>
+       <{else}>
+        <{$lang.repository_item_contributor_detail_handle}>:<{$smarty.session.item_contributor.handle}><br/>
+        <{$lang.repository_item_contributor_detail_name}>:<{$smarty.session.item_contributor.name}><br/>
+        <{$lang.repository_item_contributor_detail_email}>:<{$smarty.session.item_contributor.email}>
+       <{/if}>
+      <{else}>
+       <{$smarty.session.contributorErrorMsg}>
+      <{/if}>
+     </td>
+    </tr>
+    <{/if}>
+    <{* Add Contributor(Posted agency) A.Suzuki 2011/12/13 --end-- *}>
+    
+   <{*インデックス選択結果表示欄*}>
+    <tr>
+     <th class="item_edit_list w175px">
+      <{$lang.repository_index}>
+     </th>
+     <td class="item_edit_list al">
+      <{if count($smarty.session.indice)>0 }>      
+       <{section name=i loop=$smarty.session.indice}>
+       <{assign var="indice" value=$smarty.session.indice}>
+        <{$smarty.section.i.index_next}>.
+        <{$indice[i].index_name}>
+        <br>
+       <{/section}>
+      <{/if}>
+     </td>
+    </tr>
+    <{*リンク選択結果表示欄*}>
+    <tr>
+     <th class="item_edit_list w175px">
+      <{$lang.repository_set_link}>
+     </th>
+     <td class="item_edit_list al">
+      <{if count($smarty.session.link)>0 }>  
+       <{section name=i loop=$smarty.session.link}>
+       <{assign var="link" value=$smarty.session.link}>
+        <{$smarty.section.i.index_next}>.
+        <font size="-1"><{$lang.repository_title}>:</font><{$link[i].title}>,&nbsp;
+        <font size="-1"><{$lang.repository_item_relation}>:</font>
+        <{assign var="rel_flg" value=0}>
+        <{section name=j loop=$smarty.session.relationArray}>
+        <{assign var="relationArray" value=$smarty.session.relationArray}>
+         <{if $link[i].relation == $relationArray[j][0]}>
+          <{$relationArray[j][1]}>
+          <{assign var="rel_flg" value=1}>
+         <{/if}>
+        <{/section}>
+        <{if $rel_flg == 0}>
+          <{$lang.repository_item_relation_relate_to}>
+        <{/if}>
+        <br>
+       <{/section}>
+      <{/if}>
+     </td>
+    </tr>
+  </table>
+ 
+ </div>
+ 
+ </form>
+</div>
+
+<div align=center>
+ <form onsubmit="return false;">
+   <{if $smarty.session.edit_jalc_flag == "true"}>
+    <input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_main_item_editdoi'); return false;">
+   <{else}>
+    <input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_main_item_editlinks'); return false;">
+   <{/if}>
+  <input type="button" class="btn_next" value="<{$lang.repository_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemAdddb(); return false;">
+ </form>
+</div>
+
+</div>
+
+<{include file="repository_script.html"}>

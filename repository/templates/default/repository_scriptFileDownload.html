@@ -1,0 +1,18 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_script.html 9736 2011-07-04 06:40:22Z yuko_nakao $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{if strlen($action.fileIdx) > 0}>
+	<script class="nc_script" type="text/javascript">
+		var fileInfo = "<{$action.fileIdx}>";
+		var fileInfoArray = fileInfo.split("_");
+		location.href="<{$smarty.const.BASE_URL}>/?action=repository_action_common_download&item_id=<{$action.item_id}>"+"&item_no="+fileInfoArray[0]+"&attribute_id="+fileInfoArray[1]+"&file_no="+fileInfoArray[2]+"&block_id=<{$block_id}>&page_id=<{$page_id}>";
+	</script>
+<{/if}>

@@ -1,0 +1,81 @@
+# setting robots exclusion
+# Add robots user-agent
+#  Effective  : google
+#  Invalidity : ;google
+# 
+
+### Google ###
+Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+Googlebot-Image/1.0
+DoCoMo/2.0 N905i(c100;TB;W24H16) (compatible; Googlebot-Mobile/2.1; +http://www.google.com/bot.html)
+SAMSUNG-SGH-E250/1.0 Profile/MIDP-2.0 Configuration/CLDC-1.1 UP.Browser/6.2.3.3.c.1.101 (GUI) MMP/2.0 (compatible; Googlebot-Mobile/2.1; +http://www.google.com/bot.html)
+DoCoMo/1.0/N505i/c20/TB/W20H10 (compatible; Googlebot-Mobile/2.1; +http://www.google.com/bot.html)
+
+### Yahoo ###
+Mozilla/5.0 (compatible; Yahoo! Slurp/3.0; http://help.yahoo.com/help/us/ysearch/slurp)
+Y!J-BSC/1.0 (http://help.yahoo.co.jp/help/jp/blog-search/)
+Y!J-BRO/YFSJ crawler (compatible; Mozilla 4.0; MSIE 5.5; http://help.yahoo.co.jp/help/jp/search/indexing/indexing-15.html; YahooFeedSeekerJp/2.0)
+Y!J-BRO/YFSJ crawler (compatible; Mozilla 4.0; MSIE 5.5; http://help.yahoo.co.jp/help/jp/search/indexing/indexing-15.html; YahooFeedSeekerJp/2.0; users 0; views 28)
+YahooFeedSeeker/2.0 (compatible; Mozilla 4.0; MSIE 5.5; http://publisher.yahoo.com/rssguide)
+DoCoMo/2.0/SO502i (compatible; Y!J-SRD/1.0; http://help.yahoo.co.jp/help/jp/search/indexing/indexing-27.html)
+J-PHONE/2.0/J-SH03 (compatible; Y!J-SRD/1.0; http://help.yahoo.co.jp/help/jp/search/indexing/indexing-27.html)
+KDDI-CA23 UP.Browser/6.2.0.5 (compatible; Y!J-SRD/1.0; http://help.yahoo.co.jp/help/jp/search/indexing/indexing-27.html)
+Mozilla/5.0 (compatible; Yahoo! Slurp China; http://misc.yahoo.com.cn/help.html)
+
+### msn(bing) ###
+msnbot/2.0b (+http://search.msn.com/msnbot.htm)
+msnbot/1.0 (+http://search.msn.com/msnbot.htm)
+msnbot-media/1.1 (+http://search.msn.com/msnbot.htm)
+msnbot-media/1.0 (+http://search.msn.com/msnbot.htm)
+msnbot/2.0b (+http://search.msn.com/msnbot.htm).%
+Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)
+
+### baidu ###
+Baiduspider+(+http://www.baidu.jp/spider/)
+BaiduImagespider(+http://www.baidu.jp/spider/)
+DoCoMo/2.0 P05A(c100;TB;W24H15) (compatible; BaiduMobaider/1.0;+http://www.baidu.jp/spider/)
+
+### Ask ###
+Mozilla/5.0 (compatible; Ask Jeeves/Teoma; +http://about.ask.com/en/docs/about/webmasters.shtml)
+Mozilla/4.0 (compatible; Ask.jp BlogCrawler/0.9; http://ask.jp/)
+
+### Naver ###
+Yeti/1.0 (NHN Corp.; http://help.naver.com/robots/)
+
+### Cuil ###
+Mozilla/5.0 (Twiceler-0.9 http://www.cuil.com/twiceler/robot.html)
+
+### Dotbot ###
+Mozilla/5.0 (compatible; DotBot/1.1; http://www.dotnetdotcom.org/, crawler@dotnetdotcom.org)
+
+### yandex ###
+Yandex/1.01.001 (compatible; Win16; I)
+
+### other ###
+DoCoMo/2.0 P900i(c100;TB;W24H11) (compatible; ichiro/mobile goo; +http://help.goo.ne.jp/help/article/1142/)
+ichiro/2.0 (http://help.goo.ne.jp/door/crawler.html)
+gooRSSreader2/2.5-build 20060314 (based on glucose)
+blog search engine by BlogFan.ORG (http://www.blogfan.org/)
+blogoonbot/1.0
+BlogPeople Java/1.4.2_04
+BlogRanking/RSS checker (http://blog.with2.net/)
+Bulkfeeds/r1752 (http://bulkfeeds.net/)
+DrecomBot/1.0-RSS
+HatenaScreenshot/1.0 (checker)
+HatenaScreenshot (compatible; MSIE 6.0; Windows NT 5.1; SV1)
+Hatena Ring/0.1 (http://ring.hatena.ne.jp)
+Infoseek SideWinder/2.0R (Linux 2.6.6-1.381smp i686)
+Livedoor SF - California Crawl/1.20b (http://sf.livedoor.com)
+Captain NAMAAN/0.05 (www.namaan.net)
+MaplogCrawler (+http://maplog.jp/)
+So-net RSS Crawler
+Technoratibot/0.7
+Accelatech RSSCrawler/0.4
+AppleSyndication/54
+Biz360 spider (blogsmanager@biz360.com; http://www.biz360.com)
+BLOG360 (http://site.blog360.jp/)
+blogWatcher_crawler/0.2
+Feedster Crawler/2.0; Feedster, Inc.
+Feed::Find/0.06
+Moreoverbot/5.00 (+http://www.moreover.com)
+wadaino.jp-crawler 0.2 (http://wadaino.jp/)

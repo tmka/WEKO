@@ -1,0 +1,483 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_workflow.html 23154 2013-06-06 08:21:04Z ayumi_jin $      -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<div class="pd10">
+	<{*repository WORK FLOW*}>
+	<{strip}>
+	<{if $action.error_msg!=""}>
+		<div class="error_msg">
+			<{$action.error_msg}>
+		</div>
+	<{/if}>
+	 
+	<{* メールアドレスが登録されていない場合 *}>
+	<{if $action.review_mail_flg=="0"}>
+	<input type="checkbox" id="workflow_non_mail_review_checkbox" value="" <{if $action.review_result_mail=="1"}>checked<{/if}> onclick="javascript: repositoryCls['<{$id}>'].repositoryReviewResultSetting(this.checked, 1);" disabled="true"/><label for="workflow_non_mail_review_checkbox"><{$lang.repository_workflow_mail_review}></label><br/>
+	    <div class="bright_red pl20">
+	        <{$lang.repository_workflow_mail_address}><br/>
+	        <a style="cursor:pointer;" onclick="<{if SHIB_ENABLED == _ON}>location.href='<{$smarty.const.SHIB_MODIFY_ACCOUNT_URL}>';<{else}>commonCls.showUserDetail(event, '<{$smarty.session._user_id}>');<{/if}>return false;"><{$lang.repository_workflow_mail_where}></a><{$lang.repository_workflow_mail_setting}>
+	    </div>
+	<{* メールアドレスが登録されている場合 *}>
+	<{else}>
+	    <input type="checkbox" id="workflow_mail_review_checkbox" value="" <{if $action.review_result_mail=="1"}>checked<{/if}> onclick="javascript: repositoryCls['<{$id}>'].repositoryReviewResultSetting(this.checked, 1);"/><label for="workflow_mail_review_checkbox"><{$lang.repository_workflow_mail_review}></label>
+	<{/if}>
+
+	
+	<{*ヘルプ*}>
+	<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+		<div class="ar">
+			<a href="#"  style="cursor: help;" onclick="
+				if($('workflow_active_tab_id').value == 0)
+				{
+					repositoryCls['<{$id}>'].repositoryHelp(event,'workflow_entry'); return false;
+				}
+				else if($('workflow_active_tab_id').value == 1)
+				{
+					repositoryCls['<{$id}>'].repositoryHelp(event,'workflow_review'); return false;
+				}
+				else if($('workflow_active_tab_id').value == 2)
+				{
+					repositoryCls['<{$id}>'].repositoryHelp(event,'workflow_public'); return false;
+				}
+				"
+			>
+				<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" alt="help">
+			</a>
+		</div>
+	<{/if}>
+	
+</div>
+
+<{* ワークフローをタブで表示する work flow display to tag 2009/01/26 Y.Nakao --start--*}>
+<div><!--full ac -->
+	<div class="comp_tabset"></div>
+	<div class="full ac">
+	
+		<{* タブ1：登録中 tab1:now edit *}>
+		<div class="th_classic_content content text_color" id="workflow_tab_1" align="center">
+			<div class="paging">
+				<{if count($action.item_unregistered)==0}>
+					<{$lang.repository_workflow_nounregistered}>
+				<{else}>
+				    <div class="ofx_auto">
+					<table align="center" class="w800px ml15 mr15 brdb02">
+						<tr>
+							<th class="text_color th_col_repos ac pl08"><{$lang.repository_workflow_item}></th>
+							<th class="text_color th_col_repos w15 ac"><{$lang.repository_workflow_item_type}></th>
+							<th class="text_color th_col_repos w15 ac"><{$lang.repository_workflow_reject_reason}></th>
+							<th class="text_color th_col_repos w10 ac"><{* $lang.repository_workflow_edit *}></th>
+							<th class="text_color th_col_repos w10 ac"><{* $lang.repository_workflow_delete *}></th>
+						</tr>
+						<{section name=i loop=$action.item_unregistered}>
+						<{assign var="item_unregistered" value=$action.item_unregistered[i]}>
+						<{assign var="cnt" value=$smarty.section.i.index}>
+							<{if $cnt%2==0}>
+								<tr class="list_line_repos1">
+							<{else}>
+								<tr class="list_line_repos2">
+							<{/if}>
+								<td class="list_paging pl08">
+								 <div align="left">
+									<{* title *}>
+									<a href="#" onclick="repositoryCls['<{$id}>'].repositoryWorkflowItemDetail(event, <{$item_unregistered.item_id}>,<{$item_unregistered.item_no}>, false ,<{$page_id}>,<{$block_id}>); return false;">
+									 <{if $smarty.session._lang=="japanese"}>
+							          <{if $item_unregistered.title != "" && $item_unregistered.title != null}>
+							           <{$item_unregistered.title|smarty:nodefaults}>
+							          <{else}>
+							           <{$item_unregistered.title_english|smarty:nodefaults}>
+							          <{/if}>
+							         <{else}>
+							          <{if $item_unregistered.title_english != "" && $item_unregistered.title_english != null}>
+							           <{$item_unregistered.title_english|smarty:nodefaults}>
+							          <{else}>
+							           <{$item_unregistered.title|smarty:nodefaults}>
+							          <{/if}>
+							         <{/if}>
+									</a>
+								  </div>
+								</td>
+								<td class="list_paging w15 ac">
+									<{* item type name *}>
+									<{$item_unregistered.item_type_name|smarty:nodefaults}>
+								</td>
+								<td class="list_paging w15 al">
+									<{* reject reason *}>
+									<{section name=j loop=$item_unregistered.reject_reason}>
+									<{assign var="reject_reason" value=$item_unregistered.reject_reason[j]}>
+										<{$reject_reason|smarty:nodefaults}><br/>
+									<{/section}>
+								</td>
+								<td class="list_paging w10 ac">
+									<{* edit button *}>
+									<input type="button" class="btn_white" value="<{$lang.repository_workflow_edit}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditFilesFromWorkFlow(<{$item_unregistered.item_id}>, <{$item_unregistered.item_no}>, $('workflow_active_tab_id').value); return false;" />
+								</td>
+								<td class="list_paging w10 ac">
+									<{* delete button *}>
+									<input type="button" class="btn_delete" value="<{$lang.repository_workflow_delete}>"
+										onclick="if(!commonCls.confirm('<{$lang.repository_confirm_delete1}>\n<{$lang.repository_confirm_delete2}>')){return false;}
+												if(commonCls.confirm('<{$lang.repository_confimation_delete}>')){
+													repositoryCls['<{$id}>'].repositoryItemDeleteFromWorkFlow(<{$item_unregistered.item_id}>, <{$item_unregistered.item_no}>, '<{$item_unregistered.mod_date}>', $('workflow_active_tab_id').value);
+												}
+												return false;" />
+								</td>
+							</tr>
+						<{/section}>
+					</table>
+					</div>
+					<{* page number *}>
+					<div class="pager">
+						<table border="0" cellspacing="0" align="center">
+							<tr>
+								<{* 前へボタン *}>
+                                <td class="nobr">
+                                    <{if $action.page_disp_unregistered>1}>
+                                    <a class="dil folder-paging lh100 pb00" onclick="commonCls.sendView('<{$id}>',{'action':'repository_view_main_workflow','workflow_active_tab':$('workflow_active_tab_id').value,'page_disp_unregistered':'<{$action.page_disp_unregistered-1}>'});" href="#"><img src="images/repository/default/page_prev.gif"><{$lang.repository_page_prev}></a>
+                                    <{/if}>
+                                </td>
+                                
+								<td class="ac">
+								
+								 <{if $action.page_disp_unregistered-5 < 0}>
+								  <{assign var="start_page_no" value=0}>
+								 <{else}>
+								  <{assign var="start_page_no" value=$action.page_disp_unregistered-5}>
+								 <{/if}>
+								 <{if $action.page_disp_unregistered+6 > $action.page_num_unregistered+1}>
+								  <{assign var="end_page_no" value=$action.page_num_unregistered+1}>
+								 <{else}>
+								  <{assign var="end_page_no" value=$action.page_disp_unregistered+6}>
+								 <{/if}>
+								 
+								 <{section name=i start=$start_page_no loop=$end_page_no}>
+								  <{assign var="loop_num" value=$smarty.section.i.index}>
+								  
+								  <{* first page*}>
+								  <{if $smarty.section.i.first == true && $loop_num > 1}>
+								   <a href="#" class="page_move" onclick="commonCls.sendView('<{$id}>',{'action':'repository_view_main_workflow','workflow_active_tab':$('workflow_active_tab_id').value,'page_disp_unregistered':'1'});"><font>1</font></a>
+								   <{if $loop_num > 2}>...<{/if}>
+								  <{/if}>
+								  
+								  <{if $loop_num == $action.page_disp_unregistered}>
+								   <a class="page_view"><{$loop_num}></a>
+								  <{elseif $loop_num >= 1 && $loop_num <= $action.page_num_unregistered}>
+								   <a href="#" class="page_move" onclick="commonCls.sendView('<{$id}>',{'action':'repository_view_main_workflow','workflow_active_tab':$('workflow_active_tab_id').value,'page_disp_unregistered':'<{$loop_num}>'});"><font ><{$loop_num}></font></a>
+								  <{/if}>
+								  
+								  <{* last page *}>
+								  <{if $smarty.section.i.last == true && $loop_num < $action.page_num_unregistered}>
+								   <{if $loop_num < $action.page_num_unregistered-1}>...<{/if}>
+								   <a href="#" class="page_move" onclick="commonCls.sendView('<{$id}>',{'action':'repository_view_main_workflow','workflow_active_tab':$('workflow_active_tab_id').value,'page_disp_unregistered':'<{$action.page_num_unregistered}>'});"><font><{$action.page_num_unregistered}></font></a>
+								  <{/if}>
+								 <{/section}>
+
+								</td>
+								<{* 次へボタン *}>
+                                <td class="nobr">
+                                    <{if $action.page_num_unregistered>1 && $action.page_disp_unregistered!=$action.page_num_unregistered}>
+                                    <a class="dil folder-paging lh100 pt00" onclick="commonCls.sendView('<{$id}>',{'action':'repository_view_main_workflow','workflow_active_tab':$('workflow_active_tab_id').value,'page_disp_unregistered':'<{$action.page_disp_unregistered+1}>'});" href="#"><{$lang.repository_page_next}> <img src="images/repository/default/page_next.gif"></a>
+                                    <{/if}>
+                                </td>
+                                
+							</tr>
+						</table>
+					</div>
+				<{/if}>
+			</div>
+		</div>
+		<{* タブ2：承認待 tab2:waiting for review *}>
+		<div class="th_classic_content content text_color" id="workflow_tab_2" align="center">
+			<div class="paging">
+				<{if count($action.item_review)==0}>
+					<{$lang.repository_workflow_noreview}>
+				<{else}>
+				    <div class="ofx_auto">
+					<table align="center" class="w800px ml15 mr15 brdb02">
+						<tr>
+							<th class="text_color th_col_repos ac pl08"><{$lang.repository_workflow_item}></th>
+							<th class="text_color th_col_repos ac w15"><{$lang.repository_workflow_item_type}></th>
+							<th class="text_color th_col_repos ac w10"><{* $lang.repository_workflow_edit *}></th>
+							<th class="text_color th_col_repos ac w10"><{* $lang.repository_workflow_edit *}></th>
+						</tr>
+						<{section name=i loop=$action.item_review}>
+						<{assign var="item_review" value=$action.item_review[i]}>
+						<{assign var="cnt" value=$smarty.section.i.index}>
+							<{if $cnt%2==0}>
+								<tr class="list_line_repos1">
+							<{else}>
+								<tr class="list_line_repos2">
+							<{/if}>
+								<td class="list_paging pl08">
+								 <div align="left">
+									<{* title *}>
+									<a href="#" onclick="repositoryCls['<{$id}>'].repositoryWorkflowItemDetail(event, <{$item_review.item_id}>,<{$item_review.item_no}>, false ,<{$page_id}>,<{$block_id}>); return false;">
+									 <{if $smarty.session._lang=="japanese"}>
+							          <{if $item_review.title != "" && $item_review.title != null}>
+							           <{$item_review.title|smarty:nodefaults}>
+							          <{else}>
+							           <{$item_review.title_english|smarty:nodefaults}>
+							          <{/if}>
+							         <{else}>
+							          <{if $item_review.title_english != "" && $item_review.title_english != null}>
+							           <{$item_review.title_english|smarty:nodefaults}>
+							          <{else}>
+							           <{$item_review.title|smarty:nodefaults}>
+							          <{/if}>
+							         <{/if}>
+									</a>
+								 </div>
+								</td>
+								<td class="list_paging w15 ac">
+									<{* item type name *}>
+									<{$item_review.item_type_name|smarty:nodefaults}>
+								</td>
+								<td class="list_paging w10 ac">
+									<{* edit button *}>
+									<input type="button" class="btn_white" value="<{$lang.repository_workflow_edit}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditFilesFromWorkFlow(<{$item_review.item_id}>, <{$item_review.item_no}>, $('workflow_active_tab_id').value); return false;" />
+								</td>
+								<td class="list_paging w10 ac">
+									<{* delete button *}>
+									<input type="button" class="btn_delete" value="<{$lang.repository_workflow_delete}>"
+										onclick="if(!commonCls.confirm('<{$lang.repository_confirm_delete1}>\n<{$lang.repository_confirm_delete2}>')){return false;} if(commonCls.confirm('<{$lang.repository_confimation_delete}>')){ repositoryCls['<{$id}>'].repositoryItemDeleteFromWorkFlow(<{$item_review.item_id}>, <{$item_review.item_no}>, '<{$item_review.mod_date}>', $('workflow_active_tab_id').value); } return false;" />
+								</td>
+							</tr>
+						<{/section}>
+					</table>
+					</div>
+					<{* page number *}>
+					<div class="pager">
+						<table border="0" cellspacing="0" align="center">
+							<tr>
+								<{* 前へボタン *}>
+                                <td class="nobr">
+                                    <{if $action.page_disp_review>1}>
+                                    <a class="dil folder-paging lh100 pb00" onclick="commonCls.sendView('<{$id}>',{'action':'repository_view_main_workflow','workflow_active_tab':$('workflow_active_tab_id').value,'page_disp_review':'<{$action.page_disp_review-1}>'});" href="#"><img src="images/repository/default/page_prev.gif"><{$lang.repository_page_prev}></a>
+                                    <{/if}>
+                                </td>
+								
+								<td class="ac">
+								
+								 <{if $action.page_disp_review-5 < 0}>
+								  <{assign var="start_page_no" value=0}>
+								 <{else}>
+								  <{assign var="start_page_no" value=$action.page_disp_review-5}>
+								 <{/if}>
+								 <{if $action.page_disp_review+6 > $action.page_num_review+1}>
+								  <{assign var="end_page_no" value=$action.page_num_review+1}>
+								 <{else}>
+								  <{assign var="end_page_no" value=$action.page_disp_review+6}>
+								 <{/if}>
+								 
+								 <{section name=i start=$start_page_no loop=$end_page_no}>
+								  <{assign var="loop_num" value=$smarty.section.i.index}>
+								  
+								  <{* first page*}>
+								  <{if $smarty.section.i.first == true && $loop_num > 1}>
+								   <a href="#" class="page_move"
+								   onclick="commonCls.sendView('<{$id}>',{'action':'repository_view_main_workflow','workflow_active_tab':$('workflow_active_tab_id').value,'page_disp_review':'1'});"><font>>1</font></a>
+								   <{if $loop_num > 2}>...<{/if}>
+								  <{/if}>
+								  
+								  <{if $loop_num == $action.page_disp_review}>
+								   <a class="page_view"><{$loop_num}></a>
+								  <{elseif $loop_num >= 1 && $loop_num <= $action.page_num_review}>
+								   <a href="#" class="page_move" 
+								   onclick="commonCls.sendView('<{$id}>',{'action':'repository_view_main_workflow','workflow_active_tab':$('workflow_active_tab_id').value,'page_disp_review':'<{$loop_num}>'});"><font><{$loop_num}></font></a>
+								  <{/if}>
+								  
+								  <{* last page *}>
+								  <{if $smarty.section.i.last == true && $loop_num < $action.page_num_review}>
+								   <{if $loop_num < $action.page_num_review-1}>...<{/if}>
+								   <a href="#" class="page_move"
+								   onclick="commonCls.sendView('<{$id}>',{'action':'repository_view_main_workflow','workflow_active_tab':$('workflow_active_tab_id').value,'page_disp_review':'<{$action.page_num_review}>'});"><font><{$action.page_num_review}></font></a>
+								  <{/if}>
+								 <{/section}>
+								 
+								</td>
+								<{* 次へボタン *}>
+                                <td class="nobr">
+                                    <{if $action.page_num_review>1 && $action.page_disp_review!=$action.page_num_review}>
+                                    <a class="dil folder-paging lh100 pt00" onclick="commonCls.sendView('<{$id}>',{'action':'repository_view_main_workflow','workflow_active_tab':$('workflow_active_tab_id').value,'page_disp_review':'<{$action.page_disp_review+1}>'});" href="#"><{$lang.repository_page_next}><img src="images/repository/default/page_next.gif"></a>
+                                    <{/if}>
+                                </td>
+							</tr>
+						</table>
+					</div>
+				<{/if}>
+			</div>
+		</div>
+		<{* タブ3：承認済 tab3:accepted *}>
+		<div class="th_classic_content content text_color" id="workflow_tab_3" align="center">
+			<div class="paging">
+				<{if count($action.item_accepted)==0}>
+						<{$lang.repository_workflow_noaccepted}>
+				<{else}>
+				    <div class="ofx_auto">
+					<table align="center" class="w800px ml15 mr15 brdb02">
+						<tr>
+							<th class="text_color th_col_repos ac pl08"><{$lang.repository_workflow_item}></th>
+							<th class="text_color th_col_repos w15 ac"><{$lang.repository_workflow_item_type}></th>
+							<th class="text_color th_col_repos w15 ac"><{$lang.repository_workflow_status}></th>
+							<th class="text_color th_col_repos w10 ac"><{* $lang.repository_workflow_edit *}></th>
+							<th class="text_color th_col_repos w10 ac"><{* $lang.repository_workflow_edit *}></th>
+						</tr>
+						<{section name=i loop=$action.item_accepted}>
+						<{assign var="item_accepted" value=$action.item_accepted[i]}>
+						<{assign var="cnt" value=$smarty.section.i.index}>
+							<{if $cnt%2==0}>
+								<tr class="list_line_repos1">
+							<{else}>
+								<tr class="list_line_repos2">
+							<{/if}>
+								<td class="list_paging pl08">
+								  <div align="left">
+									<{* title *}>
+									<a href="#" onclick="repositoryCls['<{$id}>'].repositoryWorkflowItemDetail(event, <{$item_accepted.item_id}>,<{$item_accepted.item_no}>, false ,<{$page_id}>,<{$block_id}>); return false;">
+									 <{if $smarty.session._lang=="japanese"}>
+							          <{if $item_accepted.title != "" && $item_accepted.title != null}>
+							           <{$item_accepted.title|smarty:nodefaults}>
+							          <{else}>
+							           <{$item_accepted.title_english|smarty:nodefaults}>
+							          <{/if}>
+							         <{else}>
+							          <{if $item_accepted.title_english != "" && $item_accepted.title_english != null}>
+							           <{$item_accepted.title_english|smarty:nodefaults}>
+							          <{else}>
+							           <{$item_accepted.title|smarty:nodefaults}>
+							          <{/if}>
+							         <{/if}>
+									</a>
+								  </div>
+								</td>
+								<td class="list_paging w15 ac">
+									<{* item type name *}>
+									<{$item_accepted.item_type_name|smarty:nodefaults}>
+								</td>
+								<td class="list_paging w15 ac">
+									<{* status button *}>
+									<{if $item_accepted.shown_status == 0}>
+                                        <div class="nobr">
+                                        <{$lang.repository_workflow_private}>
+                                        <input type="button" class="btn_white ml10" value="<{$lang.repository_workflow_public}>" onclick="repositoryCls['<{$id}>'].repositoryChangeShownStatusFromWorkFlow(<{$item_accepted.item_id}>, <{$item_accepted.item_no}>, '<{$item_accepted.mod_date}>', true, $('workflow_active_tab_id').value); return false;" />
+                                        </div>
+                                    <{else}>
+                                        <div class="nobr">
+                                        <{$lang.repository_workflow_public}>
+                                        &nbsp;<input type="button" class="btn_white ml10" value="<{$lang.repository_workflow_private}>" onclick="repositoryCls['<{$id}>'].repositoryChangeShownStatusFromWorkFlow(<{$item_accepted.item_id}>, <{$item_accepted.item_no}>, '<{$item_accepted.mod_date}>', false, $('workflow_active_tab_id').value); return false;" />
+                                        </div>
+                                    <{/if}>
+								</td>
+								<td class="list_paging w10 ac">
+									<{* edit button *}>
+									<input type="button" class="btn_white" value="<{$lang.repository_workflow_edit}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditFilesFromWorkFlow(<{$item_accepted.item_id}>, <{$item_accepted.item_no}>, $('workflow_active_tab_id').value); return false;" />
+								</td>
+								<td class="list_paging w10 ac">
+									<{* delete button *}>
+									<input type="button" class="btn_delete" value="<{$lang.repository_workflow_delete}>"
+										onclick="if(!commonCls.confirm('<{$lang.repository_confirm_delete1}>\n<{$lang.repository_confirm_delete2}>')){return false;} if(commonCls.confirm('<{$lang.repository_confimation_delete}>')){ repositoryCls['<{$id}>'].repositoryItemDeleteFromWorkFlow(<{$item_accepted.item_id}>, <{$item_accepted.item_no}>, '<{$item_accepted.mod_date}>', $('workflow_active_tab_id').value);} return false;" />
+								</td>
+							</tr>
+						<{/section}>
+					</table>
+					</div>
+					<{* page number *}>
+					<div class="pager">
+						<table border="0" cellspacing="0" align="center">
+							<tr>
+								<{* 前へボタン *}>
+                                <td class="nobr">
+                                    <{if $action.page_disp_accepted>1}>
+                                    <a class="dil folder-paging lh100 pb00" onclick="commonCls.sendView('<{$id}>',{'action':'repository_view_main_workflow','workflow_active_tab':$('workflow_active_tab_id').value,'page_disp_accepted':'<{$action.page_disp_accepted-1}>'});" href="#"><img src="images/repository/default/page_prev.gif"><{$lang.repository_page_prev}></a>
+                                    <{/if}>
+                                </td>
+								
+								<td class="ac">
+								
+								 <{if $action.page_disp_accepted-5 < 0}>
+								  <{assign var="start_page_no" value=0}>
+								 <{else}>
+								  <{assign var="start_page_no" value=$action.page_disp_accepted-5}>
+								 <{/if}>
+								 <{if $action.page_disp_accepted+6 > $action.page_num_accepted+1}>
+								  <{assign var="end_page_no" value=$action.page_num_accepted+1}>
+								 <{else}>
+								  <{assign var="end_page_no" value=$action.page_disp_accepted+6}>
+								 <{/if}>
+								 
+								 <{section name=i start=$start_page_no loop=$end_page_no}>
+								  <{assign var="loop_num" value=$smarty.section.i.index}>
+								  
+								  <{* first page*}>
+								  <{if $smarty.section.i.first == true && $loop_num > 1}>
+								   <a href="#" class="page_move"
+								   onclick="commonCls.sendView('<{$id}>',{'action':'repository_view_main_workflow','workflow_active_tab':$('workflow_active_tab_id').value,'page_disp_accepted':'1'});"><font>1</font></a>
+								   <{if $loop_num > 2}>...<{/if}>
+								  <{/if}>
+								  
+								  <{if $loop_num == $action.page_disp_accepted}>
+								   <a class="page_view"><{$loop_num}></a>
+								  <{elseif $loop_num >= 1 && $loop_num <= $action.page_num_accepted}>
+								   <a href="#" class="page_move"
+								   onclick="commonCls.sendView('<{$id}>',{'action':'repository_view_main_workflow','workflow_active_tab':$('workflow_active_tab_id').value,'page_disp_accepted':'<{$loop_num}>'});"><font><{$loop_num}></font></a>
+								  <{/if}>
+								  
+								  <{* last page *}>
+								  <{if $smarty.section.i.last == true && $loop_num < $action.page_num_accepted}>
+								   <{if $loop_num < $action.page_num_accepted-1}>...<{/if}>
+								   <a href="#" class="page_move" 
+								   onclick="commonCls.sendView('<{$id}>',{'action':'repository_view_main_workflow','workflow_active_tab':$('workflow_active_tab_id').value,'page_disp_accepted':'<{$action.page_num_accepted}>'});"><font><{$action.page_num_accepted}></font></a>
+								  <{/if}>
+								 <{/section}>
+								 
+								</td>
+								<{* 次へボタン *}>
+                                <td class="nobr">
+                                    <{if $action.page_num_accepted>1 && $action.page_disp_accepted!=$action.page_num_accepted}>
+                                    <a class="dil folder-paging lh100 pt00" onclick="commonCls.sendView('<{$id}>',{'action':'repository_view_main_workflow','workflow_active_tab':$('workflow_active_tab_id').value,'page_disp_accepted':'<{$action.page_disp_accepted+1}>'});" href="#"><{$lang.repository_page_next}><img src="images/repository/default/page_next.gif"></a>
+                                    <{/if}>
+                                </td>
+							</tr>
+						</table>
+					</div>
+				<{/if}>
+			</div>
+		</div>
+		
+	</div>
+</div>
+<{/strip}>
+<{* display tab number *}>
+<input type="hidden" id="workflow_active_tab_id" name="workflow_active_tab" value="0" />
+
+<{include file="repository_script.html"}>
+
+<script class="nc_script" type="text/javascript">
+	changeActiveTab1 = function(){
+		$('workflow_active_tab_id').value = 0;
+	}
+	changeActiveTab2 = function(){
+		$('workflow_active_tab_id').value = 1;
+	}
+	changeActiveTab3 = function(){
+		$('workflow_active_tab_id').value = 2;
+	}
+
+</script>
+
+<script class="nc_script" type="text/javascript">
+	var tabset = new compTabset('<{$id}>');
+	tabset.setActiveIndex( valueParseInt(<{$action.workflow_active_tab}>) );
+	tabset.addTabset('<{$lang.repository_workflow_unregistered}>', changeActiveTab1);
+	tabset.addTabset('<{$lang.repository_workflow_review}>',       changeActiveTab2);
+	tabset.addTabset('<{$lang.repository_workflow_accepted}>',     changeActiveTab3);
+	tabset.render();
+</script>
+
+<{* ワークフローをタブで表示する work flow display to tag 2009/01/26 Y.Nakao --end--*}>

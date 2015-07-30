@@ -1,0 +1,279 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_item_snippet.html 40393 2014-08-25 09:29:15Z tatsuya_koyasu $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<div id="repo_main_content">
+    <{* repository_snippet_header --start-- *}>
+    <div id="repository_snippet_sp_header<{$id}>" class="full">
+        <{* Bug Fix WEKO-2014-043 2014/07/18 T.Koyasu --start-- *}>
+        <form method="get" name="form_select_lang" id="form_select_lang">
+        <{* Bug Fix WEKO-2014-043 2014/07/18 T.Koyasu --end-- *}>
+            <table class="full">
+                <tr>
+                    <td class="full">
+                        <{* keyword search *}>
+                        <input class="keyword_text_sp ptb02"
+                               type="text"
+                               id="id_search_keyword<{$id}>"
+                               onkeypress="return clickSearch<{$id}>(event)"
+                               name="search_keyword[]"
+                               value="<{$smarty.session.searchkeyword}>">
+                        <{* Bug Fix WEKO-2014-042 2014/07/18 T.Koyasu --start-- *}>
+                        <input type="hidden" id="id_pre_search_keyword<{$id}>" value="<{$smarty.session.searchkeyword}>"/>
+                        <{* Bug Fix WEKO-2014-042 2014/07/18 T.Koyasu --end-- *}>
+                    </td>
+                    <td class="pl25">
+                        <input type="button" class="btn_blue large" value="<{$lang.repository_search_start}>" onclick="redirctSearchKeyword<{$id}>(); return false;" style="height: 34px; ">
+                    </td>
+                    <td class="pl05">
+                        <{* Bug Fix WEKO-2014-042 2014/07/18 T.Koyasu --start-- *}>
+                        <{* Search type *}>
+                        <select id="search_type_hidden<{$id}>" class="snippet_header_selectbox_sp pt05" name="search_type">
+                            <option value="simple" <{if $action.search_type=="simple"}>selected="selected"<{/if}>><{$lang.repository_search_type_simple}></option>
+                            <option value="detail" <{if $action.search_type!="simple"}>selected="selected"<{/if}>><{$lang.repository_search_type_detail}></option>
+                        </select>
+                        <{* Bug Fix WEKO-2014-042 2014/07/18 T.Koyasu --end-- *}>
+                    </td>
+                    <{if $smarty.session.select_language == 1}>
+                        <td class="pl05">
+                            <{* Select language *}>
+                            <select id="select_lang<{$id}>" class="snippet_header_selectbox_sp pt05" name="select_lang" onchange="repositoryCls['<{$id}>'].repositorySwitchLanguage(); return false;">
+                                <{foreach name="lang_list" key="dirname" item="lang_name" from=$smarty.session.lang_list}>
+                                    <option value="<{$dirname}>"<{if ($dirname == $smarty.session._lang) }> selected="selected"<{/if}>>
+                                        <{$lang_name}>
+                                    </option>
+                                <{/foreach}>
+                            </select>
+                        </td>
+                    <{/if}>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <{* repository_snippet_header --end-- *}>
+ 
+    <{* Include display html --start-- *}>
+    <div class="repository_right_frame">
+        <{if $smarty.session.serach_screen=="0"}>
+            <{include file="smartphone/repository_item_search_result.html"}>
+        <{elseif $smarty.session.serach_screen=="1"}>
+            <{include file="smartphone/repository_item_detail.html"}>
+        <{elseif $smarty.session.serach_screen==2}>
+            <{include file="smartphone/repository_ranking.html"}>
+        <{elseif $smarty.session.serach_screen==3}>
+            <{include file="smartphone/repository_item_contents.html"}>
+        <{/if}>
+    </div>
+    <{* Include display html --end-- *}>
+    
+    <{* Script for indexSubTreeList Y.Nakao 2012/04/10 --start-- *}>
+    <div class="prev al" id="_repository_subIndexPanel<{$id}>">
+        <div class="ar pd02 bg_eee" onclick="$('_repository_subIndexPanel<{$id}>').style.display='none';">
+            <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/close.png" border="0" />
+        </div>
+        <div id="repository<{$id}>SubIndexTree" class="w200px" style="overflow:auto;"></div>
+    </div>
+    <{* Script for indexSubTreeList Y.Nakao 2012/04/10 --end-- *}>
+
+</div>
+
+<{* Script for search keyword --start-- *}>
+<script class="nc_script" type="text/javascript">
+    clickSearch<{$id}> = function(event) {
+        if ( event.keyCode == 13 ) {
+            // Pressed enter key
+            redirctSearchKeyword<{$id}>();
+            return false;
+        }
+    }
+    
+</script>
+<{* Script for search keyword --end-- *}>
+
+<{* Script for file download --start-- *}>
+<{if $action.detail_info=="not_access"}>
+    <script class="nc_script" type="text/javascript">
+        commonCls.alert('<{$lang.repository_detail_not_view}>');
+        location.href="<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id="+<{$page_id}>;
+    </script>
+<{elseif $action.detail_info=="login"}>
+    <script class="nc_script" type="text/javascript">
+        if (commonCls.confirm('<{$lang.repository_detail_please_login}>')) {
+            repositoryCls['<{$id}>'].repositoryDetailLogin("", '<{$action.shib_login_flg}>', '<{$action.version_flg}>');
+        } else {
+            location.href="<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id="+<{$page_id}>;
+        }
+    </script>
+<{elseif $action.detail_info=="login_index"}>
+    <script class="nc_script" type="text/javascript">
+        if (commonCls.confirm('<{$lang.repository_index_please_login}>')) {
+            repositoryCls['<{$id}>'].repositoryDetailLogin("", '<{$action.shib_login_flg}>', '<{$action.version_flg}>');
+        } else {
+            location.href="<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id="+<{$page_id}>;
+        }
+    </script>
+<{elseif $action.detail_info=="del_item"}>
+    <script class="nc_script" type="text/javascript">
+        commonCls.alert('<{$lang.repository_detail_item_del}>');
+        location.href="<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id="+<{$page_id}>;
+    </script>
+<{else}>
+    <{include file="repository_scriptFileDownload.html"}>
+<{/if}>
+
+<{if $action.uri_export!=null && $action.uri_export.status=="login"}>
+    <script class="nc_script" type="text/javascript">
+        if (commonCls.confirm('<{$lang.repository_snippet_please_login}>')) {
+            if('<{$action.version_flg}>'=='0'){
+                if('<{$action.shib_login_flg}>' == '1'){
+                    location.href='<{$smarty.const.BASE_URL}>/index.php?action=login_view_main_init';
+                } else {
+                    commonCls.sendPopupView("",{'action':'login_view_main_init'}, {'center_flag':true,'modal_flag':true});
+                }
+            }else{
+                if('<{$action.shib_login_flg}>' == '1'){
+                    location.href='<{$smarty.const.BASE_URL}>/index.php?action=login_view_main_init';
+                } else {
+                    commonCls.displayVisible($('login_popup'));
+                    commonCls.sendPopupView("",{'action':'login_view_main_init'}, {'center_flag':true});
+                }
+            }
+        } else {
+            location.href="<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id="+<{$page_id}>;
+        }
+    </script>
+<{elseif $action.uri_export!=null && $action.uri_export.status=="download"}>
+    <script class="nc_script" type="text/javascript">
+        location.href = '<{$smarty.const.BASE_URL}>/index.php?action=repository_action_main_export_filedownload'+
+                        '&item_id='+<{$action.uri_export.item_id}>+
+                        '&item_no='+<{$action.uri_export.item_no}>+
+                        '&attribute_id='+<{$action.uri_export.attribute_id}>+
+                        '&file_only=true';
+    </script>
+<{/if}>
+<{* Script for file download --end-- *}>
+
+<{* Script for login from workflow or supplemental workflow --start-- *}>
+<{if $smarty.session.login_redirect_flag == "true"}>
+    <script class="nc_script" type="text/javascript">
+        if(commonCls.confirm('<{$lang.repository_snippet_please_login_redirect}>')){
+            if('<{$action.version_flg}>'=='0'){
+                if('<{$action.shib_login_flg}>' == '1'){
+                    location.href='<{$smarty.const.BASE_URL}>/index.php?action=login_view_main_init';
+                } else {
+                    commonCls.sendPopupView("",{'action':'login_view_main_init'}, {'center_flag':true,'modal_flag':true});
+                }
+            }else{
+                if('<{$action.shib_login_flg}>' == '1'){
+                    location.href='<{$smarty.const.BASE_URL}>/index.php?action=login_view_main_init';
+                } else {
+                    commonCls.displayVisible($('login_popup'));
+                    commonCls.sendPopupView("",{'action':'login_view_main_init'}, {'center_flag':true});
+                }
+            }
+        }
+    </script>
+<{/if}>
+<{* Script for login from workflow or supplemental workflow --end-- *}>
+
+<{* Script for supplemental contents --start-- *}>
+<{if $smarty.session.supple_login=="login"}>
+    <script class="nc_script" type="text/javascript">
+        if('<{$smarty.session.ej_workflow_flag}>' == 'true'){
+            var login_message = '<{$lang.repository_supple_need_login_edit}>';
+        } else {
+            var login_message = '<{$lang.repository_supple_need_login}>';
+        }
+        
+        if(commonCls.confirm(login_message)){
+            if('<{$action.version_flg}>'=='0'){
+                if('<{$action.shib_login_flg}>' == '1'){
+                    location.href='<{$smarty.const.BASE_URL}>/index.php?action=login_view_main_init';
+                } else {
+                    commonCls.sendPopupView("",{'action':'login_view_main_init'}, {'center_flag':true,'modal_flag':true});
+                }
+            }else{
+                if('<{$action.shib_login_flg}>' == '1'){
+                    location.href='<{$smarty.const.BASE_URL}>/index.php?action=login_view_main_init';
+                } else {
+                    commonCls.displayVisible($('login_popup'));
+                    commonCls.sendPopupView("",{'action':'login_view_main_init'}, {'center_flag':true});
+                }
+            }
+        }
+    </script>
+<{elseif $smarty.session.supple_login=="no_regist"}>
+    <script class="nc_script" type="text/javascript">
+        if('<{$smarty.session.ej_workflow_flag}>' == 'true'){
+            var message = '<{$lang.repository_supple_not_edit}>';
+        } else {
+            var message = '<{$lang.repository_supple_not_regist}>';
+        }
+        commonCls.alert(message);
+    </script>
+<{elseif $smarty.session.supple_login=="no_regist_sp"}>
+    <script class="nc_script" type="text/javascript">
+        commonCls.alert('<{$lang.repository_supple_not_regist_smartphone}>');
+    </script>
+<{/if}>
+<{* Script for supplemental contents --end-- *}>
+
+<{* Script for indexSubTreeList Y.Nakao 2012/04/10 --start-- *}>
+<script class="nc_script" type="text/javascript">
+        repository<{$id}>ShowSubIndexTree = function(event, indexId)
+        {
+            // get elemets
+            var subTree = $('repository<{$id}>SubIndexTree');
+            var subTreePanel = $('_repository_subIndexPanel<{$id}>');
+            
+            subTree.style.height = 'auto';
+            
+            // loading
+            subTree.innerHTML = '<div class="ac ptb04"><img src="<{$smarty.const.CORE_BASE_URL}>/images/common/indicator.gif" /></div>';
+            subTreePanel.style.display = 'block';
+            
+            // set position
+            if(event.pageY)
+            {
+                subTreePanel.style.top = event.pageY + 100 + 'px';
+                subTreePanel.style.left = event.pageX + 10 + 'px';
+            }
+            else
+            {
+                subTreePanel.style.top = event.clientY + 100 + 'px';
+                subTreePanel.style.left = event.clientX + 10 + 'px';
+            }
+            
+            // set tree HTML
+            var pars="";
+            pars += 'action=repository_action_main_tree';
+            pars += '&click_id='+indexId;
+            pars += '&sel_mode=subIndexList';
+            var url = "<{$smarty.const.BASE_URL}>/index.php";
+            var myAjax = new Ajax.Request(
+                    url,
+                    {
+                        method: 'post',
+                        postBody: pars, 
+                        onComplete: function(req) {
+                            var tree_html = req.responseText;
+                            tree_html = tree_html.replace(/class="node_repos"/g, 'class="node_repos0"');
+                            subTree.innerHTML = tree_html;
+                            subTree.style.height = 'auto';
+                        }
+                    }
+                );
+        }
+</script>
+<{* Script for indexSubTreeList Y.Nakao 2012/04/10 --end-- *}>
+<{include file="repository_script.html"}>
+<{* Bug Fix WEKO-2014-042 2014/07/18 T.Koyasu --start-- *}>
+<{include file="repository_search_script.html"}>
+<{* Bug Fix WEKO-2014-042 2014/07/18 T.Koyasu --end-- *}>

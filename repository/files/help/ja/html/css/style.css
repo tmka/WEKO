@@ -1,0 +1,61 @@
+/** TOPのロゴ **/
+.logo{
+	padding: 0px 0px 20px 0px;
+}
+
+/** メイン用外枠 **/
+.main_body{
+	padding: 0px 20px 0px 20px;
+	text-align: left;
+}
+
+/** 見出し **/
+.main_body h2{
+	padding: 0px 0px 0px 20px;
+	border-bottom: 2px solid #598f34;
+	background-color: #d3e485;
+}
+
+/** 見出し2 **/
+.main_body h3{
+	padding: 2px 0px 0px 20px;
+	border-bottom: 2px solid #598f34;
+	background-color: #d3e485;
+}
+
+/** 見出し3 **/
+.main_body h4{
+	padding: 2px 0px 0px 20px;
+	border-bottom: 2px solid #598f34;
+	background-color: #d3e485;
+}
+
+/** ページリスト **/
+.main_body .page_list{
+	padding: 0px 0px 0px 40px;
+}
+
+/** テーブル(枠有り) **/
+.main_body .table_border{
+	border: 1px solid #598f34;
+	border-right: 0px;
+	border-bottom: 0px;
+}
+
+.table_border th{
+	border: 1px solid #598f34;
+	border-top: 0px;
+	border-left: 0px;
+	background-color:#dddddd;
+}
+
+.table_border td{
+	border: 1px solid #598f34;
+	border-top: 0px;
+	border-left: 0px;
+}
+
+.indent{
+	padding-left: 2em;
+}
+

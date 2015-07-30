@@ -1,0 +1,78 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_edit_tree_confirm.html 24105 2013-07-17 06:56:06Z koji_matsuo $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{*repository 削除対象のIndexに紐付くIndexおよびアイテムの削除方法確認*}>
+<div style="padding: 30px 50px 30px 50px;">
+	<table align="center">
+		<tr>
+			<td>
+				<div class="paging">
+					<{*Add rollback bug of #292 2012/01/12 T.Koyasu -start-*}>
+					<{*when select root index, show root index*}>
+					<{if $action.sel_node_id!=0}>
+						<img src="<{$smarty.const.BASE_URL}>/images/repository/tree/warning.png">
+						<{$action.sel_node_name}>
+						<{$lang.repository_edittree_confirm}>
+					<{/if}>
+					
+					<{*when select root index, show warning*}>
+					<{if $action.sel_node_id==0}>
+						<br>
+						<p style="color:#ff0000">
+							<img src="<{$smarty.const.BASE_URL}>/images/repository/tree/warning.png">
+							<{$lang.repository_edittree_rootindex_warning}>
+						</p>
+					<{/if}>
+					<{*Add rollback bug of #292 2012/01/12 T.Koyasu -end-*}>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td align="center">
+				<input type="button" class="btn_delete" onclick="javascript: delFolder();" value="<{$lang.repository_edittree_delfolder}>" />
+				<{if $action.sel_node_pid != 0}>
+					<input type="button" class="btn_blue" onclick="javascript: moveParentFolder();" value="<{$lang.repository_edittree_movefolder}>" />
+				<{/if}>
+				<input type="button" class="btn_white" onclick="commonCls.removeBlock('<{$id}>');" value="<{$lang.repository_cancel}>" />
+			</td>
+		</tr>
+	</table>
+</div>
+
+<{include file="repository_item_search_tree.html"}>
+<{include file="repository_script.html"}>
+
+<{* 最後にonload相当時に呼ぶスクリプトを書く*}>
+
+<script class="nc_script" type="text/javascript">
+	delFolder = function(){
+		if(!commonCls.confirm('<{$lang.repository_confimation_delete}>')){
+			return false;
+		}
+		commonCls.removeBlock('<{$id}>');
+		if('<{$smarty.session.MyPrivateTreeRootId}>' != ""){
+			repositoryCls['<{$id}>'].repositoryDeleteIndex('<{$action.sel_node_pid}>', '<{$action.sel_node_id}>', 'delete_all', '<{$page_id}>', '<{$block_id}>', 'editPrivatetree');
+		} else {
+			repositoryCls['<{$id}>'].repositoryDeleteIndex('<{$action.sel_node_pid}>', '<{$action.sel_node_id}>', 'delete_all', '<{$page_id}>', '<{$block_id}>', 'editTree');
+		}
+	}
+</script>
+
+<script class="nc_script" type="text/javascript">
+	moveParentFolder = function(){
+		commonCls.removeBlock('<{$id}>');
+		if('<{$smarty.session.MyPrivateTreeRootId}>' != ""){
+			repositoryCls['<{$id}>'].repositoryDeleteIndex('<{$action.sel_node_pid}>', '<{$action.sel_node_id}>', 'delete_move', '<{$page_id}>', '<{$block_id}>', 'editPrivatetree');
+		} else {
+			repositoryCls['<{$id}>'].repositoryDeleteIndex('<{$action.sel_node_pid}>', '<{$action.sel_node_id}>', 'delete_move', '<{$page_id}>', '<{$block_id}>', 'editTree');
+		}
+	}
+</script>

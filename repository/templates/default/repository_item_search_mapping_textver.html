@@ -1,0 +1,96 @@
+<div id="mapping_textver<{$id}>">
+	<div class="plr10 repositoryAdvancedSearchDiv">
+		<table class="repositoryAdvancedSearchList" id='textver<{$id}>_table'>
+		   <tr>
+			 <td>
+			 	<label for='textver<{$id}>_0'>
+					<input type='checkbox' id='textver<{$id}>_0' value='author' >author</br>
+				</label>
+			 </td>
+			 <td>
+			 	<label for='textver<{$id}>_1'>
+					<input type='checkbox' id='textver<{$id}>_1' value='publisher' >publisher</br>
+				</label>
+			 </td>
+			 <td>
+			 	<label for='textver<{$id}>_2'>
+					<input type='checkbox' id='textver<{$id}>_2' value='etd' >ETD</br>
+				</label>
+			 </td>
+			 <td>
+			 	<label for='textver<{$id}>_3'>
+					<input type='checkbox' id='textver<{$id}>_3' value='none' >none</br>
+				</label>
+			 </td>
+		   </tr>
+		</table>
+	</div>
+	<input type='hidden' id='textver<{$id}>_id' value=
+		<{section name=table_rows loop=$action.detail_search_select_item}>
+			<{if $action.detail_search_select_item[table_rows].type_id == 19}>
+				<{$action.detail_search_select_item[table_rows].value}>
+			<{/if}>
+		<{/section}>
+		>
+	<div class='ac ptb10' align='center'>
+		<input aline='left' type='button' value='<{$lang.repository_next}>' class='btn_blue' onclick='javascript: textverDecision<{$id}>()' />
+		<input aline='left' type='button' value='<{$lang.repository_cancel}>' class='btn_white' onclick='javascript: setCheckboxFromTextverDesc<{$id}>()' />
+	</div>
+</div>
+<script class='nc_script' type='text/javascript'>
+	textverDecision<{$id}> = function() {
+		var str = '';
+		for(var ii=0; ii<4; ii++) {
+			if(document.getElementById('textver<{$id}>_' + ii).checked) {
+				str += document.getElementById('textver<{$id}>_' + ii).value;
+				str += ',';
+			}
+		}
+		if(str) {
+			str = str.slice(0, -1);
+		}
+		document.getElementById('textver<{$id}>_id').value = str;
+		document.getElementsByName('textver')[0].value = str;
+		var row_num = searchRowNum<{$id}>('textver');
+		if(row_num < 0){
+			return;
+		}
+		document.getElementById('mapping_list<{$id}>_' + row_num).style.display = 'none';
+	}
+</script>
+<script class='nc_script' type='text/javascript'>
+	setCheckboxFromTextverDesc<{$id}> = function() {
+		var textverList = document.getElementById('textver<{$id}>_table').getElementsByTagName("input");
+		for(ii = 0; ii < textverList.length; ii++){
+			textverList[ii].checked = false;
+		}
+		var desc = document.getElementById('textver<{$id}>_id').value;
+		var descList = desc.split(",");
+		for(var ii=0; ii<descList.length; ii++) {
+			if(descList[ii] == "author"){
+				document.getElementById('textver<{$id}>_0').checked = true;
+			} else if(descList[ii] == "publisher"){
+				document.getElementById('textver<{$id}>_1').checked = true;
+			} else if(descList[ii] == "etd"){
+				document.getElementById('textver<{$id}>_2').checked = true;
+			} else if(descList[ii] == "none"){
+				document.getElementById('textver<{$id}>_3').checked = true;
+			}
+		}
+		var row_num = searchRowNum<{$id}>('textver');
+		if(row_num < 0){
+			return;
+		}
+		document.getElementById('mapping_list<{$id}>_' + row_num).style.display = 'none';
+	}
+	setCheckboxFromTextverDesc<{$id}>();
+</script>
+<script class='nc_script' type='text/javascript'>
+	clearMappingTextver<{$id}> = function() {
+		document.getElementById('textver<{$id}>_id').value = "";
+		var typeList = document.getElementById('textver<{$id}>_table').getElementsByTagName("input");
+		for(ii = 0; ii < typeList.length; ii++){
+			typeList[ii].checked = false;
+		}
+	}
+</script>

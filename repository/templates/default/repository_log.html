@@ -1,0 +1,377 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_log.html 30892 2014-01-17 08:20:21Z shota_suzuki $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<span id="log_download" style="display: none;"></span>
+<{*repository log analysis*}>
+
+<{*scrol bar*}>
+<div>
+<{* div class="ofx_auto" *}>
+
+<form name="FrmItemState" action="#" method="post" class="box_center">
+<input type="hidden" id="page_id" value="<{$page_id}>">
+<input type="hidden" id="block_id" value="<{$block_id}>">
+					
+<div class="mtb10">
+	<div class="full mb10 box_center">
+		
+		<{*ヘルプ*}>
+		<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+			<div class="ar ptb10 pr10">
+				<a href="#" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'log'); return false;" style="cursor: help;">
+					<img class="ptb10" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" align="right" alt="help">
+				</a>
+			</div>
+		<{/if}>
+		
+		<{* get total items 2014/01/14 S.Suzuki --start-- *}>
+		<div class="th_repos_title_bar text_color mb10"><{$lang.repository_log_total_registered_item}></div>
+		<table class="tb01 full mb10 mt10">
+			<tr>
+				<th class="w20 item_edit_list al"><{$lang.repository_log_total_item}></th>
+				<td><{$action.items.total}></td>
+			</tr>
+			<tr>
+				<th class="w20 item_edit_list al"><{$lang.repository_log_public_item}></th>
+				<td><{$action.items.public}></td>
+			</tr>
+			<tr>
+				<th class="w20 item_edit_list al"><{$lang.repository_log_private_item}></th>
+				<td><{$action.items.private}></td>
+			</tr>
+		</table>
+		<{* get total items 2014/01/14 S.Suzuki --end-- *}>
+		
+		<div class="th_repos_title_bar text_color mb10"><{$lang.repository_log_report}></div>
+		
+		<table class="tb01 full">
+			<tr>
+				<th class="item_edit_list al" ><{$lang.repository_log_start_month}></th>
+				<td class="item_edit_list">
+
+				    <div class="fl mt10 mb10 mr30">
+                    <select id="sy_logrep" type="text">
+                    <{foreach from=$action.year_option_end item=metadata name=loop}>
+                    <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> 
+                    <{if $action.year_option_end[$loop_num][1]=="1"}>
+                        <option value="<{$action.year_option_end[$loop_num][0]}>" selected><{$action.year_option_end[$loop_num][0]}></option>
+                    <{else}>
+                        <option value="<{$action.year_option_end[$loop_num][0]}>"><{$action.year_option_end[$loop_num][0]}></option>
+                    <{/if}>
+                    <{/foreach}>
+                    </select>
+                    <{$lang.repository_log_year}>
+                    <select id="sm_logrep" type="text">
+                    <{foreach from=$action.month_option_end item=metadata name=loop}>
+                    <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> 
+                    <{if $action.month_option_end[$loop_num][1]=="1"}>
+                        <option value="<{$action.month_option_end[$loop_num][0]}>" selected><{$action.month_option_end[$loop_num][0]}></option>
+                    <{else}>
+                        <option value="<{$action.month_option_end[$loop_num][0]}>"><{$action.month_option_end[$loop_num][0]}></option>
+                    <{/if}>
+                    <{/foreach}>
+                    </select>
+                    <{$lang.repository_log_month}>
+                    </div>
+				    <div class="ar mt15">
+	                <{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 *}>
+            		<img id="loading_0" src="<{$smarty.const.CORE_BASE_URL}>/images/common/indicator.gif" style="display: none;"/>
+                	<a id="download_csv_link" class="btn_blue white" href="javascript: downloadCSV_report('false', '');"><{$lang.repository_log_csv_link}></a>
+                	<img id="loading_4" src="<{$smarty.const.CORE_BASE_URL}>/images/common/indicator.gif" style="display: none;"/>
+                	<a id="log_report_mail" class="btn_blue white" href="javascript: downloadCSV_report('true', '<{$lang.repository_log_mail_OK}>');" <{if strlen($action.mail_address) == 0}>disabled<{/if}>><{$lang.repository_log_mail_send}></a>
+				    </div>
+			</td>
+		</tr>
+		</table>
+	
+	<{* Add send mail for log report 2010/03/10 Y.Nakao --start-- *}>
+		<table class="tb01 full mb10 mt10">
+			<tr><th class="th_col_repos"><{$lang.repository_log_mail_check}></th></tr>
+			<tr>
+			<td class="item_edit_list al">
+			<{$lang.repository_log_mail_text}><br />
+			<textarea id="log_mail_address" class="full"><{$action.mail_address}></textarea><br />
+			<div class="ac">
+			<input type="button" class="btn_next" value="<{$lang.repository_next}>" onclick="javascript: setLogMailAddress(new Array('<{$lang.repository_log_update_OK}>','<{$lang.repository_log_update_NG}>'));" />
+            </div>
+            </td>
+			</tr>
+			<tr>
+			<td class="item_edit_list al">
+			<{$lang.repository_log_mail_cron}><br />
+			<{$lang.repository_log_mail_comment}><br />
+			<input type="text" class="full" value="<{$action.mail_url}>" onclick="this.select(); return false;">
+			<!-- old ↑w15em  -->
+			</td>
+			</tr>
+		</table>
+	</div>
+	<{* Add send mail for log report 2010/03/10 Y.Nakao --end-- *}>
+
+
+	<div class="full mb10 mt20 box_center">
+	   <div class="th_repos_title_bar text_color mb10"><{$lang.repository_log_custom}></div>
+	   
+		<table class="tb01 full mb10">
+			<tr><th class="th_col_repos" colspan="2"><{$lang.repository_log_specify_term}></th></tr>
+			<tr>
+			<th class="w10 item_edit_list al"><{$lang.repository_log_start_date}></th>
+			<td class="w90 item_edit_list al">
+			<select id="sy_log" type="text">
+			<{foreach from=$action.year_option_start item=metadata name=loop}>
+			<{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> 
+			<{if $action.year_option_start[$loop_num][1]=="1"}>
+			<option value="<{$action.year_option_start[$loop_num][0]}>" selected><{$action.year_option_start[$loop_num][0]}></option>
+			<{else}>
+			<option value="<{$action.year_option_start[$loop_num][0]}>"><{$action.year_option_start[$loop_num][0]}></option>
+			<{/if}>
+			<{/foreach}>
+			</select>
+
+			<{$lang.repository_log_year}>
+			<select id="sm_log" type="text">
+			<{foreach from=$action.month_option_start item=metadata name=loop}>
+			<{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> 
+			<{if $action.month_option_start[$loop_num][1]=="1"}>
+			<option value="<{$action.month_option_start[$loop_num][0]}>" selected><{$action.month_option_start[$loop_num][0]}></option>
+			<{else}>
+			<option value="<{$action.month_option_start[$loop_num][0]}>"><{$action.month_option_start[$loop_num][0]}></option>
+			<{/if}>
+			<{/foreach}>
+			</select>
+
+			<{$lang.repository_log_month}>
+			<select id="sd_log" type="text">
+			<{foreach from=$action.day_option_start item=metadata name=loop}>
+			<{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> 
+			<{if $action.day_option_start[$loop_num][1]=="1"}>
+			<option value="<{$action.day_option_start[$loop_num][0]}>" selected><{$action.day_option_start[$loop_num][0]}></option>
+			<{else}>
+			<option value="<{$action.day_option_start[$loop_num][0]}>"><{$action.day_option_start[$loop_num][0]}></option>
+			<{/if}>
+			<{/foreach}>
+			</select>
+			<{$lang.repository_log_day}>
+			</td>
+			</tr>
+			<tr>
+			<th class="w10 item_edit_list al"><{$lang.repository_log_end_date}></th>
+			<td class="w90 item_edit_list al">
+            <select id="ey_log" type="text">
+            <{foreach from=$action.year_option_end item=metadata name=loop}>
+            <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> 
+            <{if $action.year_option_end[$loop_num][1]=="1"}>
+            <option value="<{$action.year_option_end[$loop_num][0]}>" selected><{$action.year_option_end[$loop_num][0]}></option>
+            <{else}>
+            <option value="<{$action.year_option_end[$loop_num][0]}>"><{$action.year_option_end[$loop_num][0]}></option>
+            <{/if}>
+            <{/foreach}>
+            </select>
+
+            <{$lang.repository_log_year}>
+            <select id="em_log" type="text">
+            <{foreach from=$action.month_option_end item=metadata name=loop}>
+            <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> 
+            <{if $action.month_option_end[$loop_num][1]=="1"}>
+            <option value="<{$action.month_option_end[$loop_num][0]}>" selected><{$action.month_option_end[$loop_num][0]}></option>
+            <{else}>
+            <option value="<{$action.month_option_end[$loop_num][0]}>"><{$action.month_option_end[$loop_num][0]}></option>
+            <{/if}>
+            <{/foreach}>
+            </select>
+
+            <{$lang.repository_log_month}>
+            <select id="ed_log" type="text">
+            <{foreach from=$action.day_option_end item=metadata name=loop}>
+            <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> 
+            <{if $action.day_option_end[$loop_num][1]=="1"}>
+            <option value="<{$action.day_option_end[$loop_num][0]}>" selected><{$action.day_option_end[$loop_num][0]}></option>
+            <{else}>
+            <option value="<{$action.day_option_end[$loop_num][0]}>"><{$action.day_option_end[$loop_num][0]}></option>
+            <{/if}>
+            <{/foreach}>
+            </select>
+            <{$lang.repository_log_day}>
+			</td>
+			</tr>
+			</table>
+
+            <!-- new -->
+            <table class="tb01 full mb10">
+            <tr>
+            <th class="th_col_repos"><{$lang.repository_log_num_regitem}></th>
+            <th class="th_col_repos"><{$lang.repository_log_num_download}></th>
+            <th class="th_col_repos"><{$lang.repository_log_num_refer}></th>
+            </tr>
+            
+            <tr>
+            <td class="w30 plr02 ptb04">
+                <table class="tb00 full ac mt05 mb05">
+                <tr>
+                <td class="ac nobr w40 pl00 pr00">
+                    <{$lang.repository_log_per}>:
+                    <select id="per_log1">
+                    <option value="1"><{$lang.repository_log_day}></option>
+                    <option value="2"><{$lang.repository_log_week}></option>
+                    <option value="3" selected><{$lang.repository_log_month}></option>
+                    <option value="4"><{$lang.repository_log_year}></option>
+                    <option value="6"><{$lang.repository_log_host}></option>
+                    </select>
+                </td>
+                <td class="al nobr">
+                    <a class="btn_blue white" href="javascript: showGraph_repos(1, createLogErrorMsg());"><{$lang.repository_log_view_link}></a>
+                    <img id="loading_1_1" src="<{$smarty.const.CORE_BASE_URL}>/images/common/indicator.gif" border="0" style="display: none;" />
+                    <a id="downloadCSV_1_1" class="btn_blue white" href="javascript: downloadCSV_repos(1, createLogErrorMsg());">CSV</a>
+                    <img id="loading_1_2" src="<{$smarty.const.CORE_BASE_URL}>/images/common/indicator.gif" border="0" style="display: none;" />
+                    <a id="downloadCSV_1_2" class="btn_blue white" href="javascript: downloadTSV_repos(1, createLogErrorMsg());">TSV</a>
+                </td>
+                </tr>
+                </table>
+            </td>
+            <td class="w30 plr02 ptb04">
+                <table class="tb00 full ac mt05 mb05">
+                <tr>
+                <td class="ac nobr w40 pl00">
+                    <{$lang.repository_log_per}>:
+                    <select id="per_log2">
+	                <option value="1"><{$lang.repository_log_day}></option>
+	                <option value="2"><{$lang.repository_log_week}></option>
+	                <option value="3" selected><{$lang.repository_log_month}></option>
+	                <option value="4"><{$lang.repository_log_year}></option>
+	                <option value="5"><{$lang.repository_log_item}></option>
+	                <option value="6"><{$lang.repository_log_host}></option>
+	                </select>
+	            </td>
+	            <td class="al nobr">
+                    <a class="btn_blue white" href="javascript: showGraph_repos(2, createLogErrorMsg());"><{$lang.repository_log_view_link}></a>
+                    <img id="loading_2_1" src="<{$smarty.const.CORE_BASE_URL}>/images/common/indicator.gif" style="display: none;" />
+                    <a id="downloadCSV_2_1" class="btn_blue white" href="javascript: downloadCSV_repos(2, createLogErrorMsg());">CSV</a>
+                    <img id="loading_2_2" src="<{$smarty.const.CORE_BASE_URL}>/images/common/indicator.gif" style="display: none;" />
+                    <a id="downloadCSV_2_2" class="btn_blue white" href="javascript: downloadTSV_repos(2, createLogErrorMsg());">TSV</a>
+	            </td>
+	            </tr>
+	            </table>
+            </td>
+            <td class="w30 plr02 ptb04">
+                <table class="tb00 full ac mt05 mb05">
+                <tr>
+                <td class="ac nobr w40 pl00">
+                    <{$lang.repository_log_per}>:
+	                <select id="per_log3">
+	                <option value="1"><{$lang.repository_log_day}></option>
+	                <option value="2"><{$lang.repository_log_week}></option>
+	                <option value="3" selected><{$lang.repository_log_month}></option>
+	                <option value="4"><{$lang.repository_log_year}></option>
+	                <option value="5"><{$lang.repository_log_item}></option>
+	                <option value="6"><{$lang.repository_log_host}></option>
+	                </select>
+                </td>
+                <td class="al nobr">
+                <a class="btn_blue white" href="javascript: showGraph_repos(3, createLogErrorMsg());"><{$lang.repository_log_view_link}></a>
+                <img id="loading_3_1" src="<{$smarty.const.CORE_BASE_URL}>/images/common/indicator.gif" style="display: none;" />
+                <a id="downloadCSV_3_1" class="btn_blue white" href="javascript: downloadCSV_repos(3, createLogErrorMsg());">CSV</a>
+                <img id="loading_3_2" src="<{$smarty.const.CORE_BASE_URL}>/images/common/indicator.gif" style="display: none;" />
+                <a id="downloadCSV_3_2" class="btn_blue white" href="javascript: downloadTSV_repos(3, createLogErrorMsg());">TSV</a>
+                </td>
+                </tr>
+                </table>
+            </td>
+            </tr>
+            </table>
+
+			<div style="display: none;" id="graph_area_repos"></div>
+
+			<{* Add log moves 2010/04/26 Y.Nakao --start-- *}>
+			<div class="th_repos_title_bar text_color mb10"><{$lang.repository_log_move}></div>
+
+			<table class="tb01 full mb10">
+			<tr><td class="item_edit_list al">
+			
+			<div class="mr15 fl">
+			<{$lang.repository_log_move_setting}><br/>
+			<{$action.startmonth.year}><{$lang.repository_log_year}> <{$action.startmonth.month}><{$lang.repository_log_month}> ～ 
+			<input type="hidden" name="start_year"  value="<{$action.startmonth.year}>" />
+			<input type="hidden" name="start_month" value="<{$action.startmonth.month}>" />
+			<select name="end_year">
+			<{foreach from=$action.year_option_end item=metadata name=loop}>
+			<{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> 
+			<{if $action.year_option_end[$loop_num][0]==$action.lastmonth.year}>
+			<option value="<{$action.year_option_end[$loop_num][0]}>" selected><{$action.year_option_end[$loop_num][0]}></option>
+			<{else}>
+			<option value="<{$action.year_option_end[$loop_num][0]}>"><{$action.year_option_end[$loop_num][0]}></option>
+			<{/if}>
+			<{/foreach}>
+			</select>
+			<{$lang.repository_log_year}>
+			<select name="end_month">
+			<{foreach from=$action.month_option_end item=metadata name=loop}>
+			<{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> 
+			<{if $action.month_option_end[$loop_num][0]==$action.lastmonth.month}>
+			<option value="<{$action.month_option_end[$loop_num][0]}>" selected><{$action.month_option_end[$loop_num][0]}></option>
+			<{else}>
+			<option value="<{$action.month_option_end[$loop_num][0]}>"><{$action.month_option_end[$loop_num][0]}></option>
+			<{/if}>
+			<{/foreach}>
+			</select>
+			<{$lang.repository_log_month}>
+			</div>
+			
+			<div>
+			<{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 *}>
+			<img id="loading_5" src="<{$smarty.const.CORE_BASE_URL}>/images/common/indicator.gif" style="display: none;" />
+			<input type="button" class="btn_delete" id="btn_log_move" value="<{$lang.repository_log_move_run}>" onclick="javascript: logMoves('<{$id}>');" <{if $action.startmonth.year==$action.lastmonth.year && $action.startmonth.month==$action.lastmonth.month}>disabled<{/if}>/>
+			</div>
+			<div class="red">
+			<{$lang.repository_log_move_caution_1}><BR>
+			<{$lang.repository_log_move_caution_2}>
+			</div>
+			
+			<{* Add log moves 2010/04/26 Y.Nakao --end-- *}>
+			</td>
+			</tr>
+			</table>
+
+</form>
+</div>
+
+<{include file="repository_script.html"}>
+
+<script class="nc_script" type="text/javascript">
+	createLogErrorMsg = function(){
+		return new Array("<{$lang.repository_log_error_stday}>","<{$lang.repository_log_error_edday}>","<{$lang.repository_log_error_sted}>");
+	}
+	
+	hostNameClicked = function(e, value)
+	{
+		this.display = none;
+	}
+	
+	hostdisplayClicked = function()
+	{
+ 		var disp_style = document.getElementById('print_area_repos').style;
+ 		if(disp_style.display == "none" || disp_style.display == '' || disp_style.display == undefined)
+ 		{
+ 			document.getElementById('all_print_area_repos').style.display = 'none';
+ 			document.getElementById('all_print_paging').style.display = 'none';
+ 			document.getElementById('print_area_repos').style.display = 'block';
+ 			document.getElementById('print_paging').style.display = 'block';
+ 		
+		}
+		else
+		{
+ 			document.getElementById('all_print_area_repos').style.display = 'block';
+ 			document.getElementById('all_print_paging').style.display = 'block';
+ 			document.getElementById('print_area_repos').style.display = 'none';
+ 			document.getElementById('print_paging').style.display = 'none';
+		}
+	} 
+</script>
+<{include file="repository_script.html"}>

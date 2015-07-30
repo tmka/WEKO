@@ -1,0 +1,517 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_ranking.html 40393 2014-08-25 09:29:15Z tatsuya_koyasu $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{*repository ランキング*}>
+<div class="mt10">
+
+
+
+    <{* refer ranking *}>
+    <{if count($action.refer_ranking)>0}>
+        <div class="th_repos_title_bar text-color">
+            <table class="full">
+                <tr>
+                    <td class="full al"><{$lang.repository_rank_refer_top}></td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="ranking_list" class="non_brd">
+            <table class="full">
+                <{foreach from=$action.refer_ranking item=metadata name=loop}>
+                <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}>
+
+                    <{* Add child index display more 2009/01/20 Y.Nakao --start-- *}>
+                    <{if $loop_num == 3}>
+                        </table>
+                        <div id="ranking_refer_bottom" style="display: none; overflow: hidden;">
+                        <table class="full">
+                    <{/if}>
+
+                    <{* Add child index display more 2009/01/20 Y.Nakao --end-- *}>
+                    <tr id="id_refer_ranking_1_<{$loop_num}>" <{if $loop_num==0}>class="list_line_repos1"<{else}>class="list_line_repos2"<{/if}>>
+                        <td class="w80px nobr">
+                            <p class="rank_refer_num">
+                                <{if $action.refer_ranking[$loop_num][2] != null}>
+                                    <em class="rank_ref"><{$action.refer_ranking[$loop_num][2]}></em>
+                                <{/if}>
+                                <{if $loop_num == 0}>
+                                    <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank1_bk.gif" />
+                                <{elseif $loop_num == 1}>
+                                    <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank2_bk.gif" />
+                                <{elseif $loop_num == 2}>
+                                    <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank3_bk.gif" />
+                                <{else}>
+                                    <em class="rank_rank normal"><{$action.refer_ranking[$loop_num][0]}><{$lang.repository_rank_rank}></em>
+                                <{/if}>
+                            </p>
+                        </td><!-- //rank_icon -->
+
+                        <{* thumbnail prev at 1st, 2nd ,3rd is thumbnail hidden. Y.Nakao 2012/02/07 --start-- *}>
+                        <td class="full ptb10 plr05 <{if $loop_num>0}>brdr02<{/if}> item_title">
+                            <{* パブリックスペースで動作するパーマネントリンクはpage_id必須 *}>
+                            <{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 *}>
+                            <a href="<{$smarty.const.BASE_URL}>/?action=repository_uri&item_id=<{$action.refer_ranking[$loop_num][3]}>"><{$action.refer_ranking[$loop_num][1]}></a>
+                        </td>
+                        <{* サムネイル表示 *}>
+                        <{* サムネイル表示方法を変更 K.Matsuo 2011/10/20 --start-- *}>
+                        <{if count($action.thumbnail.refer[0]) > 0 && $loop_num == 0}>
+                            <td class="ar vam pd10" rowspan="3">
+                                <{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 *}>
+                                <{if $action.thumbnail.refer[$loop_num][2] != "" && $action.thumbnail.refer[$loop_num][3] != ""}>
+                                    <a target="_blank" title="<{$lang.repository_rank_link_title}>" alt="<{$lang.repository_rank_link_title}>"
+                                        href="<{$smarty.const.BASE_URL}>/?action=repository_uri&item_id=<{$action.refer_ranking[$loop_num][3]}>&item_no=<{$action.thumbnail.refer[$loop_num][1]}>&file_id=<{$action.thumbnail.refer[$loop_num][2]}>">
+                                        <img width="120" class="brd02" src="<{$smarty.const.BASE_URL}>/index.php?action=repository_action_common_download&item_id=<{$action.thumbnail.refer[$loop_num][0]}>&item_no=<{$action.thumbnail.refer[$loop_num][1]}>&attribute_id=<{$action.thumbnail.refer[$loop_num][2]}>&file_no=<{$action.thumbnail.refer[$loop_num][3]}>&file_prev=true" alt="<{$lang.repository_rank_link_title}>" />
+                                     </a>
+                                 <{/if}>
+                             </td>
+                        <{/if}>
+                        <{* thumbnail prev at 1st, 2nd ,3rd is thumbnail hidden. Y.Nakao 2012/02/07 --start-- *}>
+                        <{* サムネイル表示 *}>
+                    </tr>
+                <{/foreach}>
+            </table>
+
+            <{* Add child index display more 2009/01/20 Y.Nakao --start-- *}>
+            <{if count($action.refer_ranking) > 3}>
+                </div><!-- //bt_acc A -->
+            <{/if}>
+
+            <{* Add child index display more 2009/01/20 Y.Nakao --end-- *}>
+            <{* ４位以下表示用ボタン *}>
+            <{if $action.count_refer > 3}>
+                <div style="text-align:right; margin-top:1px;">
+                    <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/down_displayseq.jpg" id="id_refer_button" style="cursor : pointer;" onclick="javascript: showRanking('refer', '<{$action.count_refer}>');">
+                </div>
+            <{/if}>
+
+        </div><!-- //ranking_list -->
+    <{/if}>
+
+
+
+
+
+
+
+
+
+
+    <{* download ranking *}>
+    <{if count($action.download_ranking)>0}>
+
+    <div class="th_repos_title_bar text-color">
+        <table class="full">
+            <tr>
+                <td class="full al"><{$lang.repository_rank_download_top}></td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="download_ranking" class="non_brd">
+        <table class="full">
+            <{foreach from=$action.download_ranking item=metadata name=loop}>
+                <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}>
+                <{* Add child index display more 2009/01/20 Y.Nakao --start-- *}>
+                <{if $loop_num == 3}>
+                    </table>
+                    <div id="ranking_download_bottom" style="display: none; overflow: hidden;">
+                    <table class="full">
+                <{/if}>
+                <{* Add child index display more 2009/01/20 Y.Nakao --end-- *}>
+
+                <tr id="id_download_ranking_1_<{$loop_num}>" <{if $loop_num==0}>class="list_line_repos1"<{else}>class="list_line_repos2" <{/if}>>
+                    <td class="w80px nobr">
+                        <p class="rank_refer_num">
+                        <{if $action.download_ranking[$loop_num][2] != null}>
+                            <em class="rank_ref"><{$action.download_ranking[$loop_num][2]}></em>
+                        <{/if}>
+                        <{if $loop_num == 0}>
+                            <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank1_bk.gif" />
+                        <{elseif $loop_num == 1}>
+                            <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank2_bk.gif" />
+                        <{elseif $loop_num == 2}>
+                            <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank3_bk.gif" />
+                        <{else}>
+                            <em class="rank_rank normal"><{$action.download_ranking[$loop_num][0]}><{$lang.repository_rank_rank}></em>
+                        <{/if}>
+                        </p>
+                    </td>
+                    <{* thumbnail prev at 1st, 2nd ,3rd is thumbnail hidden. Y.Nakao 2012/02/07 --start-- *}>
+                    <td class="full ptb10 plr05 <{if $loop_num>0}>brdr02<{/if}> item_title">
+                        <{* パブリックスペースで動作するパーマネントリンクはpage_id必須 *}>
+                        <{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 *}>
+                        <a href="<{$smarty.const.BASE_URL}>/?action=repository_uri&item_id=<{$action.download_ranking[$loop_num][3]}>"><{$action.download_ranking[$loop_num][1]}></a>  
+                    </td>
+                    <{* サムネイル表示 *}>
+                    <{* サムネイル表示方法を変更 K.Matsuo 2011/10/20 --start-- *}>
+                    <{if count($action.thumbnail.download[0]) > 0 && $loop_num == 0}>
+                        <td class="ar vam pd10" rowspan="3">
+                            <{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 *}>
+                            <{if $action.thumbnail.download[$loop_num][2] != "" && $action.thumbnail.download[$loop_num][3] != "" }>
+                                <a target="_blank" href="<{$smarty.const.BASE_URL}>/?action=repository_uri&item_id=<{$action.download_ranking[$loop_num][3]}>&file_id=<{$action.thumbnail.download[$loop_num][2]}>"  title="<{$lang.repository_rank_link_title}>">
+                                    <img width="120" class="brd02" src="<{$smarty.const.BASE_URL}>/index.php?action=repository_action_common_download&item_id=<{$action.thumbnail.download[$loop_num][0]}>&item_no=<{$action.thumbnail.download[$loop_num][1]}>&attribute_id=<{$action.thumbnail.download[$loop_num][2]}>&file_no=<{$action.thumbnail.download[$loop_num][3]}>&file_prev=true" alt="<{$lang.repository_rank_link_title}>" />
+                                </a>
+                            <{/if}>
+                        </td>
+                    <{/if}>
+                    <{* サムネイル表示 *}>
+                </tr>
+            <{/foreach}>
+            </table>
+            <{* Add child index display more 2009/01/20 Y.Nakao --start-- *}>
+            <{if count($action.download_ranking) > 3}>
+                </div>
+            <{/if}>
+            <{* Add child index display more 2009/01/20 Y.Nakao --end-- *}>
+            <{* ４位以下表示用ボタン *}>
+            <{if $action.count_download > 3}>
+            <div style="text-align:right; margin-top:1px;">
+                <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/down_displayseq.jpg" id="id_download_button" style="cursor : pointer;" onclick="javascript: showRanking('download', '<{$action.count_download}>');">
+            </div>
+            <{/if}>
+        </div>
+    <{/if}>
+
+
+
+
+
+
+
+    <{* user ranking *}>
+    <{if count($action.user_ranking)>0}>
+
+    <div class="th_repos_title_bar text-color">
+        <table class="full">
+            <tr>
+                <td class="full al"><{$lang.repository_rank_regitem_top}></td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="user_ranking" class="non_brd">
+        <table class="full">
+        <{foreach from=$action.user_ranking item=metadata name=loop}>
+        <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> 
+        <{* Add child index display more 2009/01/20 Y.Nakao --start-- *}>
+        <{if $loop_num == 3}>
+        </table>
+        <div id="ranking_user_bottom" style="display: none; overflow: hidden;">
+        <table class="full">
+        <{/if}>
+        <{* Add child index display more 2009/01/20 Y.Nakao --end-- *}>
+
+        <tr id="id_user_ranking_1_<{$loop_num}>" <{if $loop_num==0}>class="list_line_repos1"<{else}>class="list_line_repos2" <{/if}>>
+            <td class="w80px nobr">
+                <p class="rank_refer_num">
+                <{if $action.user_ranking[$loop_num][2] != null}>
+                    <em class="rank_ref"><{$action.user_ranking[$loop_num][2]}></em>
+                <{/if}>
+                <{if $loop_num == 0}>
+                    <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank1_bk.gif" />
+                <{elseif $loop_num == 1}>
+                    <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank2_bk.gif" />
+                <{elseif $loop_num == 2}>
+                    <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank3_bk.gif" />
+                <{else}>
+                    <em class="rank_rank normal"><{$action.user_ranking[$loop_num][0]}><{$lang.repository_rank_rank}></em>
+                <{/if}>
+                </p>
+            </td>
+            <td class="ranking_list_paging full item_title"><{$action.user_ranking[$loop_num][1]}></td>
+        </tr>
+        <{/foreach}>
+    </table>
+
+    <{* Add child index display more 2009/01/20 Y.Nakao --start-- *}>
+    <{if count($action.user_ranking) > 3}>
+    </div>
+    <{/if}>
+    <{* Add child index display more 2009/01/20 Y.Nakao --end-- *}>
+    <{* ４位以下表示用ボタン *}>
+    <{if $action.count_user > 3}>
+        <div style="text-align:right; margin-top:1px;">
+            <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/down_displayseq.jpg" id="id_user_button" style="cursor : pointer;" onclick="javascript: showRanking('user', '<{$action.count_user}>');">
+        </div>
+    <{/if}>
+    </div>
+    <{/if}>
+
+
+
+
+
+    <{* keyword ranking *}>
+    <{if count($action.keyword_ranking)>0}>
+    <div class="th_repos_title_bar text-color">
+        <table class="full">
+            <tr>
+                <td class="full al"><{$lang.repository_rank_search_top}></td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="keyword_ranking" class="non_brd">
+        <table class="full">
+        <{foreach from=$action.keyword_ranking item=metadata name=loop}>
+        <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> 
+        <{* Add child index display more 2009/01/20 Y.Nakao --start-- *}>
+        <{if $loop_num == 3}>
+        </table>
+        <div id="ranking_keyword_bottom" style="display: none; overflow: hidden;">
+        <table class="full">
+        <{/if}>
+        <{* Add child index display more 2009/01/20 Y.Nakao --end-- *}>
+        <tr id="id_keyword_ranking_1_<{$loop_num}>" <{if $loop_num==0}>class="list_line_repos1"<{else}>class="list_line_repos2" <{/if}>>
+            <td class="w80px nobr">
+                <p class="rank_refer_num">
+                <{if $action.keyword_ranking[$loop_num][2] != null}>
+                    <em class="rank_ref"><{$action.keyword_ranking[$loop_num][2]}></em>
+                <{/if}>
+                <{if $loop_num == 0}>
+                    <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank1_bk.gif" />
+                <{elseif $loop_num == 1}>
+                    <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank2_bk.gif" />
+                <{elseif $loop_num == 2}>
+                    <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank3_bk.gif" />
+                <{else}>
+                    <em class="rank_rank normal"><{$action.keyword_ranking[$loop_num][0]}><{$lang.repository_rank_rank}></em>
+                <{/if}>
+                </p>
+            </td>
+            <td class="ranking_list_paging full ptb10 plr5 item_title">
+                <a href=<{$action.keyword_ranking[$loop_num][3]}>>
+                    <{$action.keyword_ranking[$loop_num][1]}>
+                </a>
+            </td>
+        </tr>
+    <{/foreach}>
+    </table>
+    <{* Add child index display more 2009/01/20 Y.Nakao --start-- *}>
+    <{if count($action.keyword_ranking) > 3}>
+    </div>
+    <{/if}>
+    <{* Add child index display more 2009/01/20 Y.Nakao --end-- *}>
+    <{* ４位以下表示用ボタン *}>
+    <{if $action.count_keyword > 3}>
+        <div style="text-align:right; margin-top:1px;">
+            <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/down_displayseq.jpg" id="id_keyword_button" style="cursor : pointer;" onclick="javascript: showRanking('keyword', '<{$action.count_keyword}>');">
+        </div>
+    <{/if}>
+    </div>
+<{/if}>
+
+
+
+
+
+
+
+    <{* recent ranking *}>
+    <{if count($action.newitem_ranking)>0}>
+
+    <div class="th_repos_title_bar text-color">
+        <table class="full">
+            <tr>
+                <td class="full al"><{$lang.repository_rank_newitem}></td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="newitem_ranking" class="non_brd">
+        <table class="full">
+        <{foreach from=$action.newitem_ranking item=metadata name=loop}>
+        <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> 
+        <{* Add child index display more 2009/01/20 Y.Nakao --start-- *}>
+        <{if $loop_num == 3}>
+        </table>
+        <div id="ranking_newitem_bottom" style="display: none; overflow: hidden;">
+        <table class="full">
+        <{/if}>
+        <{* Add child index display more 2009/01/20 Y.Nakao --end-- *}>
+        <tr id="id_newitem_ranking_1_<{$loop_num}>" <{if $loop_num==0}>class="list_line_repos1"<{else}>class="list_line_repos2" <{/if}>>
+            <td class="w80px nobr">
+                <p class="rank_refer_num">
+                    <em class="rank_ref">new</em>
+                    <{if $loop_num == 0}>
+                        <img width="51" height="60" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/rank4_bk.gif" />
+                    <{else}>
+                        <img class="mt25 ml10" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/star.png" />
+                    <{/if}>
+                </p>
+            </td>
+            <td class="full ptb10 plr05 <{if $loop_num>0}>brdr02<{/if}>">
+                <{if $action.newitem_ranking[$loop_num][2] != null}>
+                    <em><{$action.newitem_ranking[$loop_num][2]}></em>
+                <{/if}>
+                <div class="item_title">
+                    <{* パブリックスペースで動作するパーマネントリンクはpage_id必須 *}>
+                    <{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 *}>
+                    <a href="<{$smarty.const.BASE_URL}>/?action=repository_uri&item_id=<{$action.newitem_ranking[$loop_num][3]}>"><{$action.newitem_ranking[$loop_num][1]}></a>
+                </div>
+            </td>
+            <{* サムネイル表示 *}>
+            <{if count($action.thumbnail.recent[0]) > 0 && $loop_num == 0}>
+                <td class="ar vam pd10" rowspan="3">
+                    <{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 *}>
+                    <{if $action.thumbnail.recent[$loop_num][3] != "" && $action.thumbnail.recent[$loop_num][2] != ""}>
+                        <a target="_blank" href="<{$smarty.const.BASE_URL}>/?action=repository_uri&item_id=<{$action.newitem_ranking[$loop_num][3]}>&file_id=<{$action.thumbnail.recent[$loop_num][2]}>" title="<{$lang.repository_rank_link_title}>" >
+                            <img width="120" class="brd02" src="<{$smarty.const.BASE_URL}>/index.php?action=repository_action_common_download&item_id=<{$action.thumbnail.recent[$loop_num][0]}>&item_no=<{$action.thumbnail.recent[$loop_num][1]}>&attribute_id=<{$action.thumbnail.recent[$loop_num][2]}>&file_no=<{$action.thumbnail.recent[$loop_num][3]}>&file_prev=true" alt="<{$lang.repository_rank_link_title}>" />
+                        </a>
+                    <{/if}>
+                </td>
+            <{/if}>
+            <{* サムネイル表示 *}>
+            
+            </tr>
+            <{/foreach}>
+            </table>
+            <{* Add child index display more 2009/01/20 Y.Nakao --start-- *}>
+            <{if count($action.newitem_ranking) > 3}>
+                </div>
+            <{/if}>
+            <{* Add child index display more 2009/01/20 Y.Nakao --end-- *}>
+            <{* ４位以下表示用ボタン *}>
+            <{if $action.count_recent > 3}>
+                <div style="text-align:right; margin-top:1px;">
+                    <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/down_displayseq.jpg" id="id_newitem_button" style="cursor : pointer;" onclick="javascript: showRanking('newitem', '<{$action.count_recent}>');">
+                </div>
+            <{/if}>
+        </div>
+    <{/if}>
+
+
+
+
+
+
+
+
+
+<{*{ Add ranking empty's comment K.Ando 2010/02/18 --start-- *}>
+<{if count($action.newitem_ranking) <= 0 && count($action.keyword_ranking) <= 0 && count($action.user_ranking) <= 0 && count($action.download_ranking ) <= 0 && count($action.refer_ranking) <= 0 }>
+<div class="pb10 ac">
+    <{$lang.repository_ranking_no_data}>
+</div>
+<{/if}>
+</div>
+
+<{include file="repository_script.html"}>
+
+
+
+<script class="nc_script" type="text/javascript">
+showRanking = function(type, count){
+    var button_id = "id_" + type + "_button";
+    
+    if($('ranking_'+type+'_bottom').style.display == "none" && $(button_id).src.match("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/down_displayseq.jpg") != null){
+        accordian_rank('ranking_'+type+'_bottom', type, "dw");
+    } else if(($('ranking_'+type+'_bottom').style.display == "" || $('ranking_'+type+'_bottom').style.display == "block") && $(button_id).src.match ("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/up_displayseq.jpg")) {
+        $(button_id).src = "<{$smarty.const.CORE_BASE_URL}>/images/repository/default/down_displayseq.jpg";
+        accordian_rank('ranking_'+type+'_bottom', type, "up");
+    }
+    
+    return;
+}
+</script>
+
+<{* Add child index display more 2009/01/20 Y.Nakao --start-- *}>
+<script class="nc_script" type="text/javascript">
+    var rank_max_height = 0;
+    var max_height_refer = 0;
+    var max_height_download = 0;
+    var max_height_user = 0;
+    var max_height_keyword = 0;
+    var max_height_newitem = 0;
+    var rank_sl_timer = null;
+    var rank_speed = 6;
+    accordian_rank = function(id, type, focus){
+        $(id).style.display = "";    // dsp(d,'block');
+
+        // 最大高さ保持
+        if(type == "refer"){
+            if(max_height_refer == 0){
+                max_height_refer = parseInt($(id).offsetHeight);
+            }
+            rank_max_height = max_height_refer;
+        } else if(type == "download"){
+            if(max_height_download == 0){
+                max_height_download = parseInt($(id).offsetHeight);
+            }
+            rank_max_height = max_height_download;
+        } else if(type == "user"){
+            if(max_height_user == 0){
+                max_height_user = parseInt($(id).offsetHeight);
+            }
+            rank_max_height = max_height_user;
+        } else if(type == "keyword"){
+            if(max_height_keyword == 0){
+                max_height_keyword = parseInt($(id).offsetHeight);
+            }
+            rank_max_height = max_height_keyword;
+        } else if(type == "newitem"){
+            if(max_height_newitem == 0){
+                max_height_newitem = parseInt($(id).offsetHeight);
+            }
+            rank_max_height = max_height_newitem;
+        }
+        
+        if(focus == "dw"){
+            $(id).style.height='0px';
+        } else {
+            if(rank_max_height != parseInt($(id).offsetHeight)){
+                parseInt($(id).offsetHeight) = rank_max_height;
+            }
+        }
+        
+        //clearInterval(sl_timer);        // タイマークリア
+        rank_sl_timer = setInterval( 'slider_rank("'+id+'", "'+type+'", "'+focus+'")', 10);    // タイマーセット
+    }
+    
+    slider_rank = function(id, type, focus){
+        var elm = $(id);
+        var button_id = "id_" + type + "_button";
+        if(focus == "up"){
+            // 上方向に縮小 close for top
+            var now_height = parseInt($(id).offsetHeight);
+            if(now_height > 0){
+                var val = Math.round((now_height)/rank_speed);
+                val = (val<1) ? 1 : val;
+                val = now_height - val;
+                $(id).style.height = val+'px';
+            } else {
+                $(id).style.height = '0px';
+                $(id).style.display = "none";
+                $(button_id).src = "<{$smarty.const.CORE_BASE_URL}>/images/repository/default/down_displayseq.jpg";
+                clearInterval(rank_sl_timer);
+            }
+        } else if(focus == "dw"){
+            // 下方向に展開 open for bottom
+            var now_height = parseInt($(id).offsetHeight);
+            if(rank_max_height > now_height){
+                var val = Math.round((rank_max_height-now_height)/rank_speed);
+                val = (val<1) ? 1 : val;
+                val = now_height + val;
+                $(id).style.height = val+'px';
+            }else{
+                $(id).style.height = rank_max_height + 'px';
+                $(id).style.display = "";
+                $(button_id).src = "<{$smarty.const.CORE_BASE_URL}>/images/repository/default/up_displayseq.jpg";
+                clearInterval(rank_sl_timer);
+            }
+        } else {
+            // error
+            clearInterval(rank_sl_timer);
+        }
+    }
+</script>
+<{* Add child index display more 2009/01/20 Y.Nakao --end-- *}>

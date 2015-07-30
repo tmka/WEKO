@@ -1,0 +1,257 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_review.html 23154 2013-06-06 08:21:04Z ayumi_jin $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{*repository 査読／承認*}>
+<{strip}>
+	<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+		<div align="right" class="pt10 pr10">
+			
+			<a href="#" style="cursor: help;" onclick="
+				if($('review_active_tab_id').value==0)
+				{
+					repositoryCls['<{$id}>'].repositoryHelp(event,'review_item');
+				}
+				else
+				{
+					repositoryCls['<{$id}>'].repositoryHelp(event,'review_supple');
+				}
+				return false;"
+			>
+				<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" alt="help">
+			</a>
+			
+		</div>
+	<{/if}>
+	
+	<div class="pt10">
+		<div class="comp_tabset"></div>
+		
+		<div class="comp_tabset_content">
+			
+			<{* タブ1：アイテム tab1:items *}>
+			<div class="th_classic_content content text_color" id="review_tab_1" align="center">
+				
+				<{if $smarty.session.error_code!="" || $smarty.session.error_msg != ""}>
+					<div class="mt20 error_msg">
+					<{if $smarty.session.error_code=="8"}>
+						<{$lang.review_wait_no_data}>
+					<{elseif $smarty.session.error_code=="7"}>
+						<{$lang.itemtype_update_error}>
+					<{else}>
+						<{$smarty.session.error_msg}>
+					<{/if}>
+					</div>
+				<{/if}>
+				
+				<div class="pt10 pb10">
+					<form name="FrmItemState" action="#" method="post">
+						<input type="hidden" name="block_id" value="<{$block_id}>" />
+						<div class="ofx_auto">
+							<table class="w800px mb10 ml15 mr15 brdb02" align="center">
+								<tr>
+									<th class="th_col_repos ac w45"><{$lang.repository_review_item}></th>
+									<th class="th_col_repos ac w25"><{$lang.repository_review_item_type}></th>
+									<th class="th_col_repos ac w30"><{$lang.repository_review_review}></th>
+								</tr>
+								<{foreach from=$action.item_review_info item=item_data name=loop_item}>
+								<{assign var="loop_item" value=$smarty.foreach.loop_item.iteration-1}> 
+									<{if $loop_item%2==0}>
+										<tr class="list_line_repos1">
+									<{else}>
+										<tr class="list_line_repos2">
+									<{/if}>
+										
+										<{* アイテムタイトル *}>
+										<td class="list_paging al vt w45">
+											<a href="#" onclick="repositoryCls['<{$id}>'].repositoryWorkflowItemDetail(event, <{$item_data.item_id}>,<{$item_data.item_no}>, true); return false;">
+												<{if $smarty.session._lang == "japanese"}>
+													<{if $item_data.title != ""}>
+														<{$item_data.title}>
+													<{else}>
+														<{$item_data.title_en}>
+													<{/if}>
+												<{else}>
+													<{if $item_data.title_en != ""}>
+														<{$item_data.title_en}>
+													<{else}>
+														<{$item_data.title}>
+													<{/if}>
+												<{/if}>
+											</a>
+										</td>
+										
+										<{* アイテムタイプ *}>
+										<td class="list_paging ac vt w25"><{$item_data.item_type_name}></td>
+										
+										<{* 査読 *}>
+										<td class="al vt pd05 w30">
+											<select class="mt05 ml05 vt" name="select_review[]" value="this.selectedIndex" onchange="showtextarea(this,'<{$loop_item}>','item')">
+												<option value="0"><{$lang.repository_review_wait}></option>
+												<option value="1"><{$lang.repository_review_recognition}></option>
+												<option value="2"><{$lang.repository_review_reject}></option>
+											</select>
+											<div class="ml05 mt05 mr20 mb05 vt">
+												<span id="text_<{$loop_item}>" style="display: none"><{$lang.repository_review_reject_reason}></span>
+												<textarea class="pd05 full mb10" name="reject_reason[<{$loop_item}>]" id="textarea_<{$loop_item}>" style="display: none"></textarea>
+											</div>
+										</td>
+									</tr>
+								<{/foreach}>
+							</table>
+						</div>
+					</form>
+				</div>
+				
+				<div class="box_center mb10">
+					<input type="button" class="btn_blue" value="<{$lang.repository_next}>" onclick="repositoryCls['<{$id}>'].repositoryGoReview('item', $('review_active_tab_id').value); return false;">
+				</div>
+				
+			</div>
+			
+			<{* タブ2：サプリコンテンツ tab2:supple contents *}>
+			<div class="th_classic_content content text_color" id="review_tab_2" align="center">
+ 				
+				<{if $smarty.session.supple_error_code!="" || $smarty.session.error_msg != ""}>
+					<div class="mt20 error_msg">
+						<{if $smarty.session.supple_error_code=="8"}>
+							<{$lang.review_wait_no_supple_data}>
+						<{elseif $smarty.session.supple_error_code=="7"}>
+							<{$lang.itemtype_update_error}>
+						<{else}>
+							<{$smarty.session.error_msg}>
+						<{/if}>
+					</div>
+				<{/if}>
+				
+				<div class="pt10 pb10">
+					<form name="FrmSuppleItemState" action="#" method="post">
+						<input type="hidden" name="block_id" value="<{$block_id}>" />
+						<div class="ofx_auto">
+							<table class="ac w800px ml15 mr15 brdb02" align="center">
+							<tr>
+								<th class="th_col_repos ac w35"><{$lang.repository_review_supple_contents}></th>
+								<th class="th_col_repos ac w35"><{$lang.repository_review_supple_registered_items}></th>
+								<th class="th_col_repos ac w30"><{$lang.repository_review_review}></th>
+							</tr>
+							<{foreach from=$action.supple_review_info item=supple_data name=loop_item}>
+							<{assign var="loop_item" value=$smarty.foreach.loop_item.iteration-1}> 
+								<{if $loop_item%2==0}>
+									<tr class="list_line_repos1">
+								<{else}>
+									<tr class="list_line_repos2">
+								<{/if}>
+								
+									<{* サプリコンテンツタイトル *}>
+									<td class="list_paging al vt w35">
+										<a href="<{$supple_data.supple_url}>" target="_blank">
+											<{if $smarty.session._lang == "japanese"}>
+												<{if $supple_data.supple_title != ""}>
+													<{$supple_data.supple_title}>
+												<{else}>
+													<{$supple_data.supple_title_en}>
+												<{/if}>
+											<{else}>
+												<{if $supple_data.supple_title_en != ""}>
+													<{$supple_data.supple_title_en}>
+												<{else}>
+													<{$supple_data.supple_title}>
+												<{/if}>
+											<{/if}>
+										</a>
+									</td>
+									
+									<{* 登録先アイテムタイトル *}>
+									<td class="list_paging al vt w35">
+										<a href="#" onclick="repositoryCls['<{$id}>'].repositoryWorkflowItemDetail(event, <{$supple_data.item_id}>,<{$supple_data.item_no}>, true); return false;">
+											<{if $smarty.session._lang == "japanese"}>
+												<{if $supple_data.item_title != ""}>
+													<{$supple_data.item_title}>
+												<{else}>
+													<{$supple_data.item_title_en}>
+												<{/if}>
+											<{else}>
+												<{if $supple_data.item_title_en != ""}>
+													<{$supple_data.item_title_en}>
+												<{else}>
+													<{$supple_data.item_title}>
+												<{/if}>
+											<{/if}>
+										</a>
+									</td>
+									
+									<{* 査読 *}>
+									<td class="al vt pd05 w30">
+										<select class="vt mt05 ml05" name="select_supple_review[]" value="this.selectedIndex" onchange="showtextarea(this,'<{$loop_item}>','supple')">
+											<option value="0"><{$lang.repository_review_wait}></option>
+											<option value="1"><{$lang.repository_review_recognition}></option>
+											<option value="2"><{$lang.repository_review_reject}></option>
+										</select>
+										<div class="ml05 mt05 mr20 mb05 vt">
+											<span id="supple_text_<{$loop_item}>" style="display: none"><{$lang.repository_review_reject_reason}></span>
+											<textarea class="pd05 full mb10" name="supple_reject_reason[<{$loop_item}>]" id="supple_textarea_<{$loop_item}>" style="display: none"></textarea>
+										</div>
+									</td>
+								</tr>
+							<{/foreach}>
+						</table>
+					</div>
+				</form>
+			</div>
+			<div class="box_center mb10">
+				<input type="button" class="btn_blue" value="<{$lang.repository_next}>" onclick="repositoryCls['<{$id}>'].repositoryGoReview('supple', $('review_active_tab_id').value); return false;">
+			</div>
+		</div>
+	</div>
+</div>
+
+<{/strip}>
+
+<{include file="repository_script.html"}>
+<{* 最後にonload相当時に呼ぶスクリプトを書く*}>
+<script class="nc_script" type="text/javascript">
+	showtextarea = function(selelem,number,mode) {
+		if(mode == "item"){
+			var spanelem = document.getElementById("text_" + number);
+			var textareaelem = document.getElementById("textarea_" + number);
+		} else {
+			var spanelem = document.getElementById("supple_text_" + number);
+			var textareaelem = document.getElementById("supple_textarea_" + number);
+		}
+		if(selelem.selectedIndex == 2){
+			spanelem.style.display = 'block';
+			textareaelem.style.display = 'block';
+		} else {
+			spanelem.style.display = 'none';
+			textareaelem.style.display = 'none';
+		}
+	} 
+</script>
+
+<{* display tab number *}>
+<input type="hidden" id="review_active_tab_id" name="review_active_tab" value="0" />
+
+<script class="nc_script" type="text/javascript">
+	changeActiveTab1 = function(){
+		$('review_active_tab_id').value = 0;
+	}
+	changeActiveTab2 = function(){
+		$('review_active_tab_id').value = 1;
+	}
+
+</script>
+
+<script class="nc_script" type="text/javascript">
+	var tabset = new compTabset('<{$id}>');
+	tabset.setActiveIndex( valueParseInt(<{$action.review_active_tab}>) );
+	tabset.addTabset('<{$lang.repository_review_item}>', changeActiveTab1);
+	tabset.addTabset('<{$lang.repository_review_supple_contents}>', changeActiveTab2);
+	tabset.render();
+</script>

@@ -1,0 +1,37 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_prefix_image.html 18717 2012-07-24 06:43:22Z atsushi_suzuki $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<div class="text_color">
+ <{if $smarty.session.error_flg == "retry"}>
+  <span style="color: red;"><{$lang.repository_prefix_image_error}><{$lang.repository_prefix_image_retry}></span><br/>
+ <{/if}>
+ <{$lang.repository_prefix_image_input_string}>
+ <br/>
+ <{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 *}>
+ <img alt="image" src="<{$smarty.const.CORE_BASE_URL}>/weko/capcha.png?<{$action.nowtime}>" height="50" width="150" style="border: 1px solid;" /><br/>
+ <{*<img alt="image" src="<{$smarty.session.tmp_dir}>/capcha.png" height="50" width="150" style="border: 1px solid;" /><br/>*}>
+ <{*img alt="image" src="<{$smarty.const.CORE_BASE_URL}>/_test/capcha1.png" height="50" width="150" style="border: 1px solid;" /><br/*}>
+ <br/>
+ <form name="prefix_form">
+  <input type="text" name="captcha_string" size="25"/><br/>
+ </form>
+ <div align=center>
+  <input type="button" class="btn_white" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_edit_admin'); return false;" />
+  <input type="button" class="btn_white" value="<{$lang.repository_send}>" onclick="repositoryCls['<{$id}>'].repositoryGoPrefixConfirm(); return false;" />
+ </div>
+</div>
+
+<{include file="repository_script.html"}>
+
+<script class="nc_script" type="text/javascript">
+
+</script>
+

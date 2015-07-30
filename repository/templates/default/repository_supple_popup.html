@@ -1,0 +1,119 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_supple_popup.html 15261 2012-02-06 10:13:57Z yuko_nakao $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{* サプリコンテンツ追加用ポップアップ *}>
+<{* 追加方法選択 *}>
+<div style="text-align: center; margin: 15px 40px 20px;">
+ <div id="select_type" style="display: block;">
+  <{$lang.repository_supple_select_type}><br/>
+  <div style="text-align: left; margin: 5px 0px;">
+   <b><{$lang.repository_supple_new_regist}></b>…<{$lang.repository_supple_new_regist_description}><br/>
+   <b><{$lang.repository_supple_select_existing}></b>…<{$lang.repository_supple_select_existing_description}>
+  </div>
+  <br/>
+  <span style="margin: 5px;">
+   <input type="button" class="btn_white" value="<{$lang.repository_supple_new_regist}>" onclick="javascript: clickNew(); return false;">
+  </span>
+  <span style="margin: 5px;">
+   <input type="button" class="btn_white" value="<{$lang.repository_supple_select_existing}>" onclick="javascript: clickExisting(); return false;">
+  </span>
+  <span style="margin: 5px;">
+   <input type="button" class="btn_white" value="<{$lang.repository_supple_cancel}>" onclick="commonCls.removeBlock('<{$id}>'); return false;">
+  </span>
+ </div>
+ <div id="input_weko_id" style="display: none;">
+  <form name="weko_id_form" id="id_weko_id_from">
+   <{$lang.repository_supple_input_permalink}><br/>
+   <div style="margin: 5px;">
+    Permalink:<input type="text" value="" id="weko_key" name="weko_key_text" size="20" style="ime-mode: disabled;">
+   </div>
+   <span style="margin: 5px;">
+    <input type="button" class="btn_white" value="<{$lang.repository_supple_entry}>" onclick="javascript: checkWekoID(); return false;">
+   </span>
+   <span style="margin: 5px;">
+    <input type="button" class="btn_white" value="<{$lang.repository_supple_cancel}>" onclick="javascript: clickExisting(); return false;">
+   </span>
+  </form>
+ </div>
+<div>
+<{include file="repository_script.html"}>
+<script class="nc_script" type="text/javascript">
+ clickNew = function(){
+ 	var location_str = '<{$action.supple_weko_url}>';
+	location.href=location_str.replace(/&amp;/ig,"&");
+ }
+</script>
+
+<script class="nc_script" type="text/javascript">
+ clickExisting = function(){
+ 	var select_type = document.getElementById('select_type');
+ 	var input_weko_id = document.getElementById('input_weko_id');
+ 	var weko_key_text = document.getElementById('weko_key');
+ 	
+ 	if(select_type.style.display == "none"){
+ 		select_type.style.display = "block";
+ 	} else {
+ 		select_type.style.display = "none";
+ 	}
+ 	
+ 	if(input_weko_id.style.display == "none"){
+ 		input_weko_id.style.display = "block";
+ 	} else {
+ 		input_weko_id.style.display = "none";
+ 	}
+ 	
+ 	weko_key_text.value = "";
+ }
+</script>
+
+<script class="nc_script" type="text/javascript">
+	chkNum = function(event){
+		var code = 0;
+		var char = "";
+		if (event.charCode === 0) {	// Firefox, Safari control code
+			code = 0;
+		} else if (!event.keyCode && event.charCode) {	// Firefox
+			code = event.charCode;
+		} else if (event.keyCode && !event.charCode) {	// IE
+			code = event.keyCode;
+		} else if (event.keyCode == event.charCode) {	// Safari
+			code = event.keyCode;
+		}
+		if (32 <= code && code <= 126) {	// ASCII文字の範囲内
+			char =  String.fromCharCode(code);
+		}
+		if (char && !char.match(/\d/)) {
+			return false;
+		}
+	}
+</script>
+
+<script class="nc_script" type="text/javascript">
+ checkWekoID = function(){
+ 	var weko_key_text = document.getElementById('weko_key');
+ 	var weko_key = weko_key_text.value;
+ 	
+ 	// trim space 
+ 	weko_key = weko_key.replace(" ", "");	// 半角スペース消去
+ 	weko_key = weko_key.replace("　", "");	// 全角スペース消去
+ 	
+ 	if(weko_key == ""){
+ 		alert("<{$lang.repository_supple_no_wekoid}>");
+ 	// } else if(weko_id.match(/[^0-9a-zA-Z/?_.:]+/)){
+ 	// 	alert("<{$lang.repository_supple_illegal_char}>");
+ 	} else {
+ 		var item_id = '<{$action.item_id}>';
+ 		var item_no = '<{$action.item_no}>';
+		commonCls.removeBlock('<{$id}>');
+ 		repositoryCls['_<{$block_id}>'].repositoryAddSupple(item_id, item_no, "add_existing", weko_key);
+ 	}
+ }
+</script>

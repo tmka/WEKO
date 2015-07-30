@@ -1,0 +1,313 @@
+<div id="mapping_idx<{$id}>" class="lh15">
+	<{* インデックスツリー表示用のタグ T.Koyasu *}>
+	<div class='full' id='DetailSearchIndexTree<{$id}>' align='left' class="repositoryAdvancedSearchDiv" style="height:200px; overflow:auto;"></div>
+
+	<{* 詳細検索リクエストパラメータ、レスポンスからインデックス検索条件を抜き出して初期値としている T.Koyasu *}>
+	<input type='hidden' id='idx<{$id}>_id' name='idx' value='<{section name=condition_row loop=$action.detail_search_select_item}><{if $action.detail_search_select_item[condition_row].type_id == '24'}><{$action.detail_search_select_item[condition_row].checkList}><{/if}><{/section}>'>
+
+	<{* 選択されているインデックス名をカンマ区切りで保持する T.Koyasu *}>
+	<input type='hidden' id='idx<{$id}>_name' value=''>
+
+	<div class='ac ptb10' align='center'>
+	    <{* 決定ボタン、押下時に選択内容が適用される T.Koyasu *}>
+	    <input aline='left' type='button' value='<{$lang.repository_next}>' class='btn_blue' onclick='javascript: indexDecision<{$id}>(8)' />
+	    <{* キャンセルボタン、押下時に選択内容が破棄され、前回選択時の内容が復元される T.Koyasu *}>
+	    <input aline='left' type='button' value='<{$lang.repository_cancel}>' class='btn_white' onclick='javascript: indexCansel<{$id}>(8)' />
+	</div>
+</div>
+<script class="nc_script" type="text/javascript">
+    <{* インデックスツリーの初期化 T.Koyasu *}>
+    initDetailSearchTree<{$id}> = function(screen_id){
+        <{* インデックスツリーのタグID T.Koyasu *}>
+        var elm_name='DetailSearchIndexTree<{$id}>';
+        <{* モジュールID T.Koyasu *}>
+        var id_module='<{$id}>';
+        <{* パラメータ文字列 T.Koyasu *}>
+        var pars='';
+
+        pars += 'action=repository_action_main_tree';
+        pars += '&id_module='+id_module;
+        pars += '&sel_mode=detail_search';
+        pars += '&detail_check_ids='+$('idx<{$id}>_id').value;
+        var url = "<{$smarty.const.BASE_URL}>/index.php";
+
+        <{* AjaxでRepository_Action_Main_Treeにアクセスし、ツリーのHTMLを取得する T.Koyasu *}>
+        var myAjax = new Ajax.Request(
+                        url,
+                        {
+                            method: 'post',
+                            postBody: pars,
+                            cache : false,
+                            onComplete: function(req) {
+                                <{* インデックスツリータグに取得したHTMLを挿入 T.Koyasu *}>
+                                // replace id
+                                var tree_html = repositoryDetailReplaceTreeId<{$id}>(req.responseText);
+                                $(elm_name).innerHTML="";
+                                var tree_node = document.createElement("span");
+                                tree_node.innerHTML = tree_html;
+                                $(elm_name).appendChild(tree_node);
+
+                                <{* 選択されたインデックスの名称をセットする *}>
+                                setIndexName<{$id}>(screen_id);
+                            }
+                        }
+                    );
+    }
+
+    <{* インデックスの選択状態を更新する T.Koyasu *}>
+    updateSelectedIndexIds<{$id}> = function(event, sel_id){
+        <{* インデックスの選択状況を取得 T.Koyasu *}>
+        var tag_id = 'detail_tree_check' + sel_id + '<{$id}>';
+        var sel_state = $(tag_id).checked;
+
+        <{* 子のDOMのID *}>
+        var child_id = 'detail_child<{$id}>_' + sel_id;
+
+        <{* 子のDOMの有無、インデックスの選択状態で処理を分ける *}>
+        if($(child_id) != null)
+        {
+            <{* 子のDOMが存在する場合 *}>
+            if(sel_state)
+            {
+                <{* ツリーを開いた状態にする(チェックONにする場合のみ) *}>
+                repositoryDetailClickTreeOpenClose<{$id}>(event, sel_id, "open");
+            }
+
+            <{* 子インデックスのインデックスID(カンマ区切りの文字列)を取得する T.Koyasu *}>
+            var child_index_ids = $('detail_tree_id' + sel_id + '<{$id}>').value;
+            if(child_index_ids.length > 0)
+            {
+                <{* ID文字列を分割 T.Koyasu *}>
+                var child_index_id_array = new Array();
+                child_index_id_array = child_index_ids.split(',');
+
+                <{* 子のインデックス分ループ *}>
+                for(var cnt = 0; cnt < child_index_id_array.length; cnt++)
+                {
+                    <{* タグのIDを作成し、子インデックスの選択状態を更新する *}>
+                    var child_chk_id = 'detail_tree_check' + child_index_id_array[cnt] + '<{$id}>';
+                    if($(child_chk_id) != null)
+                    {
+                        <{* 子インデックスのチェック状態を自身と同じにする *}>
+                        $(child_chk_id).checked = sel_state;
+
+                        <{* 孫以下のインデックスの選択状態も同様に更新(再帰) *}>
+                        updateSelectedIndexIds<{$id}>(event, child_index_id_array[cnt]);
+                    }
+                }
+            }
+        }
+        else if(sel_state)
+        {
+            <{* 子のDOMが存在せず、チェックをONにする場合 *}>
+            <{* チェックON状態の子インデックス以下のツリーを取得する *}>
+            repositoryDetailClickTreeOpenClose<{$id}>(event, sel_id, "all_check");
+        }
+        else
+        {
+            <{* 子のDOMが存在せず、チェックをOFFにする場合 *}>
+            <{* DOMが存在しない ⇒ 元から未選択状態 であるため処理不要 *}>
+        }
+    }
+
+    <{* インデックスツリーの子インデックス表示・非表示処理 *}>
+    repositoryDetailClickTreeOpenClose<{$id}> = function(event, sel_id, mode){
+        var tag_id = 'detail_child' + '<{$id}>' + '_' + sel_id;
+        var img_id = 'detail_tree_point_' + sel_id + '<{$id}>';
+        var node_id = 'detail_tree_node' + sel_id;
+        if($(img_id) == null)
+        {
+            return;
+        }
+        if($(tag_id) == null)
+        {
+            $(img_id).src = '<{$smarty.const.BASE_URL}>/images/common/indicator.gif';
+            var url = "<{$smarty.const.BASE_URL}>/index.php";
+            var pars="";
+            pars += 'action=repository_action_main_tree';
+            pars += '&click_id=' + sel_id;
+            pars += '&sel_mode=detail_search';
+            pars += '&id_module=<{$id}>';
+            if(mode == "all_check"){
+                pars += '&detail_all_check=true';
+            }
+            var myAjax = new Ajax.Request(
+                            url,
+                            {
+                                method: 'post',
+                                postBody: pars,
+                                onComplete: function(req) {
+                                    // replace id
+                                    var tree_html = repositoryDetailReplaceTreeId<{$id}>(req.responseText);
+
+                                    // open
+                                    var span_html = document.createElement("span");
+                                    span_html.innerHTML = tree_html;
+                                    $(node_id).appendChild(span_html);
+                                    $(tag_id).style.display = '';
+                                    $(img_id).src = '<{$smarty.const.BASE_URL}>/images/repository/tree/open.png';
+                                }
+                            }
+                        );
+        } else if($(tag_id).style.display == 'none' || mode == "open"){
+            <{* 子インデックスツリーを表示する T.Koyasu *}>
+            $(tag_id).style.display = '';
+            $(img_id).src = '<{$smarty.const.BASE_URL}>/images/repository/tree/open.png';
+        } else {
+            <{* 子インデックスツリーを非表示にする T.Koyasu *}>
+            $(tag_id).style.display = 'none';
+            $(img_id).src = '<{$smarty.const.BASE_URL}>/images/repository/tree/close.png';
+        }
+    }
+
+    <{* 決定ボタン押下時の処理 T.Koyasu *}>
+    indexDecision<{$id}> = function(screen_id){
+        var mapping_type = detectMapping<{$id}>(screen_id);
+        var row_num = searchRowNum<{$id}>(mapping_type);
+        if(row_num < 0){
+            return;
+        }
+
+        <{* チェックされているインデックスを取得 *}>
+        var sel_idx_id = "";
+        var tree_root_id = "DetailSearchIndexTree<{$id}>";
+        var inputNodeList = $(tree_root_id).getElementsByTagName("input");
+        for(i=0; i<inputNodeList.length; i++)
+        {
+            if(inputNodeList[i].getAttribute("type") == "checkbox")
+            {
+                if(inputNodeList[i].checked)
+                {
+                    var chkbox_id = inputNodeList[i].id;
+                    var reg = new RegExp('detail_tree_check([0-9]+)<{$id}>', 'gi');
+                    var index_id = chkbox_id.replace(reg, "$1");
+                    if(sel_idx_id.length > 0)
+                    {
+                        sel_idx_id += ",";
+                    }
+                    sel_idx_id += index_id;
+                }
+            }
+        }
+
+        <{* メンバ変数のインデックスIDをリクエストパラメータの要素に挿入 T.Koyasu *}>
+        var req_id = 'idx<{$id}>_id';
+        $(req_id).value=sel_idx_id;
+
+        <{* 選択されたインデックスの名称を表示用の要素にセット *}>
+        setIndexName<{$id}>(screen_id);
+
+        <{* 一覧表示のポップアップを非表示にする T.Koyasu *}>
+        var popup_id = 'mapping_list<{$id}>_' + row_num;
+        document.getElementById(popup_id).style.display='none';
+    }
+
+    <{* ×ボタンまたはキャンセルボタン押下時の処理 T.Koyasu *}>
+    indexCansel<{$id}> = function(screen_id){
+        var mapping_type = detectMapping<{$id}>(screen_id);
+        var row_num = searchRowNum<{$id}>(mapping_type);
+        if(row_num < 0){
+            return;
+        }
+
+        <{* リクエストパラメータに入っている選択済みインデックスIDを取得 *}>
+        var req_id = 'idx<{$id}>_id';
+        var sel_idx_id = "," + $(req_id).value + ",";
+
+        <{* インデックスの選択状態を戻す *}>
+        var tree_root_id = "DetailSearchIndexTree<{$id}>";
+        var inputNodeList = $(tree_root_id).getElementsByTagName("input");
+        for(i=0; i<inputNodeList.length; i++)
+        {
+            if(inputNodeList[i].getAttribute("type") == "checkbox")
+            {
+                var chkbox_id = inputNodeList[i].id;
+                var reg = new RegExp('detail_tree_check([0-9]+)<{$id}>', 'gi');
+                var index_id = chkbox_id.replace(reg, "$1");
+                if(sel_idx_id.indexOf(","+index_id+",") == -1)
+                {
+                    <{* リクエストパラメータのリストにインデックスIDが含まれていない *}>
+                    <{* チェックOFF *}>
+                    inputNodeList[i].checked = false;
+                }
+                else
+                {
+                    <{* リクエストパラメータのリストにインデックスIDが含まれている *}>
+                    <{* チェックON *}>
+                    inputNodeList[i].checked = true;
+                }
+            }
+        }
+
+        <{* 一覧表示のポップアップを非表示にする T.Koyasu *}>
+        var popup_id = 'mapping_list<{$id}>_' + row_num;
+        document.getElementById(popup_id).style.display='none';
+    }
+
+    <{* ツリーで選択されたインデックスの名称を表示用テキストボックスにセットする *}>
+    setIndexName<{$id}> = function(screen_id){
+        var mapping_type = detectMapping<{$id}>(screen_id);
+        var row_num = searchRowNum<{$id}>(mapping_type);
+        if(row_num < 0){
+            return;
+        }
+
+        <{* リクエストパラメータに入っている選択済みインデックスIDを取得 *}>
+        var req_id = "idx<{$id}>_id";
+        var sel_idx_id = $(req_id).value;
+
+        <{* インデックス名の取得 *}>
+        var sel_idx_name = "";
+        var id_list = sel_idx_id.split(",");
+        for(i=0; i<id_list.length; i++)
+        {
+            <{* 選択されているインデックス名の取得 *}>
+            var tree_name_id = "detail_tree_name" + id_list[i] + "<{$id}>";
+            if($(tree_name_id) != null)
+            {
+                if(sel_idx_name.length > 0)
+                    {
+                    sel_idx_name += ",";
+                    }
+                sel_idx_name += $(tree_name_id).value;
+            }
+        }
+
+        <{* インデックスの名称を表示用テキストボックスにセット *}>
+        var text_id = 'inputSearch<{$id}>_' + row_num;
+        $(text_id).value = sel_idx_name;
+    }
+
+    indexClear<{$id}> = function(){
+        <{* インデックスの選択状態をクリアする *}>
+        var tree_root_id = "DetailSearchIndexTree<{$id}>";
+        var inputNodeList = $(tree_root_id).getElementsByTagName("input");
+        for(i=0; i<inputNodeList.length; i++)
+        {
+            if(inputNodeList[i].getAttribute("type") == "checkbox")
+            {
+                <{* チェックOFF *}>
+                inputNodeList[i].checked = false;
+            }
+        }
+
+        <{* インデックスの行のテキストを削除する *}>
+        document.getElementById('idx<{$id}>_id').value = "";
+    }
+
+    repositoryDetailReplaceTreeId<{$id}> = function(tree_html){
+        var reg = new RegExp('tree_nodelabel([0-9]+)', 'gi');
+        tree_html = tree_html.replace(reg, 'detail_tree_nodelabel'+ "$1");
+        reg = new RegExp('tree_node([0-9]+)', 'gi');
+        tree_html = tree_html.replace(reg, 'detail_tree_node'+ "$1");
+        reg = new RegExp('tree_sentry([0-9]+)', 'gi');
+        tree_html = tree_html.replace(reg, 'detail_tree_sentry'+ "$1");
+        reg = new RegExp('child_top_([0-9]+)', 'gi');
+        tree_html = tree_html.replace(reg, 'detail_child_top_'+ "$1");
+
+        return tree_html;
+    }
+
+    <{* 詳細検索用インデックスツリーの作成 T.Koyasu *}>
+    initDetailSearchTree<{$id}>(8);
+</script>

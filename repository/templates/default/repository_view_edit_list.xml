@@ -1,0 +1,30 @@
+<{* XMLREPOSITORY内容用テンプレート *}>
+<?xml version="1.0" encoding="<{$smarty.const._CHARSET}>"?>
+<{strip}>
+<lists>
+	<{foreach from=$action.repository_contents item=contents}>
+	<row>
+		<id><![CDATA[
+			<a class="syslink" href="#" onclick="return false;">
+				<{$contents.item_type_id}>
+			</a>
+		]]></id>
+		<name><![CDATA[
+			<a class="syslink" href="#" onclick="return false;">
+				<{$contents.item_type_name}>
+			</a>
+		]]></name>
+		<name_short><![CDATA[
+			<a class="syslink" href="#" onclick="return false;">
+				<{$contents.item_type_short_name}>
+			</a>
+		]]></name_short>
+		<attr_num><![CDATA[
+			<a class="syslink" href="#" onclick="return false;">
+				<{$contents.is_delete}>
+			</a>
+		]]></attr_num>
+	</row>
+	<{/foreach}>
+</lists>
+<{/strip}>

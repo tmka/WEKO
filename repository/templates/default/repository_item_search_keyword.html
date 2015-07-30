@@ -1,0 +1,90 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_item_search_keyword.html 31327 2014-01-30 02:20:58Z tomohiro_ichikawa $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{* キーワード検索 *}>
+<div id="_repository_keyword" class="mt10" align="center">
+	<form action="./item_snippet.html" method="post" name="form_keyword" id="form_keyword<{$id}>" >
+		<div class="plr05">
+			<{* for performance test --start-- *}>
+			
+			<table class="full">
+				<tr>
+					<td class="full">
+						<{* keyword search *}>
+						<input class="keyword_text_sp"
+							type="text"
+							id="id_search_keyword<{$id}>"
+							onkeypress="return clickSearch<{$id}>(event)"
+							name="search_keyword[]"
+							value="<{$smarty.session.searchkeyword}>" />
+						<input type="hidden" id="id_pre_search_keyword<{$id}>" value="<{$smarty.session.searchkeyword}>"/>
+					</td>
+					<td class="pl25">
+						<input type="button" id="repositorySimpleSearchButton<{$id}>" class="btn_blue large h34px <{if $action.active_search_flag=='1'}>display-none<{/if}>" value="<{$lang.repository_search_start}>" onclick="redirctSearchKeyword<{$id}>(); return false;">
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2" class="full">
+						<table class="full">
+							<tr>
+								<td align="left" class="ptb04" width="33%">
+									<div class="vam">
+										<a href="#" onclick="repositoryDisplayChangeForAdvancedSearch<{$id}>(this); return false"><img border="0" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/tree/<{if $action.active_search_flag=='0'}>close-1.png<{else}>open-1.png<{/if}>" style="vertical-align:text-top;"><{$lang._search_detail}></a>
+									</div>
+								</td>
+								<td align="center" width="34%">
+									<div class="clear nobr">
+										<label for="search_type_detail<{$id}>"><input type="radio" name="search_type" id="search_type_detail<{$id}>" class="vabl" value="detail" onclick="$('search_type_hidden<{$id}>').value='detail';" <{if $action.search_type!="simple"}>checked<{/if}>><{$lang.repository_search_type_detail}></label>&nbsp;
+										<label for="search_type_simple<{$id}>"><input type="radio" name="search_type" id="search_type_simple<{$id}>" class="vabl" value="simple" onclick="$('search_type_hidden<{$id}>').value='simple';" <{if $action.search_type=="simple"}>checked<{/if}>><{$lang.repository_search_type_simple}></label>
+										<br/>
+										<input type="hidden" id="search_type_hidden<{$id}>" value="<{if $action.search_type!=null}><{$action.search_type}><{else}>all<{/if}>"/>
+									</div>
+								</td>
+								<td align="right" width="33%">
+									<{*ヘルプ*}>
+									<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+										<div class="pb10 pr05">
+											<a href="#" style="cursor: help;"
+														onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'search_keyword'); return false;">
+												<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" align="right" alt="help">
+											</a>
+										</div>
+									<{/if}>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</form>
+</div>
+<script class="nc_script" type="text/javascript">
+	clickSearch<{$id}> = function(event) {
+		if ( event.keyCode == 13 ) {
+			// エンターキーなら検索
+			// repositoryCls['<{$id}>'].sendSearchKeyword();
+			// do not advanced search
+			var detailSearchDisplay = $('useAdvancedSearchFlag<{$id}>').value;
+			if(detailSearchDisplay == 0)
+			{
+				// do keyword search
+				redirctSearchKeyword<{$id}>();
+			}
+			else
+			{
+				// do advanced search
+				redirectDetailSearch<{$id}>();
+			}
+			return false;
+		}
+	}
+</script>

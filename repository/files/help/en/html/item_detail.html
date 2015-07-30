@@ -1,0 +1,334 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: item_detail.html 39150 2014-07-28 08:48:19Z tomohiro_ichikawa $        -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+	<HTML>
+		<HEAD>
+			<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+			<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+			<link rel="stylesheet" href="./css/style.css" type="text/css">
+			<TITLE>item_detail</TITLE>
+		</HEAD>
+	<BODY>
+		<div class="main_body">
+			<h2>アイテム詳細</h2>
+			<div class="page_list">
+				<a href="./search.html#item_list">アイテムリスト</a>や<a href="./ranking.html">ランキング</a>に表示されたアイテムタイトルをクリックすると、アイテム詳細画面が表示されます。<br/>
+				登録されたアイテムの詳細情報を閲覧できます。<br/>
+				<br/>
+				<center><img src="./img/item_detail_path.png" alt="アイテム詳細画面"></center><br/>
+				<br/>
+				<h3><a name="output">メタデータ出力</a></h3>
+				<div class="page_list">
+					表示中アイテムのメタデータをOAI-PMH形式, BIBTEX形式, SWRC形式で表示することができます。<br/>
+					また、WEKOインポート形式によるアイテムのエクスポートや詳細画面を印刷することができます。<br/>
+					<br/>
+					[OAI-PMH]<br/>
+					<div class="page_list">
+						<img src="./img/banner_oai_pmh.png" alt="OAI-PMH">をクリックすると別ウインドウが開き、メタデータがOAI-PMH形式で表示されます。<br/>
+						<br/>
+					</div>
+					[BIBTEX]<br/>
+					<div class="page_list">
+						<img src="./img/banner_bibtex.png" alt="BIBTEX">をクリックすると別ウインドウが開き、メタデータがBIBTEX形式で表示されます。<br/>
+						<br/>
+					</div>
+					[SWRC]<br/>
+					<div class="page_list">
+						<img src="./img/banner_swrc.png" alt="OWL SWRC">をクリックすると別ウインドウが開き、メタデータがSWRC形式で表示されます。<br/>
+						<br/>
+					</div>
+					[エクスポート]<br/>
+					<div class="page_list">
+						<img src="./img/banner_export.png" alt="WEKO EXPORT">をクリックするとファイル保存ダイアログが起動し、WEKOインポート形式のファイルをダウンロードすることができます。<br/>
+						<br/>
+					</div>
+					[印刷]<br/>
+					<div class="page_list">
+						<img src="./img/banner_print.png" alt="PRINT">をクリックすると、アイテム詳細の画面を印刷することができます。<br/>
+						<br/>
+					</div>
+					<br/>
+					<center><img src="./img/item_detail.png" alt="アイテム詳細"></center><br/>
+					<br/>
+					<br/>
+					【注意事項】
+					<ul>
+						<li>
+							OAI-PMH, BIBTEX, SWRCの各形式による表示を行うにはアイテムタイプおよびメタデータのマッピング設定がされている必要があります。<br/>
+							マッピング設定については<a href="./itemtype_mapping.html">アイテムタイプ管理(OAH-PMHマップ)</a>をご覧ください。
+						</li>
+					</ul>
+					<br/>
+				</div>
+				<br/>
+				<h3><a name="file">ファイルダウンロード</a></h3>
+				<div class="page_list">
+					ファイルアイコンまたはファイル名のリンクをクリックするとファイル保存ダイアログが起動し、添付ファイルをダウンロードすることができます。<br/>
+					ユーザー権限ごとのファイルダウンロード可否は下記のようになっております。<br/>
+					<br/>
+					<table class="table_border" border="0" cellspacing="0">
+						<tr>
+							<th nowrap>ユーザー権限</th>
+							<th nowrap>属性</th>
+							<th nowrap>公開状態</th>
+							<th nowrap>ダウンロード可否</th>
+						</tr>
+						<tr>
+							<td rowspan="4">ゲスト</td>
+							<td rowspan="2">ファイル</td>
+							<td>オープンアクセス</td>
+							<td align="center">○</td>
+						</tr>
+						<tr>
+							<td>公開日前</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td rowspan="2">課金ファイル</td>
+							<td>オープンアクセス</td>
+							<td align="center">○</td>
+						</tr>
+						<tr>
+							<td>公開日前</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td rowspan="5">登録ユーザー</td>
+							<td rowspan="2">ファイル</td>
+							<td>オープンアクセス</td>
+							<td align="center">○</td>
+						</tr>
+						<tr>
+							<td>公開日前</td>
+							<td align="center">○</td>
+						</tr>
+						<tr>
+							<td rowspan="3">課金ファイル</td>
+							<td>オープンアクセス</td>
+							<td align="center">○</td>
+						</tr>
+						<tr>
+							<td>公開日前(価格有)</td>
+							<td align="center">○</td>
+						</tr>
+						<tr>
+							<td>公開日前(価格無)</td>
+							<td align="center">×</td>
+						</tr>
+						<tr>
+							<td rowspan="5">管理者</td>
+							<td rowspan="2">ファイル</td>
+							<td>オープンアクセス</td>
+							<td align="center">○</td>
+						</tr>
+						<tr>
+							<td>公開日前</td>
+							<td align="center">○</td>
+						</tr>
+						<tr>
+							<td rowspan="3">課金ファイル</td>
+							<td>オープンアクセス</td>
+							<td align="center">○</td>
+						</tr>
+						<tr>
+							<td>公開日前(価格有)</td>
+							<td align="center">○</td>
+						</tr>
+						<tr>
+							<td>公開日前(価格無)</td>
+							<td align="center">○</td>
+						</tr>
+					</table>
+					<br/>
+					<center><img src="./img/item_detail_download.png" alt="ファイルダウンロード"></center><br/>
+					<br/>
+				</div>
+				<!-- マルチメディアコンテンツ2012/12/11 A.Jin -->
+				<h3><a name="multimedia">マルチメディアコンテンツ表示</a></h3>
+				<div class="page_list">
+					動画ファイル、Flashファイル、音楽ファイルのコンテンツを表示できます。<br/>
+					<br/>
+					■動画ファイルのコンテンツ表示<br/>
+					対応形式：ASF, AVI, Matroska, NUT, FLV, WAV, QuickTime, 3GPP,<br/>
+							MPEG(mp4), SMAF(MMF), OpenMG, TwinVQ, Ogg/FLAC, <br/>
+							Monkey's Audio, WavPack, TTA<br/>
+					<br/>
+					<center><img src="./img/item_detail_avi.png" alt="マルチメディアコンテンツ表示"></center><br/>
+					<br/>
+					■Flashファイルのコンテンツ表示<br/>
+					対応形式：Flash
+					<br/>
+					<center><img src="./img/item_detail_flash.png" alt="マルチメディアコンテンツ表示"></center><br/>
+					<br/>
+					■音楽ファイルのコンテンツ表示<br/>
+					対応形式：MP3
+					<br/>
+					<center><img src="./img/item_detail_mp3.png" alt="マルチメディアコンテンツ表示"></center><br/>
+					【注意事項】
+					<ul>
+						<li>自動再生には対応しません。</li>
+					</ul>
+					<br/>
+				</div>
+				<br/>
+				<!-- 利用統計2012/12/12 A.Jin -->
+				<h3><a name="usagestatistics">利用統計表示</a></h3>
+				<div class="page_list">
+					アイテムの利用統計が閲覧出来ます。<br/>
+					また、アイテム詳細画面に、サイト開設時からのファイル毎のダウンロード回数が、リアルタイムで表示されます。<br/>
+					<br/>
+					
+					<center><img src="./img/item_detail_tokei.png" alt="利用統計表示"></center><br/>
+					<br/>
+					アイテム詳細画面の利用統計リンクをクリックすると、利用統計画面がポップアップで表示されます。<br/>
+					<br/>
+					指定した年月におけるアイテムの閲覧回数とファイルごとのダウンロード回数の統計は初期表示に上位5件が「国別」「ドメイン別」で表示されます。<br/>
+					6件目以降は<img src="./img/ranking_close.png" alt="下向きボタン">ボタンおよび<img src="./img/ranking_open.png" alt="上向きボタン">ボタンで表示/非表示を切り替えます。<br/>
+					<center><img src="./img/item_detail_tokeipopup.png" alt="利用統計表示"></center><br/>
+					【注意事項】
+					<ul>
+						<li>利用統計の集計が行われている場合のみ「利用統計を見る」リンクが表示されます。</br>
+						利用統計の集計方法については<a href="./setting.html#run_DB">WEKO管理 データベース管理</a>をご覧ください。
+						</li>
+					</ul>
+				</div>
+				<br/>
+				<h3><a name="supple">サプリメンタルコンテンツ</a></h3>
+				<div class="page_list">
+					サプリメンタルWEKO(連携している外部のWEKO)に登録されているアイテムをサプリメンタルコンテンツとして、アイテムにリンクを登録することができます。<br/>
+					サプリメンタルコンテンツはアイテムタイプがメタデータ属性「サプリメンタルコンテンツ」を持つ場合に利用することができます。<br/>
+					<br/>
+					<h4><a name="supple_entry">サプリメンタルコンテンツ登録</a></h4>
+					<div class="page_list">
+						「サプリメンタルコンテンツ追加」ボタンをクリックするとポップアップが表示されます。<br/>
+						サプリメンタルコンテンツの追加方法として、新規登録か既存登録かを選択します。<br/>
+						<br/>
+						<center><img src="./img/supple_entry_detail_01.png" alt="サプリメンタルコンテンツ追加"></center><br/>
+						<br/>
+						<center><img src="./img/supple_entry_popup_01.png" alt="サプリメンタルコンテンツ登録ポップアップ"></center><br/>
+						<br/>
+						■新規登録<br/>
+						<div class="page_list">
+							サプリメンタルコンテンツの本体となるアイテムをサプリメンタルWEKOに登録します。<br/>
+							サプリメンタルWEKOでのアイテムの登録方法は<a href="item_entry.html">アイテム登録</a>と同様です。<br/>
+							<br/>
+							<center><img src="./img/supple_entry_regist.png" alt="サプリメンタルWEKOアイテム登録"></center><br/>
+							<br/>
+							サプリメンタルWEKOへのアイテム登録が完了すると、サプリメンタルコンテンツとして自動的に登録されます。<br/>
+							<br/>
+							査読待の表示がある場合は他のユーザーに公開されていません。<br/>
+							管理者の承認後に自動的に他のユーザーに公開されます。<br/>
+							自身が登録したサプリメンタルコンテンツの公開状態は<a href="./workflow_supple.html">サプリメンタルコンテンツ</a>タブで確認できます。<br/>
+							<br/>
+							<center><img src="./img/supple_entry_detail_02.png" alt="サプリメンタルコンテンツ新規追加完了"></center><br/>
+							<br/>
+							<br/>
+							【注意事項】
+							<ul>
+								<li>サプリメンタルWEKO上でアイテムを登録するには、サプリメンタルWEKOへ別途ログインする必要があります。</li>
+							</ul>
+							<br/>
+						</div>
+						■既存登録<br/>
+						<div class="page_list">
+							サプリメンタルWEKOに登録されている既存のアイテムをサプリメンタルコンテンツとして登録します。<br/>
+							登録するアイテムのパーマリンクURLをテキストボックスに入力し、「登録」ボタンをクリックするとパーマリンク先のアイテム情報を取得します。<br/>
+							<br/>
+							<center><img src="./img/supple_entry_popup_02.png" alt="サプリメンタルコンテンツ既存登録ポップアップ"></center><br/>
+							<br/>
+							アイテムのパーマリンクURLはアイテム詳細画面に表示されています。<br/>
+							<br/>
+							<center><img src="./img/supple_permalink.png" alt="パーマリンクURL"></center><br/>
+							<br/>
+							アイテムの情報取得が正常に完了すると、サプリメンタルコンテンツとして登録されます。<br/>
+							<br/>
+							査読待の表示がある場合は他のユーザーに公開されていません。<br/>
+							管理者の承認後に自動的に他のユーザーに公開されます。<br/>
+							自身が登録したサプリメンタルコンテンツの公開状態は<a href="./workflow_supple.html">サプリメンタルコンテンツ</a>タブで確認できます。<br/>
+							<br/>
+							<center><img src="./img/supple_entry_detail_03.png" alt="サプリメンタルコンテンツ既存追加完了"></center><br/>
+							<br/>
+							<br/>
+							【注意事項】
+							<ul>
+								<li>パーマリンクURLが表示されていないアイテムをサプリメンタルコンテンツとして登録することはできません。</li>
+							</ul>
+							<br/>
+						</div>
+					</div>
+					<h4><a name="supple_view">サプリメンタルコンテンツ表示</a></h4>
+					<div class="page_list">
+						表示中のアイテムに登録されている公開中のサプリメンタルコンテンツが表示されます。<br/>
+						また、自身が登録した査読待のサプリメンタルコンテンツも表示されます。<br/>
+						<br/>
+						ファイルアイコンをクリックするとファイル保存ダイアログが起動し、サプリメンタルコンテンツに添付されているファイルをダウンロードできます。<br/>
+						タイトルをクリックするとサプリメンタルコンテンツ本体のアイテム詳細画面にジャンプします。<br/>
+						<br/>
+						自身が登録したサプリメンタルコンテンツには「削除」ボタンが表示されます。<br/>
+						「削除」ボタンをクリックすると、確認用のポップアップが表示されます。<br/>
+						「OK」ボタンをクリックするとコンテンツ本体へのリンクが削除されます。<br/>
+						<br/>
+						<center><img src="./img/supple_view.png" alt="サプリメンタルコンテンツ表示"></center><br/>
+						<br/>
+						<br/>
+						【注意事項】
+						<ul>
+							<li>
+								コンテンツ本体へのリンクのみの削除ではコンテンツ本体は削除されません。<br/>
+								コンテンツ本体を削除する場合は、コンテンツ本体のアイテム詳細画面から削除を行う必要があります。
+							</li>
+						</ul>
+					</div>
+				</div>
+				
+				<h3><a name="edit">アイテム編集</a></h3>
+				<div class="page_list">
+					アイテムの編集権限を持つ場合、「公開」ボタンまたは「非公開」ボタン、「編集」ボタン、「削除」ボタンが表示されます。<br/>
+					<br/>
+					「公開」ボタンをクリックすると、アイテムの状態が"公開"になり、他のユーザーが閲覧できるようになります。<br/>
+					「非公開」ボタンをクリックすると、アイテムの状態が"非公開"になり、閲覧権限を持つユーザのみが閲覧できるようになります。<br/>
+					<br/>
+					「編集」ボタンをクリックすると、アイテムのメタデータの編集を行うことができます。<br/>
+					アイテムの編集については<a href="./item_entry.html">アイテム登録</a>をご覧ください。<br/>
+					<br/>
+					「削除」ボタンをクリックすると、確認用のポップアップが表示されます。<br/>
+					「OK」ボタンをクリックするとアイテムを削除することができます。<br/>
+					<br/>
+					<center><img src="./img/item_detail_edit.png" alt="アイテム編集"></center><br/>
+					<br/>
+				</div>
+				<h3><a name="edit">検索ワード表示機能</a></h3>
+				<div class="page_list">
+					アイテムがどのようなワードによって検索されているかを表示します。<br/>
+					<br/>
+					検索に使われたワードの上位10件を表示します。<br/>
+					検索された回数に応じてワードの文字サイズが変化します。<br/>
+					<br/>
+					WEKO管理画面より、表示・非表示の設定を行うことができます。<br/>
+					設定については<a href="./setting.html">WEKO管理</a>をご覧ください。<br/>
+					<br/>
+					キーワードのリンクを押下する事で、全文検索が行えます。<br/>
+					検索については<a href="./search.html">キーワード検索</a>をご覧ください。<br/>
+					<br/>
+					<br/>
+					<center><img src="./img/item_detail_referer.png" alt="検索キーワード表示"></center><br/>
+					<br/>
+				</div>
+				<br/>
+				<br/>
+				
+			</div>
+			<p align="center"><font size="2"><a href="../index.html" target="_top">WEKO Help Top</a></font></p>
+		</div>
+	</BODY>
+</HTML>

@@ -1,0 +1,539 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_item_search_result.html 16446 2012-04-10 05:49:27Z ayumi_jin $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{* 検索結果表示画面 *}>
+<div class="mt10">
+<{include file="smartphone/repository_item_search_indexlist.html"}>
+
+<form id="export_print" method="post" class="min-w685px">
+<{* when child index is any and item is no, item list is not view *}>
+<{if $smarty.session.child_index!="" && !($action.item_num != null && $action.item_num != 0)}>
+<{else}>
+<{* アイテムリストバー & 件数表示 *}>
+<{if $smarty.session.searchkeyword!=null || $smarty.session.searchIndexId!=0}>
+    <div class="th_repos_title_bar text_color" id="search_print_order">
+        <table cellspacing="0">
+            <tr>
+                <td align="left" valign="top" nowrap="nowrap">
+                    <b>
+                        <{if $smarty.session.searchkeyword!=null}>
+                            <{$lang.repository_search_result}>
+                        <{else}>
+                            <{$lang.repository_search_list_view}>
+                        <{/if}>
+                    </b>
+                </td>
+                <td align="right" valign="top">
+                    <div class="item_num c">
+                        <em>
+                            <{$action.view_start_no}>
+                            -
+                            <{if $action.view_end_no > $action.item_num}>
+                                <{$action.item_num}>
+                            <{else}>
+                                <{$action.view_end_no}>
+                            <{/if}> 
+                            of
+                            <{$action.item_num}>
+                            items
+                        </em>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <{* アイテムリストバーのパンクズ表示 *}>
+    <{strip}>
+    <div class="plr10 ptb10">
+        <{if $smarty.session.searchkeyword==null}>
+            <a href="<{$smarty.const.BASE_URL}>/?action=repository_opensearch&index_id=0&count=<{$smarty.session.list_view_num}>&order=<{$smarty.session.sort_order}>&pn=1">
+            <{$lang.repository_search_root}>
+            </a>
+            <span class="plr05" onclick="javascript: repository<{$id}>ShowSubIndexTree(event, 0);" id="_repository_subIndexList">
+                <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/page_next.gif" class="plr10 vam" border="0" />
+            </span>
+        <{/if}>
+        <{if $smarty.session.parent_index_data != null}>
+            <{assign var="parent_index" value=$smarty.session.parent_index_data}>
+            <{section name=i loop=$parent_index}>
+                <{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 *}>
+                <a href="<{$smarty.const.BASE_URL}>/?action=repository_opensearch&index_id=<{$parent_index[i].index_id}>&count=<{$smarty.session.list_view_num}>&order=<{$smarty.session.sort_order}>&pn=1">
+                    <{if $smarty.session._lang=="japanese"}>
+                        <{if $parent_index[i].index_name != "" && $parent_index[i].index_name != null}>
+                            <{$parent_index[i].index_name}>
+                        <{else}>
+                            <{$parent_index[i].index_name_english}>
+                        <{/if}>
+                    <{else}>
+                        <{if $parent_index[i].index_name_english != "" && $parent_index[i].index_name_english != null}>
+                            <{$parent_index[i].index_name_english}>
+                        <{else}>
+                            <{$parent_index[i].index_name}>
+                        <{/if}>
+                    <{/if}>
+                </a>
+                <span class="plr05" onclick="javascript: repository<{$id}>ShowSubIndexTree(event, '<{$parent_index[i].index_id}>');" id="_repository_subIndexList">
+                    <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/page_next.gif" class="plr10 vam" border="0" />
+                </span>
+            <{/section}>
+        <{/if}>
+        <b>
+            <{if $smarty.session._lang=="japanese"}>
+                <{if $smarty.session.index_data.index_name != "" && $smarty.session.index_data.index_name != null}>
+                    <{$smarty.session.index_data.index_name}>
+                <{else}>
+                    <{$smarty.session.index_data.index_name_english}>
+                <{/if}>
+            <{else}>
+                <{if $smarty.session.index_data.index_name_english != "" && $smarty.session.index_data.index_name_english != null}>
+                    <{$smarty.session.index_data.index_name_english}>
+                <{else}>
+                    <{$smarty.session.index_data.index_name}>
+                <{/if}>
+            <{/if}>
+        </b>
+    </div>
+    <{/strip}>
+<{/if}>
+
+<{if $smarty.session.error_cord!="" || $smarty.session.error_msg!="" || $action.item_num == null || $action.item_num == 0}>
+    <div class="clear" style="color: #ff0000;">
+        <{if $smarty.session.error_cord=="1"}>
+            <{$lang.repository_search_error1}>
+        <{* Bug Fix If search result num is zero, show error message T.Koyasu 2014/07/24 --start-- *}>
+        <{elseif $action.item_num == null || $action.item_num == 0}>
+            <{$lang.repository_search_error2}>
+        <{* Bug Fix If search result num is zero, show error message T.Koyasu 2014/07/24 --end-- *}>
+        <{elseif $smarty.session.error_cord=="7"}>
+            <{$lang.repository_search_error3}>
+        <{else}>
+            <{$smarty.session.error_msg}>
+        <{/if}>
+    </div>
+<{/if}>
+
+<{* 結果件数 *}>
+<{if $action.item_num != null && $action.item_num != 0}>
+    <{* 印刷・Exportプルダウン＆ボタン *}>
+    <div>
+        <div class="fr disp_num c">
+            <{* Fix sort order 2013/05/17 Y.Nakao --start-- *}>
+            <{* 表示順 *}>
+            <{$lang.repository_search_view_sort}>
+            <select name="sort_order" onChange="redirctChangeSortOrder<{$id}>(this.options[this.selectedIndex].value); return false;" style="padding :0px;">
+                <{foreach name="sortOrder" key="sortOrderCnt" item="sortOrderValue" from=$action.sortOrderList}>
+                    <option value="<{$sortOrderValue}>" <{if $sortOrderValue==$action.sort_order}>selected="selected"<{/if}>>
+                    <{if $sortOrderValue=="1"}>
+                        <{$lang.repository_search_title_asc}>
+                    <{elseif $sortOrderValue=="2"}>
+                        <{$lang.repository_search_title_desc}>
+                    <{elseif $sortOrderValue=="3"}>
+                        <{$lang.repository_search_author_asc}>
+                    <{elseif $sortOrderValue=="4"}>
+                        <{$lang.repository_search_author_desc}>
+                    <{elseif $sortOrderValue=="5"}>
+                        <{$lang.repository_search_content_type_asc}>
+                    <{elseif $sortOrderValue=="6"}>
+                        <{$lang.repository_search_content_type_desc}>
+                    <{elseif $sortOrderValue=="7"}>
+                        <{$lang.repository_search_weko_id_asc}>
+                    <{elseif $sortOrderValue=="8"}>
+                        <{$lang.repository_search_weko_id_desc}>
+                    <{elseif $sortOrderValue=="9"}>
+                        <{$lang.repository_search_modify_date_asc}>
+                    <{elseif $sortOrderValue=="10"}>
+                        <{$lang.repository_search_modify_date_desc}>
+                    <{elseif $sortOrderValue=="11"}>
+                        <{$lang.repository_search_contribute_date_asc}>
+                    <{elseif $sortOrderValue=="12"}>
+                        <{$lang.repository_search_contribute_date_desc}>
+                    <{elseif $sortOrderValue=="13"}>
+                        <{$lang.repository_search_review_date_asc}>
+                    <{elseif $sortOrderValue=="14"}>
+                        <{$lang.repository_search_review_date_desc}>
+                    <{elseif $sortOrderValue=="15"}>
+                        <{$lang.repository_search_publication_year_asc}>
+                    <{elseif $sortOrderValue=="16"}>
+                        <{$lang.repository_search_publication_year_desc}>
+                    <{elseif $sortOrderValue=="17"}>
+                        <{$lang.repository_search_custom_asc}>
+                    <{elseif $sortOrderValue=="18"}>
+                        <{$lang.repository_search_custom_desc}>
+                    <{/if}>
+                    </option>
+                <{/foreach}>
+            </select>
+            <{* Fix sort order 2013/05/17 Y.Nakao --end-- *}>
+            
+            <{* アイテム表示数 *}>
+            <{$lang.repository_search_view_num}>
+            <select onChange="redirctChangeListViewNum<{$id}>(this.value); return false;" >
+                <option value="20" <{if $smarty.session.list_view_num=="20"}>SELECTED<{/if}>>20</option>
+                <option value="50" <{if $smarty.session.list_view_num=="50"}>SELECTED<{/if}>>50</option>
+                <option value="75" <{if $smarty.session.list_view_num=="75"}>SELECTED<{/if}>>75</option>
+                <option value="100" <{if $smarty.session.list_view_num=="100"}>SELECTED<{/if}>>100</option>
+            </select>
+        </div>
+    </div>
+<{* 一覧表示 *}>
+<table class="pt10">
+<{* 件数 *}>
+<{foreach from=$action.array_title item=item_data name=loop_item}>
+<{assign var="loop_item" value=$smarty.foreach.loop_item.iteration-1}>
+<{assign var="newline_flg" value=0}>
+<tr>
+<td>
+<div class="item_block c" id="print_area_list_<{$loop_item}>"><{* 印刷エリア指定 *}>
+    <{* タイトル *}>
+    <div class="list_title_line">
+        <{* チェックボックス *}>
+        <div class="list_chk_repos" id="chk">
+         <input id="check_<{$loop_item}>" type="checkbox" name="export_check[]" value="<{$loop_item}>" <{if $smarty.session.export_check[$loop_item]=="1"}>CHECKED<{/if}>>
+        </div>
+        <div id="print_area_icon_<{$loop_item}>" class="print_area_icon fl"><{* 印刷エリア指定 *}>
+        <{* アイテムタイプアイコン *}>
+          <{if $action.array_item_type_id[$loop_item]==""}>
+            <{* 共通リソースのアイコン *}>
+            <img width="16px" height="16px" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/tree/item.png"/>
+          <{else}>
+            <{* 登録されているアイコン *}>
+            <img 
+            <{if $action.array_icon_width[$loop_item] > 16 || $action.array_icon_height[$loop_item] > 16}>
+              <{if $action.array_icon_width[$loop_item] >= $action.array_icon_height[$loop_item]}>
+                width="16px"
+              <{else}>
+                height="16px"
+              <{/if}> 
+            <{/if}>
+            src="<{$smarty.const.BASE_URL}>/?action=repository_action_common_download&item_type_id=<{$action.array_item_type_id[$loop_item]}>"/>
+          <{/if}>
+        </div>
+         <{* アイコン *}>
+         <{* パブリックスペースで動作するパーマネントリンクはpage_id必須 *}>
+        <div class="item_title pl55">
+         <a href="<{$smarty.const.BASE_URL}>/?action=repository_uri&item_id=<{$action.array_item[$loop_item].item_id}>">
+          <{* 選択言語で表示するタイトルを切り替える *}>
+          <{if $smarty.session._lang=="japanese"}>
+           <{if $action.array_title[$loop_item] != "" && $action.array_title[$loop_item] != null}>
+            <{$action.array_title[$loop_item]}>
+           <{else}>
+            <{$action.array_title_english[$loop_item]}>
+           <{/if}>
+          <{else}>
+           <{if $action.array_title_english[$loop_item] != "" && $action.array_title_english[$loop_item] != null}>
+            <{$action.array_title_english[$loop_item]}>
+           <{else}>
+            <{$action.array_title[$loop_item]}>
+           <{/if}>
+          <{/if}>
+         </a>
+       </div>
+    </div>
+    <{* 他言語タイトル *}>
+    <{if $action.alter_flg == "1" && $action.array_title[$loop_item] != "" && $action.array_title_english[$loop_item] != ""}>
+     <div class="pd05">
+      <{if $smarty.session._lang=="japanese"}>
+       <{$action.array_title_english[$loop_item]}>
+      <{else}>
+       <{$action.array_title[$loop_item]}>
+      <{/if}>
+      <br/>
+     </div>
+    <{/if}>
+    <{* 属性値 *}>
+     <{* 改行分 *}>
+     <{foreach from=$action.array_item_attr_list[$loop_item] item=list_data name=loop_list}>
+     <{assign var="loop_list" value=$smarty.foreach.loop_list.iteration-1}>
+      <{* 1行分 *}>
+      <{foreach from=$action.array_item_attr_list[$loop_item][$loop_list] item=attr_data name=loop_attr}>
+      <{assign var="loop_attr" value=$smarty.foreach.loop_attr.iteration-1}>
+      <{assign var="attr_flg" value=0}>
+        <{* 一属性分 *}>
+        <{foreach from=$action.array_item_attr_list[$loop_item][$loop_list][$loop_attr] item=str_data name=loop_str}>
+        <{assign var="loop_str" value=$smarty.foreach.loop_str.iteration-1}>
+           <{if $loop_str!=0 && $action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][$loop_str]!=""}>
+           <{assign var="attr_flg" value=1}>
+             <{if $newline_flg==0}>
+               <{assign var="newline_flg" value=1}>
+               <div class="list_attr_repos pl10">
+             <{/if}>
+             <{if $action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][0]=="link"}>
+               <a href="<{$action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][$loop_str].attr_value[0]}>" target="_blank"><{if $action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][$loop_str].attr_value[1] != ""}><{$action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][$loop_str].attr_value[1]}><{else}><{$action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][$loop_str].attr_value[0]}><{/if}></a>
+             <{elseif $action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][0]=="textarea"}>
+                 <{section name=i loop=$action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][$loop_str].attr_value}>
+                     <{if $smarty.section.i.index!=0}><br/><{/if}>
+                     <{$action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][$loop_str].attr_value[i]}>
+                 <{/section}>
+             <{elseif $action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][0]=="file" || $action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][0]=="file_price"}>
+              <{* 表示方法が1:簡易表示の場合 *}>
+                <a style="cursor : pointer; text-decoration: underline;"
+                   href="<{$action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][$loop_str].open_access_file}>"
+                ><{$action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][$loop_str].attr_value}></a>
+                <{* for bot search metadata --start-- *}>
+                    <div style="display:none;">
+                        <a href="<{$action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][$loop_str].open_access_file}>">
+                            <{$action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][$loop_str].attr_value}>
+                        </a>
+                    </div>
+                <{* for bot search metadata --end-- *}>
+                <{* for read e-book --start-- *}>
+                &nbsp;
+             <{else}>
+                <{$action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][$loop_str].attr_value}>
+             <{/if}>
+             <{if $action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][$loop_str].last_flg!=1}>
+              , 
+             <{/if}>
+           <{/if}>
+        <{/foreach}>
+        <{* 一属性分 *}>
+      <{/foreach}>
+      <{* 1行分 *}>
+      <{if $newline_flg==1 && $attr_flg==1}>
+       <br/>
+      <{/if}>
+    <{/foreach}>
+    <{* 改行分 *}>
+    <{if $newline_flg==1}>
+     </div>
+     <{assign var="newline_flg" value=0}>
+    <{/if}>
+    <{* thumbnail *}>
+    <{if count($action.arrayListThumbnail[$loop_item]) > 0}>
+        <div class="list_attr_repos pl10">
+            <{* item_title *}>
+            <{foreach from=$action.arrayListThumbnail[$loop_item] item=thumbnail}>
+                <img class="vab" 
+                <{if $thumbnail.height > 50 || $thumbnail.width > 50}>
+                    <{if $thumbnail.width > $thumbnail.height}>
+                        width="50px"
+                    <{else}>
+                        height="50px"
+                    <{/if}>
+                <{/if}>
+                src="<{$smarty.const.BASE_URL}>/?action=repository_action_common_download&item_id=<{$thumbnail.item_id}>&item_no=<{$thumbnail.item_no}>&attribute_id=<{$thumbnail.attribute_id}>&file_no=<{$thumbnail.file_no}>&img=true"
+                />
+            <{/foreach}>
+        </div>
+    <{/if}>
+    <{* ファイル *}>
+     <{foreach from=$action.array_item_attr_list_file[$loop_item] item=list_data name=loop_list}>
+     <{assign var="loop_list" value=$smarty.foreach.loop_list.iteration-1}>
+      <{* 1行分 *}>
+      <{foreach from=$action.array_item_attr_list_file[$loop_item][$loop_list] item=attr_data name=loop_attr}>
+      <{assign var="loop_attr" value=$smarty.foreach.loop_attr.iteration-1}>
+        <{* 一属性分 *}>
+        <{foreach from=$action.array_item_attr_list_file[$loop_item][$loop_list][$loop_attr] item=str_data name=loop_str}>
+        <{assign var="loop_str" value=$smarty.foreach.loop_str.iteration-1}>
+           <{if $loop_str != 0}>
+             <{if $newline_flg==0}>
+              <{assign var="newline_flg" value=1}>
+               <div class="list_attr_repos pl10">
+             <{/if}>
+             <{if $action.array_item_attr_list_file[$loop_item][$loop_list][$loop_attr][0]=="file" || $action.array_item_attr_list_file[$loop_item][$loop_list][$loop_attr][0]=="file_price"}>
+              <a class="list_mimetype_icon" style="cursor : pointer;"
+                 href="<{$action.array_item_attr_list_file[$loop_item][$loop_list][$loop_attr][$loop_str].open_access_file}>"
+              >
+              <{* ボタンの文字作成開始 *}>
+              <{foreach from=$action.array_item_attr_list_file[$loop_item][$loop_list][$loop_attr][$loop_str].mimetype_name item=str_mime name=loop_mime}>
+                <{assign var="loop_mime" value=$smarty.foreach.loop_mime.iteration-1}>
+                <{* 空白はそのまま表示 *}>
+                <{if $action.array_item_attr_list_file[$loop_item][$loop_list][$loop_attr][$loop_str].mimetype_name[$loop_mime]==' '}>
+                  &nbsp;
+                <{else}><{* 空白でない(表示文字列)を表示 *}>
+                <{$action.array_item_attr_list_file[$loop_item][$loop_list][$loop_attr][$loop_str].mimetype_name[$loop_mime]}>
+                <{/if}>
+              <{/foreach}>
+              <{* ボタンの文字作成終わり *}>
+              </a>
+              <{* for bot search metadata --start-- *}>
+              <div style="display:none;">
+                 <a href="<{$action.array_item_attr_list_file[$loop_item][$loop_list][$loop_attr][$loop_str].open_access_file}>">
+                      <{if $action.array_item_attr_list_file[$loop_item][$loop_list][$loop_attr][$loop_str].display_neme != ""}>
+                       <{$action.array_item_attr_list_file[$loop_item][$loop_list][$loop_attr][$loop_str].display_neme}>
+                      <{else}>
+                       <{$action.array_item_attr_list_file[$loop_item][$loop_list][$loop_attr][$loop_str].fileneme}>
+                      <{/if}>
+                  </a>
+              </div>
+              <{* for bot search metadata --end-- *}>
+              <{/if}>
+            <{/if}>
+        <{/foreach}>
+        <{* 一属性分 *}>
+      <{/foreach}>
+      <{* 1行分 *}>
+     <{/foreach}>
+     <{* 改行分 *}>
+     <{if $newline_flg==1}>
+      </div>
+      <{assign var="newline_flg" value=1}>
+     <{/if}>
+</div><{*印刷用*}>
+</tr>
+<{/foreach}><{* 件数 *}>
+</table>
+<{/if}>
+<{* ページ番号 *}>
+<{if $smarty.session.error_cord!=2}>
+<div class="pager">
+<table style="width: auto;" align="center">
+<tbody>
+<tr>
+<{* 前へボタン *}>
+<{if $action.page_no>1}>
+ <td class="nowrap">
+  <{strip}>
+  <a href="#" onclick="redirctChangePageNo<{$id}>(<{$action.page_no-1}>); return false;" class="pd00">
+    <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/page_prev.gif" border="0"/>
+    <{$lang.repository_page_prev}>
+  </a>
+  <{/strip}>
+ </td>
+<{/if}>
+
+<{* 各ページのボタン *}>
+<{if $action.page_no < 6}>
+ <{assign var="start_page_no" value=1}>
+<{else}>
+ <{assign var="start_page_no" value=$action.page_no-5}>
+<{/if}>
+
+<{if $action.page_no+5 > $action.page_num}>
+ <{assign var="end_page_no" value=$action.page_num}>
+<{else}>
+ <{assign var="end_page_no" value=$action.page_no+5}>
+<{/if}>
+
+<{section name=i start=$start_page_no loop=$end_page_no+1}>
+ <td class="nowrap">
+  <{assign var="loop_num" value=$smarty.section.i.index}>
+  <{if $smarty.section.i.first == true}>
+    <{if $loop_num > 1}>
+      <a href="#" class="page_move dil" onclick="redirctChangePageNo<{$id}>(1); return false;">
+       1
+      </a>
+    </td>
+    <td class="nowrap">
+     <{if $loop_num > 2}>
+         ...
+     <{/if}>
+    </td>
+    <td class="nowrap">
+   <{/if}>
+  <{/if}>
+  <{if $loop_num == $action.page_no}>
+   <a class="page_view">
+    <{$loop_num}>
+   </a>
+  <{else}>
+   <a href="#" class="page_move" onclick="redirctChangePageNo<{$id}>(<{$loop_num}>); return false;">
+    <{$loop_num}>
+   </a>
+  <{/if}>
+  <{if $smarty.section.i.last == true}>
+      <{if $loop_num < $action.page_num}>
+          </td>
+          <td class="nowrap">
+              <{if $loop_num < $action.page_num-1}> ...  <{/if}>
+          </td>
+          <td class="nowrap">
+              <a href="#" class="page_move" onclick="redirctChangePageNo<{$id}>(<{$action.page_num}>); return false;">
+                  <{$action.page_num}>
+              </a>
+      <{/if}>
+  <{/if}>
+ </td>
+<{/section}>
+
+<{* 次へボタン *}>
+<{if $action.page_no != $action.page_num}>
+ <td class="nowrap">
+  <{strip}>
+  <a href="#" onclick="redirctChangePageNo<{$id}>(<{$action.page_no+1}>); return false;" class="pd00">
+    <{$lang.repository_page_next}>
+    <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/page_next.gif" border="0" />
+  </a>
+  <{/strip}>
+ </td>
+<{/if}>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<{/if}>
+<{/if}>
+</form>
+    <input type="hidden" id="send_footer" value="<{$smarty.session._meta.meta_footer}>">
+</div>
+
+<script class="nc_script" type="text/javascript">
+    redirctChangePageNo<{$id}> = function(page_no) {
+        var redirect_url = "<{$smarty.const.BASE_URL}>" + "/?action=repository_opensearch";
+        var keyword = encodeURIComponent("<{$smarty.session.searchkeyword}>");
+        var index_id = "<{$smarty.session.searchIndexId}>";
+        
+        if(keyword != null && keyword != ""){
+            redirect_url += "&keyword=" + keyword;
+            redirect_url += "&search_type=" + "<{$smarty.session.search_type}>";
+        }
+        if(index_id != null && index_id != "") {
+            redirect_url += "&index_id=" + index_id;
+        }
+        redirect_url += "&pn=" + page_no;
+        redirect_url += "&order=" + "<{$smarty.session.sort_order}>";
+        redirect_url += "&count=" + "<{$smarty.session.list_view_num}>";
+        location.href = redirect_url;
+        return false;
+    }
+</script>
+<script class="nc_script" type="text/javascript">
+    redirctChangeListViewNum<{$id}> = function(list_view_num) {
+        var redirect_url = "<{$smarty.const.BASE_URL}>" + "/?action=repository_opensearch";
+        var keyword = encodeURIComponent("<{$smarty.session.searchkeyword}>");
+        var index_id = "<{$smarty.session.searchIndexId}>";
+        var search_type = "<{$smarty.session.search_type}>";
+        
+        if(keyword != null && keyword != "" && search_type == "detail"){
+            redirect_url += "&all=" + keyword;
+        } else {
+            redirect_url += "&meta=" + keyword;
+        }
+        if(index_id != null && index_id != "") {
+            redirect_url += "&index_id=" + index_id;
+        }
+        redirect_url += "&count=" + list_view_num;
+        redirect_url += "&order=" + "<{$smarty.session.sort_order}>";
+        redirect_url += "&pn=1";
+        location.href = redirect_url;
+        return false;
+    }
+</script>
+<script class="nc_script" type="text/javascript">
+    redirctChangeSortOrder<{$id}> = function(sort_order) {
+        var redirect_url = "<{$smarty.const.BASE_URL}>" + "/?action=repository_opensearch";
+        var keyword = encodeURIComponent("<{$smarty.session.searchkeyword}>");
+        var index_id = "<{$smarty.session.searchIndexId}>";
+        var search_type = "<{$smarty.session.search_type}>";
+        
+        if(keyword != null && keyword != "" && search_type == "detail"){
+            redirect_url += "&all=" + keyword;
+        } else {
+            redirect_url += "&meta=" + keyword;
+        }
+        redirect_url += "&order=" + sort_order;
+        redirect_url += "&pn=1";
+        redirect_url += "&count=" + "<{$smarty.session.list_view_num}>";
+        location.href = redirect_url;
+        return false;
+    }
+</script>

@@ -1,0 +1,1061 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_item_search_detail.html 41035 2014-09-05 06:06:29Z tomohiro_ichikawa $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{* 詳細検索 *}>
+<div class="plr10">
+	<form action="./item_snippet.html" method="post" id="form_detail<{$id}>">
+		<div class="lh25">
+			<table class="plr05 ptb10 full" cellspacing="0" id="detail_table<{$id}>">
+				<{* 管理画面で設定された「初期選択」の数だけ検索欄を予め表示する *}>
+				<{section name=table_rows loop=$action.detail_search_select_item}>
+					<tr class="ptb02">
+						<{* 一行目以外の時は「AND」の文字を表示する *}>
+						<td class="ac vam w20px">
+							<{if $smarty.section.table_rows.first == false}>AND<{/if}>
+						</td>
+						<td class="al vam w20">
+							<select id="typeSelect<{$id}>_<{$smarty.section.table_rows.index}>" 
+									class="full" 
+									onChange="javascript: changeTypes<{$id}>(<{$smarty.section.table_rows.index}>, '');
+														  permitOptions<{$id}>((<{$smarty.section.table_rows.index}>-1), (<{$smarty.section.table_rows.index}>+1));
+														  return false;"
+									onMouseOver="javascript: checkInputColumn<{$id}>(<{$smarty.section.table_rows.index}>);return false;" >
+								<{* 管理画面で設定された「使用項目」の数だけ選択肢の生成を行う *}>
+								<{section name=option_loops loop=$action.detail_search_usable_item}>
+									<{* データベースに設定されたtype_idの値によって選択肢が決定される *}>
+									<{if $action.detail_search_usable_item[option_loops].type_id == 1}>
+										<option value="title"><{$lang.repository_detail_search_show_name_title}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 2}>
+										<option value="creator"><{$lang.repository_detail_search_show_name_creator}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 3}>
+										<option value="kw"><{$lang.repository_detail_search_show_name_subject}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 4}>
+										<option value="niisubject"><{$lang.repository_detail_search_show_name_niisubject}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 5}>
+										<option value="des"><{$lang.repository_detail_search_show_name_description}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 6}>
+										<option value="pub" ><{$lang.repository_detail_search_show_name_publisher}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 7}>
+										<option value="con"><{$lang.repository_detail_search_show_name_contributor}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 8}>
+										<option value="date"><{$lang.repository_detail_search_show_name_date}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 9}>
+										<option value="itemTypeList"><{$lang.repository_detail_search_show_name_item_type}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 10}>
+										<option value="type"><{$lang.repository_detail_search_show_name_type}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 11}>
+										<option value="form"><{$lang.repository_detail_search_show_name_format}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 12}>
+										<option value="id"><{$lang.repository_detail_search_show_name_id}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 13}>
+										<option value="jtitle"><{$lang.repository_detail_search_show_name_jtitle}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 14}>
+										<option value="dateofissued"><{$lang.repository_detail_search_show_name_dateofissued}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 15}>
+										<option value="lang"><{$lang.repository_detail_search_show_name_language}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 16}>
+										<option value="sp"><{$lang.repository_detail_search_show_name_spatial}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 17}>
+										<option value="era"><{$lang.repository_detail_search_show_name_temporal}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 18}>
+										<option value="rights"><{$lang.repository_detail_search_show_name_rights}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 19}>
+										<option value="textver"><{$lang.repository_detail_search_show_name_textversion}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 20}>
+										<option value="grantid"><{$lang.repository_detail_search_show_name_grantid}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 21}>
+										<option value="dateofgranted"><{$lang.repository_detail_search_show_name_dateofgranted}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 22}>
+										<option value="degreename"><{$lang.repository_detail_search_show_name_degreename}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 23}>
+										<option value="grantor"><{$lang.repository_detail_search_show_name_grantor}></option>
+									<{elseif $action.detail_search_usable_item[option_loops].type_id == 24}>
+										<option value="idx"><{$lang.repository_detail_search_show_name_index}></option>
+									<{/if}>
+								<{/section}>
+							</select>
+						</td>
+						<{* 「一覧」のリンクが表示されるセル *}>
+						<td class="ac vam w40px">
+							<div id="listLink<{$id}>_<{$smarty.section.table_rows.index}>"></div>
+						</td>
+						<{* 入力欄のセル *}>
+						<td class="al vam w60" align="left">
+							<{* セッションに値が入っていた場合、初期値をその値に設定する *}>
+								<div id="input_textboxes<{$id}>_<{$smarty.section.table_rows.index}>">
+								<input type="text" id="inputSearch<{$id}>_<{$smarty.section.table_rows.index}>" class="full" value="<{$action.detail_search_select_item[table_rows].value}>">
+								</div>
+						</td>
+						<{if $smarty.section.table_rows.index != 0}>
+						<td class="ar vam w10px">
+							<img border='0' src='<{$smarty.const.CORE_BASE_URL}>/images/repository/default/close.png' id="deleteButton<{$id}>_<{$smarty.section.table_rows.index}>" onclick="javascript: deleteSearchRow<{$id}>(this, <{$smarty.section.table_rows.index}>);">
+							<{*<input type="button" id="deleteButton<{$id}>_<{$smarty.section.table_rows.index}>" value="<{$lang.repository_delete}>" onclick="javascript: deleteSearchRow<{$id}>(this, <{$smarty.section.table_rows.index}>);">*}>
+						</td>
+						<{/if}>
+					</tr>
+					<{* マッピングの選択画面の表示用の行 *}>
+					<tr class="ptb02">
+						<td class="ac vam w10"></td>
+						<td colspan="3">
+							<{* マッピング画面をインクルードする領域 *}>
+							<div id="mapping_list<{$id}>_<{$smarty.section.table_rows.index}>" class="full item_block" style="display: none;">
+							</div>
+						</td>
+					</tr>
+				<{/section}>
+			</table>
+			<div class="ar ml10">
+				<a href="#" id="add_button_on<{$id}>" onclick="javascript: addRow<{$id}>(); return false;"><{$lang.repository_detail_more_row}></a>
+				<span id="add_button_off<{$id}>" style="display: none;" class="repositoryAdvancedSearchAddrowDisabled"><{$lang.repository_detail_more_row}></span>
+			</div>
+			<div class="ac">
+				<input type="button" id="detail_search_start<{$id}>" class="btn_blue box_center quarter" value="<{$lang.repository_search_start}>" onClick="javascript: redirectDetailSearch<{$id}>()"/>
+				<input type="button" id="detail_search_input_clear<{$id}>" class="btn_white" value="<{$lang.repository_detail_clear}>" onClick="javascript: initParameter<{$id}>()" />
+			</div>
+		</div>
+	</form>
+	<input type="hidden" id="selects_number<{$id}>" value="<{$action.detail_search_select_item|@count}>">
+	<input type="hidden" id="options_length<{$id}>" value="<{$action.detail_search_usable_item|@count}>">
+	<input type="hidden" id="selects_length<{$id}>" value="<{$action.detail_search_select_item|@count}>">
+</div>
+
+
+<script class="nc_script" type="text/javascript">
+	detailClickSearch<{$id}> = function(event) {
+		if ( event.keyCode == 13 ) {
+			redirectDetailSearch<{$id}>();
+			return false;
+		}
+	}
+</script>
+
+<script class="nc_script" type="text/javascript">
+	getIdNumberList<{$id}> = function() {
+		var rowNumber = $("selects_number<{$id}>").value;
+		var rowCnt = 0
+		var idNumberList = new Array();
+		for(var cnt = 0; cnt < rowNumber; cnt++)
+		{
+			if($("typeSelect<{$id}>_" + cnt) != null)
+			{
+				idNumberList.push(cnt);
+			}
+		}
+		return idNumberList;
+	}
+</script>
+
+
+<{* 選択肢が変更された時の処理 *}>
+<script class="nc_script" type="text/javascript">
+	changeTypes<{$id}> = function(row_num, setValue) {
+		<{* 変更されたセレクトメニューの値を取得する *}>
+		var selects = $("typeSelect<{$id}>_" + row_num);
+		var option = selects.options.item(selects.selectedIndex).value;
+		<{* 変更が行われるセルを指定する *}>
+		var indication = $("listLink<{$id}>_" + row_num);
+		var popup = $("mapping_list<{$id}>_" +row_num);
+		initMapping<{$id}>(popup);
+		var input_text = $("input_textboxes<{$id}>_" + row_num);
+		popup.style.display='none';
+		
+		<{* 選択された値に応じてリンクの表示やページのインクルードを行う *}>
+		if(option == "niisubject") {
+			indication.innerHTML = "<a href='#' onclick='javascript: keywordSearchPopup<{$id}>(" + row_num + ", \""+option+"\"); return false;' tabindex=-1><{$lang.repository_list}></a>";
+			popup.appendChild($("mapping_niisubject<{$id}>"));
+			$("input_textboxes<{$id}>_" + row_num).innerHTML = "<input type='text' id='inputSearch<{$id}>_" + row_num + "' name='scDes' class='full' value='"+setValue+"' onkeypress='return detailClickSearch<{$id}>(event)' onfocus='javascript: permitOptions<{$id}>(" + row_num + ", " + (row_num+1) + "); return false;'>";
+		} else if(option == "itemTypeList") {
+			indication.innerHTML = "<a href='#' onclick='javascript: keywordSearchPopup<{$id}>(" + row_num + ", \""+option+"\"); return false;' tabindex=-1><{$lang.repository_list}></a>";
+			popup.appendChild($("mapping_itemTypeList<{$id}>"));
+			$("input_textboxes<{$id}>_" + row_num).innerHTML = "<input type='text' id='inputSearch<{$id}>_" + row_num + "' name='' class='full' value='' onkeypress='return detailClickSearch<{$id}>(event)' onfocus='javascript: permitOptions<{$id}>(" + row_num + ", " + (row_num+1) + "); return false;' readonly >";
+		} else if(option == "id") {
+			indication.innerHTML = "<a href='#' onclick='javascript: keywordSearchPopup<{$id}>(" + row_num + ", \""+option+"\"); return false;' tabindex=-1><{$lang.repository_list}></a>";
+			popup.appendChild($("mapping_id<{$id}>"));
+			$("input_textboxes<{$id}>_" + row_num).innerHTML = "<input type='text' id='inputSearch<{$id}>_" + row_num + "' name='idDes' class='full' value='"+setValue+"' onkeypress='return detailClickSearch<{$id}>(event)' onfocus='javascript: permitOptions<{$id}>(" + row_num + ", " + (row_num+1) + "); return false;' >";
+		} else if(option == "type") {
+			indication.innerHTML = "<a href='#' onclick='javascript: keywordSearchPopup<{$id}>(" + row_num + ", \""+option+"\"); return false;' tabindex=-1><{$lang.repository_list}></a>";
+			popup.appendChild($("mapping_type<{$id}>"));
+			$("input_textboxes<{$id}>_" + row_num).innerHTML = "<input type='text' id='inputSearch<{$id}>_" + row_num + "' name='' class='full' value='"+setValue+"' onkeypress='return detailClickSearch<{$id}>(event)' onfocus='javascript: permitOptions<{$id}>(" + row_num + ", " + (row_num+1) + "); return false;' readonly>";
+		} else if(option == "lang") {
+			indication.innerHTML = "<a href='#' onclick='javascript: keywordSearchPopup<{$id}>(" + row_num + ", \""+option+"\"); return false;' tabindex=-1><{$lang.repository_list}></a>";
+			popup.appendChild($("mapping_lang<{$id}>"));
+			$("input_textboxes<{$id}>_" + row_num).innerHTML = "<input type='text' id='inputSearch<{$id}>_" + row_num + "' name='' class='full' value='' onkeypress='return detailClickSearch<{$id}>(event)' onfocus='javascript: permitOptions<{$id}>(" + row_num + ", " + (row_num+1) + "); return false;' readonly>";
+		} else if(option == "rights") {
+			indication.innerHTML = "<a href='#' onclick='javascript: keywordSearchPopup<{$id}>(" + row_num + ", \""+option+"\"); return false;' tabindex=-1><{$lang.repository_list}></a>";
+			popup.appendChild($("mapping_rights<{$id}>"));
+			$("input_textboxes<{$id}>_" + row_num).innerHTML = "<input type='text' id='inputSearch<{$id}>_" + row_num + "' name='riDes' class='full' value='"+setValue+"' onkeypress='return detailClickSearch<{$id}>(event)' onfocus='javascript: permitOptions<{$id}>(" + row_num + ", " + (row_num+1) + "); return false;' readonly>";
+		} else if(option == "textver") {
+			indication.innerHTML = "<a href='#' onclick='javascript: keywordSearchPopup<{$id}>(" + row_num + ", \""+option+"\"); return false;' tabindex=-1><{$lang.repository_list}></a>";
+			popup.appendChild($("mapping_textver<{$id}>"));
+			$("input_textboxes<{$id}>_" + row_num).innerHTML = "<input type='text' id='inputSearch<{$id}>_" + row_num + "' name='textver' class='full' value='"+setValue+"' onkeypress='return detailClickSearch<{$id}>(event)' onfocus='javascript: permitOptions<{$id}>(" + row_num + ", " + (row_num+1) + "); return false;' readonly>";
+		} else if(option == "idx") {
+			indication.innerHTML = "<a href='#' onclick='javascript: keywordSearchPopup<{$id}>(" + row_num + ", \""+option+"\"); return false;' tabindex=-1><{$lang.repository_list}></a>";
+			popup.appendChild($("mapping_idx<{$id}>"));
+			$("input_textboxes<{$id}>_" + row_num).innerHTML = "<input type='text' readonly='true' id='inputSearch<{$id}>_" + row_num + "' class='full' value='' onkeypress='return detailClickSearch<{$id}>(event)' onfocus='javascript: permitOptions<{$id}>(" + row_num + ", " + (row_num+1) + "); return false;' >";
+		} else if(option == "date") {
+			indication.innerHTML = "";
+			popup.innerHTML = "";
+			var year = setValue.substring(0, 4); 
+			var month = setValue.substring(4, 6); 
+			var day = setValue.substring(6, 8); 
+			var year_inputs = "<input type='text' id='date<{$id}>_year' class='al w40px' value='"+year+"' onkeypress='return detailClickSearch<{$id}>(event)' onfocus='javascript: permitOptions<{$id}>(" + row_num + ", " + (row_num+1) + "); return false;' ><label><{$lang.repository_year}></label>";
+			var month_selects = setMonthSelects<{$id}>("date");
+			month_selects = month_selects.replace("'"+month+"'", "'"+month+"'"+" SELECTED");  
+			var day_selects = setDaySelects<{$id}>("date");
+			day_selects = day_selects.replace("'"+day+"'", "'"+day+"'" +" SELECTED");  
+			$("input_textboxes<{$id}>_" + row_num).innerHTML = year_inputs 
+																			+ month_selects 
+																			+ day_selects
+																			+ "<input type='hidden' name='date' value='"+setValue+"'>";
+		} else if(option == "dateofissued") {
+			indication.innerHTML = "";
+			popup.innerHTML = "";
+			date = setValue.split("|");
+			var from = "";
+			var until = "";
+			if(date.length >= 2){
+				from = date[0];
+				until = date[1];
+			}
+			$("input_textboxes<{$id}>_" + row_num).innerHTML = "<input type='text' id='pubYearFrom<{$id}>' name='pubYearFrom' class='al w40px' value='"+from+"' onkeypress='return detailClickSearch<{$id}>(event)' onfocus='javascript: permitOptions<{$id}>(" + row_num + ", " + (row_num+1) + "); return false;' >"
+																			+ "&nbsp;<{$lang.repository_year}>&nbsp;&nbsp;<{$lang.repository_search_from_until}>&nbsp;&nbsp;"
+																			+ "<input type='text' id='pubYearUntil<{$id}>' name='pubYearUntil' class='al w40px' value='"+until+"' onkeypress='return detailClickSearch<{$id}>(event)' onfocus='javascript: permitOptions<{$id}>(" + row_num + ", " + (row_num+1) + "); return false;' >"
+																			+ "&nbsp;<{$lang.repository_year}>";
+		} else if(option == "dateofgranted") {
+			indication.innerHTML = "";
+			popup.innerHTML = "";
+			date = setValue.split("|");
+			var from = "";
+			var until = "";
+			if(date.length >= 2){
+				from = date[0];
+				until = date[1];
+			}
+			var fromYear = from.substring(0, 4); 
+			var fromMonth = from.substring(4, 6); 
+			var fromDay = from.substring(6, 8); 
+			var untilYear = until.substring(0, 4); 
+			var untilMonth = until.substring(4, 6); 
+			var untilDay = until.substring(6, 8); 
+			var year_from_inputs = "<input type='text' id='grantDateFrom<{$id}>_year' class='al w40px' value='"+fromYear+"' onkeypress='return detailClickSearch<{$id}>(event)' onfocus='javascript: permitOptions<{$id}>(" + row_num + ", " + (row_num+1) + "); return false;' ><{$lang.repository_grant_year}>";
+			var year_until_inputs = "<input type='text' id='grantDateUntil<{$id}>_year' class='al w40px' value='"+untilYear+"' onkeypress='return detailClickSearch<{$id}>(event)' onfocus='javascript: permitOptions<{$id}>(" + row_num + ", " + (row_num+1) + "); return false;' ><{$lang.repository_grant_year}>";
+			var month_from_selects = setMonthSelects<{$id}>("grantDateFrom");
+			month_from_selects = month_from_selects.replace("'"+fromMonth+"'", "'"+fromMonth+"'"+" SELECTED");
+			var month_until_selects = setMonthSelects<{$id}>("grantDateUntil");
+			month_until_selects = month_until_selects.replace("'"+untilMonth+"'", "'"+untilMonth+"'"+" SELECTED");
+			var day_from_selects = setDaySelects<{$id}>("grantDateFrom");
+			day_from_selects = day_from_selects.replace("'"+fromDay+"'", "'"+fromDay+"'"+" SELECTED");
+			var day_until_selects = setDaySelects<{$id}>("grantDateUntil");
+			day_until_selects = day_until_selects.replace("'"+untilDay+"'", "'"+untilDay+"'"+" SELECTED");
+			$("input_textboxes<{$id}>_" + row_num).innerHTML = year_from_inputs + "&nbsp;"
+															 + month_from_selects + "&nbsp;"
+															 + day_from_selects
+															 + "&nbsp;&nbsp;<{$lang.repository_search_from_until}>&nbsp;&nbsp;"
+															 + year_until_inputs + "&nbsp;"
+															 + month_until_selects + "&nbsp;"
+															 + day_until_selects
+															 + "<input type='hidden' name='grantDateFrom' value='"+from+"'>"
+															 + "<input type='hidden' name='grantDateUntil' value='"+until+"'>";
+		} else {
+			indication.innerHTML = "";
+			popup.innerHTML = "";
+			
+			$("input_textboxes<{$id}>_" + row_num).innerHTML = "<input type='text' id='inputSearch<{$id}>_" + row_num + "' name='" + option +"' class='full' value='"+setValue+"' onkeypress='return detailClickSearch<{$id}>(event)' onfocus='javascript: permitOptions<{$id}>(" + row_num + ", " + (row_num+1) + "); return false;' >";
+		}
+	}
+</script>
+
+<script class="nc_script" type="text/javascript">
+	initMapping<{$id}> = function(popup) {
+		var children = popup.childNodes;
+		for(ii = 0; ii < children.length; ii++){
+			if(children[ii].id == "mapping_allmeta<{$id}>"){
+				$("allmeta_hidden<{$id}>").appendChild(children[ii]);
+				clearMappingAllMeta<{$id}>();
+			} else if(children[ii].id == "mapping_niisubject<{$id}>"){
+				$("niisubject_hidden<{$id}>").appendChild(children[ii]);
+				clearMappingScList<{$id}>();
+			} else if(children[ii].id == "mapping_itemTypeList<{$id}>"){
+				$("itemTypeList_hidden<{$id}>").appendChild(children[ii]);
+				clearMappingItemtype<{$id}>();
+			} else if(children[ii].id == "mapping_id<{$id}>"){
+				$("id_hidden<{$id}>").appendChild(children[ii]);
+				clearMappingId<{$id}>();
+			} else if(children[ii].id == "mapping_type<{$id}>"){
+				$("type_hidden<{$id}>").appendChild(children[ii]);
+				clearMappingType<{$id}>();
+			} else if(children[ii].id == "mapping_lang<{$id}>"){
+				$("lang_hidden<{$id}>").appendChild(children[ii]);
+				clearMappingLang<{$id}>();
+			} else if(children[ii].id == "mapping_rights<{$id}>"){
+				$("rights_hidden<{$id}>").appendChild(children[ii]);
+				clearMappingRights<{$id}>();
+			} else if(children[ii].id == "mapping_textver<{$id}>"){
+				$("textver_hidden<{$id}>").appendChild(children[ii]);
+				clearMappingTextver<{$id}>();
+			} else if(children[ii].id == "mapping_idx<{$id}>"){
+				$("idx_hidden<{$id}>").appendChild(children[ii]);
+				indexClear<{$id}>();
+			}
+		}
+	}
+	
+</script>
+<{* 年月日をパラメータ用のhiddenにセットする *}>
+<script class="nc_script" type="text/javascript">
+	setAllDate<{$id}> = function() {
+		var grantDateFrom = document.getElementsByName("grantDateFrom");
+		if(grantDateFrom.length != 0){
+			if(!validateDate<{$id}>("grantDateFrom")){
+				return false;
+			}
+		}
+		var grantDateUntil = document.getElementsByName("grantDateUntil");
+		if(grantDateUntil.length != 0){
+			if(!validateDate<{$id}>("grantDateUntil")){
+				return false;
+			}
+		}
+		var date = document.getElementsByName("date");
+		if(date.length != 0){
+			if(!validateDate<{$id}>("date")){
+				return false;
+			}
+		}
+		if($("pubYearFrom<{$id}>") != null){
+			if(!validateYear<{$id}>("pubYearFrom<{$id}>")){
+				return false;
+			}
+		}
+		if($("pubYearUntil<{$id}>") != null){
+			if(!validateYear<{$id}>("pubYearUntil<{$id}>")){
+				return false;
+			}
+		}
+		return true;
+	}
+</script>
+<{* 年月日をパラメータ用のhiddenにセットする *}>
+<script class="nc_script" type="text/javascript">
+	validateDate<{$id}> = function(selects_name) {
+		// hidden -> set blank
+		document.getElementsByName(selects_name)[0].value = "";
+		
+		var date_value = "";
+		if(!validateYear<{$id}>(selects_name + "<{$id}>_year")){
+			return false;
+		}
+		var date_year = $(selects_name + "<{$id}>_year").value;
+		if(date_year.length == 0){
+			return true;
+		}
+		date_value += date_year;
+		var date_month = $(selects_name + "<{$id}>_month").value;
+		var date_day = $(selects_name + "<{$id}>_day").value;
+		
+        if(date_year != "" && date_month != "00" && date_day != "00"){
+            var dt = new Date(date_year, date_month - 1, date_day);
+            if(dt == null || dt.getFullYear() != date_year || dt.getMonth() + 1 != date_month || dt.getDate() != date_day) {
+                alert('<{$lang.repository_detail_search_date_illegal}>');
+                $(selects_name + "<{$id}>_month").selectedIndex = 0;
+                $(selects_name + "<{$id}>_day").selectedIndex = 0;
+                return false;
+            }
+        }
+		if(date_month != "00") {
+			date_value += ("00" + date_month).slice(-2);
+			if(date_day != "00") {
+				date_value += ("00" + date_day).slice(-2);
+			}
+		}
+		
+		document.getElementsByName(selects_name)[0].value = date_value;
+		return true;
+	}
+</script>
+
+<{* 年月日をパラメータ用のhiddenにセットする *}>
+<script class="nc_script" type="text/javascript">
+	validateYear<{$id}> = function(select_id) {
+		var selectYear = $(select_id).value;
+		if(selectYear == null){
+			return true;
+		}
+		var year = selectYear.trim();
+		if(year.length == 0){
+		    return true;
+		}
+        // Regular expression check
+        if(year.search(/[^0-9]+/) != -1 || year.length > 4) {
+            alert('<{$lang.repository_detail_search_date_illegal}>');
+            return false;
+        }
+        $(select_id).value = ("0000" + year).slice(-4);
+        return true;
+	}
+</script>
+
+<{* 月によって使用不可の日を作る *}>
+<script class="nc_script" type="text/javascript">
+	concludeMonth<{$id}> = function(type) {
+		var selects_month = $(type + "<{$id}>_month");
+		var selected_month = selects_month.options.item(selects_month.selectedIndex).value;
+		var selects_day = $(type + "<{$id}>_day");
+		if(selected_month == "0") {
+			for(var ii=1; ii<selects_day.length; ii++) {
+				selects_day[ii].selected = false;
+				selects_day[ii].disabled = true;
+			}
+		} else if(selected_month == "2") {
+			for(var ii=0; ii<selects_day.length; ii++) {
+				if(parseInt(selects_day.options[ii].value) > 29) {
+					selects_day[ii].selected = false;
+					selects_day.options[ii].disabled = true;
+				} else {
+					selects_day.options[ii].disabled = false;
+				}
+			}
+		} else if(selected_month == "4" || selected_month == "6" || selected_month == "9" || selected_month == "11") {
+			for(var ii=0; ii<selects_day.length; ii++) {
+				if(parseInt(selects_day.options[ii].value) > 30) {
+					selects_day[ii].selected = false;
+					selects_day.options[ii].disabled = true;
+				} else {
+					selects_day.options[ii].disabled = false;
+				}
+			}
+		} else {
+			for(var ii=0; ii<selects_day.length; ii++) {
+				selects_day.options[ii].disabled = false;
+			}
+		}
+	}
+</script>
+
+<{* 「date」用の日付選択欄を作成する *}>
+<script class="nc_script" type="text/javascript">
+	setMonthSelects<{$id}> = function(type) {
+		var month_html = "<select id='" + type + "<{$id}>_month'>(\"" + type + "\")'>"
+					   + "<option value='00'>-</option>"
+					   + "<option value='01'>1</option>"
+					   + "<option value='02'>2</option>"
+					   + "<option value='03'>3</option>"
+					   + "<option value='04'>4</option>"
+					   + "<option value='05'>5</option>"
+					   + "<option value='06'>6</option>"
+					   + "<option value='07'>7</option>"
+					   + "<option value='08'>8</option>"
+					   + "<option value='09'>9</option>"
+					   + "<option value='10'>10</option>"
+					   + "<option value='11'>11</option>"
+					   + "<option value='12'>12</option>"
+					   + "</select>";
+		if(type == "grantDateFrom" || type == "grantDateUntil") {
+			month_html += "<label><{$lang.repository_grant_month}></label>"
+		} else {
+			month_html += "<label><{$lang.repository_month}></label>";
+		}
+		return month_html;
+	}
+</script>
+
+<script class="nc_script" type="text/javascript">
+	setDaySelects<{$id}> = function(type) {
+		var day_html = "<select id='" + type + "<{$id}>_day'>"
+					 + "<option value='00'>-</option>"
+					 + "<option value='01'>1</option>"
+					 + "<option value='02'>2</option>"
+					 + "<option value='03'>3</option>"
+					 + "<option value='04'>4</option>"
+					 + "<option value='05'>5</option>"
+					 + "<option value='06'>6</option>"
+					 + "<option value='07'>7</option>"
+					 + "<option value='08'>8</option>"
+					 + "<option value='09'>9</option>"
+					 + "<option value='10'>10</option>"
+					 + "<option value='11'>11</option>"
+					 + "<option value='12'>12</option>"
+					 + "<option value='13'>13</option>"
+					 + "<option value='14'>14</option>"
+					 + "<option value='15'>15</option>"
+					 + "<option value='16'>16</option>"
+					 + "<option value='17'>17</option>"
+					 + "<option value='18'>18</option>"
+					 + "<option value='19'>19</option>"
+					 + "<option value='20'>20</option>"
+					 + "<option value='21'>21</option>"
+					 + "<option value='22'>22</option>"
+					 + "<option value='23'>23</option>"
+					 + "<option value='24'>24</option>"
+					 + "<option value='25'>25</option>"
+					 + "<option value='26'>26</option>"
+					 + "<option value='27'>27</option>"
+					 + "<option value='28'>28</option>"
+					 + "<option value='29'>29</option>"
+					 + "<option value='30'>30</option>"
+					 + "<option value='31'>31</option>"
+					 + "</select>";
+		if(type == "grantDateFrom" || type == "grantDateUntil") {
+			day_html += "<label><{$lang.repository_grant_day}></label>"
+		} else {
+			day_html += "<label><{$lang.repository_day}></label>";
+		}
+		return day_html;
+	}
+</script>
+
+<{* 1行増やす *}>
+<script class="nc_script" type="text/javascript">
+	addRow<{$id}> = function() {
+		
+		<{* 行追加判定 *}>
+		var rowCnt = parseInt($("selects_length<{$id}>").value);
+		if(rowCnt >= $("options_length<{$id}>").value)
+		{
+			// can't add row
+			return false;
+		}
+		
+		var tables = $("detail_table<{$id}>");
+		
+		<{* テーブルの末尾に新しい行を追加する *}>
+		var searchRow = tables.insertRow(-1);
+		searchRow.className = "ptb02";
+		var andCell = searchRow.insertCell(0);
+		andCell.className = "ac vam w20px";
+		var selectCell = searchRow.insertCell(1);
+		selectCell.className = "al vam w20";
+		var listCell = searchRow.insertCell(2);
+		listCell.className = "ac vam w40px";
+		var inputCell = searchRow.insertCell(3);
+		inputCell.className = "al vam w60";
+		inputCell.align = "left";
+		var buttonCell = searchRow.insertCell(4);
+		buttonCell.className = "ar vam w10px";
+		
+		<{* 一覧画面表示用の行 *}>
+		var listRow = tables.insertRow(-1);
+		listRow.className = "ptb02";
+		var emptyCell = listRow.insertCell(0);
+		emptyCell.className = "ac vam w20px";
+		var viewCell = listRow.insertCell(1);
+		viewCell.colSpan = 3;
+		
+		var rowNum = parseInt($("selects_number<{$id}>").value);
+		
+		<{* 現在選ばれている値を配列で取得する *}>
+		var selectedList = selectedValues<{$id}>();
+		<{* オプションの値とテキストを取得する *}>
+		var new_options_value = new Array();
+		var new_options_text = new Array();
+			<{section name=option_loops loop=$action.detail_search_usable_item}>
+				<{if $action.detail_search_usable_item[option_loops].type_id == 1}>
+					new_options_value.push("title");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_title}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 2}>
+					new_options_value.push("creator");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_creator}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 3}>
+					new_options_value.push("kw");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_subject}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 4}>
+					new_options_value.push("niisubject");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_niisubject}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 5}>
+					new_options_value.push("des");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_description}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 6}>
+					new_options_value.push("pub");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_publisher}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 7}>
+					new_options_value.push("con");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_contributor}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 8}>
+					new_options_value.push("date");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_date}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 9}>
+					new_options_value.push("itemTypeList");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_item_type}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 10}>
+					new_options_value.push("type");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_type}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 11}>
+					new_options_value.push("form");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_format}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 12}>
+					new_options_value.push("id");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_id}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 13}>
+					new_options_value.push("jtitle");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_jtitle}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 14}>
+					new_options_value.push("dateofissued");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_dateofissued}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 15}>
+					new_options_value.push("lang");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_language}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 16}>
+					new_options_value.push("sp");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_spatial}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 17}>
+					new_options_value.push("era");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_temporal}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 18}>
+					new_options_value.push("rights");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_rights}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 19}>
+					new_options_value.push("textver");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_textversion}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 20}>
+					new_options_value.push("grantid");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_grantid}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 21}>
+					new_options_value.push("dateofgranted");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_dateofgranted}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 22}>
+					new_options_value.push("degreename");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_degreename}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 23}>
+					new_options_value.push("grantor");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_grantor}>");
+				<{elseif $action.detail_search_usable_item[option_loops].type_id == 24}>
+					new_options_value.push("idx");
+					new_options_text.push("<{$lang.repository_detail_search_show_name_index}>");
+				<{/if}>
+			<{/section}>
+		<{* 現在選択されていない要素の配列を作成する *}>
+		var tmp_options = new_options_value.clone();
+		for(var ii=0; ii<selectedList.length; ii++) {
+			for(var jj=0; jj<tmp_options.length; jj++) {
+				if(selectedList[ii] == tmp_options[jj]) {
+					tmp_options.splice(jj, 1);
+				}
+			}
+		}
+		<{* 使われていない要素の内、一番上の値をSELECTEDにする *}>
+		var selectedValue = tmp_options[0];
+		
+		var option_lists = "";
+		for(ii = 0; ii < new_options_value.length; ii++) {
+			option_lists += "<option value='" + new_options_value[ii] + "'";
+			if(new_options_value[ii] == selectedValue) {
+				option_lists += " SELECTED";
+			}
+			option_lists += ">" + new_options_text[ii] + "</option>";
+		}
+		
+		<{* 行に中身を入れる *}>
+		andCell.innerHTML = "<label>AND</label>";
+		
+		selectCell.innerHTML = "<select id='typeSelect<{$id}>_" + rowNum + "' class='full' onChange=\"javascript: changeTypes<{$id}>(" + rowNum + ", ''); permitOptions<{$id}>(" + (rowNum-1) + ", " + (rowNum+1) + "); return false;\" onMouseOver='javascript: checkInputColumn<{$id}>(" + rowNum + "); return false' />" + option_lists + "</select>";
+		
+		listCell.innerHTML = "<div id='listLink<{$id}>_" + rowNum + "'></div>";
+		
+		inputCell.innerHTML = "<div id='input_textboxes<{$id}>_" + rowNum + "'><input type='text' id='inputSearch<{$id}>_" + rowNum + "' class='full'></div>";
+		
+		emptyCell.innerHTML = "";
+		viewCell.innerHTML = "<div id='mapping_list<{$id}>_" + rowNum + "' class='full item_block' style='display:none;'></div>";
+
+		//buttonCell.innerHTML = "<input type=\'button\' id='deleteButton<{$id}>_" + rowNum + "\' value=\'<{$lang.repository_delete}>\' onclick=\'javascript: deleteSearchRow<{$id}>(this, " + rowNum + ");\'>";
+		buttonCell.innerHTML = "<img border=\'0\' style=\'position:relative; left 20px;\' src=\'<{$smarty.const.CORE_BASE_URL}>/images/repository/default/close.png\' id=\'deleteButton<{$id}>_" + rowNum + "\' onclick=\'javascript: deleteSearchRow<{$id}>(this, " + rowNum + ");\'>"
+		$("selects_number<{$id}>").value = parseInt($("selects_number<{$id}>").value) + 1;
+		$("selects_length<{$id}>").value = parseInt($("selects_length<{$id}>").value) + 1;
+		
+		changeTypes<{$id}>(rowNum, "");
+		checkInputColumn<{$id}>(rowNum);
+		checkAddButton<{$id}>();
+		return rowNum;
+	}
+</script>
+
+<{* オプションの選択可否判定 *}>
+<script class="nc_script" type="text/javascript">
+	checkInputColumn<{$id}> = function(num) {
+		
+		var selects = $("typeSelect<{$id}>_" + num);
+		if(selects != null) {
+			var selectedList = selectedValues<{$id}>();
+			<{* 一旦全ての選択肢を使用可能にする *}>
+			for(var ii=0; ii<selects.length; ii++) {
+				selects.options[ii].disabled = false;
+			}
+			for(var ii=0; ii<selects.length; ii++) {
+				for(var jj=0; jj<selectedList.length; jj++) {
+					if((selects.options[ii].value == selectedList[jj]) && ((selects.options[ii].value != selects.options.item(selects.selectedIndex).value))) {
+						selects.options[ii].disabled = true;
+					}
+				}
+			}
+		}
+	}
+</script>
+
+<{* 条件追加ボタンの使用可否判定 *}>
+<script class="nc_script" type="text/javascript">
+	checkAddButton<{$id}> = function() {
+		var rowCnt = parseInt($("selects_length<{$id}>").value);
+		if(rowCnt >= $("options_length<{$id}>").value) {
+			commonCls.displayNone($('add_button_on<{$id}>'));
+			commonCls.displayVisible($('add_button_off<{$id}>'));
+		} else {
+			commonCls.displayVisible($('add_button_on<{$id}>'));
+			commonCls.displayNone($('add_button_off<{$id}>'));
+		}
+	}
+</script>
+
+<{* 現在選択されている値を配列で取得 *}>
+<script class="nc_script" type="text/javascript">
+	selectedValues<{$id}> = function() {
+		var rowCnt = parseInt($("selects_number<{$id}>").value);
+		
+		var selectedList = new Array();
+		for(var ii=0; ii<rowCnt; ii++) {
+			if($("typeSelect<{$id}>_" + ii) != null)
+			{
+				selectedList.push($("typeSelect<{$id}>_" + ii).options.item($("typeSelect<{$id}>_" + ii).selectedIndex).value);
+			}
+		}
+		return selectedList;
+	}
+</script>
+
+
+<{* 指定した検索タイプの行を探す *}>
+<script class='nc_script' type='text/javascript'>
+	searchRowNum<{$id}> = function(select_type) {
+		var row_num = -1;
+		var rowCnt = parseInt($("selects_number<{$id}>").value);
+		
+		for(var ii=0; ii<rowCnt; ii++) {
+			if($("typeSelect<{$id}>_" + ii) != null)
+			{
+				if($("typeSelect<{$id}>_" + ii).options.item($("typeSelect<{$id}>_" + ii).selectedIndex).value == select_type) {
+					row_num = ii;
+					break;
+				}
+			}
+		}
+		return row_num;
+	}
+</script>
+
+<{* どの一覧画面からの情報か識別する *}>
+<script class="nc_script" type="text/javascript">
+	detectMapping<{$id}> = function(num) {
+		var mapping = "";
+		 
+		if(num == 0) {
+			mapping = "allmeta";
+		} else if(num == 1) {
+			mapping = "niisubject";
+		} else if(num == 2) {
+			mapping = "itemTypeList";
+		} else if(num == 3) {
+			mapping = "type";
+		} else if(num == 4) {
+			mapping = "id";
+		} else if(num == 5) {
+			mapping = "lang";
+		} else if(num == 6) {
+			mapping = "rights";
+		} else if(num == 7) {
+			mapping = "textver";
+		} else if(num == 8) {
+			mapping = "idx";
+		}
+		
+		return mapping;
+	}
+</script>
+
+<{* 一覧画面の変更を取り消す *}>
+<script class="nc_script" type="text/javascript">
+	searchMappingCancel<{$id}> = function(screen_id, checks) {
+		var mapping_type = detectMapping<{$id}>(screen_id);
+		var row_num = searchRowNum<{$id}>(mapping_type);
+		if(mapping_type == "id") {
+			mapping_type = "idList";
+		} else if(mapping_type == "niisubject") {
+			mapping_type = "scList";
+		}
+		var checked_value = $(mapping_type + '<{$id}>_id').value.split(",");
+		
+		<{* 一度全てのチェックをOFFにする *}>
+		for(var ii=0; ii<checks; ii++) {
+			$(mapping_type + '<{$id}>_' + ii).checked = false;
+		}
+		<{* 保存した値と一致したチェックボックスをONにする *}>
+		for(var ii=0; ii<checks; ii++) {
+			for(var jj=0; jj<checked_value.length; jj++) {
+				if($(mapping_type + '<{$id}>_' + ii).value == checked_value[jj]) {
+					$(mapping_type + '<{$id}>_' + ii).checked = true;
+				}
+			}
+		}
+		$('mapping_list<{$id}>_' + row_num).style.display='none';
+	}
+</script>
+
+<{* 「一覧」リンク押下時の処理 *}>
+<script class="nc_script" type="text/javascript">
+	keywordSearchPopup<{$id}> = function(num, option) {
+		if($("mapping_list<{$id}>_" + num).style.display=='none') {
+			$("mapping_list<{$id}>_" + num).style.display='';
+		} else {
+			$("mapping_list<{$id}>_" + num).style.display='none';
+			// call cancel
+			if(option == "niisubject")
+			{
+				setCheckboxFromScListDesc<{$id}>();
+			}
+			else if(option == "itemTypeList")
+			{
+				setCheckboxFromitemTypeList<{$id}>();
+			}
+			else if(option == "id")
+			{
+				setCheckboxFromIdDesc<{$id}>();
+			}
+			else if(option == "type")
+			{
+				setCheckboxFromTypeDesc<{$id}>();
+			}
+			else if(option == "lang")
+			{
+				setCheckboxFromLangDesc<{$id}>();
+			}
+			else if(option == "rights")
+			{
+				setCheckboxFromRightsDesc<{$id}>();
+			}
+			else if(option == "textver")
+			{
+				setCheckboxFromTextverDesc<{$id}>();
+			}else if(option == "idx")
+			{
+				indexCansel<{$id}>(8);
+			}
+		}
+	}
+</script>
+
+<{* 入力を全部初期状態にする *}>
+<script class="nc_script" type="text/javascript">
+	setInitParameter<{$id}> = function() {
+		
+		<{* 行を削る *}>
+		<{* 初期表示される検索欄の数を求める *}>
+		var initial_num = <{$action.detail_search_select_item|@count}> * 2;
+		<{* 初期表示以外の列を消す *}>
+		var tables = $("detail_table<{$id}>");
+		var rowCnt = tables.rows.length;
+		var idList = getIdNumberList<{$id}>();
+		for(var ii=0; ii<idList.length; ii++) {
+			var popup = $("mapping_list<{$id}>_" + idList[ii]);
+			initMapping<{$id}>(popup);
+		}
+		for(var ii=initial_num; ii<rowCnt; ii++) {
+			tables.deleteRow(initial_num);
+		}
+		
+		var count = 0;
+		<{* 選択肢を元に戻す *}>
+		<{* セッションの初期表示の値を使って設定し直す *}>
+		<{section name=initial_select loop=$action.detail_search_select_item}>
+			<{section name=initial_option loop=$action.detail_search_usable_item}>
+				<{if $action.detail_search_select_item[initial_select].type_id == $action.detail_search_usable_item[initial_option].type_id}>
+					$("typeSelect<{$id}>_<{$smarty.section.initial_select.index}>").options[<{$smarty.section.initial_option.index}>].selected = true;
+					changeTypes<{$id}>(count, "<{$action.detail_search_select_item[initial_select].value}>");
+					count++;
+				<{/if}>
+			<{/section}>
+		<{/section}>
+		
+		$("selects_length<{$id}>").value = <{$action.detail_search_select_item|@count}>;
+		var selectsCnt = parseInt($("selects_length<{$id}>").value);
+
+		
+		checkAddButton<{$id}>();
+	}
+</script>
+
+<{* クリアボタンが押されたら *}>
+<script class="nc_script" type="text/javascript">
+	initParameter<{$id}> = function() {
+		$('id_search_keyword<{$id}>').value = "";
+		<{* 行を削る *}>
+		var idList = getIdNumberList<{$id}>();
+		for(var ii=0; ii<idList.length; ii++) {
+			var popup = $("mapping_list<{$id}>_" + idList[ii]);
+			initMapping<{$id}>(popup);
+		}
+		<{* 初期表示される検索欄の数を求める *}>
+		var initial_num = <{$action.default_detail_search|@count}> * 2;
+		<{* 初期表示以外の列を消す *}>
+		var tables = $("detail_table<{$id}>");
+		var rowCnt = tables.rows.length;
+		
+		for(var jj = initial_num; jj < rowCnt; jj++){
+			tables.deleteRow(initial_num);
+			if(jj % 2 == 0)
+			{
+				$("selects_length<{$id}>").value = parseInt($("selects_length<{$id}>").value) -1;
+		}
+		}
+		
+		var idNumberList = getIdNumberList<{$id}>();
+		var count = 0;
+		<{* 選択肢を元に戻す *}>
+		<{* セッションの初期表示の値を使って設定し直す *}>
+		<{section name=initial_select loop=$action.default_detail_search}>
+			<{section name=initial_option loop=$action.detail_search_usable_item}>
+				<{if $action.default_detail_search[initial_select].type_id == $action.detail_search_usable_item[initial_option].type_id}>
+					if($("typeSelect<{$id}>_" + idNumberList[count]) == null)
+					{
+						var newID = addRow<{$id}>();
+						typeSelect = $("typeSelect<{$id}>_" + newID);
+						typeSelect.options[<{$smarty.section.initial_option.index}>].selected = true;
+						changeTypes<{$id}>(newID, "");
+					} else {
+						typeSelect = $("typeSelect<{$id}>_" + idNumberList[count]);
+						typeSelect.options[<{$smarty.section.initial_option.index}>].selected = true;
+						changeTypes<{$id}>(idNumberList[count], "");
+					}
+					count++;
+				<{/if}>
+			<{/section}>
+		<{/section}>
+		$("selects_length<{$id}>").value = <{$action.default_detail_search|@count}>;
+		var selectsCnt = parseInt($("selects_length<{$id}>").value);
+
+		
+		checkAddButton<{$id}>();
+	}
+</script>
+
+<{* 入力欄からフォーカスが離れた時にオプションのdisabled処理をする (ブラウザ互換の為) *}>
+<script class="nc_script" type="text/javascript">
+	permitOptions<{$id}> = function(prev_num, next_num) {
+		if($("typeSelect<{$id}>_" + (prev_num)) != null) {
+			checkInputColumn<{$id}>(prev_num);
+		}
+		if($("typeSelect<{$id}>_" + (next_num)) != null) {
+			checkInputColumn<{$id}>(next_num);
+		}
+	}
+</script>
+
+<{* 初回ロード時に読み込む *}>
+<script class="nc_script" type="text/javascript">
+	<{* セッションで *}>
+	setInitParameter<{$id}>();
+	for(var ii=0; ii<parseInt($("selects_number<{$id}>").value); ii++) {
+		checkInputColumn<{$id}>(ii);
+	}
+</script>
+<script class="nc_script" type="text/javascript">
+	deleteSearchRow<{$id}> = function(elm, deletedRow) {
+		var Tr = elm.parentNode.parentNode;
+		var rowNum = parseInt($("selects_number<{$id}>").value);
+		var deletedSelect = $("typeSelect<{$id}>_" + deletedRow );
+		var selectedList = selectedValues<{$id}>();
+		var mappingTr = $('mapping_list<{$id}>_' + deletedRow).parentNode.parentNode;
+		var option = deletedSelect.options.item(deletedSelect.selectedIndex).value;
+		if(option == "allmeta")
+		{
+			clearMappingAllMeta<{$id}>();
+			$('mapping_list<{$id}>_' + deletedRow).style.display = 'none';
+		}
+		else if(option == "itemTypeList")
+		{
+			clearMappingItemtype<{$id}>();
+			$('mapping_list<{$id}>_' + deletedRow).style.display = 'none';
+		}
+		else if(option == "textver")
+		{
+			clearMappingTextver<{$id}>();
+			$('mapping_list<{$id}>_' + deletedRow).style.display = 'none';
+		}
+		else if(option == "type")
+		{
+			clearMappingType<{$id}>();
+			$('mapping_list<{$id}>_' + deletedRow).style.display = 'none';
+		}
+		else if(option == "id")
+		{
+			clearMappingId<{$id}>();
+			$('mapping_list<{$id}>_' + deletedRow).style.display = 'none';
+		}
+		else if(option == "lang")
+		{
+			clearMappingLang<{$id}>();
+			$('mapping_list<{$id}>_' + deletedRow).style.display = 'none';
+		}
+		else if(option == "niisubject")
+		{
+			clearMappingScList<{$id}>();
+			$('mapping_list<{$id}>_' + deletedRow).style.display = 'none';
+		}
+		else if(option == "rights")
+		{
+			clearMappingRights<{$id}>();
+			$('mapping_list<{$id}>_' + deletedRow).style.display = 'none';
+		}
+		else if(option == "idx")
+		{
+			indexClear<{$id}>();
+			$('mapping_list<{$id}>_' + deletedRow).style.display = 'none';
+		}
+		
+		for(var cnt=0; cnt<rowNum; cnt++)
+		{
+			var selects = $("typeSelect<{$id}>_" + cnt);  // select
+			if(selects != null)
+			{
+				if(selects.id == deletedSelect.id)
+				{
+					var popup = $("mapping_list<{$id}>_" + cnt);
+					initMapping<{$id}>(popup);
+					Tr.parentNode.deleteRow(Tr.sectionRowIndex);
+					mappingTr.parentNode.deleteRow(mappingTr.sectionRowIndex);
+					continue;
+				}
+				<{* 一旦全ての選択肢を使用可能にする *}>
+				for(var ii=0; ii<selects.length; ii++) {
+					selects.options[ii].disabled = false;
+				}
+				for(var ii=0; ii<selects.length; ii++) {
+					for(var jj=0; jj<selectedList.length; jj++) {
+						if((selects.options[ii].value == selectedList[jj]) && ((selects.options[ii].value != selects.options.item(selects.selectedIndex).value)) && (selects.options[ii].value != deletedSelect.value)) {
+							selects.options[ii].disabled = true;
+						}
+					}
+				}
+			}		}
+		
+		// 検索項目数を一つ減らす
+		var rowCnt = parseInt($("selects_length<{$id}>").value);
+		rowCnt--;
+		$("selects_length<{$id}>").value = rowCnt;
+		// 検索条件追加ボタンを使用可能にする
+		checkAddButton<{$id}>();
+	}
+</script>
+<div style="display:none" id="niisubject_hidden<{$id}>"><{include file='repository_item_search_mapping_niisubject.html'}></div>
+<div style="display:none" id="itemTypeList_hidden<{$id}>"><{include file='repository_item_search_mapping_itemTypeList.html'}></div>
+<div style="display:none" id="type_hidden<{$id}>"><{include file='repository_item_search_mapping_type.html'}></div>
+<div style="display:none" id="id_hidden<{$id}>"><{include file='repository_item_search_mapping_id.html'}></div>
+<div style="display:none" id="lang_hidden<{$id}>"><{include file='repository_item_search_mapping_lang.html'}></div>
+<div style="display:none" id="rights_hidden<{$id}>"><{include file='repository_item_search_mapping_rights.html'}></div>
+<div style="display:none" id="textver_hidden<{$id}>"><{include file='repository_item_search_mapping_textver.html'}></div>
+<div style="display:none" id="idx_hidden<{$id}>"><{include file='repository_item_search_mapping_idx.html'}></div>
+

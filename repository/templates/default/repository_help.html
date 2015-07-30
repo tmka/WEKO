@@ -1,0 +1,32 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_help.html 2009-09-28 09:01:32Z K.Ito		           -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,       -->
+<!--// Research and Development Center for Scientific Information Resources-->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{*HTML Helpの入れ物*}>
+	<form id="help_detail" method="post">
+		<IFRAME SRC="<{$smarty.const.CORE_BASE_URL}>/<{$action.helpPath}>" WIDTH="800" HeiGht="400" onload="htmlHELP(); return false;" scrolling="auto" frameborder="0">
+		<{$lang.repository_help_not_support_inline_frame}><br>
+		<a href="<{$smarty.const.CORE_BASE_URL}>/weko/help/ja/hh_start.htm" target="_blank"><{$lang.repository_help_link_here}></a><{$lang.repository_help_to_helptop}>
+		</IFRAME>
+	</form>
+
+<script class="nc_script" type="text/javascript">
+	htmlHELP = function() {
+	//ポップアップのヘルプの中身のリンクを新しいウィンドウで開くようにする
+	//IRAMEの中身を取得
+	 var doc = document.getElementsByTagName("IFRAME")[0].contentWindow.document.body.innerHTML;
+	 //alert(doc);
+	 //リンク書き換え
+	 doc = doc.replace('_top','_blank');
+	 //alert(doc);
+	 document.getElementsByTagName("IFRAME")[0].contentWindow.document.body.innerHTML = doc;
+	 return false;
+	}
+</script>

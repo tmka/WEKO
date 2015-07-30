@@ -1,0 +1,566 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_cinii_admin.html 31729 2014-02-18 00:32:14Z tomohiro_ichikawa $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+
+<{strip}>
+
+<div class="th_classic_content content text_color box_center">
+    <div class="mt10">
+	<div class="comp_tabset"></div>
+	<div>
+		<{* 1st tab : els convert *}>
+		<div class="th_classic_content content text_color mt10" id="els_tab_1">
+
+		    <{* index tree *}>
+		    <div id="repo_side_navi" class="fl">
+		      <div id="repository_index_tree">
+                 <h3 class="th_repos_title_bar nc_block_title c"><span class="pl05"><{$lang.repository_index_tree}></span></h3>
+                 <div>
+                 <div class="th_classic_content content" id="elsTree<{$id}>panel" style="overflow:auto;"></div>
+                 <{include file="repository_item_search_tree.html"}>
+                 </div>
+              </div>
+		    </div>
+
+		    <{* ELS connect info *}>
+						<{* ELS *}>
+						<div id="els_result">
+						    <div class="ofx_auto">
+							<table class="text_color paging tb_repos mt00 full" cellspacing="0" align="center">
+								<{* ELS connect info*}>
+								<tr>
+									<th colspan="2"><div class="th_repos_title_bar ranking_paging"><{$lang.repository_cinii_els_connect_info}></div></th>
+								</tr>
+								<tr>
+									<td class="ranking_list_paging" colspan="2">
+										<img class="brd03 mt10 ml05 mr05 mb00" style="background-color:
+											<{if $smarty.const._REPOSITORY_ELS_CONTENTS_LAB == "1"}>
+												<{if $action.els_connect=='true' && $action.lab_connect=='true'}>
+													#0f0;
+												<{elseif $action.els_connect=='true' || $action.lab_connect=='true'}>
+													#ff0;
+												<{else}>
+													#f00;
+												<{/if}>
+											<{else}>
+												<{if $action.els_connect=='true'}> #0f0; <{else}> #f00;<{/if}>
+											<{/if}>
+											" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/check.png" />
+										<{$lang.repository_cinii_els_connect}>
+										<br/>
+										<img class="brd03 mt10 ml05 mr05 mb00" style="background-color: <{if $action.els_scp=='true'}> #0f0; <{else}> #f00;<{/if}>" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/check.png" />
+										<{$lang.repository_cinii_els_scp}>
+										<{if $smarty.const._REPOSITORY_ELS_CONTENTS_LAB == "1"}>
+											<br/>
+											<img class="brd03 mt10 ml05 mr05 mb00" style="background-color: <{if $action.lab_scp=='true'}> #0f0; <{else}> #f00;<{/if}>" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/check.png" />
+											<{$lang.repository_cinii_els_lab_scp}>
+										<{/if}>
+									</td>
+								</tr>
+								<tr>
+									<th colspan="2"><div class="th_repos_title_bar ranking_paging al"><{$lang.repository_cinii_els_system}></div></th>
+								</tr>
+								<tr>
+									<td class="ranking_paging">
+										<P id="select_embargo_index" class="al" ></P>
+										<P id="select_index" class="al bright_red"><{$lang.repository_item_embargo_select_index}></P>
+										<P id="select_registered_index" class="al bright_red" style="display:none;"><{$lang.repository_item_embargo_registered_index}></P>
+										<input id="select_embargo_index_id" class="ar" type="hidden" value="">
+									</td>
+									<td class="ranking_list_paging" style="text-align: center;" width="130px">
+										<{if $action.els_auto=="true" && (($action.els_connect=="true" && $action.els_scp=="true") || ($action.lab_connect=="true" && $action.lab_scp=="true"))}>
+											<{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 *}>
+                                            <img id="loading_0" src="<{$smarty.const.CORE_BASE_URL}>/images/common/indicator.gif" border="0" style="display: none;" />
+                                            <input class="btn_blue white" type="button" value="<{$lang.repository_cinii_els_entry}>" onclick="javascript: setElsIndex(2);" id="els_button_entry" disabled>
+                                            <input class="btn_blue white" type="button" value="<{$lang.repositoey_cinii_els_download}>" onclick="javascript: setElsIndex(1);" id="els_button_download" disabled style="display:none;">
+                                        <{else}>
+                                        	<{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 *}>
+                                            <img id="loading_0" src="<{$smarty.const.CORE_BASE_URL}>/images/common/indicator.gif" border="0" style="display: none;" />
+                                            <input class="btn_blue white" type="button" value="<{$lang.repository_cinii_els_entry}>" onclick="javascript: setElsIndex(2);" id="els_button_entry" disabled style="display:none;">
+                                            <input class="btn_blue white" type="button" value="<{$lang.repositoey_cinii_els_download}>" onclick="javascript: setElsIndex(1);" id="els_button_download" disabled>
+                                        <{/if}>
+									</td>
+								</tr>
+                                <{* Add Shelf registration to contents lab 2012/10/21 T.Koyasu -start- *}>
+                                <{if $smarty.const._REPOSITORY_ELS_CONTENTS_LAB == "1" && $action.lab_connect=='true'}>
+                                    <tr>
+                                        <th colspan="2"><div class="th_repos_title_bar ranking_paging al"><{$lang.repository_cinii_els_shelf_registration}></div></th>
+                                    </tr>
+                                    <tr>
+                                        <{if $action.shelfRegistrationFlg=="false"}>
+                                            <{* ready execute *}>
+                                            <td class="plr05 ptb04" colspan="2">
+                                                <div id="shelf_registration_button" class="ac">
+                                                    <input id="shelfregistration_button" class="btn_blue white" type="button" onclick="javascript: showLoginForm();" value="<{$lang.repository_cinii_els_entry}>" />
+
+                                                    <{* convert failed index list *}>
+                                                    <{if count($action.convertFailedIndexList) > 0}>
+                                                        <div class="al error_msg" onclick="$('convertFailedIndexList').style.display='';this.innerHTML='<{$lang.repository_els_notallsuccess}>'">
+                                                            <{$lang.repository_els_notallsuccess}><br/>
+                                                            <br/>
+                                                            <{$lang.repository_cinii_els_view_lab_record}>
+                                                        </div>
+                                                        <div id="convertFailedIndexList" style="display:none;">
+                                                            <table class="full brd01">
+                                                                <tr>
+                                                                    <th class="th_col_repos ac pd05"><{$lang.repository_els_result_no}></th>
+                                                                    <th class="th_col_repos ac pd05"><{$lang.repository_els_index}></th>
+                                                                </tr>
+                                                                <{section name=i loop=$action.convertFailedIndexList}>
+                                                                <{assign var="nCnt" value=$smarty.section.i.index+1}>
+                                                                    <tr>
+                                                                        <td class="list_paging pd10"><{$nCnt}></td>
+                                                                        <td class="list_paging pd10 al">
+                                                                            <{* show parent index name *}>
+                                                                            <{if count($action.convertFailedIndexList[i].parentIndexList) > 0}>
+                                                                                <{section name=j loop=$action.convertFailedIndexList[i].parentIndexList}>
+                                                                                    <{* show parent index_name *}>
+                                                                                    <{$action.convertFailedIndexList[i].parentIndexList[j].indexName}>
+                                                                                    <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/page_next.gif" class="plr10 vam" border="0" />
+                                                                                <{/section}>
+                                                                            <{/if}>
+
+                                                                            <a href="<{$action.convertFailedIndexList[i].url}>" target="_blank">
+                                                                                <{$action.convertFailedIndexList[i].indexName}>
+                                                                            </a>
+                                                                        </td>
+                                                                    </tr>
+                                                                <{/section}>
+                                                            </table>
+                                                        </div>
+                                                    <{/if}>
+                                                </div>
+                                                <{* UserInterface for login *}>
+                                                <div id="login_form_div" style="display:none">
+                                                    <{$lang.repository_cinii_els_login_comment}>
+                                                    <form id="login_form">
+                                                        <table class="full">
+                                                            <tr>
+                                                                <td class="ar w100px">
+                                                                    <{$lang.repository_cinii_els_login_id}>
+                                                                </td>
+                                                                <td>
+                                                                    <input id="login_id" type="text" name="login_id" class="w300px" value="" <{if $action.shelfregistrationflg=='true'}>disabled='true'<{/if}> />
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="ar w100px">
+                                                                    <{$lang.repository_cinii_els_password}>
+                                                                </td>
+                                                                <td>
+                                                                    <input id="login_password" type="password" name="login_password" class="w300px" value="" <{if $action.shelfregistrationflg=='true'}>disabled='true'<{/if}> />
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="2">
+                                                                    <div id="execute_shelfregistration" class="ac">
+                                                                        <input id="hide_login_form_button" class="btn_blue white" type="button" onclick="javascript: hideLoginForm();" value="<{$lang.repository_return}>" />
+                                                                        <input id="execute_shelfregistration_button" class="btn_blue white" type="button" onclick="javascript: executeShelfregistration();" value="<{$lang.repository_execute}>" />
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        <{else}>
+                                            <{* now executing *}>
+                                            <td class="ac plr05 ptb04">
+                                                <{* now state *}>
+                                                <div class="warning_msg" id="repository<{$id}>shelfregistrationStatusString"><{$lang.repository_cinii_els_now_executing}></div>
+                                            </td>
+                                            <td class="ac plr05 ptb04">
+                                                <{* kll process button *}>
+                                                <div id="repository<{$id}>shelfregistrationStatusBtn">
+                                                    <input type="button" class="btn_delete" value="<{$lang.repository_cinii_els_process_kill}>" onclick="javascript: repositoryShelfregistrationKillProcess();" />
+                                                </div>
+                                            </td>
+                                        <{/if}>
+                                    </tr>
+                                <{/if}>
+                                <{* Add Shelf registration to contents lab 2012/10/21 T.Koyasu -end- *}>
+							</table>
+							</div>
+
+							<div id="bottom_view">
+                                    <div class="ofx_auto mb10" align="center">
+
+                                    <table class="full brd01">
+                                        <caption class="mb10">
+		                                 <{if $action.selIdx_name!=""}>
+		                                     <div class="al text_color">
+		                                         <{$lang.repository_els_index}> : <{$action.selIdx_name|smarty:nodefaults}>
+		                                     </div>
+		                                 <{/if}>
+
+	                                 <{if $action.els_result=="no_item"}>
+	                                     <div class="al error_msg"><{$lang.repository_eld_noitem}></div>
+	                                     </caption>
+	                                 <{elseif $action.els_result!=null && count($action.els_result) != 0}>
+	                                     <{if $action.all_success=="true"}>
+	                                         <div class="al text_color">
+	                                             <{$lang.repository_els_allsuccess}>
+	                                         </div>
+	                                     <{else}>
+	                                         <div class="al error_msg">
+	                                             <{$lang.repository_els_notallsuccess}>
+	                                             <{* no use success only button 2011/01/12 A.Suzuki --start-- *}>
+	                                             <{*
+	                                             <{if $action.els_auto_entry == "true"}>
+	                                                 <br/>
+	                                                 <input class="btn_blue white" type="button" value="<{$lang.repository_cinii_els_entry_confirm}>" id="els_button_success_only"
+	                                                     onclick="this.disabled = 'true';
+	                                                     repositoryCls['<{$id}>'].repositoryElsEntry( '<{$page_id}>', '<{$block_id}>', '<{$action.selIdx_id}>', '<{$action.els_connect}>', '<{$action.lab_connect}>',
+	                                                                                                  '<{$lang.repository_cinii_els_entry_success}>', '<{$lang.repository_cinii_els_entry_error}>',
+	                                                                                                  '<{$lang.repository_cinii_els_entry_success_els}>', '<{$lang.repository_cinii_els_entry_success_lab}>',
+	                                                                                                  '<{$lang.repository_cinii_els_entry_error_els}>', '<{$lang.repository_cinii_els_entry_error_lab}>', '<{$id}>');"/>
+	                                             <{/if}>
+	                                             *}>
+	                                             <{* no use success only button 2011/01/12 A.Suzuki --end-- *}>
+	                                         </div>
+	                                     <{/if}>
+	                                   </caption>
+
+                                        <tbody>
+                                        <tr>
+                                            <th class="th_col_repos ac pd05" nowrap><{$lang.repository_els_result_no}></th>
+                                            <th class="th_col_repos ac pd05" nowrap><{$lang.repository_title}></th>
+                                            <th class="th_col_repos ac pd05" nowrap><{$lang.repository_result}></th>
+                                        </tr>
+                                        <{section name=i loop=$action.els_result}>
+                                            <{assign var="nCnt" value=$smarty.section.i.index+1}>
+                                            <{if $action.els_result[i][0]=="0"}>
+                                                <{if $nCnt%2==0}>
+                                                <tr class="list_line_repos1 bright_red al">
+                                                <{else}>
+                                                <tr class="list_line_repos2 bright_red al">
+                                                <{/if}>
+                                            <{else}>
+                                                <tr class="text_color">
+                                            <{/if}>
+                                            <td class="list_paging pd05 ar" nowrap><{$nCnt}></td>
+                                            <td class="list_paging pd10 al">
+                                                <{if $action.els_result[i][0]=="0" && $action.els_result[i][3]!=""}><a href="<{$action.els_result[i][3]}>" target="_blank"><{/if}>
+                                                <{$action.els_result[i][1]}>
+                                                <{if $action.els_result[i][0]=="0" && $action.els_result[i][3]!=""}></a><{/if}>
+                                            </td>
+                                            <td class="list_paging pd10 al" nowrap><{$action.els_result[i][2]}></td>
+                                            </tr>
+                                        <{/section}>
+                                        <{/if}>
+                                        </caption>
+                                        </tbody>
+                                    </table>
+                                    </div>
+						</div>
+					</div>
+		</div>
+
+		<{* 2nd tab : els setting *}>
+		<div class="th_classic_content content text_color" id="els_tab_2" align="center">
+		<div class="mt10">
+			<form id="els_setting">
+				<table class="tb01 w90 box_center" cellspacing="0">
+					<{* ELS connect info*}>
+					<tr>
+						<th class="th_col_repos ranking_paging al" colspan="2"><{$lang.repository_cinii_els_connect_info}></th>
+					</tr>
+					<tr>
+						<td class="ranking_list_paging al vam" colspan="2">
+							<img class="brd03 mt10 ml05 mr05 mb00" style="background-color:
+								<{if $smarty.const._REPOSITORY_ELS_CONTENTS_LAB == "1"}>
+									<{if $action.els_connect=='true' && $action.lab_connect=='true'}>
+										#0f0;
+									<{elseif $action.els_connect=='true' || $action.lab_connect=='true'}>
+										#ff0;
+									<{else}>
+										#f00;
+									<{/if}>
+								<{else}>
+									<{if $action.els_connect=='true'}> #0f0; <{else}> #f00;<{/if}>
+								<{/if}>
+								" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/check.png" />
+							<{$lang.repository_cinii_els_connect}>
+							<br/>
+							<img class="brd03 mt10 ml05 mr05 mb00" style="background-color: <{if $action.els_scp=='true'}> #0f0; <{else}> #f00;<{/if}>" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/check.png" />
+							<{$lang.repository_cinii_els_scp}>
+							<{if $smarty.const._REPOSITORY_ELS_CONTENTS_LAB == "1"}>
+								<br/>
+								<img class="brd03 mt10 ml05 mr05 mb00" style="background-color: <{if $action.lab_scp=='true'}> #0f0; <{else}> #f00;<{/if}>" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/check.png" />
+								<{$lang.repository_cinii_els_lab_scp}>
+							<{/if}>
+						</td>
+					</tr>
+					<{* setting ELS auto entry *}>
+					<tr>
+						<th class="th_col_repos ranking_paging al vam" colspan="2"><{$lang.repository_cinii_els_set_auto_entry}></th>
+					</tr>
+					<tr>
+						<td class="ranking_list_paging al vt w30">
+							<{$lang.repository_cinii_els_login_id}>
+						</td>
+						<td class="ranking_list_paging al vam">
+                            <{* Add Shelf registration to contents lab 2012/10/21 T.Koyasu -start- *}>
+							<input type="text" name="els_login_id" class="full" value="<{$action.els_login_id}>" <{if $action.shelfRegistrationFlg=='true'}>disabled='true'<{/if}> />
+                            <{* Add Shelf registration to contents lab 2012/10/21 T.Koyasu -end- *}>
+						</td>
+					</tr>
+					<tr>
+						<td class="ranking_list_paging al vt w30">
+							<{$lang.repository_cinii_els_set_auto_entry}>
+						</td>
+						<td class="ranking_list_paging al vam">
+							<label for="id_auto_entry">
+                                <{* Add Shelf registration to contents lab 2012/10/21 T.Koyasu -start- *}>
+								<input type="checkbox" id="id_auto_entry" name="auto_entry" <{if $action.els_auto=='true'}>checked<{/if}> <{if $action.shelfRegistrationFlg=='true'}>disabled='true'<{/if}> />
+                                <{* Add Shelf registration to contents lab 2012/10/21 T.Koyasu -end- *}>
+								<{if $smarty.const._REPOSITORY_ELS_CONTENTS_LAB == "1"}>
+									<{$lang.repository_cinii_els_auto_entry_lab}>
+								<{else}>
+									<{$lang.repository_cinii_els_auto_entry}>
+								<{/if}>
+							</label>
+						</td>
+					</tr>
+					<{* setting command path *}>
+					<tr>
+						<th class="th_col_repos ranking_paging al" colspan="2"><{$lang.repository_admin_server}></th>
+					</tr>
+					<tr>
+						<td class="ranking_list_paging al vt w30">
+							<{$lang.repository_admin_server_cmmdpath}>
+						</td>
+						<td class="ranking_list_paging al vam pb10">
+							<table class="tb00 full">
+							<tr>
+							<td class="w10">
+							<{* SSH *}>
+							<img class="brd03 mt10 ml05 mr05 mb00" style="background-color: <{if $action.ssh_cmd_flg=='true'}> #0f0; <{else}> #f00;<{/if}>" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/check.png" />
+							SSH&nbsp;&nbsp;(ssh)
+							</td>
+							<td class="w90">
+                            <{* Add Shelf registration to contents lab 2012/10/21 T.Koyasu -start- *}>
+							<input type="text" name="path_ssh" class="full" value="<{$action.path_ssh}>" <{if $action.shelfRegistrationFlg=='true'}>disabled='true'<{/if}> />
+                            <{* Add Shelf registration to contents lab 2012/10/21 T.Koyasu -end- *}>
+							<{*br/ *}>
+							</td>
+							</tr>
+							<tr>
+							<td class="w10">
+							<{* SCP *}>
+							<img class="brd03 mt10 ml05 mr05 mb00" style="background-color: <{if $action.scp_cmd_flg=='true'}> #0f0; <{else}> #f00;<{/if}>" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/check.png" />
+							SCP&nbsp;&nbsp;(scp)
+							</td>
+                            <{* Add Shelf registration to contents lab 2012/10/21 T.Koyasu -start- *}>
+                            <td class="w90">
+							<input type="text" name="path_scp" class="full" value="<{$action.path_scp}>" <{if $action.shelfRegistrationFlg=='true'}>disabled='true'<{/if}> />
+                            <{* Add Shelf registration to contents lab 2012/10/21 T.Koyasu -end- *}>
+                            </td>
+                            </tr>
+                            </table>
+						</td>
+					</tr>
+				</table>
+			</form>
+			<div class="btn-bottom mt10 mb10">
+				<center>
+                    <{* Add Shelf registration to contents lab 2012/10/21 T.Koyasu -start- *}>
+					<input class="btn_blue white" type="button" value="<{$lang.repository_commit}>" onclick="repositoryCls['<{$id}>'].repositoryElsSetting();" <{if $action.shelfRegistrationFlg=='true'}>disabled='true'<{/if}> />
+                    <{* Add Shelf registration to contents lab 2012/10/21 T.Koyasu -end- *}>
+				</center>
+			</div>
+
+			</div>
+		</div>
+	</div>
+	</div>
+</div>
+
+<input type="hidden" id="els_active_tab_id" name="els_active_tab" value="0" />
+
+<{include file="repository_script.html"}>
+
+<{/strip}>
+
+<{if $action.els_download == "true"}>
+	<{* download ELS file *}>
+	<script class="nc_script" type="text/javascript">
+		// Modify Directory specification BASE_URL K.Matsuo 2011/9/2
+		location.href='<{$smarty.const.BASE_URL}>/index.php?action=repository_action_edit_cinii_els_download&page_is='+<{$page_id}>+'&block_id='+<{$block_id}>;
+	</script>
+<{/if}>
+
+<{if $action.els_auto_entry == "true"}>
+	<{* entry ELS *}>
+	<{if $action.all_success=="true"}>
+		<script class="nc_script" type="text/javascript">
+			repositoryCls['<{$id}>'].repositoryElsEntry('<{$page_id}>', '<{$block_id}>', '<{$action.selIdx_id}>', '<{$action.els_connect}>', '<{$action.lab_connect}>',
+														'<{$lang.repository_cinii_els_entry_success}>', '<{$lang.repository_cinii_els_entry_error}>',
+														'<{$lang.repository_cinii_els_entry_success_els}>', '<{$lang.repository_cinii_els_entry_success_lab}>',
+														'<{$lang.repository_cinii_els_entry_error_els}>', '<{$lang.repository_cinii_els_entry_error_lab}>', '<{$id}>');
+		</script>
+	<{/if}>
+<{/if}>
+
+
+<script class="nc_script" type="text/javascript">
+	setElsIndex = function(entry_type){
+		var selectnode = $('select_embargo_index_id');
+		if(selectnode){
+			$('loading_0').style.display = "";
+			repositoryCls['<{$id}>'].repositoryElsDownload($('select_embargo_index_id').value, encodeURIComponent($('select_embargo_index').innerHTML), entry_type);
+		}else{
+			alert("<{$lang.repository_item_embargo_index_error}>");
+			return false;
+		}
+	}
+</script>
+
+<{* make index tree 2008/12/03 Y.Nakao --start-- *}>
+<script class="nc_script" type="text/javascript">
+    repositoryInitTree<{$id}>('elsTree<{$id}>panel','<{$id}>', 'els');
+	$('elsTree<{$id}>panel').style.height = <{$smarty.const._SNIPPET_HEIGHT}>+"px";
+	$('elsTree<{$id}>panel').style.width = <{$smarty.const._SNIPPET_WIDTH}>+"px";
+</script>
+<script class="nc_script" type="text/javascript">
+	var click_id = '';
+	repositoryClickTreeSelect<{$id}> = function(id, idx_name, registered_flag){
+		if(click_id!=''){
+			$('tree_nodelabel'+click_id).className = 'nodelabel_repos';
+		}
+		$('tree_nodelabel'+id).className = 'nodelabel_s_repos';
+		click_id = id;
+		if( $('select_embargo_index') != null ) {
+			$('select_embargo_index').innerHTML = idx_name;
+			$('select_embargo_index_id').value = id;
+			$('select_index').style.display = 'none';
+            if( $('bottom_view') != null ) {
+                $('bottom_view').innerHTML = '';
+            }
+            <{* Add Shelf registration to contents lab 2012/10/21 T.Koyasu -start- *}>
+            <{if $action.shelfRegistrationFlg=='false'}>
+                if(registered_flag=='true'){
+                    $('els_button_entry').disabled = 'true';
+                    $('els_button_entry').style.display = 'none';
+                    $('els_button_download').disabled = '';
+                    $('els_button_download').style.display = '';
+                    $('select_registered_index').style.display = '';
+                }else{
+                    if('<{$action.els_auto}>'=='true'&&(('<{$action.els_connect}>'=='true'&&'<{$action.els_scp}>'=='true')||('<{$action.lab_connect}>'=='true'&&'<{$action.lab_scp}>'=='true'))){
+                        $('els_button_entry').disabled = '';
+                        $('els_button_entry').style.display = '';
+                        $('els_button_download').disabled = 'true';
+                        $('els_button_download').style.display = 'none';
+                    }else{
+                        $('els_button_entry').disabled = 'true';
+                        $('els_button_entry').style.display = 'none';
+                        $('els_button_download').disabled = '';
+                        $('els_button_download').style.display = '';
+                    }
+                    $('select_registered_index').style.display = 'none';
+                }
+            <{/if}>
+            <{* Add Shelf registration to contents lab 2012/10/21 T.Koyasu -end- *}>
+		}
+	}
+</script>
+<{* make index tree 2008/12/03 Y.Nakao --end-- *}>
+
+
+<{* make Tab 2009/08/31 Y.Nakao --start-- *}>
+<script class="nc_script" type="text/javascript">
+	changeActiveTab1 = function(){
+		var active_tab = "els_active_tab_id";
+		$(active_tab).value = 0;
+	}
+</script>
+
+<script class="nc_script" type="text/javascript">
+	changeActiveTab2 = function(){
+		var active_tab = "els_active_tab_id";
+		$(active_tab).value = 1;
+	}
+</script>
+
+<script class="nc_script" type="text/javascript">
+	var tabset = new compTabset('<{$id}>');
+	tabset.setActiveIndex(valueParseInt(<{$action.els_active_tab}>));
+	tabset.addTabset("<{$lang.repository_cinii_els_entry}>", changeActiveTab1);
+	tabset.addTabset("<{$lang.repository_cinii_els_setting}>", changeActiveTab2);
+	tabset.render();
+</script>
+<{* make Tab 2009/08/31 Y.Nakao --end-- *}>
+<{* Add Shelf registration to contents lab 2012/10/21 T.Koyasu -start- *}>
+<script class="nc_script" type="text/javascript">
+    executeShelfregistration = function(){
+        $('execute_shelfregistration').innerHTML = '<img broder="0" src="<{$smarty.const.CORE_BASE_URL}>/images/common/indicator.gif" />';
+        var page_id = '<{$page_id}>';
+        var block_id = '<{$block_id}>';
+
+        var pars = "action=repository_action_common_cinii";
+        pars += '&page_id=' + page_id;
+        pars += '&block_id=' + block_id;
+        pars += '&login_id=' + encodeURIComponent(document.getElementById('login_id').value);
+        pars += '&password=' + encodeURIComponent(document.getElementById('login_password').value);
+        var url = _nc_base_url + "/index.php";  // Modify Directory specification BASE_URL K.Matsuo 2011/9/2
+        document.body.style.cursor = 'wait';
+
+        var myAjax = new Ajax.Request(
+                        url,
+                        {
+                            method: 'get',
+                            parameters: pars,
+                            onFailure : function(){
+                                alert('error');
+                            },
+                            onSuccess : function(res){
+                                document.body.style.cursor = 'default';
+                            },
+                            onComplete: function(res) {
+                                document.location.href=_nc_base_url+'/?action=pages_view_main&active_action=repository_view_edit_cinii_admin'
+                                 + '&page_id=' + page_id + "&block_id=" + block_id;
+                                return;
+                            }
+                        }
+                    );
+    }
+</script>
+
+<script class="nc_script" type="text/javascript">
+    repositoryShelfregistrationKillProcess = function(elm)
+    {
+        if(!commonCls.confirm('<{$lang.repository_cinii_els_process_killconf}>'))
+        {
+            return false;
+        }
+        $('repository<{$id}>shelfregistrationStatusBtn').innerHTML = '<img broder="0" src="<{$smarty.const.CORE_BASE_URL}>/images/common/indicator.gif" />';
+        $('repository<{$id}>shelfregistrationStatusString').innerHTML = '<{$lang.repository_cinii_els_process_killing}>';
+
+        var top_el = $(this.id);
+        var params = new Object();
+        params["method"] = "get";
+        params["top_el"] = top_el;
+        repositoryCls['<{$id}>'].repositorySendView('<{$id}>', 'action=repository_view_edit_cinii_admin&kill_flg=true', params, null)
+    }
+</script>
+<script class="nc_script" type="text/javascript">
+    showLoginForm = function()
+    {
+        $('login_form_div').style.display = 'block';
+        $('shelf_registration_button').style.display = 'none';
+    }
+    hideLoginForm = function()
+    {
+        $('login_form_div').style.display = 'none';
+        $('shelf_registration_button').style.display = 'block';
+    }
+</script>
+<{* Add Shelf registration to contents lab 2012/10/21 T.Koyasu -end- *}>

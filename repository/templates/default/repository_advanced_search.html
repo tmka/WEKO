@@ -1,0 +1,40 @@
+<{strip}>
+<div class="plr10" id="<{$id}>">
+	<{* 簡易検索 *}>
+	<div class="th_classic_content content text_color" id="advanced_search_tab_1<{$id}>">
+		<{* repository_item_search_keyword.htmlを埋め込む *}>
+		<{include file="repository_item_search_keyword.html"}>
+	</div>
+	<{* 詳細検索 *}>
+	<div id="repositorySearchDetail<{$id}>" <{if $action.active_search_flag=="0"}> class="display-none"<{/if}>>
+		<{include file="repository_item_search_detail.html"}>
+	</div>
+	<input type="hidden" id="useAdvancedSearchFlag<{$id}>" value="<{$action.active_search_flag}>" >
+</div>
+<{/strip}>
+
+<script class="nc_script" type="text/javascript">
+	repositoryDisplayChangeForAdvancedSearch<{$id}> = function(clickElm)
+	{
+		// change open/close image
+		var imgElm = Element.getChildElement(clickElm);
+		if (imgElm.src.match("open-1.png"))
+		{
+			imgElm.src = imgElm.src.replace("open-1.png", "close-1.png");
+			$('useAdvancedSearchFlag<{$id}>').value = 0;
+		}
+		else
+		{
+			imgElm.src = imgElm.src.replace("close-1.png", "open-1.png");
+			$('useAdvancedSearchFlag<{$id}>').value = 1;
+		}
+		// change advanced search display
+		commonCls.displayChange($('repositorySearchDetail<{$id}>'));
+		
+		// change simple search button display
+		commonCls.displayChange($('repositorySimpleSearchButton<{$id}>'));
+		
+		return false;
+	}
+</script>
+<{include file="repository_search_script.html"}>

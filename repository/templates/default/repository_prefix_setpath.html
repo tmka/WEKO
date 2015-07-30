@@ -1,0 +1,32 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_prefix_setpath.html 18717 2012-07-24 06:43:22Z atsushi_suzuki $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<div class="text_color">
+ <{if $smarty.session.error_flg == "true"}>
+  <span style="color: red;"><{$lang.repository_prefix_setpath_error}></span><br/>
+ <{/if}>
+ <br/>
+ <{$lang.repository_prefix_setpath_no_prefix}><br/>
+ <{$lang.repository_prefix_setpath_input_path}><br/>
+ <form name="ssl_path_form">
+ <input type="text" class="w15em" name="ssl_path" value="/usr/bin/"><br/>
+ <div class=box_center>
+  <div align=center><em><span><input type="button" class="btn_white" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_edit_admin'); return false;" /><input type="button" class="btn_white" value="<{$lang.repository_execute}>" onclick="repositoryCls['<{$id}>'].repositoryGoPrefixImage(); return false;" /></span></em></div>
+ </div>
+ </form>
+</div>
+
+<{include file="repository_script.html"}>
+
+<script class="nc_script" type="text/javascript">
+
+</script>
+

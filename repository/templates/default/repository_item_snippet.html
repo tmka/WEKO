@@ -1,0 +1,236 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_item_snippet.html 31729 2014-02-18 00:32:14Z tomohiro_ichikawa $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<{*repository 検索結果表示*}>
+<{* 検索結果 *}>
+<div id="repo_main_content">
+<div id="advanced_search" class="plr65">
+<{include file="repository_advanced_search.html"}>
+</div>
+<div id="repo_side_navi" class="mt10" style="width: <{$smarty.const._SNIPPET_WIDTH}>px;">
+
+<{if $action.sitemap_flg != false}>
+ <div style="display:none;">
+  <a href="<{$action.sitemap_file_path}>">sitemap</a>
+ </div>
+<{/if}>
+
+
+<{if $smarty.session.select_language == 1}>
+<{* 言語選択 *}>
+<div id="_repository_select_language">
+	<h3 class="th_repos_title_bar text_color c ptb04">
+		<span class="fl plr05"><{$lang.repository_select_lang}></span>
+	</h3>
+	<{* repository_select_language.htmlを埋め込む *}>
+	<{include file="repository_select_language.html"}>
+</div>
+<{/if}>
+
+<{* Add index list --start-- *}>
+<{if $action.select_index_list_display == 1}>
+	<div id="select_index_list">
+		<h3 class="th_repos_title_bar text_color c ptb04">
+			<span class="fl plr05"><{$lang.repository_admin_select_index_list}></span>
+		</h3>
+		<{* include repository_item_search_select_index_name_list *}>
+		<div class="plr05 ptb10"
+			<{include file="repository_item_search_select_index_name_list.html"}>
+		</div>
+	</div>
+<{/if}>
+<{* Add index list --end-- *}>
+
+
+<{* ツリーのスペース *}>
+	<h3 class="th_repos_title_bar text_color c ptb04">
+		<{* add link 2011/09/14 K.Matsuo *}>
+		<a href="<{$smarty.const.BASE_URL}>/?action=repository_opensearch&index_id=0" style="text-decoration: none; cursor:pointer;">
+			<span class="fl plr05"><{$lang.repository_index_tree}></span>
+		</a>
+		<div class="plr05 fl c" <{if $action.oaiore_icon_display != "1"}>style="display:none;"<{/if}>>
+			<{* Modify Directory specification BASE_URL K.Matsuo 2011/9/5 *}>
+			<a class="fl" href="<{$smarty.const.BASE_URL}>/?action=repository_oaiore" target="_blank">
+				<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/oai_ore.png" alt="OAI-ORE"/>
+			</a>
+		</div>
+		<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+			<div <{if $action.oaiore_icon_display != "1"}>class="ml20"<{/if}>>
+				<a class="help" href="#" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'search_directory'); return false;">
+					<{* Modify Directory specification BASE_URL K.Matsuo 2011/9/5 *}>
+					<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" alt="help">
+				</a>
+			</div>
+		<{/if}>
+	</h3>
+
+
+<{* make index tree 2008/12/03 Y.Nakao --start-- *}>
+<div id="snippetTree<{$id}>panel" class="repository_left_frame_tree" style="overflow:auto; width: <{$smarty.const._SNIPPET_WIDTH}>px;">
+<{include file="repository_item_search_tree.html"}>
+<{* make index tree 2008/12/03 Y.Nakao --end-- *}>
+</div>
+</div><!-- //repo_side_navi -->
+
+
+<div id="_repository_right_col<{$id}>">
+	<div class="repository_right_header ofx_auto">
+		<div id="_repository_folders<{$id}>" class="repository_right_frame">
+
+			<{if $smarty.session.serach_screen=="0"}>
+			<{* repository_search_result.htmlを埋め込む *}>
+				<{include file="repository_item_search_result.html"}>
+			<{elseif $smarty.session.serach_screen=="1"}>
+				<{include file="repository_item_detail.html"}>
+			<{elseif $smarty.session.serach_screen==2}>
+				<{include file="repository_ranking.html"}>
+			<{elseif $smarty.session.serach_screen==3}>
+				<{include file="repository_item_contents.html"}>
+			<{/if}>
+		</div><!-- //_repository_folders<{$id}> -->
+	</div><!-- //repository_right_header -->
+</div><!-- //_repository_right_col<{$id}>--></div>
+
+</div><!-- //repo_main_content -->
+
+<{if $action.detail_info=="not_access"}>
+  <script class="nc_script" type="text/javascript">
+    commonCls.alert('<{$lang.repository_detail_not_view}>');
+    location.href="<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id="+<{$page_id}>;  // Modify Directory specification BASE_URL K.Matsuo 2011/9/5
+  </script>
+<{elseif $action.detail_info=="login"}>
+  <script class="nc_script" type="text/javascript">
+   if (commonCls.confirm('<{$lang.repository_detail_please_login}>')) {
+     repositoryCls['<{$id}>'].repositoryDetailLogin("", '<{$action.shib_login_flg}>', '<{$action.version_flg}>');
+   } else {
+     location.href="<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id="+<{$page_id}>; // Modify Directory specification BASE_URL K.Matsuo 2011/9/5
+   }
+  </script>
+<{elseif $action.detail_info=="login_index"}>
+  <script class="nc_script" type="text/javascript">
+   if (commonCls.confirm('<{$lang.repository_index_please_login}>')) {
+     repositoryCls['<{$id}>'].repositoryDetailLogin("", '<{$action.shib_login_flg}>', '<{$action.version_flg}>');
+   } else {
+     location.href="<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id="+<{$page_id}>; // Modify Directory specification BASE_URL K.Matsuo 2011/9/5
+   }
+  </script>
+<{elseif $action.detail_info=="del_item"}>
+  <script class="nc_script" type="text/javascript">
+    commonCls.alert('<{$lang.repository_detail_item_del}>');
+    location.href="<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id="+<{$page_id}>;  // Modify Directory specification BASE_URL K.Matsuo 2011/9/5
+  </script>
+<{else}>
+    <{include file="repository_scriptFileDownload.html"}>
+<{/if}>
+<{if $smarty.session.supple_login=="login"}>
+  <script class="nc_script" type="text/javascript">
+  	if('<{$smarty.session.ej_workflow_flag}>' == 'true'){
+  		var login_message = '<{$lang.repository_supple_need_login_edit}>';
+  	} else {
+  		var login_message = '<{$lang.repository_supple_need_login}>';
+  	}
+
+	if(commonCls.confirm(login_message)){
+        if('<{$action.version_flg}>'=='0'){
+            if('<{$action.shib_login_flg}>' == '1'){
+                location.href='<{$smarty.const.BASE_URL}>/index.php?action=login_view_main_init';	// Modify Directory specification BASE_URL K.Matsuo 2011/9/5
+            } else {
+                commonCls.sendPopupView("",{'action':'login_view_main_init'}, {'center_flag':true,'modal_flag':true});
+            }
+        }else{
+            if('<{$action.shib_login_flg}>' == '1'){
+                location.href='<{$smarty.const.BASE_URL}>/index.php?action=login_view_main_init';	// Modify Directory specification BASE_URL K.Matsuo 2011/9/5
+            } else {
+                commonCls.displayVisible($('login_popup'));
+                commonCls.sendPopupView("",{'action':'login_view_main_init'}, {'center_flag':true});
+            }
+        }
+	}
+  </script>
+<{elseif $smarty.session.supple_login=="no_regist"}>
+  <script class="nc_script" type="text/javascript">
+  	if('<{$smarty.session.ej_workflow_flag}>' == 'true'){
+  		var message = '<{$lang.repository_supple_not_edit}>';
+  	} else {
+  		var message = '<{$lang.repository_supple_not_regist}>';
+  	}
+	commonCls.alert(message);
+  </script>
+<{/if}>
+
+<{* fix download any files from repositoy_uri 2010/01/08 Y.Nakao --start-- *}>
+<{if $action.uri_export!=null && $action.uri_export.status=="login"}>
+	<script class="nc_script" type="text/javascript">
+		if (commonCls.confirm('<{$lang.repository_snippet_please_login}>')) {
+			if('<{$action.version_flg}>'=='0'){
+				if('<{$action.shib_login_flg}>' == '1'){
+					location.href='<{$smarty.const.BASE_URL}>/index.php?action=login_view_main_init';	// Modify Directory specification BASE_URL K.Matsuo 2011/9/5
+				} else {
+					commonCls.sendPopupView("",{'action':'login_view_main_init'}, {'center_flag':true,'modal_flag':true});
+				}
+			}else{
+				if('<{$action.shib_login_flg}>' == '1'){
+					location.href='<{$smarty.const.BASE_URL}>/index.php?action=login_view_main_init';	// Modify Directory specification BASE_URL K.Matsuo 2011/9/5
+				} else {
+					commonCls.displayVisible($('login_popup'));
+					commonCls.sendPopupView("",{'action':'login_view_main_init'}, {'center_flag':true});
+				}
+			}
+		} else {
+			location.href="<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id="+<{$page_id}>;		// Modify Directory specification BASE_URL K.Matsuo 2011/9/5
+		}
+	</script>
+<{elseif $action.uri_export!=null && $action.uri_export.status=="download"}>
+	<script class="nc_script" type="text/javascript">
+		location.href = '<{$smarty.const.BASE_URL}>/index.php?action=repository_action_main_export_filedownload'+		// Modify Directory specification BASE_URL K.Matsuo 2011/9/5
+						'&item_id=' + <{$action.uri_export.item_id}>+
+						'&item_no='+ <{$action.uri_export.item_no}>+
+						'&attribute_id=' + <{$action.uri_export.attribute_id}>+
+						'&file_only=true';
+	</script>
+<{/if}>
+<{* fix download any files from repositoy_uri 2010/01/08 Y.Nakao --end-- *}>
+
+<{*最後にonload相当時に呼ぶスクリプトを書く*}>
+<{include file="repository_script.html"}>
+
+<{* make index tree 2008/12/02 Y.Nakao --start-- *}>
+<script class="nc_script" type="text/javascript">
+    if ('<{$smarty.session.serach_screen}>'=="1"){
+        repositoryInitTree<{$id}>('snippetTree<{$id}>panel','<{$id}>','detail');
+    } else {
+        repositoryInitTree<{$id}>('snippetTree<{$id}>panel','<{$id}>');
+	}
+</script>
+<{* make index tree 2008/12/02 Y.Nakao --end-- *}>
+
+<{* add login from workflow 2009/10/07 A.Suzuki --start-- *}>
+<{if $smarty.session.login_redirect_flag == "true"}>
+<script class="nc_script" type="text/javascript">
+    if(commonCls.confirm('<{$lang.repository_snippet_please_login_redirect}>')){
+        if('<{$action.version_flg}>'=='0'){
+            if('<{$action.shib_login_flg}>' == '1'){
+                location.href='<{$smarty.const.BASE_URL}>/index.php?action=login_view_main_init';	// Modify Directory specification BASE_URL K.Matsuo 2011/9/5
+            } else {
+                commonCls.sendPopupView("",{'action':'login_view_main_init'}, {'center_flag':true,'modal_flag':true});
+            }
+        }else{
+            if('<{$action.shib_login_flg}>' == '1'){
+                location.href='<{$smarty.const.BASE_URL}>/index.php?action=login_view_main_init';	// Modify Directory specification BASE_URL K.Matsuo 2011/9/5
+            } else {
+                commonCls.displayVisible($('login_popup'));
+                commonCls.sendPopupView("",{'action':'login_view_main_init'}, {'center_flag':true});
+            }
+        }
+	}
+</script>
+<{/if}>
+<{* add login from workflow 2009/10/07 A.Suzuki --end-- *}>

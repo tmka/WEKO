@@ -1,0 +1,143 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_item_select_type.html 39149 2014-07-28 08:37:06Z rei_matsuura $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+
+<div class="mt10">
+	
+	<div>
+		<table align="center">
+			<{* HELP *}>
+			<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+				<tr>
+					<td align="right" class="ptb10">
+						<a href="#" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'select_itemtype'); return false;" style="cursor: help;">
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" align="right" alt="help">
+						</a>
+					</td>
+				</tr>
+			<{/if}>
+			
+			<{* FLOW *}>
+			<tr>
+				<td align="center">
+					<{if $smarty.session._lang == "japanese"}>
+						<{if $action.itemtype_file[0]=="0"}>
+							<img id="fileImg<{$id}>_JPN" style="display:none" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_1.png" />
+							<img id="fileImg<{$id}>_JPN_DOI" style="display:none" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_1.png" />
+							<img id="fileImg<{$id}>_JPN_NO" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_no_file_1.png" />
+						<{elseif $action.itemtype_data[0][2]=="1"}>
+							<img id="fileImg<{$id}>_JPN" style="display:none" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_1.png" />
+							<img id="fileImg<{$id}>_JPN_DOI" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_1.png" />
+							<img id="fileImg<{$id}>_JPN_NO" style="display:none" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_no_file_1.png" />
+						<{else}>
+							<img id="fileImg<{$id}>_JPN" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_1.png" />
+							<img id="fileImg<{$id}>_JPN_DOI" style="display:none" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_1.png" />
+							<img id="fileImg<{$id}>_JPN_NO" style="display:none" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_no_file_1.png" />
+						<{/if}>
+					<{else}>
+						<{if $action.itemtype_file[0]=="0"}>
+							<img id="fileImg<{$id}>_ENG" style="display:none" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_1_eng.png" />
+							<img id="fileImg<{$id}>_ENG_DOI" style="display:none" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_1_eng.png" />
+							<img id="fileImg<{$id}>_ENG_NO" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_no_file_1_eng.png" />
+						<{elseif $action.itemtype_data[0][2]=="true"}>
+							<img id="fileImg<{$id}>_ENG" style="display:none" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_1_eng.png" />
+							<img id="fileImg<{$id}>_ENG_DOI" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_1_eng.png" />
+							<img id="fileImg<{$id}>_ENG_NO" style="display:none" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_no_file_1_eng.png" />
+						<{else}>
+							<img id="fileImg<{$id}>_ENG" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_1_eng.png" />
+							<img id="fileImg<{$id}>_ENG_DOI" style="display:none" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_1_eng.png" />
+							<img id="fileImg<{$id}>_ENG_NO"style="display:none" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_no_file_1_eng.png" />
+						<{/if}>
+					<{/if}>
+				</td>
+			</tr>
+		</table>
+	</div>
+	
+<div align="center" class="text_color">
+  
+	<p class="error_meg">
+		
+		<{$action.error_msg}>
+	</p>
+
+  <div class="paging">
+    <{$lang.repository_item_msg_selecttype}>
+  </div>
+
+  <div>
+   <form id="id_item_type_select" method="post">
+     <select class="w30" name="itemtype_id" size="1" onChange="javascript: editInsFlow(this.selectedIndex)">
+     <!-- アイテムタイプ一覧をスクリプトで登録。valueは主キー, 表示はアイテムタイプ名 -->
+     <{foreach from=$action.itemtype_data item=item_type}>
+       <option value="<{$item_type[0]}>" <{if $smarty.session.item_type_all.item_type_name == $item_type[1]}>SELECTED<{/if}>><{$item_type[1]}></option>
+     <{/foreach}>
+     </select>
+   </form>
+  </div>
+</div>
+
+<div align=center class="paging">
+  <form onsubmit="return false;">
+	<input type="button" class="btn_next" value="<{$lang.repository_page_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditFiles(); return false;" />
+  </form>
+</div>
+
+</div>
+
+<{include file="repository_script.html"}>
+
+<script class="nc_script" type="text/javascript">
+    editInsFlow = function( idx ) {
+    attrfile = new Array();
+    doigrant = new Array();
+
+    <{foreach from=$action.itemtype_file item=attr_file}>
+       attrfile.push(<{$attr_file}>);
+    <{/foreach}>
+    <{foreach from=$action.itemtype_data item=type_data}>
+       doigrant.push(<{$type_data[2]}>);
+    <{/foreach}>
+    
+    imgFlowFile = new Object();
+    imgFlowFileNo = new Object();
+    imgFlowDoi = new Object();
+    <{if $smarty.session._lang == "japanese"}>
+        imgFlowFile = $('fileImg<{$id}>_JPN');
+        imgFlowFileNo = $('fileImg<{$id}>_JPN_NO');
+        imgFlowDoi = $('fileImg<{$id}>_JPN_DOI');
+    <{else}>
+        imgFlowFile = $('fileImg<{$id}>_ENG');
+        imgFlowFileNo = $('fileImg<{$id}>_ENG_NO');
+        imgFlowDoi = $('fileImg<{$id}>_ENG_DOI');
+    <{/if}>
+    
+    if( attrfile[idx] != "1" )
+    {
+        imgFlowFile.style.display = "none";
+        imgFlowFileNo.style.display = "";
+        imgFlowDoi.style.display = "none";
+    }
+    else if( doigrant[idx] == "1" )
+    {
+        imgFlowFile.style.display = "none";
+        imgFlowFileNo.style.display = "none";
+        imgFlowDoi.style.display = "";
+    }
+    else
+    {
+        imgFlowFile.style.display = "";
+        imgFlowFileNo.style.display = "none";
+        imgFlowDoi.style.display = "none";
+    }
+  }
+</script>
+

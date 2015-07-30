@@ -1,0 +1,287 @@
+<!--// ---------------------------------------------------------------------->
+<!--//                                                                     -->
+<!--// $Id: repository_item_type_confirm.html 24559 2013-08-02 00:47:17Z koji_matsuo $          -->
+<!--//                                                                     -->
+<!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
+<!--// Research and Development Center for Scientific Information Resources -->
+<!--//                                                                     -->
+<!--// This program is licensed under a Creative Commons BSD Licence       -->
+<!--// http://creativecommons.org/licenses/BSD/                            -->
+<!--//                                                                     -->
+<!--// ---------------------------------------------------------------------->
+<div class="mt10">
+
+	<table class="box_center">
+		<{*ヘルプ*}>
+		<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+			<tr>
+				<td align="right" class="ptb10">
+					<div>
+						<a href="#" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'itemtype_confirm'); return false;" style="cursor: help;">
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" align="right" alt="help">
+						</a>
+					</div>
+				</td>
+			</tr>
+		<{/if}>
+		<tr>
+			<td>
+				 <{if $smarty.session._lang == "japanese"}>
+					<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_type_settings4.png" />
+				 <{else}>
+					<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_type_settings4_eng.png" />
+				 <{/if}>
+			</td>
+		</tr>
+	</table>
+
+<{if $smarty.session.error_code!=""}>
+  <P style="color: #ff0000;">
+     <{if $smarty.session.error_code=="1"}><{$lang.db_repeat_error}>
+     <{elseif $smarty.session.error_code=="2"}><{$lang.db_itemtype_notthing}>
+     <{elseif $smarty.session.error_code!="0"}><{$smarty.session.error_code}><{/if}>
+  </P>
+<{/if}>
+
+
+<div align="center" class="ml10 mr10">
+ <form name="FormItem" action="Confirm_ItemType.html" method="post">
+  <!-- セッション情報からアイテムタイプを取得し、表示 -->
+  <div class="paging text_color">
+   <b>
+     <table>
+       <tbody>
+         <tr>
+           <td class="nowrap pr05">
+     <{$lang.repository_itemtype}> : 
+           </td>
+           <td class="pr05">
+             <{* Mod fix a glitch with upload icon is deleted when back from repository_item_type_confirm 2012/02/16 T.Koyasu -start- *}>
+             <{* value of session.icon_edit -> const value *}>
+             <{if $smarty.session.icon_edit=="2"}>
+               <{*アイテムタイプテーブルに登録済み => アイテムタイプテーブルからメモリ展開して表示*}>
+               <{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 *}>
+               <img vspace="0" hspace="0" width="16" height="16" id="db_icon" style="border: 0px solid rgb(204, 204, 204); margin-left:3px;margin-top:0px;margin-bottom:0px;margin-right:0px;" alt="" title="" src="<{$smarty.const.BASE_URL}>/index.php?action=repository_action_common_download&item_type_id=<{$smarty.session.item_type_id}>"/>
+             <{elseif $smarty.session.icon_edit=="3"}>
+               <{*アイテムタイプテーブルに未登録 => アップロードテーブルから表示*}>
+               <{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 *}>
+               <img vspace="0" hspace="0" width="16" height="16" style="border: 0px solid rgb(204, 204, 204); float: none;" alt="" title="" src="<{$smarty.const.BASE_URL}>/index.php?action=common_download_main&upload_id=<{$smarty.session.upload_icon.upload.upload_id}>"/>
+             <{else}>
+               <{* 共通リソース *}>
+               <{* Modify Directory specification BASE_URL K.Matsuo 2011/9/2 *}>
+               <img vspace="0" hspace="0" width="16" height="16" style="border: 0px solid rgb(204, 204, 204); float: none;" alt="" title="" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/tree/item.png"/>
+             <{/if}>
+             <{* Mod fix a glitch with upload icon is deleted when back from repository_item_type_confirm 2012/02/16 T.Koyasu -end- *}>
+           </td>
+           <td>
+             <{$smarty.session.item_type_name}>
+           </td>
+         </tr>
+       </tbody>
+     </table>
+   </b>
+  </div>
+  <div class="paging text_color">
+   <table border="1" class="tb01 al">
+    <tr>
+     <th class="item_edit_list w175px" ><{$lang.repository_attribute_name}></th>
+     <th class="item_edit_list w175px" ><{$lang.repository_itemtype_multi_setting}></th>
+     <th class="item_edit_list w175px" ><{$lang.repository_attribute}></th>
+     <th class="item_edit_list w175px" ><{$lang.repository_opption}></th>
+    </tr>
+    <tr>
+     <td class="item_edit_list"><{$lang.repository_title}></td>
+     <td class="item_edit_list"></td>
+     <td class="item_edit_list"><{$lang.repository_text}></td>
+     <td class="item_edit_list"><{$lang.repository_requier}>,&nbsp;<{$lang.repository_listview}>,&nbsp;<{$lang.repository_newline}></td>
+    </tr>
+    <tr>
+     <td class="item_edit_list"><{$lang.repository_title_english}></td>
+     <td class="item_edit_list"></td>
+     <td class="item_edit_list"><{$lang.repository_text}></td>
+     <td class="item_edit_list"><{$lang.repository_requier}>,&nbsp;<{$lang.repository_listview}>,&nbsp;<{$lang.repository_newline}></td>
+    </tr>
+    <tr>
+     <td class="item_edit_list"><{$lang.repository_language}></td>
+     <td class="item_edit_list"></td>
+     <td class="item_edit_list"><{$lang.repository_text}></td>
+     <td class="item_edit_list"><{$lang.repository_requier}></td>
+    </tr>
+    <tr>
+     <td class="item_edit_list"><{$lang.repository_pub_date}></td>
+     <td class="item_edit_list"></td>
+     <td class="item_edit_list"><{$lang.repository_attribute_type_date}></td>
+     <td class="item_edit_list"><{$lang.repository_requier}></td>
+    </tr>
+    <tr>
+     <td class="item_edit_list"><{$lang.repository_keyword}></td>
+     <td class="item_edit_list"></td>
+     <td class="item_edit_list"><{$lang.repository_text}></td>
+     <td class="item_edit_list"></td>
+    </tr>
+    <tr>
+     <td class="item_edit_list"><{$lang.repository_keyword_english}></td>
+     <td class="item_edit_list"></td>
+     <td class="item_edit_list"><{$lang.repository_text}></td>
+     <td class="item_edit_list"></td>
+    </tr>
+    <!-- ここから先はユーザ定義のメタデータ。とはいっても必須情報も↑みたくベタ書きにはいくまいが。 -->
+    <{* メタデータ情報書き出し actionクラスメンバから *}>   
+    <!-- 2008/02/27 セッションから呼び出すように変更
+    <{foreach from=$action.metadata_array item=metadata name=loop}>
+     <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> 
+     <tr>   
+      <td bgcolor="lightgrey" width="100"><{$metadata[0]}></td>
+       ↓ 2008/02/26 metadata[1]の中身は英語のため日本語化
+      //<td bgcolor="lightgrey" width="250"><{$metadata[1]}></td>
+       <td bgcolor="lightgrey" width="250">
+          <{if $metadata[1]=="text"}><{$lang.repository_attibute_type_text}><{/if}>
+          <{if $metadata[1]=="textarea"}><{$lang.repository_attibute_type_textarea}><{/if}>
+          <{if $metadata[1]=="link"}><{$lang.repository_attibute_type_link}><{/if}>
+          <{if $metadata[1]=="select"}><{$lang.repository_attibute_type_select}><{/if}>
+          <{if $metadata[1]=="file"}><{$lang.repository_attibute_type_file}><{/if}>
+      </td>
+       ↑ 2008/02/26 
+      <td bgcolor="lightgrey" width="250">
+       <{if $metadata[2]=="on" && $metadata[3]=="on"}>
+              必須,&nbsp一覧表示
+       <{elseif $metadata[2]=="on"}>
+              必須
+       <{elseif $metadata[3]=="on"}>
+               一覧表示
+       <{/if }>
+      </td>
+     </tr>   
+    <{/foreach}>-->
+    <{foreach from=$smarty.session.metadata_title item=matadata name=loop}>
+     <{assign var="loop_num" value=$smarty.foreach.loop.iteration-1}> 
+     <tr>   
+      <td class="item_edit_list">
+       <{$smarty.session.metadata_title[$loop_num]}>
+      </td>
+      <td id="multiLang<{$loop_num}>">
+       <div >
+        <{foreach from=$smarty.session.metadata_multi_title[$loop_num]  key="lang_name" item="item_type_name"  name="multilang"}>
+         <{if $item_type_name!=""}>
+          <{$smarty.session.lang_list[$lang_name]}>:<{$item_type_name}><BR>
+         <{/if}>
+        <{/foreach}>
+       </div>
+      </td>
+      <!-- ↓ 2008/02/26 metadata[1]の中身は英語のため日本語化-->
+  	<td class="item_edit_list">
+       	<{* テキスト *}>
+          <{if $smarty.session.metadata_type[$loop_num]=="text"}><{$lang.repository_attribute_type_text}><{/if}>
+         <{* テキストエリア *}>
+          <{if $smarty.session.metadata_type[$loop_num]=="textarea"}><{$lang.repository_attribute_type_textarea}><{/if}>
+         <{* リンク *}>
+          <{if $smarty.session.metadata_type[$loop_num]=="link"}><{$lang.repository_attribute_type_link}><{/if}>
+         <{* チェック *}>
+          <{if $smarty.session.metadata_type[$loop_num]=="checkbox"}><{$lang.repository_attribute_type_checkbox}><br><{$lang.repository_candidate}><{$smarty.session.metadata_candidate[$loop_num]}><{/if}>
+         <{* 選択式(ラジオ) *}>
+          <{if $smarty.session.metadata_type[$loop_num]=="radio"}><{$lang.repository_attribute_type_radio}><br><{$lang.repository_candidate}><{$smarty.session.metadata_candidate[$loop_num]}><{/if}>
+         <{* 選択式(プルダウン) *}>
+          <{if $smarty.session.metadata_type[$loop_num]=="select"}><{$lang.repository_attribute_type_pulldown}><br><{$lang.repository_candidate}><{$smarty.session.metadata_candidate[$loop_num]}><{/if}>
+         <{* 氏名 *}>
+          <{if $smarty.session.metadata_type[$loop_num]=="name"}><{$lang.repository_attribute_type_name}><{/if}>
+         <{* サムネイル *}>
+          <{if $smarty.session.metadata_type[$loop_num]=="thumbnail"}><{$lang.repository_attribute_type_image}><{/if}>
+         <{* ファイル *}>
+          <{if $smarty.session.metadata_type[$loop_num]=="file"}><{$lang.repository_attribute_type_file}><{/if}>
+         <{* 書誌情報 Add 2008/08/11 *}>
+          <{if $smarty.session.metadata_type[$loop_num]=="biblio_info"}><{$lang.repository_attribute_type_biblio}><{/if}>
+         <{* 課金ファイル Add 2008/08/28 *}>
+          <{if $smarty.session.metadata_type[$loop_num]=="file_price"}><{$lang.repository_attribute_type_fileprice}><{/if}>
+         <{* 日付 Add 2008/10/10 *}>
+          <{if $smarty.session.metadata_type[$loop_num]=="date"}><{$lang.repository_attribute_type_date}><{/if}>
+         <{* サプリ Add 2009/08/12 *}>
+          <{if $smarty.session.metadata_type[$loop_num]=="supple"}><{$lang.repository_attribute_type_supple}><{/if}>
+         <{* heading Add 2010/07/02 *}>
+          <{if $smarty.session.metadata_type[$loop_num]=="heading"}><{$lang.repository_attribute_type_heading}><{/if}>
+      </td>
+      <!-- ↑ 2008/02/26 -->
+      <td class="item_edit_list">
+      <{* 必須,一覧表示,複数可,改行指定 *}>
+       <{if $smarty.session.metadata_required[$loop_num]==1 && $smarty.session.metadata_disp[$loop_num]==1 && $smarty.session.metadata_plural[$loop_num]==1 && $smarty.session.metadata_newline[$loop_num]==1}>
+          <{$lang.repository_requier}>,&nbsp<{$lang.repository_listview}>,&nbsp<{$lang.repository_plural_on}>,&nbsp<{$lang.repository_newline}>
+      <{* 必須,一覧表示,複数可 *}>
+       <{elseif $smarty.session.metadata_required[$loop_num]==1 && $smarty.session.metadata_disp[$loop_num]==1 && $smarty.session.metadata_plural[$loop_num]==1}>
+          <{$lang.repository_requier}>,&nbsp<{$lang.repository_listview}>,&nbsp<{$lang.repository_plural_on}>
+      <{* 必須,一覧表示,改行指定 *}>
+       <{elseif $smarty.session.metadata_required[$loop_num]==1 && $smarty.session.metadata_disp[$loop_num]==1 && $smarty.session.metadata_newline[$loop_num]==1}>
+          <{$lang.repository_requier}>,&nbsp<{$lang.repository_listview}>,&nbsp<{$lang.repository_newline}>
+      <{* 必須,複数可,改行指定 *}>
+       <{elseif $smarty.session.metadata_required[$loop_num]==1 && $smarty.session.metadata_plural[$loop_num]==1 && $smarty.session.metadata_newline[$loop_num]==1}>
+          <{$lang.repository_requier}>,&nbsp<{$lang.repository_plural_on}>,&nbsp<{$lang.repository_newline}>
+      <{* 必須,複数可,非表示 *}>
+       <{elseif $smarty.session.metadata_required[$loop_num]==1 && $smarty.session.metadata_plural[$loop_num]==1 && $smarty.session.metadata_hidden[$loop_num]==1}>
+          <{$lang.repository_requier}>,&nbsp<{$lang.repository_plural_on}>,&nbsp<{$lang.repository_hidden}>
+      <{* 一覧表示,複数可,改行指定 *}>
+       <{elseif $smarty.session.metadata_disp[$loop_num]==1 && $smarty.session.metadata_plural[$loop_num]==1 && $smarty.session.metadata_newline[$loop_num]==1}>
+          <{$lang.repository_listview}>,&nbsp<{$lang.repository_plural_on}>,&nbsp<{$lang.repository_newline}>
+      <{* 必須,複数可 *}>
+       <{elseif $smarty.session.metadata_required[$loop_num]==1 && $smarty.session.metadata_plural[$loop_num]==1}>
+          <{$lang.repository_requier}>,&nbsp<{$lang.repository_plural_on}>
+      <{* 必須,一覧表示 *}>
+       <{elseif $smarty.session.metadata_required[$loop_num]==1 && $smarty.session.metadata_disp[$loop_num]==1}>
+          <{$lang.repository_requier}>,&nbsp<{$lang.repository_listview}>
+      <{* 必須,改行指定 *}>
+       <{elseif $smarty.session.metadata_required[$loop_num]==1 && $smarty.session.metadata_newline[$loop_num]==1}>
+          <{$lang.repository_requier}>,&nbsp<{$lang.repository_newline}>
+      <{* 必須,非表示 *}>
+       <{elseif $smarty.session.metadata_required[$loop_num]==1 && $smarty.session.metadata_hidden[$loop_num]==1}>
+          <{$lang.repository_requier}>,&nbsp<{$lang.repository_hidden}>
+      <{* 一覧表示,複数可 *}>
+       <{elseif $smarty.session.metadata_disp[$loop_num]==1 && $smarty.session.metadata_plural[$loop_num]==1}>
+          <{$lang.repository_listview}>,&nbsp<{$lang.repository_plural_on}>
+      <{* 一覧表示,改行指定 *}>
+       <{elseif $smarty.session.metadata_disp[$loop_num]==1 && $smarty.session.metadata_newline[$loop_num]==1}>
+          <{$lang.repository_listview}>,&nbsp<{$lang.repository_newline}>
+      <{* 複数可,改行指定 *}>
+       <{elseif $smarty.session.metadata_plural[$loop_num]==1 && $smarty.session.metadata_newline[$loop_num]==1}>
+          <{$lang.repository_plural_on}>,&nbsp<{$lang.repository_newline}>
+      <{* 複数可,非表示 *}>
+       <{elseif $smarty.session.metadata_plural[$loop_num]==1 && $smarty.session.metadata_hidden[$loop_num]==1}>
+          <{$lang.repository_plural_on}>,&nbsp<{$lang.repository_hidden}>
+      <{* 必須 *}>
+       <{elseif $smarty.session.metadata_required[$loop_num]==1}>
+          <{$lang.repository_requier}>
+      <{* 一覧表示 *}>
+       <{elseif $smarty.session.metadata_disp[$loop_num]==1}>
+          <{$lang.repository_listview}>
+      <{* 複数可 *}>
+       <{elseif $smarty.session.metadata_plural[$loop_num]==1}>
+          <{$lang.repository_plural_on}>
+      <{* 改行指定 *}>
+       <{elseif $smarty.session.metadata_newline[$loop_num]==1}>
+          <{$lang.repository_newline}>
+      <{* 非表示 *}>
+       <{elseif $smarty.session.metadata_hidden[$loop_num]==1}>
+          <{$lang.repository_hidden}>
+       <{/if}>
+      </td>
+     </tr>   
+    <{/foreach}>
+   </table>
+  </div>
+ </form>
+</div>
+<{if $smarty.session.item_type_edit_flag==0}>
+<div class="paging" style="text-align:center; color:#ff0000;">
+ <b><{$lang.repository_itemtype_induces}></b>
+</div>
+<{/if}>
+<div align=center>
+ <input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_edit_itemtype_icon'); return false;">
+ <input type="button" class="btn_blue" value="<{$lang.repository_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemTypeAdddb(); return false;">
+ <!--
+  ここで決定を押したとき、アイテムタイプ登録処理を行い編集メイン画面に戻る。即ち、
+  1.決定アクション時のアクションと遷移用javascriptを作成する。コンポーネントはdbとsessionがあればよかろう。
+  2.アクション内でセッションに保存されているアイテムタイプ情報をDB登録。この時点でセッション情報は精査済みのはずなので登録のみでOK。
+  3.success時のアクションはどうだろうな。編集mainか登録確認画面か。成功したらセッション情報削除すること。
+  -->
+</div>
+
+</div><!-- // mt10 -->
+
+<{include file="repository_script.html"}>
