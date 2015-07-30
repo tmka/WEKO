@@ -32,4 +32,13 @@ This WEKO modules is added following point.
 * [WEKO](http://weko.at.nii.ac.jp/)
 * [SPASE](http://www.spase-group.org/)
 
+##License
+Copyright (c) 2007 - 2015, National Institute of Informatics  
+Research and Development Center for Scientific Information Resources  
+
+This program is licensed under a Creative Commons BSD Licence  
+http://creativecommons.org/licenses/BSD/
+
+Some source programs were edited by T.M.
+
 
