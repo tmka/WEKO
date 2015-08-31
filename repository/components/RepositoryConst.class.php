@@ -443,11 +443,12 @@ class RepositoryConst {
 	// const SPASE_START = "SPASE";
 	const SPASE_SCHEMA_ORG = "http://www.spase-group.org/data/schema/";
 	const SPASE_SCHEMA_XSD = "http://www.spase-group.org/data/schema/spase-2_2_3.xsd";
-	const SPASE_START = "spase";
+	const SPASE_START = "Spase";
 	const SPASE_LANGUAGE = "language";
 	const SPASE_LANG_JAPANESE = "ja";
 	const SPASE_LANG_ENGLISH = "en";
 	const SPASE_URI = "URI";
+	const SPASE_VERSION = "2.2.3";
 
 	//SPASE_Numerical_Data
 	const SPASE_NUMERICALDATA = "NumericalData";
@@ -713,7 +714,7 @@ class RepositoryConst {
 	const SPASE_INSTRUMENT_RESOURCEHEADER_DESCRIPTION = "Instrument.ResourceHeader.Description";
 	const SPASE_INSTRUMENT_RESOURCEHEADER_CONTACT_PERSONID = "Instrument.ResourceHeader.Contact.PersonID";
 	const SPASE_INSTRUMENT_RESOURCEHEADER_CONTACT_ROLE = "Instrument.ResourceHeader.Contact.Role";
-	//const SPASE_INSTRUMENT_TYPE = "Instrument.Type";
+	const SPASE_INSTRUMENT_TYPE = "Instrument.Type";
 	const SPASE_INSTRUMENT_INSTRUMENTTYPE = "Instrument.InstrumentType";
 	const SPASE_INSTRUMENT_INVESTIGATIONNAME = "Instrument.InvestigationName";
 	const SPASE_INSTRUMENT_OBSEVATORYID = "Instrument.ObsevatoryID";

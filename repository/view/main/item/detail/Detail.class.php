@@ -381,7 +381,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
             // Add make treeinfo 2008/10/20 Y.Nakao --end--
             
             // Add Output "OAI-PMH getrecord" on detail page J.Ito --start--
-            $this->Session->setParameter("oaipmh_uri", BASE_URL."/?action=repository_oaipmh&verb=GetRecord&metadataPrefix=junii2&identifier=oai:".$_SERVER['HTTP_HOST'].":".sprintf("%08d", $this->item_id));
+            $this->Session->setParameter("oaipmh_uri", BASE_URL."/?action=repository_oaipmh&verb=GetRecord&metadataPrefix=spase&identifier=oai:".$_SERVER['HTTP_HOST'].":".sprintf("%08d", $this->item_id));
             // Add Output "OAI-PMH getrecord" on detail page J.Ito --end--
             
             // Add Output bibTeX feed on detail page 2008/10/30 A.Suzuki --start--

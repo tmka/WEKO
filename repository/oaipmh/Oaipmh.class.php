@@ -490,8 +490,8 @@ class Repository_Oaipmh extends RepositoryAction
         //SPASE
         else if($this->metadataPrefix == RepositoryConst::OAIPMH_METADATA_PREFIX_SPASE)
         {
-        	require_once WEBAPP_DIR. '/modules/repository/oaipmh/format/SPASE3.class.php';
-        	$this->metadataClass = new Repository_Oaipmh_Spase3($this->Session, $this->Db);
+        	require_once WEBAPP_DIR. '/modules/repository/oaipmh/format/SPASE.class.php';
+        	$this->metadataClass = new Repository_Oaipmh_Spase($this->Session, $this->Db);
         	if($this->metadataClass == null)
         	{
         		$this->errorCode = self::ERRORCODE_NO_METADATA_FORMATS;
@@ -682,10 +682,10 @@ class Repository_Oaipmh extends RepositoryAction
         $xml .= RepositoryConst::OAIPMH_METADATA_PREFIX_SPASE;
         $xml .= '</'.RepositoryConst::OAIPMH_TAG_META_PREFIX.'>';
         $xml .= '<'.RepositoryConst::OAIPMH_TAG_SCHEMA.'>';
-        $xml .= 'http://www.iugonet.org/data/schema/iugonet-1_0_4.xsd';
+        $xml .= 'http://www.spase-group.org/data/schema/spase-2_2_3.xsd';
         $xml .= '</'.RepositoryConst::OAIPMH_TAG_SCHEMA.'>';
         $xml .= '<'.RepositoryConst::OAIPMH_TAG_META_NAMESP.'>';
-        $xml .= 'http://www.iugonet.org/data/schema/';
+        $xml .= 'http://www.spase-group.org/data/schema/';
         $xml .= '</'.RepositoryConst::OAIPMH_TAG_META_NAMESP.'>';
         $xml .= '</'.RepositoryConst::OAIPMH_TAG_MATA_FORMT.'>';
 
@@ -789,6 +789,7 @@ class Repository_Oaipmh extends RepositoryAction
      * @param int $skipNum
      * @param int $displayNum
      */
+    
     public function outputListSetsSet($index, $indexKey, $parentSpec, &$skipNum, &$displayNum)
     {
         $xml = '';
