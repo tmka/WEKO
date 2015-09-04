@@ -38,8 +38,8 @@ if(isset($_GET['keyword'])){
 	//thumbnail mode
 	if(isset($_GET['thumb'])){
 		$keyword = $_GET['keyword'];
-		$item = contents_url($keyword);
-		if(is_null($item)){
+		$item_id = contents_url($keyword);
+		if(is_null($item_id)){
 			header("HTTP/1.1 301 Moved Permanently");
 	     	header("Location: ".$BASE_URL);
 		}else{
