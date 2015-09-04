@@ -22,7 +22,7 @@ function contents_url($keyword){
 		$link = (string)$item->link->attributes()->href;
 	}
 	parse_str($link); //extract only $item_id
-	return $link;
+	return $item_id;
 }
 
 function get_date($keyword){
@@ -43,7 +43,7 @@ if(isset($_GET['keyword'])){
 			header("HTTP/1.1 301 Moved Permanently");
 	     		header("Location: ".$BASE_URL);
 		}else{
-			$download_URL .= $item . "&item_no=1&attribute_id=2&file_no=1&img=true";
+			$download_URL .= "&item_id=". $item_id . "&item_no=1&file_id=1&attribute_id=2&file_no=1&img=true";
 			$date = date(DATE_RFC850,strtotime(get_date($keyword)));
 			header('Last-Modified: ' + $date);
 			if($_SERVER['HTTP_IF_MODIFIED_SINCE']){
@@ -63,7 +63,7 @@ if(isset($_GET['keyword'])){
 			header("HTTP/1.1 301 Moved Permanently");
 	     		header("Location: ".$BASE_URL);
 		}else{
-			$download_URL .= $item_id . "&file_id=1&file_no=1";
+			$download_URL .= "&item_id=". $item_id . "&item_no=1&file_id=1&attribute_id=1&file_no=1";
 			$now_date = date(DATE_RFC850,time());
 			$date = date(DATE_RFC850,strtotime(get_date($keyword)));
 
