@@ -20,13 +20,19 @@ This WEKO modules is added following point.
 
 1. Install this WEKO module in your NetCommons2 site.  
 2. You can download SPASE metadata via OAI-PMH interface.  
-(You have to use this query **metadataPrefix=spase** instead of "junii2 or oai_dc ~~")
+Go to Item detail page, and push the OAI-PMH button.  
+You will get the XML file written by SPASE metadata format.
 
 ##permalink.php
+Make permalink from WEKO's opensearch interface, using PHP modules.
 
-* permalink.php ... create permalink by WEKO's open search interface.
-  * usgae ... just use this query, permalink.php?keyword=**** (***=search keyword)  
-  When the search result isn't not single, this program just pull only first one.
+* permalink.php(out of date) ... create permalink by WEKO's open search interface.
+  * usage ... http://any.com/permalink_v2.php?keyword=something
+* permalink\_v2.php ... Used HTTP\_IF\_MODIFIED_HEADER and fixed interface 
+  * usage ... http://any.com/permalink_v2.php?keyword=something  
+  * If OpenSearch inteface can't find anything, then return to $BASE_URL page.  
+  * If you want to get thumbnail image, then use following query  
+  http://any.com/permalink_v2.php?keyword=something&thumb=on  
   
 
 
