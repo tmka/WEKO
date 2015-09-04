@@ -41,17 +41,25 @@ if(isset($_GET['keyword'])){
 		$item = contents_url($keyword);
 		if(is_null($item)){
 			header("HTTP/1.1 301 Moved Permanently");
-	     		header("Location: ".$BASE_URL);
+	     	header("Location: ".$BASE_URL);
 		}else{
 			$download_URL .= "&item_id=". $item_id . "&item_no=1&file_id=1&attribute_id=2&file_no=1&img=true";
 			$date = date(DATE_RFC850,strtotime(get_date($keyword)));
+
+			$If_Header = $_SERVER['HTTP_IF_MODIFIED_SINCE'];
+
 			header('Last-Modified: ' + $date);
-			if($_SERVER['HTTP_IF_MODIFIED_SINCE']){
-				//header('HTTP/1.1 304 Not Modified');
-				echo 'not changed';
+			if($If_Header){
+				if($_SERVER['HTTP_IF_MODIFIED_SINCE']){
+					header('HTTP/1.1 304 Not Modified');
+					//echo 'not changed';
+				}else{
+					header("HTTP/1.1 301 Moved Permanently");
+	     				header("Location: ".$download_URL);
+				}
 			}else{
 				header("HTTP/1.1 301 Moved Permanently");
-	     			header("Location: ".$download_URL);
+	     		header("Location: ".$download_URL);
 			}
 		}
 	}
@@ -92,7 +100,7 @@ if(isset($_GET['keyword'])){
 				//echo 'changed';
 				//var_dump($_SERVER);
 				header("HTTP/1.1 301 Moved Permanently");
-	     			header("Location: ".$download_URL);
+	     		header("Location: ".$download_URL);
 			}
 		}
 	}
