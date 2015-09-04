@@ -25,6 +25,9 @@ This WEKO modules is added following point.
 ##permalink.php
 
 * permalink.php ... create permalink by WEKO's open search interface.
+  * usgae ... just use this query, permalink.php?keyword=**** (***=search keyword)  
+  When the search result isn't not single, this program just pull only first one.
+  
 
 
 ##Reference

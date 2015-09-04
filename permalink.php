@@ -1,9 +1,10 @@
 <?php
 
 //You need to change the following variable when you use this code for other sites.
-$BASE_URL = "http://hogehoge.com/";
+$URL = "hogehoge.com"
+$BASE_URL = "https://" . $URL . "/";
 $opensearch_URL = $BASE_URL . "index.php?action=repository_opensearch&format=atom&keyword=";
-$oaipmh_URL = $BASE_URL . "?action=repository_oaipmh&verb=GetRecord&medatadaPrefix=oai_dc&identifier=oai:hogehoge.com:";
+$oaipmh_URL = $BASE_URL . "?action=repository_oaipmh&verb=GetRecord&medatadaPrefix=oai_dc&identifier=oai:".$URL.":";
 $download_URL = $BASE_URL. "index.php?action=repository_action_common_download&item_id=";
 
 //return contents URL or thumbnail URL
