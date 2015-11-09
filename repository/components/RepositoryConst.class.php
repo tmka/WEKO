@@ -710,7 +710,7 @@ class RepositoryConst {
 	const SPASE_INSTRUMENT = "Instrument";
 	const SPASE_INSTRUMENT_RESOURCEID = "Instrument.ResourceID";
 	const SPASE_INSTRUMENT_RESOURCEHEADER_RESOURCENAME = "Instrument.ResourceHeader.ResourceName";
-	const SPASE_INSTRUMENT_RESOURCEHEADER_RELEASEDATE = "Instrument.ResourceHeader.ReleaseData";
+	const SPASE_INSTRUMENT_RESOURCEHEADER_RELEASEDATE = "Instrument.ResourceHeader.ReleaseDate";
 	const SPASE_INSTRUMENT_RESOURCEHEADER_DESCRIPTION = "Instrument.ResourceHeader.Description";
 	const SPASE_INSTRUMENT_RESOURCEHEADER_CONTACT_PERSONID = "Instrument.ResourceHeader.Contact.PersonID";
 	const SPASE_INSTRUMENT_RESOURCEHEADER_CONTACT_ROLE = "Instrument.ResourceHeader.Contact.Role";
@@ -721,7 +721,7 @@ class RepositoryConst {
 	//Delete Prefix
 	const SPASE_I_RESOURCEID = "ResourceID";
 	const SPASE_I_RESOURCEHEADER_RESOURCENAME = "ResourceHeader.ResourceName";
-	const SPASE_I_RESOURCEHEADER_RELEASEDATE = "ResourceHeader.ReleaseData";
+	const SPASE_I_RESOURCEHEADER_RELEASEDATE = "ResourceHeader.ReleaseDate";
 	const SPASE_I_RESOURCEHEADER_DESCRIPTION = "ResourceHeader.Description";
 	const SPASE_I_RESOURCEHEADER_CONTACT_PERSONID = "ResourceHeader.Contact.PersonID";
 	const SPASE_I_RESOURCEHEADER_CONTACT_ROLE = "ResourceHeader.Contact.Role";
@@ -734,7 +734,7 @@ class RepositoryConst {
 	const SPASE_OBSERVATORY = "Observatory";
 	const SPASE_OBSERVATORY_RESOURCEID = "Observatory.ResourceID";
 	const SPASE_OBSERVATORY_RESOURCEHEADER_RESOURCENAME = "Observatory.ResourceHeader.ResourceName";
-	const SPASE_OBSERVATORY_RESOURCEHEADER_RELEASEDATE = "Observatory.ResourceHeader.ReleaseData";
+	const SPASE_OBSERVATORY_RESOURCEHEADER_RELEASEDATE = "Observatory.ResourceHeader.ReleaseDate";
 	const SPASE_OBSERVATORY_RESOURCEHEADER_DESCRIPTION = "Observatory.ResourceHeader.Description";
 	const SPASE_OBSERVATORY_RESOURCEHEADER_CONTACT_PERSONID = "Observatory.ResourceHeader.Contact.PersonID";
 	const SPASE_OBSERVATORY_RESOURCEHEADER_CONTACT_ROLE = "Observatory.ResourceHeader.Contact.Role";
@@ -745,7 +745,7 @@ class RepositoryConst {
 	//Delete Prefix
 	const SPASE_O_RESOURCEID = "ResourceID";
 	const SPASE_O_RESOURCEHEADER_RESOURCENAME = "ResourceHeader.ResourceName";
-	const SPASE_O_RESOURCEHEADER_RELEASEDATE = "ResourceHeader.ReleaseData";
+	const SPASE_O_RESOURCEHEADER_RELEASEDATE = "ResourceHeader.ReleaseDate";
 	const SPASE_O_RESOURCEHEADER_DESCRIPTION = "ResourceHeader.Description";
 	const SPASE_O_RESOURCEHEADER_CONTACT_PERSONID = "ResourceHeader.Contact.PersonID";
 	const SPASE_O_RESOURCEHEADER_CONTACT_ROLE = "ResourceHeader.Contact.Role";
@@ -772,7 +772,7 @@ class RepositoryConst {
 	const SPASE_REPOSITORY = "Repository";
 	const SPASE_REPOSITORY_RESOURCEID = "Repository.ResourceID";
 	const SPASE_REPOSITORY_RESOURCEHEADER_RESOURCENAME = "Repository.ResourceHeader.ResourceName";
-	const SPASE_REPOSITORY_RESOURCEHEADER_RELEASEDATE = "Repository.ResourceHeader.ReleaseData";
+	const SPASE_REPOSITORY_RESOURCEHEADER_RELEASEDATE = "Repository.ResourceHeader.ReleaseDate";
 	const SPASE_REPOSITORY_RESOURCEHEADER_DESCRIPTION = "Repository.ResourceHeader.Description";
 	const SPASE_REPOSITORY_RESOURCEHEADER_CONTACT_PERSONID = "Repository.ResourceHeader.Contact.PersonID";
 	const SPASE_REPOSITORY_RESOURCEHEADER_CONTACT_ROLE = "Repository.ResourceHeader.Contact.Role";
@@ -780,7 +780,7 @@ class RepositoryConst {
 	//Delete Prefix
 	const SPASE_R_RESOURCEID = "ResourceID";
 	const SPASE_R_RESOURCEHEADER_RESOURCENAME = "ResourceHeader.ResourceName";
-	const SPASE_R_RESOURCEHEADER_RELEASEDATE = "ResourceHeader.ReleaseData";
+	const SPASE_R_RESOURCEHEADER_RELEASEDATE = "ResourceHeader.ReleaseDate";
 	const SPASE_R_RESOURCEHEADER_DESCRIPTION = "ResourceHeader.Description";
 	const SPASE_R_RESOURCEHEADER_CONTACT_PERSONID = "ResourceHeader.Contact.PersonID";
 	const SPASE_R_RESOURCEHEADER_CONTACT_ROLE = "ResourceHeader.Contact.Role";
@@ -789,7 +789,7 @@ class RepositoryConst {
 	// SPASE_GRANULE
 	const SPASE_GRANULE = "Granule";
 	const SPASE_GRANULE_RESOURCEID = "Granule.ResourceID";
-	const SPASE_GRANULE_RELEASEDATE = "Granule.ReleaseData";
+	const SPASE_GRANULE_RELEASEDATE = "Granule.ReleaseDate";
 	const SPASE_GRANULE_PARENTID = "Granule.ParentID";
 	const SPASE_GRANULE_STARTDATE = "Granule.StartDate";
 	const SPASE_GRANULE_STOPDATE = "Granule.StopDate";
@@ -808,7 +808,7 @@ class RepositoryConst {
 	const SPASE_GRANULE_SPATIALCOVERAGE_REFERENCE = "Granule.SpatialCoverage.Reference";
 	//Delete Prefix
 	const SPASE_G_RESOURCEID = "ResourceID";
-	const SPASE_G_RELEASEDATE = "ReleaseData";
+	const SPASE_G_RELEASEDATE = "ReleaseDate";
 	const SPASE_G_PARENTID = "ParentID";
 	const SPASE_G_STARTDATE = "StartDate";
 	const SPASE_G_STOPDATE = "StopDate";

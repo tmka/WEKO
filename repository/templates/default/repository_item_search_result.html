@@ -373,11 +373,11 @@
             <{* item_title *}>
             <{foreach from=$action.arrayListThumbnail[$loop_item] item=thumbnail}>
                 <img class="vab" 
-                <{if $thumbnail.height > 50 || $thumbnail.width > 50}>
+                <{if $thumbnail.height > 200 || $thumbnail.width > 200}>
                     <{if $thumbnail.width > $thumbnail.height}>
-                        width="50px"
+                        width="200px"
                     <{else}>
-                        height="50px"
+                        height="200px"
                     <{/if}>
                 <{/if}>
                 src="<{$smarty.const.BASE_URL}>/?action=repository_action_common_download&item_id=<{$thumbnail.item_id}>&item_no=<{$thumbnail.item_no}>&attribute_id=<{$thumbnail.attribute_id}>&file_no=<{$thumbnail.file_no}>&img=true"

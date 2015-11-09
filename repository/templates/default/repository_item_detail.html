@@ -1251,11 +1251,11 @@
 														<{* Modify invalid javascript of thumbnail onLoad T.Koyasu 2011/12/26 -start- *}>
 														<img 
 														<{* Modify when icon is small, show by real size T.Koyasu 2012/01/19 -start- *}>
-														<{if $item_attr[i][j].width > 100 || $item_attr[i][j].height > 100}>
+														<{if $item_attr[i][j].width > 500 || $item_attr[i][j].height > 500}>
 															<{if $item_attr[i][j].width >= $item_attr[i][j].height}>
-																width="100px"
+																width="500px"
 															<{else}>
-																height="100px"
+																height="500px"
 															<{/if}> 
 														<{/if}>
 														<{* Modify when icon is small, show by real size T.Koyasu 2012/01/19 -end- *}>
