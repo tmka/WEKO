@@ -2363,7 +2363,9 @@ class Repository_Oaipmh_SPASE_Displaydata
     }
 
     if($this->Resourceheader_Contact_PersonID != null || $this->Resourceheader_Contact_Role != null){
+
     $xmlStr .= '<Contact>'."\n";
+
     if($this->Resourceheader_Contact_PersonID != null)
     {
         $xml = $this->Resourceheader_Contact_PersonID->output();
@@ -2375,6 +2377,7 @@ class Repository_Oaipmh_SPASE_Displaydata
         }
     }
 
+    if($this->Resourceheader_Contact_Role != null){
     for($ii=0;$ii<count($this->Resourceheader_Contact_Role);$ii++){
           $xml = $this->Resourceheader_Contact_Role[$ii]->output();
           if(strlen($xml)>0){
@@ -2384,7 +2387,10 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
           }
       }
+    }
+
     $xmlStr .= '</Contact>'."\n";
+
     }
 
     if($this->Resourceheader_Resourcename != null)
