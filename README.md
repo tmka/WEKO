@@ -6,13 +6,14 @@
 
 ##Files
 * repository ... WEKO module
-* permalink.php ... Generate permalink from WEKO's open search interface.
+* [out of date]permalink.php ... Generate permalink from WEKO's open search interface.
 * permalinkv2.php ... fixed some issues for first version.
 
 
 ##repository
 ###requires
-* NetCommons 2.4.x
+* NetCommons 2.4.x  
+
 ###changes
 * Added SPASE definition. (SPASE is a kind of metadata format)
 
@@ -24,10 +25,9 @@ Go to Item detail page, and push the OAI-PMH button.
 You will get the XML file written by SPASE metadata format.
 
 ##permalink.php, permalinkv2.php
-Developed another interface that can offer direct file download link for the sake of developer.  
+Developed another interface that can provide to direct file download link for the sake of developer.  
 This program will makes permalink from WEKO's opensearch interface.
 
-* permalink.php ... (out of date)
 * permalink\_v2.php ... Used HTTP\_IF\_MODIFIED_HEADER and fixed interface 
   * usage ... http://any.com/permalink_v2.php?keyword=something  
   * If OpenSearch inteface can't find anything, then return to $BASE_URL page.  
