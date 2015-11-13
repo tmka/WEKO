@@ -234,9 +234,9 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                     break;
                 case RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_CONTACT_ROLE:
                     $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction);
-					$tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
-					$tmp->addArray($tmp2);
-					$this->catalog->addResourceheader_Contact_Role($tmp);
+                    $tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+                    $tmp->addArray($tmp2);
+                    $this->catalog->addResourceheader_Contact_Role($tmp);
                     break;
                 case RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_REPOSITORYID:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
@@ -405,9 +405,9 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                     break;
                 case RepositoryConst::SPASE_DISPLAYDATA_RESOURCEHEADER_CONTACT_ROLE:
                     $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction);
-					$tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
-					$tmp->addArray($tmp2);
-					$this->catalog->addResourceheader_Contact_Role($tmp);
+                    $tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+                    $tmp->addArray($tmp2);
+                    $this->catalog->addResourceheader_Contact_Role($tmp);
                     break;
                 case RepositoryConst::SPASE_DISPLAYDATA_ACCESSINFORMATION_REPOSITORYID:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
@@ -659,9 +659,9 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                     break;
                 case RepositoryConst::SPASE_INSTRUMENT_RESOURCEHEADER_CONTACT_ROLE:
                     $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction);
-					$tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
-					$tmp->addArray($tmp2);
-					$this->instrument->addResourceheader_Contact_Role($tmp);
+                    $tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+                    $tmp->addArray($tmp2);
+                    $this->instrument->addResourceheader_Contact_Role($tmp);
                     break;
                 case RepositoryConst::SPASE_INSTRUMENT_TYPE:
                     $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction, $value, $language);
@@ -669,9 +669,9 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                     break;
                 case RepositoryConst::SPASE_INSTRUMENT_INVESTIGATIONNAME:
                     $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction);
-					$tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
-					$tmp->addArray($tmp2);
-					$this->instrument->addInvestigationname($tmp);
+                    $tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+                    $tmp->addArray($tmp2);
+                    $this->instrument->addInvestigationname($tmp);
                     break;
                 case RepositoryConst::SPASE_INSTRUMENT_OBSEVATORYID:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
@@ -713,15 +713,15 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
                     $this->numericaldata->addResourceheader_Acknowledgement($tmp);
                     break;
-                case RepositoryConst::SPASE_NUMERICALDATA_CONTACT_PERSONID:
+                case RepositoryConst::SPASE_NUMERICALDATA_RESOURCEHEADER_CONTACT_PERSONID:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
                     $this->numericaldata->addResourceheader_Contact_PersonID($tmp);
                     break;
-                case RepositoryConst::SPASE_NUMERICALDATA_CONTACT_ROLE:
+                case RepositoryConst::SPASE_NUMERICALDATA_RESOURCEHEADER_CONTACT_ROLE:
                     $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction);
-					$tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
-					$tmp->addArray($tmp2);
-					$this->numericaldata->addResourceheader_Contact_Role($tmp);
+                    $tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+                    $tmp->addArray($tmp2);
+                    $this->numericaldata->addResourceheader_Contact_Role($tmp);
                     break;
                 case RepositoryConst::SPASE_NUMERICALDATA_ACCESSINFORMATION_REPOSITORYID:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
@@ -885,15 +885,15 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                     break;
                 case RepositoryConst::SPASE_OBSERVATORY_RESOURCEHEADER_CONTACT_ROLE:
                     $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction);
-					$tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
-					$tmp->addArray($tmp2);
-					$this->observatory->addResourceheader_Contact_Role($tmp);
+                    $tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+                    $tmp->addArray($tmp2);
+                    $this->observatory->addResourceheader_Contact_Role($tmp);
                     break;
                 case RepositoryConst::SPASE_OBSERVATORY_LOCATION_OBSERVATORYREGION:
                     $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction);
-					$tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
-					$tmp->addArray($tmp2);
-					$this->observatory->addLocation_Observatoryregion($tmp);
+                    $tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+                    $tmp->addArray($tmp2);
+                    $this->observatory->addLocation_Observatoryregion($tmp);
                     break;
                 case RepositoryConst::SPASE_OBSERVATORY_LOCATION_COORDINATESYSTEMNAME_LATITUDE:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
@@ -941,9 +941,9 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                     break;
                 case RepositoryConst::SPASE_PERSON_EMAIL:
                     $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction);
-					          $tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
-					          $tmp->addArray($tmp2);
-					          $this->person->addEmail($tmp);
+                              $tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+                              $tmp->addArray($tmp2);
+                              $this->person->addEmail($tmp);
                     break;
                 default :
                     break;
@@ -983,9 +983,9 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                     break;
                 case RepositoryConst::SPASE_REPOSITORY_RESOURCEHEADER_CONTACT_ROLE:
                     $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction);
-					$tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
-					$tmp->addArray($tmp2);
-					$this->repository->addResourceheader_Contact_Role($tmp);
+                    $tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+                    $tmp->addArray($tmp2);
+                    $this->repository->addResourceheader_Contact_Role($tmp);
                     break;
                 case RepositoryConst::SPASE_REPOSITORY_ACCESSURL_URL:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
@@ -1385,7 +1385,7 @@ class Repository_Oaipmh_SPASE_Catalog
     $xmlStr .= '<Version>';
     $xmlStr .= RepositoryConst::SPASE_VERSION;
     $xmlStr .= '</Version>'. "\n";
-	*/
+    */
     /*
     for($ii=0;$ii<count($this->identifier);$ii++){
       $xmlStr .= $this->identifier[$ii]->output();
@@ -1962,7 +1962,7 @@ class Repository_Oaipmh_SPASE_Catalog
       if($this->ResourceID != null)
     {
     $xmlStr .= '</'.RepositoryConst::SPASE_CATALOG.'>';
-  	}
+    }
 
     return $xmlStr;
   }
@@ -2071,10 +2071,10 @@ class Repository_Oaipmh_SPASE_Displaydata
   }
 
   public function addResourceheader_Contact_Role(Repository_Oaipmh_SPASE_Array $Resourceheader_Contact_Role){
-  	$tmp = RepositoryOutputFilterSPASE::retValue($Resourceheader_Contact_Role->getArrayCount());
-  	if(strlen($tmp)>0){
-  	array_push($this->Resourceheader_Contact_Role, $Resourceheader_Contact_Role);
-  	}
+    $tmp = RepositoryOutputFilterSPASE::retValue($Resourceheader_Contact_Role->getArrayCount());
+    if(strlen($tmp)>0){
+    array_push($this->Resourceheader_Contact_Role, $Resourceheader_Contact_Role);
+    }
   }
 
   public function addAccessinformation_Repositoryid(Repository_Oaipmh_SPASE_LangString $Accessinformation_Repositoryid){
@@ -2981,10 +2981,10 @@ class Repository_Oaipmh_SPASE_NumericalData
   }
 
   public function addResourceheader_Contact_Role(Repository_Oaipmh_SPASE_Array $Resourceheader_Contact_Role){
-  	$tmp = RepositoryOutputFilterSPASE::retValue($Resourceheader_Contact_Role->getArrayCount());
-  	if(strlen($tmp)>0){
-  	array_push($this->Resourceheader_Contact_Role, $Resourceheader_Contact_Role);
-  	}
+    $tmp = RepositoryOutputFilterSPASE::retValue($Resourceheader_Contact_Role->getArrayCount());
+    if(strlen($tmp)>0){
+    array_push($this->Resourceheader_Contact_Role, $Resourceheader_Contact_Role);
+    }
   }
 
   public function addAccessinformation_Repositoryid(Repository_Oaipmh_SPASE_LangString $Accessinformation_Repositoryid){
@@ -4442,26 +4442,26 @@ class Repository_Oaipmh_SPASE_Person
 
 /*
   for($ii=0;$ii<count($this->Email);$ii++){
-  	$xml = $this->Email[$ii]->output();
-  	if(strlen($xml)>0){
-  		$xmlStr .= '<'.RepositoryConst::SPASE_P_EMAIL.'>';
-  		$xmlStr .= $xml;
-  		$xmlStr .= '</'.RepositoryConst::SPASE_P_EMAIL.'>'."\n";
-  	}
+    $xml = $this->Email[$ii]->output();
+    if(strlen($xml)>0){
+        $xmlStr .= '<'.RepositoryConst::SPASE_P_EMAIL.'>';
+        $xmlStr .= $xml;
+        $xmlStr .= '</'.RepositoryConst::SPASE_P_EMAIL.'>'."\n";
+    }
   }
   */
 
   if($this->Email != null)
   {
-	  for($ii=0;$ii<count($this->Email);$ii++){
-	  	$xml = $this->Email[$ii]->output();
-	  	if(strlen($xml)>0){
-		    $value = explode(".",RepositoryConst::SPASE_P_EMAIL);
-		    $xmlStr .= '<'.$value[count($value)-1].'>';
-		    $xmlStr .= $xml;
-		    $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
-	  	}
-	  }
+      for($ii=0;$ii<count($this->Email);$ii++){
+        $xml = $this->Email[$ii]->output();
+        if(strlen($xml)>0){
+            $value = explode(".",RepositoryConst::SPASE_P_EMAIL);
+            $xmlStr .= '<'.$value[count($value)-1].'>';
+            $xmlStr .= $xml;
+            $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
+        }
+      }
   }
 
 
@@ -5348,10 +5348,10 @@ class Repository_Oaipmh_SPASE_Array{
         }
         //ar
         for($ii=0;$ii<count($this->ar);$ii++){
-        	$xml = $this->ar[$ii]->output();
-        	if(strlen($xml)>0){
-        		$xmlStr.=$xml;
-        	}
+            $xml = $this->ar[$ii]->output();
+            if(strlen($xml)>0){
+                $xmlStr.=$xml;
+            }
         }
         return $xmlStr;
     }
