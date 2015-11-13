@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Move.class.php 38124 2014-07-01 06:56:02Z rei_matsuura $
+// $Id: Move.class.php 57188 2015-08-27 00:55:07Z tatsuya_koyasu $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics,
 // Research and Development Center for Scientific Information Resources
@@ -49,7 +49,7 @@ class Repository_Action_Edit_Log_Move extends RepositoryAction
 	// member
 	var $log_exception = "";
 	
-	function execute()
+	function executeApp()
 	{
 		try {
 			ini_set('memory_limit', -1);
@@ -230,8 +230,9 @@ class Repository_Action_Edit_Log_Move extends RepositoryAction
             // -------------------------------------------
             // Aggregate usage statistics
             // -------------------------------------------
-            $RepositoryUsagestatistics = new RepositoryUsagestatistics($this->Session, $this->Db, $this->TransStartDate);
-            if(!$RepositoryUsagestatistics->aggregateUsagestatistics())
+            $this->infoLog("businessUsagestatistics", __FILE__, __CLASS__, __LINE__);
+            $usageStatistics = BusinessFactory::getFactory()->getBusiness("businessUsagestatistics");
+            if(!$usageStatistics->aggregateUsagestatistics())
             {
                 $this->failTrans();
                 $this->exitAction();
@@ -388,316 +389,279 @@ class Repository_Action_Edit_Log_Move extends RepositoryAction
 		// calc log statistics per date
 		// ------------------------------------------
 			
-			// ------------------------------------------
-			// fill insert item count
-			// ------------------------------------------
-			$query = "SELECT CAST( log.record_date AS DATE ) AS d1, count(*) AS cnt ".
-					" FROM  ".DATABASE_PREFIX."repository_log AS log ".
-					" WHERE log.record_date >= '$start_date' ".
-					" AND log.record_date <= '$end_date' ".
-					" AND log.operation_id = '1' ".
-					$this->log_exception.
-					" GROUP BY d1 ";
-			$result = $this->Db->execute($query);
-			if($result === false){
-				return false;
+		// ------------------------------------------
+		// fill insert item count
+		// ------------------------------------------
+		$query = "SELECT CAST( log.record_date AS DATE ) AS d1, count(*) AS cnt ".
+				" FROM  ".DATABASE_PREFIX."repository_log AS log ".
+				" WHERE log.record_date >= '$start_date' ".
+				" AND log.record_date <= '$end_date' ".
+				" AND log.operation_id = 1 ".
+				$this->log_exception.
+				" GROUP BY d1 ";
+		$result = $this->Db->execute($query);
+		if($result === false){
+			return false;
+		}
+		for($ii=0; $ii<count($result); $ii++){
+			$log_per_date[$result[$ii]['d1']]['item_count'] = $result[$ii]['cnt'];
+		}
+		
+		// ------------------------------------------
+		// fill download count
+		// ------------------------------------------
+		// Modify for remove IE Continuation log K.Matsuo 2011/11/17 --start-- 
+		$query = "SELECT CAST( log.record_date AS DATE ) AS d1, count(*) AS cnt ".
+				 " FROM (".
+				 "   SELECT DISTINCT DATE_FORMAT( record_date, '%Y-%m-%d %H:%i' ) AS record_date,".
+				 "   ip_address, item_id, item_no, attribute_id, file_no, user_id, operation_id, user_agent".
+				 "   FROM ". DATABASE_PREFIX ."repository_log ".
+				 "   WHERE operation_id=2 ) AS log".
+				" WHERE log.record_date >= '$start_date' ".
+				" AND log.record_date <= '$end_date' ".
+				" AND log.operation_id = 2 ".
+				$this->log_exception.
+				" GROUP BY d1 ";
+		// Modify for remove IE Continuation log K.Matsuo 2011/11/17 --end-- 
+		$result = $this->Db->execute($query);
+		if($result === false){
+			return false;
+		}
+		for($ii=0; $ii<count($result); $ii++){
+			$log_per_date[$result[$ii]['d1']]['download_count'] = $result[$ii]['cnt'];
+		}
+		
+		// ------------------------------------------
+		// fill view count
+		// ------------------------------------------
+		$query ="SELECT CAST( log.record_date AS DATE ) AS d1, count(*) AS cnt ".
+				" FROM  ".DATABASE_PREFIX."repository_log AS log ".
+				" WHERE log.record_date >= '$start_date' ".
+				" AND log.record_date <= '$end_date' ".
+				" AND log.operation_id = 3 ".
+				$this->log_exception.
+				" GROUP BY d1 ".
+				" ORDER BY d1 ";
+		$result = $this->Db->execute($query);
+		if($result === false){
+			return false;
+		}
+		for($ii=0; $ii<count($result); $ii++){
+			$log_per_date[$result[$ii]['d1']]['view_count'] = $result[$ii]['cnt'];
+		}
+		
+		// ------------------------------------------
+		// make log file(yyyy.txt)
+		// ------------------------------------------
+		$year = "";
+        
+		foreach ($log_per_date as $date => $val){
+			if(substr($date, 0, 4) != $year){
+			    if (strlen($year) > 0){
+				    fclose($fp);
+			    }
+				$year = substr($date, 0, 4);
+				$fp = fopen(WEBAPP_DIR."/logs/weko/logfile/log_per_date_$year.txt", "a");
 			}
-			for($ii=0; $ii<count($result); $ii++){
-				$log_per_date[$result[$ii]['d1']]['item_count'] = $result[$ii]['cnt'];
-			}
-			
-			// ------------------------------------------
-			// fill download count
-			// ------------------------------------------
-			// Modify for remove IE Continuation log K.Matsuo 2011/11/17 --start-- 
-			$query = "SELECT CAST( log.record_date AS DATE ) AS d1, count(*) AS cnt ".
-					 " FROM (".
-					 "   SELECT DISTINCT DATE_FORMAT( record_date, '%Y-%m-%d %H:%i' ) AS record_date,".
-					 "   ip_address, item_id, item_no, attribute_id, file_no, user_id, operation_id, user_agent".
-					 "   FROM ". DATABASE_PREFIX ."repository_log ".
-					 "   WHERE operation_id='2' ) AS log".
-					" WHERE log.record_date >= '$start_date' ".
-					" AND log.record_date <= '$end_date' ".
-					" AND log.operation_id = '2' ".
-					$this->log_exception.
-					" GROUP BY d1 ";
-			// Modify for remove IE Continuation log K.Matsuo 2011/11/17 --end-- 
-			$result = $this->Db->execute($query);
-			if($result === false){
-				return false;
-			}
-			for($ii=0; $ii<count($result); $ii++){
-				$log_per_date[$result[$ii]['d1']]['download_count'] = $result[$ii]['cnt'];
-			}
-			
-			// ------------------------------------------
-			// fill view count
-			// ------------------------------------------
-			$query ="SELECT CAST( log.record_date AS DATE ) AS d1, count(*) AS cnt ".
-					" FROM  ".DATABASE_PREFIX."repository_log AS log ".
-					" WHERE log.record_date >= '$start_date' ".
-					" AND log.record_date <= '$end_date' ".
-					" AND log.operation_id = '3' ".
-					$this->log_exception.
-					" GROUP BY d1 ".
-					" ORDER BY d1 ";
-			$result = $this->Db->execute($query);
-			if($result === false){
-				return false;
-			}
-			for($ii=0; $ii<count($result); $ii++){
-				$log_per_date[$result[$ii]['d1']]['view_count'] = $result[$ii]['cnt'];
-			}
-			
-			// ------------------------------------------
-			// make log file(yyyy.txt)
-			// ------------------------------------------
-			$year = "";
-			foreach ($log_per_date as $date => $val){
-				if(substr($date, 0, 4) != $year){
-					fclose($fp);
-					$year = substr($date, 0, 4);
-					$fp = fopen(WEBAPP_DIR."/logs/weko/logfile/log_per_date_$year.txt", "a");
-				}
-				fwrite($fp, $val['record_date']."\t".
-							$val['year_week']."\t".
-							$val['item_count']."\t".
-							$val['download_count']."\t".
-							$val['view_count']."\n"
-				);
-			}
-			fclose($fp);
+			fwrite($fp, $val['record_date']."\t".
+						$val['year_week']."\t".
+						$val['item_count']."\t".
+						$val['download_count']."\t".
+						$val['view_count']."\n"
+			);
+		}
+		fclose($fp);
 			
 		// ------------------------------------------
 		// calc log statistics per host
 		// ------------------------------------------
+		
+		// ------------------------------------------
+		// fill item count
+		// ------------------------------------------
+		$query = " SELECT CAST( log.record_date AS DATE ) AS d1, ip_address AS addr, host, count(*) AS cnt ".
+				" FROM  ".DATABASE_PREFIX."repository_log AS log ".
+				" WHERE log.record_date >= '$start_date' ".
+				" AND log.record_date <= '$end_date' ".
+				" AND log.operation_id = 1 ".
+				$this->log_exception.
+				" GROUP BY d1, addr ".
+				" ORDER BY d1, addr ";
+		$result = $this->Db->execute($query);
+		if($result === false){
+			return false;
+		}
+		for($ii=0;$ii<count($result);$ii++){
+			$date = $result[$ii]['d1'];
+			$ip = $result[$ii]['addr'];
+			if(!isset($log_per_host[$date])){
+				$log_per_host[$date] = array();
+			}
+			if(!isset($log_per_host[$date][$ip])){
+				$log_per_host[$date][$ip] = array();
+				$log_per_host[$date][$ip]['record_date'] = $result[$ii]['d1'];
+				$log_per_host[$date][$ip]['ip_address'] = $result[$ii]['addr'];
+				$log_per_host[$date][$ip]['host'] = $result[$ii]['host'];
+				$log_per_host[$date][$ip]['item_count'] = 0;
+				$log_per_host[$date][$ip]['download_count'] = 0;
+				$log_per_host[$date][$ip]['view_count'] = 0;
+			}
+			$log_per_host[$date][$ip]['item_count'] = $result[$ii]['cnt'];
+		}
+		
+		// ------------------------------------------
+		// fill download count
+		// ------------------------------------------
+		// Modify for remove IE Continuation log K.Matsuo 2011/11/17 --start-- 
+		$query =" SELECT CAST( log.record_date AS DATE ) AS d1, ip_address AS addr, host, count(*) AS cnt ".
+				" FROM (".
+				"   SELECT DISTINCT DATE_FORMAT( record_date, '%Y-%m-%d %H:%i' ) AS record_date,".
+				"	ip_address, item_id, item_no, attribute_id, file_no, user_id, operation_id, user_agent, host".
+				"   FROM ". DATABASE_PREFIX ."repository_log ".
+				"   WHERE operation_id=2 ) AS log".
+				" WHERE log.record_date >= '$start_date' ".
+				" AND log.record_date <= '$end_date' ".
+				" AND log.operation_id = 2 ".
+				$this->log_exception.
+				" GROUP BY d1, addr ".
+				" ORDER BY d1, addr ";
+		// Modify for remove IE Continuation log K.Matsuo 2011/11/17 --end-- 
+		$result = $this->Db->execute($query);
+		if($result === false){
+			return false;
+		}
+		for($ii=0;$ii<count($result);$ii++){
+			$date = $result[$ii]['d1'];
+			$ip = $result[$ii]['addr'];
+			if(!isset($log_per_host[$date])){
+				$log_per_host[$date] = array();
+			}
+			if(!isset($log_per_host[$date][$ip])){
+				$log_per_host[$date][$ip] = array();
+				$log_per_host[$date][$ip]['record_date'] = $result[$ii]['d1'];
+				$log_per_host[$date][$ip]['ip_address'] = $result[$ii]['addr'];
+				$log_per_host[$date][$ip]['host'] = $result[$ii]['host'];
+				$log_per_host[$date][$ip]['item_count'] = 0;
+				$log_per_host[$date][$ip]['download_count'] = 0;
+				$log_per_host[$date][$ip]['view_count'] = 0;
+			}
+			$log_per_host[$date][$ip]['download_count'] = $result[$ii]['cnt'];
+		}
+		
+		// ------------------------------------------
+		// fill view count
+		// ------------------------------------------
+		$query =" SELECT CAST( log.record_date AS DATE ) AS d1, ip_address AS addr, host, count(*) AS cnt ".
+				" FROM  ".DATABASE_PREFIX."repository_log AS log ".
+				" WHERE log.record_date >= '$start_date' ".
+				" AND log.record_date <= '$end_date' ".
+				" AND log.operation_id = 3 ".
+				$this->log_exception.
+				" GROUP BY d1, addr ".
+				" ORDER BY d1, addr ";
+		$result = $this->Db->execute($query);
+		if($result === false){
+			return false;
+		}
+		for($ii=0;$ii<count($result);$ii++){
+			$date = $result[$ii]['d1'];
+			$ip = $result[$ii]['addr'];
+			if(!isset($log_per_host[$date])){
+				$log_per_host[$date] = array();
+			}
+			if(!isset($log_per_host[$date][$ip])){
+				$log_per_host[$date][$ip] = array();
+				$log_per_host[$date][$ip]['record_date'] = $result[$ii]['d1'];
+				$log_per_host[$date][$ip]['ip_address'] = $result[$ii]['addr'];
+				$log_per_host[$date][$ip]['host'] = $result[$ii]['host'];
+				$log_per_host[$date][$ip]['item_count'] = 0;
+				$log_per_host[$date][$ip]['download_count'] = 0;
+				$log_per_host[$date][$ip]['view_count'] = 0;
+			}
+			$log_per_host[$date][$ip]['view_count'] = $result[$ii]['cnt'];
+		}
 			
-			// ------------------------------------------
-			// fill item count
-			// ------------------------------------------
-			$query = " SELECT CAST( log.record_date AS DATE ) AS d1, ip_address AS addr, host, count(*) AS cnt ".
-					" FROM  ".DATABASE_PREFIX."repository_log AS log ".
-					" WHERE log.record_date >= '$start_date' ".
-					" AND log.record_date <= '$end_date' ".
-					" AND log.operation_id = '1' ".
-					$this->log_exception.
-					" GROUP BY d1, addr ".
-					" ORDER BY d1, addr ";
-			$result = $this->Db->execute($query);
-			if($result === false){
-				return false;
-			}
-			for($ii=0;$ii<count($result);$ii++){
-				$date = $result[$ii]['d1'];
-				$ip = $result[$ii]['addr'];
-				if(!isset($log_per_host[$date])){
-					$log_per_host[$date] = array();
-				}
-				if(!isset($log_per_host[$date][$ip])){
-					$log_per_host[$date][$ip] = array();
-					$log_per_host[$date][$ip]['record_date'] = $result[$ii]['d1'];
-					$log_per_host[$date][$ip]['ip_address'] = $result[$ii]['addr'];
-					$log_per_host[$date][$ip]['host'] = $result[$ii]['host'];
-					$log_per_host[$date][$ip]['item_count'] = 0;
-					$log_per_host[$date][$ip]['download_count'] = 0;
-					$log_per_host[$date][$ip]['view_count'] = 0;
-				}
-				$log_per_host[$date][$ip]['item_count'] = $result[$ii]['cnt'];
-			}
-			
-			// ------------------------------------------
-			// fill download count
-			// ------------------------------------------
-			// Modify for remove IE Continuation log K.Matsuo 2011/11/17 --start-- 
-			$query =" SELECT CAST( log.record_date AS DATE ) AS d1, ip_address AS addr, host, count(*) AS cnt ".
-					" FROM (".
-					"   SELECT DISTINCT DATE_FORMAT( record_date, '%Y-%m-%d %H:%i' ) AS record_date,".
-					"	ip_address, item_id, item_no, attribute_id, file_no, user_id, operation_id, user_agent, host".
-					"   FROM ". DATABASE_PREFIX ."repository_log ".
-					"   WHERE operation_id='2' ) AS log".
-					" WHERE log.record_date >= '$start_date' ".
-					" AND log.record_date <= '$end_date' ".
-					" AND log.operation_id = '2' ".
-					$this->log_exception.
-					" GROUP BY d1, addr ".
-					" ORDER BY d1, addr ";
-			// Modify for remove IE Continuation log K.Matsuo 2011/11/17 --end-- 
-			$result = $this->Db->execute($query);
-			if($result === false){
-				return false;
-			}
-			for($ii=0;$ii<count($result);$ii++){
-				$date = $result[$ii]['d1'];
-				$ip = $result[$ii]['addr'];
-				if(!isset($log_per_host[$date])){
-					$log_per_host[$date] = array();
-				}
-				if(!isset($log_per_host[$date][$ip])){
-					$log_per_host[$date][$ip] = array();
-					$log_per_host[$date][$ip]['record_date'] = $result[$ii]['d1'];
-					$log_per_host[$date][$ip]['ip_address'] = $result[$ii]['addr'];
-					$log_per_host[$date][$ip]['host'] = $result[$ii]['host'];
-					$log_per_host[$date][$ip]['item_count'] = 0;
-					$log_per_host[$date][$ip]['download_count'] = 0;
-					$log_per_host[$date][$ip]['view_count'] = 0;
-				}
-				$log_per_host[$date][$ip]['download_count'] = $result[$ii]['cnt'];
-			}
-			
-			// ------------------------------------------
-			// fill view count
-			// ------------------------------------------
-			$query =" SELECT CAST( log.record_date AS DATE ) AS d1, ip_address AS addr, host, count(*) AS cnt ".
-					" FROM  ".DATABASE_PREFIX."repository_log AS log ".
-					" WHERE log.record_date >= '$start_date' ".
-					" AND log.record_date <= '$end_date' ".
-					" AND log.operation_id = '3' ".
-					$this->log_exception.
-					" GROUP BY d1, addr ".
-					" ORDER BY d1, addr ";
-			$result = $this->Db->execute($query);
-			if($result === false){
-				return false;
-			}
-			for($ii=0;$ii<count($result);$ii++){
-				$date = $result[$ii]['d1'];
-				$ip = $result[$ii]['addr'];
-				if(!isset($log_per_host[$date])){
-					$log_per_host[$date] = array();
-				}
-				if(!isset($log_per_host[$date][$ip])){
-					$log_per_host[$date][$ip] = array();
-					$log_per_host[$date][$ip]['record_date'] = $result[$ii]['d1'];
-					$log_per_host[$date][$ip]['ip_address'] = $result[$ii]['addr'];
-					$log_per_host[$date][$ip]['host'] = $result[$ii]['host'];
-					$log_per_host[$date][$ip]['item_count'] = 0;
-					$log_per_host[$date][$ip]['download_count'] = 0;
-					$log_per_host[$date][$ip]['view_count'] = 0;
-				}
-				$log_per_host[$date][$ip]['view_count'] = $result[$ii]['cnt'];
-			}
-			
-			// ------------------------------------------
-			// make log file(log_per_host_yyyyMM.txt)
-			// ------------------------------------------
-			$month = "";
-			foreach ($log_per_host as $date => $list){
-				if(substr($date, 0, 4).substr($date, 5, 2) != $month){
-					fclose($fp);
-					$month = substr($date, 0, 4).substr($date, 5, 2);
-					$fp = fopen(WEBAPP_DIR."/logs/weko/logfile/log_per_host_".$month.".txt", "a"); 
-				}
-				foreach ($list as $ip => $val){
-					fwrite($fp, $val['record_date']."\t".
-								$val['ip_address']."\t".
-								$val['host']."\t".
-								$val['item_count']."\t".
-								$val['download_count']."\t".
-								$val['view_count']."\n"
-					);
-				}
-			}
-			fclose($fp);
+        $this->writeLogPerHost($log_per_host);
 			
 		// ------------------------------------------
 		// calc log statistics per item
 		// ------------------------------------------
 		
-			// ------------------------------------------
-			// fill download count
-			// ------------------------------------------
-			// Modify for remove IE Continuation log K.Matsuo 2011/11/17 --start-- 
-			$query =" SELECT DISTINCT CAST( log.record_date AS DATE ) AS d1, item_id, item_no, count(*) AS cnt ".
-					" FROM (".
-					"   SELECT DISTINCT DATE_FORMAT( record_date, '%Y-%m-%d %H:%i' ) AS record_date,".
-					"	ip_address, item_id, item_no, attribute_id, file_no, user_id, operation_id, user_agent".
-					"   FROM ". DATABASE_PREFIX ."repository_log ".
-					"   WHERE operation_id='2' ) AS log".
-					" WHERE log.record_date >= '$start_date' ".
-					" AND log.record_date <= '$end_date' ".
-					" AND log.operation_id = '2' ".
-					$this->log_exception.
-					" GROUP BY d1, item_id, item_no ".
-					" ORDER BY d1, item_id, item_no; ";
-			// Modify for remove IE Continuation log K.Matsuo 2011/11/17 --end-- 
-			$result = $this->Db->execute($query);
-			if($result === false){
-				return false;
+		// ------------------------------------------
+		// fill download count
+		// ------------------------------------------
+		// Modify for remove IE Continuation log K.Matsuo 2011/11/17 --start-- 
+		$query =" SELECT DISTINCT CAST( log.record_date AS DATE ) AS d1, item_id, item_no, count(*) AS cnt ".
+				" FROM (".
+				"   SELECT DISTINCT DATE_FORMAT( record_date, '%Y-%m-%d %H:%i' ) AS record_date,".
+				"	ip_address, item_id, item_no, attribute_id, file_no, user_id, operation_id, user_agent".
+				"   FROM ". DATABASE_PREFIX ."repository_log ".
+				"   WHERE operation_id=2 ) AS log".
+				" WHERE log.record_date >= '$start_date' ".
+				" AND log.record_date <= '$end_date' ".
+				" AND log.operation_id = 2 ".
+				$this->log_exception.
+				" GROUP BY d1, item_id, item_no ".
+				" ORDER BY d1, item_id, item_no; ";
+		// Modify for remove IE Continuation log K.Matsuo 2011/11/17 --end-- 
+		$result = $this->Db->execute($query);
+		if($result === false){
+			return false;
+		}
+		for($ii=0;$ii<count($result);$ii++){
+			$date = $result[$ii]['d1'];
+			$item_id = $result[$ii]['item_id'];
+			$item_no = $result[$ii]['item_no'];
+			if(!isset($log_per_item[$date])){
+				$log_per_item[$date] = array();
 			}
-			for($ii=0;$ii<count($result);$ii++){
-				$date = $result[$ii]['d1'];
-				$item_id = $result[$ii]['item_id'];
-				$item_no = $result[$ii]['item_no'];
-				if(!isset($log_per_item[$date])){
-					$log_per_item[$date] = array();
-				}
-				if(!isset($log_per_item[$date][$item_id])){
-					$log_per_item[$date][$item_id] = array();
-					$log_per_item[$date][$item_id][$item_no] = array();
-					$log_per_item[$date][$item_id][$item_no]['record_date'] = $date;
-					$log_per_item[$date][$item_id][$item_no]['item_id'] = $item_id;
-					$log_per_item[$date][$item_id][$item_no]['item_no'] = $item_no;
-					$log_per_item[$date][$item_id][$item_no]['download_count'] = 0;
-					$log_per_item[$date][$item_id][$item_no]['view_count'] = 0;
-				}
-				$log_per_item[$date][$item_id][$item_no]['download_count'] = $result[$ii]['cnt'];
+			if(!isset($log_per_item[$date][$item_id])){
+				$log_per_item[$date][$item_id] = array();
+				$log_per_item[$date][$item_id][$item_no] = array();
+				$log_per_item[$date][$item_id][$item_no]['record_date'] = $date;
+				$log_per_item[$date][$item_id][$item_no]['item_id'] = $item_id;
+				$log_per_item[$date][$item_id][$item_no]['item_no'] = $item_no;
+				$log_per_item[$date][$item_id][$item_no]['download_count'] = 0;
+				$log_per_item[$date][$item_id][$item_no]['view_count'] = 0;
 			}
+			$log_per_item[$date][$item_id][$item_no]['download_count'] = $result[$ii]['cnt'];
+		}
+		
+		// ------------------------------------------
+		// fill view count
+		// ------------------------------------------
+		$query =" SELECT DISTINCT CAST( log.record_date AS DATE ) AS d1, item_id, item_no, count(*) AS cnt ".
+				" FROM  ".DATABASE_PREFIX."repository_log AS log ".
+				" WHERE log.record_date >= '$start_date' ".
+				" AND log.record_date <= '$end_date' ".
+				" AND log.operation_id = 3 ".
+				$this->log_exception.
+				" GROUP BY d1, item_id, item_no ".
+				" ORDER BY d1, item_id, item_no; ";
+		$result = $this->Db->execute($query);
+		if($result === false){
+			return false;
+		}
+		for($ii=0;$ii<count($result);$ii++){
+			$date = $result[$ii]['d1'];
+			$item_id = $result[$ii]['item_id'];
+			$item_no = $result[$ii]['item_no'];
+			if(!isset($log_per_item[$date])){
+				$log_per_item[$date] = array();
+			}
+			if(!isset($log_per_item[$date][$item_id])){
+				$log_per_item[$date][$item_id] = array();
+				$log_per_item[$date][$item_id][$item_no] = array();
+				$log_per_item[$date][$item_id][$item_no]['record_date'] = $date;
+				$log_per_item[$date][$item_id][$item_no]['item_id'] = $item_id;
+				$log_per_item[$date][$item_id][$item_no]['item_no'] = $item_no;
+				$log_per_item[$date][$item_id][$item_no]['download_count'] = 0;
+				$log_per_item[$date][$item_id][$item_no]['view_count'] = 0;
+			}
+			$log_per_item[$date][$item_id][$item_no]['view_count'] = $result[$ii]['cnt'];
+		}
 			
-			// ------------------------------------------
-			// fill view count
-			// ------------------------------------------
-			$query =" SELECT DISTINCT CAST( log.record_date AS DATE ) AS d1, item_id, item_no, count(*) AS cnt ".
-					" FROM  ".DATABASE_PREFIX."repository_log AS log ".
-					" WHERE log.record_date >= '$start_date' ".
-					" AND log.record_date <= '$end_date' ".
-					" AND log.operation_id = '3' ".
-					$this->log_exception.
-					" GROUP BY d1, item_id, item_no ".
-					" ORDER BY d1, item_id, item_no; ";
-			$result = $this->Db->execute($query);
-			if($result === false){
-				return false;
-			}
-			for($ii=0;$ii<count($result);$ii++){
-				$date = $result[$ii]['d1'];
-				$item_id = $result[$ii]['item_id'];
-				$item_no = $result[$ii]['item_no'];
-				if(!isset($log_per_item[$date])){
-					$log_per_item[$date] = array();
-				}
-				if(!isset($log_per_item[$date][$item_id])){
-					$log_per_item[$date][$item_id] = array();
-					$log_per_item[$date][$item_id][$item_no] = array();
-					$log_per_item[$date][$item_id][$item_no]['record_date'] = $date;
-					$log_per_item[$date][$item_id][$item_no]['item_id'] = $item_id;
-					$log_per_item[$date][$item_id][$item_no]['item_no'] = $item_no;
-					$log_per_item[$date][$item_id][$item_no]['download_count'] = 0;
-					$log_per_item[$date][$item_id][$item_no]['view_count'] = 0;
-				}
-				$log_per_item[$date][$item_id][$item_no]['view_count'] = $result[$ii]['cnt'];
-			}
-			
-			// ------------------------------------------
-			// make log file(log_per_host_yyyyMM.txt)
-			// ------------------------------------------
-			$month = "";
-			foreach ($log_per_item as $date => $list){
-				if(substr($date, 0, 4).substr($date, 5, 2) != $month){
-					fclose($fp);
-					$month = substr($date, 0, 4).substr($date, 5, 2);
-					$fp = fopen(WEBAPP_DIR."/logs/weko/logfile/log_per_item_$month.txt", "a");
-				}
-				foreach ($list as $item_id => $item){
-					foreach ($item as $item_no => $val){
-						fwrite($fp, $val['record_date']."\t".
-									$val['item_id']."-".$val['item_no']."\t".
-									$val['download_count']."\t".
-									$val['view_count']."\n"
-						);
-					}
-				}
-			}
-			fclose($fp);
+        $this->writeLogPerItem($log_per_item);
 		
 		return true;
 	}
@@ -710,30 +674,39 @@ class Repository_Action_Edit_Log_Move extends RepositoryAction
 	 */
 	function makeLogReport(){
 		$block_id = $this->getBlockPageId();
-		$logreport = new Repository_Logreport();
-		//$cnt_month = 0;
-		//$end_time = mktime(0, 0, 0, $this->end_month, 1, $this->end_year);
+        $this->infoLog("businessLogreport", __FILE__, __CLASS__, __LINE__);
+        $logreport = BusinessFactory::getFactory()->getBusiness("businessLogreport");
+        $logreport->setAdminBase($this->repository_admin_base);
+        $logreport->setAdminRoom($this->repository_admin_room);
+        $repositoryLogreport = new Repository_Logreport();
 		
 		$start_date = $this->start_year."-".$this->start_month."-01";
 		$end_date = $this->end_year."-".$this->end_month."-01";
 		$query = "SELECT DATEDIFF('".$end_date."', '".$start_date."') AS date_diff;";
 		$result = $this->Db->execute($query);
-		if($result === false || count($result) != 1){
-			return false;
+		if($result === false){
+            $this->errorLog($this->Db->ErrorMsg(), __FILE__, __CLASS__, __LINE__);
+            throw new AppException($this->Db->ErrorMsg());
 		}
+        
+        if(count($result) != 1) {
+            return false;
+        }
 		$diff = $result[0]['date_diff'];
 		$tmp_date = $start_date;
-		
-		//while( ($month = mktime(0, 0, 0, $this->start_month+$cnt_month, 1, $this->start_year)) <= $end_time){
+        
 		while( $diff >= 0){
-			//$report_file = WEBAPP_DIR."/logs/weko/logreport/logReport_".date("Y", $month).date("m", $month).".zip";
-			
 			$query = "SELECT DATE_FORMAT('".$tmp_date."', '%Y') AS tmp_y, ".
 					 "DATE_FORMAT('".$tmp_date."', '%m') AS tmp_m;";
 			$result = $this->Db->execute($query);
-			if($result === false || count($result) != 1){
-				return false;
-			}
+		    if($result === false){
+                $this->errorLog($this->Db->ErrorMsg(), __FILE__, __CLASS__, __LINE__);
+                throw new AppException($this->Db->ErrorMsg());
+    		}
+            
+            if(count($result) != 1) {
+                return false;
+            }
 			$tmp_year = $result[0]['tmp_y'];
 			$tmp_month = $result[0]['tmp_m'];
 			$report_file = WEBAPP_DIR."/logs/weko/logreport/logReport_".$tmp_year.$tmp_month.".zip";
@@ -745,100 +718,47 @@ class Repository_Action_Edit_Log_Move extends RepositoryAction
 			// -----------------------------------------------
 			// init
 			// -----------------------------------------------
-			$logreport->smartyAssign = $this->smartyAssign;
-			$logreport->Session = $this->Session;
-			$logreport->Db = $this->Db;
-			//$logreport->sy_log = date("Y", $month);
-			//$logreport->sm_log = date("m", $month);
-			$logreport->sy_log = $tmp_year;
-			$logreport->sm_log = $tmp_month;
-			$logreport->mail = false;
 			// set start date
-			$logreport->start_date = sprintf("%d-%02d-%02d",$logreport->sy_log, $logreport->sm_log,$logreport->sd_log);
-			$logreport->disp_start_date = sprintf("%d-%02d",$logreport->sy_log, $logreport->sm_log);
-			// set end date
-			$logreport->ey_log = $logreport->sy_log;
-			$logreport->em_log = $logreport->sm_log;
-			$logreport->end_date = sprintf("%d-%02d-%02d",$logreport->ey_log, $logreport->em_log,$logreport->ed_log);
-			$logreport->disp_end_date = sprintf("%d-%02d",$logreport->ey_log, $logreport->em_log);
+            $logreport->setStartYear($tmp_year);
+            $logreport->setStartMonth($tmp_month);
+            // set end date
+            $logreport->setEndYear($tmp_year);
+            $logreport->setEndMonth($tmp_month);
+            // set parameter
+            $repositoryLogreport->Session = $this->Session;
+            $repositoryLogreport->Db = $this->Db;
+            $repositoryLogreport->sy_log = $tmp_year;
+            $repositoryLogreport->sm_log = $tmp_month;
+            $repositoryLogreport->start_date = sprintf("%d-%02d-%02d",$repositoryLogreport->sy_log, $repositoryLogreport->sm_log, $repositoryLogreport->sd_log);
+            $repositoryLogreport->disp_start_date = sprintf("%d-%02d",$repositoryLogreport->sy_log, $repositoryLogreport->sm_log);
+            $repositoryLogreport->ey_log = $repositoryLogreport->sy_log;
+            $repositoryLogreport->em_log = $repositoryLogreport->sm_log;
+            $repositoryLogreport->end_date = sprintf("%d-%02d-%02d",$repositoryLogreport->ey_log, $repositoryLogreport->em_log,$repositoryLogreport->ed_log);
+            $repositoryLogreport->disp_end_date = sprintf("%d-%02d",$repositoryLogreport->ey_log, $repositoryLogreport->em_log);
+            $repositoryLogreport->setupLanguageResourceForOtherAction();
+            $repositoryLogreport->setupGroupList();
+            
 			// add for compress files
 			$output_files = array();
-			//$date = date("YmdHis");
-			$query = "SELECT DATE_FORMAT(NOW(), '%Y%m%d%H%i%s') AS now_date;";
-			$result = $this->Db->execute($query);
-			if($result === false || count($result) != 1){
-				return false;
-			}
-			$date = $result[0]['now_date'];
-			$tmp_dir = WEBAPP_DIR."/uploads/repository/_".$date;
-			mkdir( $tmp_dir, 0777 );
-			// setting log ecception
-			$log_report->log_exception = $this->log_exception;
+            $this->infoLog("businessWorkdirectory", __FILE__, __CLASS__, __LINE__);
+            $businessWorkdirectory = BusinessFactory::getFactory()->getBusiness('businessWorkdirectory');
+            $tmp_dir = $businessWorkdirectory->create();
+            $tmp_dir = substr($tmp_dir, 0, -1);
 			
 			// -----------------------------------------------
 			// make
 			// -----------------------------------------------
-			// site license
-			$log_str = $logreport->makeAccessLogReport();
-			$log_file = $tmp_dir . "/logReport_SiteAccess_".
-						str_replace("-", "", $logreport->disp_start_date).".tsv";
-			$log_report = fopen($log_file, "w");
-			fwrite($log_report, $log_str);
-			fclose($log_report);
-			array_push( $output_files, $log_file );
-			
-			// download file num
-			$log_str = $logreport->makeFilePriceDownloadLogReportStr();
-			$log_file = $tmp_dir . "/logReport_PayPerView_".
-						str_replace("-", "", $logreport->disp_start_date).".tsv";
-			$log_report = fopen($log_file, "w");
-			fwrite($log_report, $log_str);
-			fclose($log_report);
-			array_push( $output_files, $log_file );
-			
-			// detail view as index
-			$log_str = $logreport->makeIndexLogReport();
-			$log_file = $tmp_dir . "/logReport_IndexAccess_".
-						str_replace("-", "", $logreport->disp_start_date).".tsv";
-			$log_report = fopen($log_file, "w");
-			fwrite($log_report, $log_str);
-			fclose($log_report);
-			array_push( $output_files, $log_file );
-			
-			// detail view and download file num as supple items
-			$log_str = $logreport->makeSuppleLogReport();
-			$log_file = $tmp_dir . "/logReport_SuppleAccess_".
-						str_replace("-", "", $logreport->disp_start_date).".tsv";
-			$log_report = fopen($log_file, "w");
-			fwrite($log_report, $log_str);
-			fclose($log_report);
-			array_push( $output_files, $log_file );
-			
-			// host log
-			$log_str = $logreport->makeHostLogReport();
-			$log_file = $tmp_dir . "/logReport_HostAccess_".
-						str_replace("-", "", $logreport->disp_start_date).".tsv";
-			$log_report = fopen($log_file, "w");
-			fwrite($log_report, $log_str);
-			fclose($log_report);
-			array_push( $output_files, $log_file );
-			
-            // Add Flash view log 2011/03/01 Y.Nakao --start--
-            $log_str = $logreport->makeFlashViewLogReport();
-            $log_file = $tmp_dir . "/logReport_FlashView_".
-                        str_replace("-", "", $logreport->disp_start_date).".tsv";
-            $log_report = fopen($log_file, "w");
-            fwrite($log_report, $log_str);
-            fclose($log_report);
-            array_push( $output_files, $log_file );
-            // Add Flash view log 2011/03/01 Y.Nakao --end--
-			
+            // Get data
+			$logreport->execute();
+            // Make file
+            $output_files = $repositoryLogreport->createLogReport($tmp_dir);
+            
 			// -----------------------------------------------
 			// compress zip file
 			// -----------------------------------------------
 			// set zip file name
 			$zip_file = "logReport_".
-						str_replace("-", "", $logreport->disp_start_date).".zip";
+						str_replace("-", "", sprintf("%d-%02d",$tmp_year, $tmp_month)).".zip";
 			// compress zip file	
 			File_Archive::extract(
 				$output_files,
@@ -987,6 +907,77 @@ class Repository_Action_Edit_Log_Move extends RepositoryAction
 			return false;
 		}
 	}
+	
+    /**
+     * write custom report accesss data(log per host)
+     * ホスト単位のカスタムレポートを作成
+     *
+     * @param array $log_per_host
+     */
+    private function writeLogPerHost($log_per_host){
+        // ------------------------------------------
+        // make log file(log_per_host_yyyyMM.txt)
+        // ------------------------------------------
+        $month = "";
+        
+        foreach ($log_per_host as $date => $list){
+            if(substr($date, 0, 4).substr($date, 5, 2) != $month){
+                if (strlen($month) > 0){
+                    fclose($fp);
+                }
+                $month = substr($date, 0, 4).substr($date, 5, 2);
+                $fp = fopen(WEBAPP_DIR."/logs/weko/logfile/log_per_host_".$month.".txt", "a"); 
+            }
+            foreach ($list as $ip => $val){
+                fwrite($fp, $val['record_date']."\t".
+                            $val['ip_address']."\t".
+                            $val['host']."\t".
+                            $val['item_count']."\t".
+                            $val['download_count']."\t".
+                            $val['view_count']."\n"
+                );
+            }
+        }
+        
+        if(isset($fp)){
+            fclose($fp);
+        }
+    }
+    
+    /**
+     * write custom report access data(log per item)
+     * アイテム毎のカスタムレポートを作成
+     *
+     * @param array $log_per_item
+     */
+    private function writeLogPerItem($log_per_item){
+        // ------------------------------------------
+        // make log file(log_per_item_yyyyMM.txt)
+        // ------------------------------------------
+        $month = "";
+        
+        foreach ($log_per_item as $date => $list){
+            if(substr($date, 0, 4).substr($date, 5, 2) != $month){
+                if (strlen($month) > 0){
+                    fclose($fp);
+                }
+                $month = substr($date, 0, 4).substr($date, 5, 2);
+                $fp = fopen(WEBAPP_DIR."/logs/weko/logfile/log_per_item_$month.txt", "a");
+            }
+            foreach ($list as $item_id => $item){
+                foreach ($item as $item_no => $val){
+                    fwrite($fp, $val['record_date']."\t".
+                                $val['item_id']."-".$val['item_no']."\t".
+                                $val['download_count']."\t".
+                                $val['view_count']."\n"
+                    );
+                }
+            }
+        }
+        if(isset($fp)){
+            fclose($fp);
+        }
+    }
 }
 
 

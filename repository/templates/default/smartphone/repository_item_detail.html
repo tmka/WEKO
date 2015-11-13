@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: repository_item_detail.html 43252 2014-10-27 12:16:31Z keiya_sugimoto $          -->
+<!--// $Id: repository_item_detail.html 53594 2015-05-28 05:25:53Z kaede_matsushita $          -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -1345,7 +1345,7 @@
                 
                 <{*show pdf reference S.Suzuki 2013/11/27 --start--*}>
                     <{if count($action.fileName) > 0}>
-                        <{include file="repository_pdf_reference.html"}>
+                        <{include file=$smarty.const.WEBAPP_DIR|cat:'/modules/repository/templates/default/repository_pdf_reference.html'}>
                     <{/if}>
                 <{*show pdf reference S.Suzuki 2013/11/27 --end--*}>
                 
@@ -1403,7 +1403,7 @@
 
 </div>
 
-<{include file="repository_script.html"}>
+<{include file=$smarty.const.WEBAPP_DIR|cat:'/modules/repository/templates/default/repository_script.html'}>
 
 <script class="nc_script" type="text/javascript">
     redirctPrevPage = function() {

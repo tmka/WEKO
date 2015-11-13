@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Workflow.class.php 16916 2012-04-06 05:10:11Z ayumi_jin $
+// $Id: Workflow.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -353,7 +353,7 @@ class Repository_View_Main_Workflow extends RepositoryAction
 				 "FROM ". DATABASE_PREFIX ."repository_item ITEM, ".				// アイテムテーブル
 				 		  DATABASE_PREFIX ."repository_item_type ITEMTYPE ".	// アイテムタイプテーブル
 				 "WHERE (ITEM.ins_user_id = '". $user_id ."' OR ITEM.mod_user_id = '". $user_id ."' ) ".	// 作成者が自分
-				 " AND ITEM.is_delete = '0' ";			// 削除されていない
+				 " AND ITEM.is_delete = 0 ";			// 削除されていない
 		if($review_status!=null && $review_status!=""){
 			$query .= " AND ITEM.review_status = '".$review_status ."' ";	// 査読状況
 		}

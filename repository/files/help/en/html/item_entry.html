@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: item_entry.html 43357 2014-10-29 07:45:24Z keiya_sugimoto $        -->
+<!--// $Id: item_entry.html 53594 2015-05-28 05:25:53Z kaede_matsushita $        -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -27,6 +27,11 @@
 				<br/>
 				<center><img src="./img/item_entry_tab.png" alt="アイテム登録タブ"></center><br/>
 				<br/>
+                フロー画像の各画面名をクリックすると該当の画面にジャンプできます。<br/>
+                ただし途中の画面で未入力の必須項目がある場合はその画面に遷移します。<br/>
+                <br/>
+                <center><img src="./img/item_entry_flow.png" alt="フロー画像"></center><br/>
+                <br/>
 				<br/>
 				<h3><a name="select">アイテムタイプ選択</a></h3>
 				<div class="page_list">
@@ -212,6 +217,20 @@
 						<br/>
 					</div>
 					<br/>
+					<h4><a name="price">権限設定</a></h4>
+					<div class="page_list">
+						メタデータ属性がファイルである場合はグループごとにダウンロード権限の設定をすることができます。<br/>
+						権限が設定されていないグループのユーザーはファイルをダウンロードできません。<br/>
+						<br/>
+						「More input row」ボタンを押下すると権限を設定するグループを追加できます。<br/>
+						「削除」ボタンを押下するとその行が削除されます。<br/>
+						<br/>
+						公開方法がオープンアクセスのファイルには権限は設定できません。<br/>
+						オープンアクセス日が経過した場合は、すべてのユーザーがファイルをダウンロードできます。<br/>
+						<br/>
+						<center><img src="./img/file_auth_setting.png" alt="権限設定"></center><br/>
+						<br/>
+					</div>
 					<h4><a name="price">課金設定</a></h4>
 					<div class="page_list">
 						メタデータ属性が課金ファイルである場合はグループごとに価格の設定をすることができます。<br/>
@@ -365,6 +384,29 @@
 						<br/>
 						<br/>
 					</div>
+					
+					<h4><a name="empty">空白文字列入力</a></h4>
+					<div class="page_list">
+						メタデータ入力時、「&EMPTY&」と入力すると、「空データ」を登録することができます。<br/>
+						個別のメタデータで、登録順序に意味がある場合などに利用します。<br/>
+						<br/>
+						<center><img src="./img/blank_word_01.png" alt="空白文字列入力"></center><br/>
+						<br/>
+						<p class="indent">
+							◆詳細画面<br/>
+							　詳細画面では「空データ」は表示されません。<br/>
+								<center><img src="./img/blank_word_02.png" alt="詳細表示"></center><br/>
+							<br/>
+						</p>
+						<br/>
+						<p class="indent">
+							◆OAI-PMH<br/>
+							　グルーピングに意味がある項目を出力する際に「空データ」を考慮してデータを出力します。<br/>
+								<center><img src="./img/blank_word_03.png" alt="詳細表示"></center><br/>
+							<br/>
+						</p>
+					</div>
+					
 					<h4><a name="policy_name">著作権ポリシー表示</a></h4>
 					<div class="page_list">
 						書誌に定められた著作権ポリシーを表示する。<br/>
@@ -451,7 +493,7 @@
 					<div class="page_list">
 						外部データベースから書誌情報を取得し該当項目に自動入力します。<br/>
 						<br/>
-						外部データベースは<a href="http://www.amazon.co.jp/" target="_blank">Amazon</a>, <a href="http://www.ncbi.nlm.nih.gov/sites/entrez/" target="_blank">PubMed</a>, <a href="http://ci.nii.ac.jp/" target="_blank">CiNii</a>, <a href="http://search.jamas.or.jp/" target="_blank">医中誌</a>が利用できます。<br/>
+						外部データベースは<a href="http://www.amazon.co.jp/" target="_blank">Amazon</a>, <a href="http://www.ncbi.nlm.nih.gov/sites/entrez/" target="_blank">PubMed</a>, <a href="http://ci.nii.ac.jp/" target="_blank">CiNii</a>, <a href="http://search.jamas.or.jp/" target="_blank">医中誌</a>, <a href="http://www.crossref.org/" target="_blank">CrossRef</a>が利用できます。<br/>
 						各サイトで利用可能な書誌IDを入力し、「取得」ボタンを押下すると書誌情報が取得されます。<br/>
 						取得された書誌情報は、アイテムの対応項目および対応するjunii2マッピングが設定されたメタデータ項目に自動入力されます。<br/>
 						<br/>
@@ -551,6 +593,27 @@
 									issn<br/>
 								</td>
 							</tr>
+							<tr>
+								<td>CrossRef</td>
+								<td>
+									CrossRef<br/>
+								</td>
+								<td>
+									タイトル（英）<br/>
+									著者名（英）<br/>
+									言語<br/>
+									雑誌名（英）<br/>
+									巻<br/>
+									号<br/>
+									ページ<br/>
+									発行年<br/>
+								</td>
+								<td>
+									creator<br/>
+									contributor<br/>
+									issn<br/>
+								</td>
+							</tr>
 						</table>
 						<br/>
 						<center><img src="./img/metadata_fill.png" alt="メタデータ自動入力"></center><br/>
@@ -566,6 +629,10 @@
 							<li>
 								医中誌は、医中誌と連携ができる場合のみメタデータ自動入力の項目に表示されます。<br/>
 								医中誌の連携については<a href="./setting.html#server_biblio">WEKO管理 書誌情報簡単登録</a>をご覧ください。
+							</li>
+							<li>
+								CrossRefは、CrossRefと連携ができる場合のみメタデータ自動入力の項目に表示されます。<br/>
+								CrossRefの連携については<a href="./setting.html#server_biblio">WEKO管理 書誌情報簡単登録</a>をご覧ください。
 							</li>
 						</ul>
 					</div>
@@ -588,7 +655,7 @@
 							<img alt="代理投稿機能" src="./img/contributor.png">
 						</center>
 					</div>
-					<h4><a name="contributor">フィードバックメール送信先設定機能</a></h4>
+					<h4><a name="feedbackmail">フィードバックメール送信先設定機能</a></h4>
 					<div class="page_list">
 						WEKOに登録されている著者を、フィードバックメール送信先として指定することができます。
 						<br/>
@@ -711,7 +778,7 @@
 						DOIの取扱は十分注意して行ってください。<br/>
 						<ul>
 							<li>アイテム登録時にIDサーバー(http://id.nii.ac.jp/)のSuffixが付与される状態となっている</li>
-							<li>「JaLC」または「CrossRef」のプレフィックスがWEKOの管理画面にて登録されている</li>
+							<li>「JaLC」または「CrossRef」または「DataCite」のプレフィックスがWEKOの管理画面にて登録されている</li>
 							<li>削除されたアイテムではなく、公開されているアイテムである</li>
 							<li>ハーベストが許可(公開)されている</li>
 							<li>OAI-PMHのJuNii2形式でメタデータを出力することができる</li>

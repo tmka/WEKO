@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Install.class.php 38124 2014-07-01 06:56:02Z rei_matsuura $
+// $Id: Install.class.php 54835 2015-06-25 04:10:46Z keiya_sugimoto $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -334,6 +334,10 @@ class Repository_Action_main_Install extends RepositoryAction
             }
             // Add advanced search 2013/11/27 R.Matsuura --end--
             
+            // Improve Log 2015/06/22 K.Sugimoto --start--
+            $this->addRobotListData();
+            // Improve Log 2015/06/22 K.Sugimoto --end--
+            
             //////////////////////////////
             // Prefix
             //////////////////////////////
@@ -561,5 +565,31 @@ class Repository_Action_main_Install extends RepositoryAction
         $this->dbAccess->executeQuery($query);
         return true;
     }
+    
+    // Improve Log 2015/06/22 K.Sugimoto --start--
+    /**
+     * add robotlist data
+     *
+     */
+    private function addRobotListData()
+    {
+        require_once WEBAPP_DIR. '/modules/repository/components/RepositoryProcessUtility.class.php';
+        if (!isset($_SERVER["SERVER_PORT"])) // NULLの時
+        {
+            //BASE_URLの先頭をチェックしてhttps://なら443を$_SERVER["SERVER_PORT"]に入力
+            if ( preg_match("/^https\:\/\//", BASE_URL) ) {
+                $_SERVER["SERVER_PORT"] = 443;
+            }
+            //BASE_URLの先頭をチェックしてhttp://なら80を$_SERVER["SERVER_PORT"]に入力
+            else if ( preg_match("/^http\:\/\//", BASE_URL) ){
+                $_SERVER["SERVER_PORT"] = 80;
+            }
+        }
+        
+        // Request parameter for next URL
+        $nextRequest = BASE_URL."/?action=repository_action_common_robotlist";
+        RepositoryProcessUtility::callAsyncProcess($nextRequest);
+    }
+    // Improve Log 2015/06/22 K.Sugimoto --end--
 }
 ?>

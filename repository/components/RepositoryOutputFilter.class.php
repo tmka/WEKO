@@ -1,9 +1,9 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: RepositoryOutputFilter.class.php 41901 2014-09-22 12:39:14Z tatsuya_koyasu $
+// $Id: RepositoryOutputFilter.class.php 46336 2015-01-15 01:04:14Z yuko_nakao $
 //
-// Copyright (c) 2007 - 2008, National Institute of Informatics,
+// Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
 //
 // This program is licensed under a Creative Commons BSD Licence
@@ -13,21 +13,21 @@
 
 /**
  * output format filter class
- *
+ * 
  * return format string. when not allow format, return '';
- *
+ * 
  */
 class RepositoryOutputFilter
 {
     // Add JuNii2Ver3 R.Matsuura 2013/09/19
     const RESEACHER_RESOLVER_ID_PREFIX = "http://rns.nii.ac.jp/nr/";
-
+    
     // Mod name delimiter changes to comma T.Koyasu 2014/09/12 --start--
     const NAME_DELIMITER_IS_SPACE = 1;
     const NAME_DELIMITER_IS_COMMA = 2;
     // Add name delimiter changes to comma T.Koyasu 2014/09/12 --end--
-
-
+    
+    
     /**
      * format string
      *  to lower
@@ -48,13 +48,13 @@ class RepositoryOutputFilter
         $str = strtolower($str);
         return $str;
     }
-
+    
     /**
      * language filter
      *   allow language is item language select data.
      * ISO639
-     *
-     *
+     * 
+     * 
      * @param string $str
      * @return string
      */
@@ -132,7 +132,7 @@ class RepositoryOutputFilter
         }
         return $str;
     }
-
+    
     /**
      * date format
      * allow format YYYY-MM-DD or YYYY-MM or YYYY
@@ -147,7 +147,7 @@ class RepositoryOutputFilter
         $year = '';
         $month = '';
         $day = '';
-
+        
         // separate date
         if(preg_match("/^[0-9]+$/", $str)==1)
         {
@@ -187,8 +187,8 @@ class RepositoryOutputFilter
                 $day   = self::day($tmp[2]);
             }
         }
-
-        // set date
+        
+        // set date 
         $str = '';
         if(strlen($year) > 0)
         {
@@ -202,12 +202,12 @@ class RepositoryOutputFilter
                 }
             }
         }
-
+        
         return $str;
     }
-
+    
     /**
-     * month format
+     * month format 
      * allow format MM
      *
      * @param string $str
@@ -226,9 +226,9 @@ class RepositoryOutputFilter
         }
         return $str;
     }
-
+    
     /**
-     * month format
+     * month format 
      * allow format DD
      *
      * @param string $str
@@ -247,7 +247,7 @@ class RepositoryOutputFilter
         }
         return $str;
     }
-
+    
     /**
      * インプットタイプに応じた出力文字列を作成
      *
@@ -259,7 +259,7 @@ class RepositoryOutputFilter
      *                           3: $jtitle, $volume($issue), $spage-$epage($dateofissued)
      *                              or
      *                              $jtitle_en, $volume($issue), $spage-$epage($dateofissued)
-     * @param int $nameFormat 名前出力のフォーマット
+     * @param int $nameFormat 名前出力のフォーマット 
      *                           1: Taro Yamada     スペース
      *                           2: 山田, 太郎      カンマとスペース
      * @return string $this->RepositoryAction->forXmlChange実施済のattribute_value文字列
@@ -388,7 +388,7 @@ class RepositoryOutputFilter
                 $spage        = $itemAttr[RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_START_PAGE];
                 $epage        = $itemAttr[RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_END_PAGE];
                 $dateofissued = $itemAttr[RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_DATE_OF_ISSUED];
-
+                
                 // set jtitle
                 if($biblioFormat == 3)
                 {
@@ -423,11 +423,11 @@ class RepositoryOutputFilter
                         $jtitle = $jtitleEn;
                     }
                 }
-
+                
                 if($biblioFormat == 1 || $biblioFormat == 3)
                 {
                     // format : $jtitle = $jtitle_en, $volume($issue), $spage-$epage($dateofissued)
-
+                    
                     $value .= $jtitle;
                     if(strlen($volume) > 0)
                     {
@@ -437,7 +437,7 @@ class RepositoryOutputFilter
                         }
                         $value .= $volume;
                     }
-
+                    
                     if(strlen($issue) > 0)
                     {
                         if(strlen($value) > 0 && strlen($volume) == 0)
@@ -467,7 +467,7 @@ class RepositoryOutputFilter
                         }
                         $value .= $page;
                     }
-
+                    
                     if(strlen($dateofissued) > 0)
                     {
                         if(strlen($value) > 0 && strlen($page) == 0)
@@ -498,20 +498,20 @@ class RepositoryOutputFilter
                 $value = '';
                 break;
         }
-
+        
         // 不備文字を除去
         if(RepositoryOutputFilter::string($value) == " ")
         {
             $value = '';
         }
-
+        
         return $value;
     }
-
+    
     // Add JuNii2Ver3 R.Matsuura 2013/09/19 --start--
     /**
      * check format id attribution
-     *
+     * 
      * @param array $authorIdArray
      */
     static public function creatorId($authorIdArray)
@@ -540,10 +540,10 @@ class RepositoryOutputFilter
             return "";
         }
     }
-
+    
     /**
      * return license notation from file infomation
-     *
+     * 
      * @param array $fileInfo
      */
     static public function fileLicence($fileInfo)
@@ -583,7 +583,7 @@ class RepositoryOutputFilter
         return $licenseNotation;
     }
     // Add JuNii2Ver3 R.Matsuura 2013/09/19 --end--
-
+    
     // Add OpenDepo S.Arata 2013/12/20 --start--
     /**
      * @param string $date 0埋めしていない日付（YYYY-M-D形式）
@@ -594,25 +594,26 @@ class RepositoryOutputFilter
     static public function zeroPaddingDate($date) {
         // 日付を年月日に分割する
         $divideDate = explode("-", $date);
-
+        
         // フォーマットチェック
         if(count($divideDate) != 3){
             return -1;
         }
-
+        
         // 日付チェック
         if( checkdate($divideDate[1], $divideDate[2], $divideDate[0]) == false) {
             return -2;
         }
-        // 月、日の0埋めした値を返す
+        // 月、日の0埋めした値を返す        
         return $divideDate[0]."-".sprintf("%02d",$divideDate[1])."-".sprintf("%02d",$divideDate[2]);
     }
     // Add OpenDepo S.Arata 2013/12/20 --end--
-
+    
     // Add LIDO S.Suzuki 2014/05/09 --start--
     /**
+    /**
      * exclusive reserved words
-     *
+     * 
      * @param string $str
      * @return string
      */
@@ -626,7 +627,7 @@ class RepositoryOutputFilter
         }
     }
     // Add LIDO S.Suzuki 2014/05/09 --end--
-
+    
     // Add json format escape method T.Koyasu 2014/09/12 --start--
     /**
      * escape JSON
@@ -634,7 +635,7 @@ class RepositoryOutputFilter
      * @param array $index_data
      */
     static public function escapeJSON($str, $lineFlg = false){
-
+        
         $str = str_replace("\\", "\\\\", $str);
         $str = str_replace('"', '\"', $str);
         if($lineFlg){
@@ -642,7 +643,7 @@ class RepositoryOutputFilter
             $str = str_replace("\n", "\\n", $str);
         }
         $str = htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
-
+        
         return $str;
     }
     // Add json format escape method T.Koyasu 2014/09/12 --end--
@@ -652,12 +653,16 @@ class RepositoryOutputFilter
  * output filter for format:DublinCore class
  *
  */
-class RepositoryOutputFilterDublinCore extends RepositoryOutputFilter
+class RepositoryOutputFilterDublinCore extends RepositoryOutputFilter 
 {
+
 }
 
-
-class RepositoryOutputFilterJuNii2 extends RepositoryOutputFilter
+/**
+ * output filter for format:JuNii2 class
+ *
+ */
+class RepositoryOutputFilterJuNii2 extends RepositoryOutputFilter 
 {
     // ---------------------------------------------
     // Const
@@ -667,7 +672,7 @@ class RepositoryOutputFilterJuNii2 extends RepositoryOutputFilter
     const PMID_PREFIX = "info:pmid/";
     const NAID_PREFIX = "http://ci.nii.ac.jp/naid/";
     const ICHUSHI_PREFIX = "http://search.jamas.or.jp/link/ui/";
-
+    
     /**
      * ISSN : \d{4}\-?\d{3}[\dXx]
      *
@@ -682,7 +687,7 @@ class RepositoryOutputFilterJuNii2 extends RepositoryOutputFilter
         }
         return $str;
     }
-
+    
     /**
      * textversion
      *
@@ -702,7 +707,7 @@ class RepositoryOutputFilterJuNii2 extends RepositoryOutputFilter
         }
         return $str;
     }
-
+    
     /**
      * convert language notation to RFC3066 format
      *
@@ -721,7 +726,7 @@ class RepositoryOutputFilterJuNii2 extends RepositoryOutputFilter
         $chineseRfcArray = array("bo", "i-hak", "ii", "za", "zh-CN", "zh-gan", "zh-guoyu", "zh-hakka",
                                 "zh-Hans", "zh-Hant", "zh-wuu", "zh-xiang", "zh-yue");
         $russianRfcArray = array("av", "ba", "ce", "cu", "cv", "kv", "os", "ru-RU", "tt", "yi");
-
+        
         if($strLang == "japanese" || $strLang == "jpn")
         {
             $strLang = "ja";
@@ -751,7 +756,7 @@ class RepositoryOutputFilterJuNii2 extends RepositoryOutputFilter
             return "";
         }
     }
-
+    
     /**
      * convert language notation to ISO-639 format
      *
@@ -774,7 +779,7 @@ class RepositoryOutputFilterJuNii2 extends RepositoryOutputFilter
         $arabicArray = array("ar", "ara");
         $greekArray = array("el", "gre", "ell");
         $koreanArray = array("ko", "kor");
-
+        
         if(in_array($strLang, $japaneseArray))
         {
             $strLang = "jpn";
@@ -837,7 +842,7 @@ class RepositoryOutputFilterJuNii2 extends RepositoryOutputFilter
         }
         return $strLang;
     }
-
+    
     /**
      * check string format whether grantid or not
      *
@@ -848,8 +853,8 @@ class RepositoryOutputFilterJuNii2 extends RepositoryOutputFilter
     {
         $pattern_zero = "/^\d{5}[AB]\d+$/";
         $pattern_one = "/^\d{5}.*第.*\d+号$/";
-
-        if(preg_match($pattern_zero, $strTarget) || preg_match($pattern_one, $strTarget))
+        
+        if(preg_match($pattern_zero, $strTarget)===1 || preg_match($pattern_one, $strTarget)===1)
         {
             return $strTarget;
         }
@@ -858,7 +863,7 @@ class RepositoryOutputFilterJuNii2 extends RepositoryOutputFilter
             return "";
         }
     }
-
+    
     /**
      * check string format whether pmid or not
      *
@@ -883,7 +888,7 @@ class RepositoryOutputFilterJuNii2 extends RepositoryOutputFilter
             return "";
         }
     }
-
+    
     /**
      * check string format whether DOI or not
      *
@@ -908,7 +913,7 @@ class RepositoryOutputFilterJuNii2 extends RepositoryOutputFilter
             return "";
         }
     }
-
+    
     /**
      * check string format whether NAID or not
      *
@@ -933,7 +938,7 @@ class RepositoryOutputFilterJuNii2 extends RepositoryOutputFilter
             return "";
         }
     }
-
+    
     /**
      * check string format whether ICHUSHI or not
      *
@@ -958,7 +963,7 @@ class RepositoryOutputFilterJuNii2 extends RepositoryOutputFilter
             return "";
         }
     }
-
+    
     /**
      * convert uri to reseacher resolver id prefix
      *
@@ -985,7 +990,7 @@ class RepositoryOutputFilterJuNii2 extends RepositoryOutputFilter
             return "";
         }
     }
-
+    
     /**
      * convert language notation to ISO-639-2 format
      *
@@ -1011,7 +1016,7 @@ class RepositoryOutputFilterJuNii2 extends RepositoryOutputFilter
         $arabicArray = array("ar", "ara", "ar-AE");
         $greekArray = array("el", "gre", "el-GR");
         $koreanArray = array("ko", "kor", "ko-KP");
-
+        
         if(in_array($strLang, $japaneseArray))
         {
             $strLang = "ja";
@@ -1074,7 +1079,7 @@ class RepositoryOutputFilterJuNii2 extends RepositoryOutputFilter
         }
         return $strLang;
     }
-
+    
     /**
      * convert language notation to RFC3066 format
      *
@@ -1576,7 +1581,7 @@ class RepositoryOutputFilterSPASE extends RepositoryOutputFilter
  * output filter for format:LOM class
  *
  */
-class RepositoryOutputFilterLOM extends RepositoryOutputFilter
+class RepositoryOutputFilterLOM extends RepositoryOutputFilter 
 {
     /**
      * general structure
@@ -1594,7 +1599,7 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
         }
         return $str;
     }
-
+    
     /**
      * general aggregation level
      *  allow : '1', '2', '3', 4'
@@ -1610,7 +1615,7 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
         }
         return $str;
     }
-
+    
     /**
      * lifeCycle statue
      *  allow : 'draft', 'final', 'revised', 'unavailable'
@@ -1626,13 +1631,13 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
         }
         return $str;
     }
-
+    
     /**
      * lifeCycle contribute role
-     *  allow : 'author', 'publisher', 'unknown', 'initiator', 'terminator', 'validator', 'editor',
-     *          'graphical designer', 'technical implementer', 'content provider', 'technical validator',
+     *  allow : 'author', 'publisher', 'unknown', 'initiator', 'terminator', 'validator', 'editor', 
+     *          'graphical designer', 'technical implementer', 'content provider', 'technical validator', 
      *          'educational validator', 'script writer', 'instructional designer', 'subject matter expert'
-     *
+     * 
      * @param string $str
      */
     static public function lyfeCycleContributeRole($str)
@@ -1655,7 +1660,7 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
         }else if($str == 'subjectmatterexpert'){
             $str = 'subject matter expert';
         }
-
+        
         if( $str != 'author' && $str != 'publisher' && $str != 'unknown' && $str != 'initiator' &&
             $str != 'terminator' && $str != 'validator' && $str != 'editor' && $str != 'graphical designer' &&
             $str != 'technical implementer' && $str != 'content provider' && $str != 'technical validator' &&
@@ -1666,11 +1671,11 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
         }
         return $str;
     }
-
+    
     /**
      * metaMetadata contribute role
      *  allow : 'creator', 'validator'
-     *
+     * 
      * @param string $str
      */
     static public function metaMetadataContributeRole($str)
@@ -1682,19 +1687,19 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
         }
         return $str;
     }
-
+    
     /*
      * technical size
      * @param string $str
      * @return string
      */
     static public function technicalSize($str){
-
+        
         $str = preg_replace("/[^0-9]+/", "", $str);
-
+        
         return $str;
     }
-
+    
     /**
      * technical requirement orComposite type value
      *  allow : 'operating system', 'browser'
@@ -1711,11 +1716,11 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
         }
         return $str;
     }
-
+    
     /**
      * technical Requirement OrComposite Name Value
      * when technical requirement orComposite type value is 'operating system'
-     *
+     * 
      * allow : 'pc-dos', 'ms-windows', 'macos', 'unix', 'multi-os', 'none'
      *
      * @param string $str
@@ -1724,18 +1729,18 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
     static public function technicalRequirementOrCompositeNameValueForOperatingSystem($str)
     {
         $str = RepositoryOutputFilter::string($str);
-        if( $str != 'pc-dos' && $str != 'ms-windows' && $str != 'macos' &&
+        if( $str != 'pc-dos' && $str != 'ms-windows' && $str != 'macos' && 
             $str != 'unix' && $str != 'multi-os' && $str != 'none' )
         {
             $str = '';
         }
         return $str;
     }
-
+    
     /**
      * technical Requirement OrComposite Name Value
      * when technical requirement orComposite type value is 'browser'
-     *
+     * 
      * allow : 'any', 'netscape', 'communicator', 'ms-internet explorer', 'opera', 'amaya'
      *
      * @param string $str
@@ -1744,19 +1749,19 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
     static public function technicalRequirementOrCompositeNameValueForBrowser($str)
     {
         $str = RepositoryOutputFilter::string($str);
-        if( $str != 'any' && $str != 'netscape' && $str != 'communicator' &&
+        if( $str != 'any' && $str != 'netscape' && $str != 'communicator' && 
             $str != 'ms-internet explorer' && $str != 'opera' && $str != 'amaya' )
         {
             $str = '';
         }
         return $str;
     }
-
+    
     /**
      * technical Requirement OrComposite Combination Type Name Value
      * when technical requirement orComposite type value is 'operating system'
      * allow : 'pc-dos', 'ms-windows', 'macos', 'unix', 'multi-os', 'none'
-     *
+     * 
      * when technical requirement orComposite type value is 'browser'
      * allow : 'any', 'netscape', 'communicator', 'ms-internet explorer', 'opera', 'amaya'
      *
@@ -1781,18 +1786,18 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
         {
             return false;
         }
-
+        
         if(strlen($type)>0 && strlen($name)>0)
         {
             return true;
         }
-
+        
         return false;
     }
-
+    
     /**
      * duration
-     *
+     * 
      * P[yY][mM][dD][T[hH][nM][s[.s]S]] where:
      * y = number of years
      * (integer, > 0, not restricted)
@@ -1806,7 +1811,7 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
      * (integer, > 0, not restricted, e.g., > 59 is acceptable)
      * s = number of seconds or fraction of seconds
      * (integer, > 0, not restricted, e.g., > 59 is acceptable)
-     *
+     * 
      * The character literal designators "P", "Y", "M", "D", "T", "H", "M", "S" must
      * appear if the corresponding nonzero value is present.
      * @param string $str
@@ -1815,7 +1820,7 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
     static public function duration($str)
     {
         $match = array();
-
+        
         if(preg_match("/^P([0-9]+Y)*([0-9]+M)*([0-9]+D)*((T)([0-9]+H)*([0-9]+M)*([0-9]+(\.[0-9]+)*S)*)*$/", $str, $match)==1)
         {
             $str = 'P';
@@ -1866,7 +1871,7 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
         }
         return $str;
     }
-
+    
     /**
      * educational interactivity type
      * allow : 'active', 'expositive', 'mixed'
@@ -1882,11 +1887,11 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
         }
         return $str;
     }
-
+    
     /**
      * educational learning resource type
-     * allow : 'exercise', 'simulation', 'questionnaire', 'diagram', 'figure',
-     *         'graph', 'index', 'slide', 'table', 'narrative text', 'exam',
+     * allow : 'exercise', 'simulation', 'questionnaire', 'diagram', 'figure', 
+     *         'graph', 'index', 'slide', 'table', 'narrative text', 'exam', 
      *         'experiment', 'problem statement', 'self assessment', 'lecture'
      * @param string $str
      * @return string
@@ -1894,7 +1899,7 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
     static public function educationalLearningResourceType($str)
     {
         $str = RepositoryOutputFilter::string($str);
-        if( $str != 'exercise' && $str != 'simulation' && $str != 'questionnaire' &&
+        if( $str != 'exercise' && $str != 'simulation' && $str != 'questionnaire' && 
             $str != 'diagram' && $str != 'figure' && $str != 'graph' && $str != 'index' &&
             $str != 'slide' && $str != 'table' && $str != 'narrative text' && $str != 'exam' &&
             $str != 'experiment' && $str != 'problem statement' && $str != 'self assessment' &&
@@ -1904,7 +1909,7 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
         }
         return $str;
     }
-
+    
     /**
      * educational interactivity level
      * allow : 'very low', 'low', 'medium', 'high','very high'
@@ -1920,7 +1925,7 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
         }
         return $str;
     }
-
+    
     /**
      * educational semantic oensity
      * allow : 'very low', 'low', 'medium', 'high','very high'
@@ -1931,7 +1936,7 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
     {
         return self::educationalInteractivityLevel($str);
     }
-
+    
     /**
      * educational intended end user role
      * allow : 'teacher', 'author', 'learner', 'manager'
@@ -1947,7 +1952,7 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
         }
         return $str;
     }
-
+    
     /**
      * educational context
      * allow : 'school', 'higher education', 'training', 'other'
@@ -1963,7 +1968,7 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
         }
         return $str;
     }
-
+    
     /**
      * educational difficulty
      * allow : 'very easy', 'easy', 'medium', 'difficult', 'very difficult'
@@ -1979,7 +1984,7 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
         }
         return $str;
     }
-
+    
     /**
      * YesNo
      * allow : 'yes', 'no'
@@ -1995,32 +2000,32 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
         }
         return $str;
     }
-
+    
     /**
      * relation
-     * allow : 'ispartof', 'haspart', 'isversionof', 'hasversion', 'isformatof',
-     *         'hasformat', 'references', 'isreferencedby', 'isbasedon', 'isbasisfor',
+     * allow : 'ispartof', 'haspart', 'isversionof', 'hasversion', 'isformatof', 
+     *         'hasformat', 'references', 'isreferencedby', 'isbasedon', 'isbasisfor', 
      *         'requires', 'isrequiredby'
-     *
+     * 
      * @param string $str
      * @return string
      */
     static public function relation($str)
     {
         $str = RepositoryOutputFilter::string($str);
-        if( $str !='ispartof' && $str != 'haspart' && $str != 'isversionof' && $str != 'hasversion' &&
-            $str != 'isformatof' && $str != 'hasformat' && $str != 'references' && $str != 'isreferencedby' &&
+        if( $str !='ispartof' && $str != 'haspart' && $str != 'isversionof' && $str != 'hasversion' && 
+            $str != 'isformatof' && $str != 'hasformat' && $str != 'references' && $str != 'isreferencedby' && 
             $str != 'isbasedon' && $str != 'isbasisfor' && $str != 'requires' && $str != 'isrequiredby')
         {
             $str = '';
         }
         return $str;
     }
-
+    
     /**
      * classification purpose
-     * allow : 'discipline', 'idea', 'prerequisite', 'educational objective',
-     *         'accessibility', 'restrictions', 'educational level', 'skill level',
+     * allow : 'discipline', 'idea', 'prerequisite', 'educational objective', 
+     *         'accessibility', 'restrictions', 'educational level', 'skill level', 
      *         'security level', 'competency
      * @param string $str
      * @return string
@@ -2028,8 +2033,8 @@ class RepositoryOutputFilterLOM extends RepositoryOutputFilter
     static public function classificationPurpose($str)
     {
         $str = RepositoryOutputFilter::string($str);
-        if( $str != 'discipline' && $str != 'idea' && $str != 'prerequisite' && $str != 'educational objective' &&
-            $str != 'accessibility' && $str != 'restrictions' && $str != 'educational level' && $str != 'skill level' &&
+        if( $str != 'discipline' && $str != 'idea' && $str != 'prerequisite' && $str != 'educational objective' && 
+            $str != 'accessibility' && $str != 'restrictions' && $str != 'educational level' && $str != 'skill level' && 
             $str != 'security level' && $str != 'competency')
         {
             $str = '';

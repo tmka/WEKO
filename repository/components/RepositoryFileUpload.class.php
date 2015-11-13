@@ -1,15 +1,20 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: RepositoryFileUpload.class.php 42605 2014-10-03 01:02:01Z keiya_sugimoto $
+// $Id: RepositoryFileUpload.class.php 56711 2015-08-19 13:21:44Z tomohiro_ichikawa $
 //
-// Copyright (c) 2007 - 2008, National Institute of Informatics, 
+// Copyright (c) 2007 - 2008, National Institute of Informatics,
 // Research and Development Center for Scientific Information Resources
 //
 // This program is licensed under a Creative Commons BSD Licence
 // http://creativecommons.org/licenses/BSD/
 //
 // --------------------------------------------------------------------
+require_once WEBAPP_DIR. '/modules/repository/components/util/MultipartStreamDecoder.class.php';
+require_once WEBAPP_DIR. '/modules/repository/components/util/CreateWorkDirectory.class.php';
+require_once WEBAPP_DIR.'/modules/repository/components/FW/AppException.class.php';
+require_once WEBAPP_DIR.'/modules/repository/components/FW/IO/IOException.class.php';
+require_once WEBAPP_DIR.'/modules/repository/components/FW/IO/FileStream.class.php';
 
 /**
  * output format filter class
@@ -46,12 +51,14 @@ class RepositoryFileUpload
      *
      * @return RepositoryFileUpload
      */
-    public function RepositoryFileUpload()
+    public function __construct()
     {
         $this->init();
-        $this->uploadDir = WEBAPP_DIR.DIRECTORY_SEPARATOR.
-                           "uploads".DIRECTORY_SEPARATOR.
-                           "repository";
+        
+        $this->uploadDir = Repository_Components_Util_CreateWorkDirectory::create(WEBAPP_DIR.DIRECTORY_SEPARATOR."uploads".DIRECTORY_SEPARATOR."repository".DIRECTORY_SEPARATOR);
+        if($this->uploadDir === false) {
+            $this->uploadDir = WEBAPP_DIR.DIRECTORY_SEPARATOR."uploads".DIRECTORY_SEPARATOR."repository".DIRECTORY_SEPARATOR;
+        }
         
         // Create log file
         if($this->isCreateLog)
@@ -70,12 +77,12 @@ class RepositoryFileUpload
      *
      * @return array
      */
-    public function getUploadData()
+    public function getUploadData(&$statusCode)
     {
         $this->writeLog("-- Start getUploadData (".date("Y/m/d H:i:s").") --\n");
-        
-        $this->getFileByInput();
-        
+
+        $this->getFileByInput($statusCode);
+
         $fileData = array();
         if( isset($this->fileName) && isset($this->physicalFileName) && isset($this->fileSize) &&
             isset($this->mimetype) && isset($this->extension) && isset($this->insertTime) && isset($this->uploadDir))
@@ -90,10 +97,15 @@ class RepositoryFileUpload
         }
         else
         {
-            if( strlen($this->uploadDir)>0 && strlen($this->physicalFileName)>0 &&
-                file_exists($this->uploadDir.DIRECTORY_SEPARATOR.$this->physicalFileName))
+            if(!isset($statusCode) || strlen($statusCode) == 0)
             {
-                unlink($this->uploadDir.DIRECTORY_SEPARATOR.$this->physicalFileName);
+                $statusCode = 400;
+            }
+
+            if( strlen($this->uploadDir)>0 && strlen($this->physicalFileName)>0 &&
+                file_exists($this->uploadDir.$this->physicalFileName))
+            {
+                unlink($this->uploadDir.$this->physicalFileName);
             }
         }
         
@@ -101,7 +113,10 @@ class RepositoryFileUpload
         
         return $fileData;
     }
-    
+
+    /**
+     * 初期化処理
+     */
     private function init()
     {
         $this->fileName = null;
@@ -113,25 +128,66 @@ class RepositoryFileUpload
         
         $this->writeLog("  Init data.\n");
     }
-    
-    private function getFileByInput()
+
+    /**
+     * ファイル情報の取得
+     * @param エラーメッセージ $errorMsg
+     */
+    private function getFileByInput(&$statusCode)
     {
         $this->writeLog("-- Start getFileByInput (".date("Y/m/d H:i:s").") --\n");
-        
+
         $this->init();
-        
+        // Update SuppleContentsEntry Y.Yamazawa --start-- 2015/04/08 --start--
+        // ファイル情報を決める
+        $this->decideInsertTime();
+        $this->decideMimeType();
+        $this->decideFileName();
+        $this->decideExtension();
+        $this->decidePhysicalName();
+
+        // ファイルのアップロード
+        $this->decodeFile($statusCode);
+
+        // ログの出力
+        $this->outPutLogOfFileInfo();
+        $this->writeLog("-- End getFileByInput (".date("Y/m/d H:i:s").") --\n\n");
+        // Update SuppleContentsEntry Y.Yamazawa --end-- 2015/04/08 --end--
+    }
+
+    // Add SuppleContentsEntry Y.Yamazawa --start-- 2015/04/08 --start--
+    /**
+     * InsertTimeを決める
+     */
+    private function decideInsertTime()
+    {
         // Set insertTime
         $now = new Date();
         $this->insertTime = $now->getDate(DATE_FORMAT_TIMESTAMP);
-        
+    }
+    // Add SuppleContentsEntry Y.Yamazawa --end-- 2015/04/08 --end--
+
+    // Add SuppleContentsEntry Y.Yamazawa --start-- 2015/04/08 --start--
+    /**
+     * MimeTypeを決める
+     */
+    private function decideMimeType()
+    {
         // Set mimetype
         if(isset($_SERVER['CONTENT_TYPE'])){
             $this->mimetype = $_SERVER['CONTENT_TYPE'];
         } else if(isset($_SERVER['HTTP_CONTENT_TYPE'])){
             $this->mimetype = $_SERVER['HTTP_CONTENT_TYPE'];
         }
-        
-        // Set fileName
+    }
+    // Add SuppleContentsEntry Y.Yamazawa --end-- 2015/04/08 --end--
+
+    // Add SuppleContentsEntry Y.Yamazawa --start-- 2015/04/08 --start--
+    /**
+     * ファイル名を決める
+     */
+    private function decideFileName()
+    {
         if(isset($_SERVER["CONTENT_DISPOSITION"])){
             $contentDisposition = urldecode($_SERVER["CONTENT_DISPOSITION"]);
             $contentDisposition = mb_convert_encoding($contentDisposition, "UTF-8", "ASCII,JIS,UTF-8,EUC-JP,SJIS");
@@ -160,13 +216,22 @@ class RepositoryFileUpload
                 }
             }
         }
-        
+    }
+    // Add SuppleContentsEntry Y.Yamazawa --end-- 2015/04/08 --end--
+
+    // Add SuppleContentsEntry Y.Yamazawa --start-- 2015/04/08 --start--
+    /**
+     * Extensionを決める
+     */
+    private function  decideExtension()
+    {
         // Set extension
         if(strlen($this->fileName) > 0)
         {
             if(preg_match("/^application\/zip/", $this->mimetype) ||
-                    preg_match("/^application\/x-zip/",$mimetype) ||
-                    preg_match("/^application\/x-compress/", $this->mimetype))
+                    preg_match("/^application\/x-zip/",$this->mimetype) ||
+                    preg_match("/^application\/x-compress/", $this->mimetype) ||
+                    preg_match("/^multipart\/form-data/", $this->mimetype))
             {
                 $this->extension = "zip";
                 $this->fileName .= ".".$this->extension;
@@ -180,24 +245,78 @@ class RepositoryFileUpload
                 }
             }
         }
-        
+    }
+    // Add SuppleContentsEntry Y.Yamazawa --end-- 2015/04/08 --end--
+
+    // Add SuppleContentsEntry Y.Yamazawa --start-- 2015/04/08 --start--
+    /**
+     * PhysicalNameを決める
+     */
+    private function decidePhysicalName()
+    {
         // Set physicalName
         $this->physicalFileName = $this->insertTime.".".$this->extension;
         if(strlen($this->fileName) == 0)
         {
             $this->fileName = $this->physicalFileName;
         }
-        
-        $putdata = fopen("php://input", "rb");
-        $fp = fopen($this->uploadDir.DIRECTORY_SEPARATOR.$this->physicalFileName, "w");
-        while($data = fread($putdata, 1024)){   // 1MBずつ追記する
-            fwrite($fp, $data);
+    }
+    // Add SuppleContentsEntry Y.Yamazawa --end-- 2015/04/08 --end--
+
+    // Add SuppleContentsEntry Y.Yamazawa --start-- 2015/04/08 --start--
+    /**
+     * ファイルアップロード処理
+     * @param string $statusCode ステータスコード
+     * @return boolean デコード処理の成功失敗
+     */
+    private function decodeFile(&$statusCode)
+    {
+        try {
+            $readFileStream = FileStream::open("php://input", "rb");
+            $this->writeLog("[decode]:");
+            $fileList = Repository_Components_Util_MultipartStreamDecoder::decodeMultiPartFile($readFileStream, $this->uploadDir.$this->physicalFileName);
+            $this->writeLog("Success\n");
+            $this->writeLog("[UPLODE FILE]"."\n");
+            foreach ($fileList as $fileName){
+                $this->writeLog($fileName."\n");
+            }
         }
-        fclose($fp);
-        fclose($putdata);
-        
-        $this->fileSize = filesize($this->uploadDir.DIRECTORY_SEPARATOR.$this->physicalFileName);
-        
+        catch(AppException $e){
+            $errorMsg = $e->getMessage();
+            $this->writeLog("ERROR\n".$errorMsg."\n");
+            $readFileStream->close();
+
+            // マルチパートでない場合のzipファイル出力処理
+            $readFileStream = FileStream::open("php://input", "rb");
+            $outputFileStream = FileStream::open($this->uploadDir.$this->physicalFileName, "w");
+            while ($data = $readFileStream->read(1024))
+            {
+                $outputFileStream->write($data);
+            }
+            $outputFileStream->close();
+            $readFileStream->close();
+        }
+        catch(IOException $e)
+        {
+            $errorMsg = $e->getMessage();
+            $this->writeLog("ERROR\n".$errorMsg."\n");
+            $statusCode = 500;
+
+            return false;
+        }
+
+        $this->fileSize = filesize($this->uploadDir.$this->physicalFileName);
+
+        return true;
+    }
+    // Add SuppleContentsEntry Y.Yamazawa --end-- 2015/04/08 --end--
+
+    // Add SuppleContentsEntry Y.Yamazawa --start-- 2015/04/08 --start--
+    /**
+     * ファイル情報ログの出力
+     */
+    private function outPutLogOfFileInfo()
+    {
         $this->writeLog(" [Session data]\n");
         if(isset($_SERVER['CONTENT_TYPE']))
         {
@@ -223,7 +342,8 @@ class RepositoryFileUpload
         $this->writeLog("  fileSize: ".$this->fileSize."\n");
         $this->writeLog("-- End getFileByInput (".date("Y/m/d H:i:s").") --\n\n");
     }
-    
+    // Add SuppleContentsEntry Y.Yamazawa --end-- 2015/04/08 --end--
+
     /**
      * Write log to file
      *

@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Log.class.php 30892 2014-01-17 08:20:21Z shota_suzuki $
+// $Id: Log.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -60,7 +60,7 @@ class Repository_View_Edit_Log extends RepositoryAction
      *
      * @access  public
      */
-    function execute()
+    function executeApp()
     {
     	// 開始・終了日の選択候補（デフォルトチェック込み）文字列の作成
     	// 年

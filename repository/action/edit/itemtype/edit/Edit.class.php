@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Edit.class.php 24559 2013-08-02 00:47:17Z koji_matsuo $
+// $Id: Edit.class.php 48455 2015-02-16 10:53:40Z atsushi_suzuki $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -22,11 +22,6 @@ require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.
  */
 class Repository_Action_Edit_Itemtype_Edit extends RepositoryAction
 {
-	// 2008/02/25 itemtype を item_type に変更
-	// 使用コンポーネントを受け取るため
-	//var $session = null;
-	var $db = null;
-	
 	// リクエストパラメータを受け取るため
 	var $item_type_name = null;		//前画面で入力したアイテムタイプ名(新規作成時)
 	var $item_type_id = null;		//前画面で選択したアイテムタイプID(編集時)
@@ -175,15 +170,6 @@ class Repository_Action_Edit_Itemtype_Edit extends RepositoryAction
 		   		// メタデータ編集反映不具合対応 2008/06/17 Y.Nakao --end--
 	   		
 	 			// アイテムタイプを検索してセッション情報に保存
-	 			/* 2008/03/06 クエリー変更
-	    		$params = array(
-					"item_type_id" => $this->item_type_id,
-	    			"is_delete" => 0
-	    		);
-	 			// ↓ 2008/02/26 DB修正 nakao
-	 			$result = $this->db->selectExecute("repository_item_type", $params);
-	 			// ↑ 2008/02/26
-				*/
 	 			$query = "SELECT * ".
                 	     "FROM ". DATABASE_PREFIX ."repository_item_type ".
                     	 "WHERE item_type_id = ? AND ".

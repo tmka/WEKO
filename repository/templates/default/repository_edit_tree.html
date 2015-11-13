@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: repository_edit_tree.html 39149 2014-07-28 08:37:06Z rei_matsuura $          -->
+<!--// $Id: repository_edit_tree.html 54835 2015-06-25 04:10:46Z keiya_sugimoto $          -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -80,7 +80,7 @@
 						<th class="item_edit_list4 vt al ptb04 plr08"><{$lang.repository_edittree_publish}></th>
 						<td class="item_edit_list4 al" colspan="3">
 							<label for="publish_repos<{$id}>">
-								<input type="checkbox" id="publish_repos<{$id}>" onclick="if(this.checked==true){$('input_date_repos').style.display='block';}else{$('input_date_repos').style.display='none';}" disabled/>
+								<input type="checkbox" id="publish_repos<{$id}>" onclick="if(this.checked==true){$('input_date_repos').style.display='block';$('pubdate_recursive<{$id}>').checked='';}else{$('input_date_repos').style.display='none';$('pubdate_recursive<{$id}>').checked='';}" disabled/>
 									<{$lang.repository_edittree_show}><span style="color: #8a8;"><{$lang.repository_edittree_setpubdate}></span>
 							</label>
 							<div style="display: none;" id="input_date_repos" >
@@ -136,6 +136,13 @@
 							<input type="hidden" id="hid_pubyear_repos<{$id}>" />
 							<input type="hidden" id="hid_pubmonth_repos<{$id}>" />
 							<input type="hidden" id="hid_pubday_repos<{$id}>" />
+							
+							<div>
+								<label class="mt05 ml15" for="pubdate_recursive<{$id}>">
+									<input type="checkbox" id="pubdate_recursive<{$id}>" disabled/>
+									<{$lang.repository_edittree_pub_date_recursive}>
+								</label>
+							</div>
 						</td>
 					</tr>
 					<{* Add child index display more 2009/01/16 Y.Nakao --start-- *}>
@@ -170,6 +177,11 @@
                         <td class="item_edit_list4 al" colspan="3">
                             <label for="create_cover_flag<{$id}>">
                                 <input type="checkbox" id="create_cover_flag<{$id}>" disabled="disabled"/><{$lang.repository_edittree_pdf_cover_create}><br/>
+                            </label>
+                            <br>
+                            <label class="mt05 ml15" for="create_cover_recursive<{$id}>">
+                                <input type="checkbox" id="create_cover_recursive<{$id}>" disabled/>
+                                <{$lang.repository_edittree_pdf_cover_recursive}>
                             </label>
                         </td>
                     </tr>
@@ -368,6 +380,10 @@
 									</td>
 								</tr>
 							</table>
+                            <label class="mt05 mb05 ml25" for="aclRoleIds_recursive<{$id}>">
+                                <input type="checkbox" id="aclRoleIds_recursive<{$id}>" disabled/>
+                                <{$lang.repository_edittree_exclusive_acl_role_ids_recursive}>
+                            </label>
 						</td>
 					</tr>
 					<tr class="tree_access_control">
@@ -395,6 +411,10 @@
 									</td>
 								</tr>
 							</table>
+                            <label class="mt05 ml20" for="aclRoomAuth_recursive<{$id}>">
+                                <input type="checkbox" id="aclRoomAuth_recursive<{$id}>" disabled/>
+                                <{$lang.repository_edittree_exclusive_acl_room_auth_recursive}>
+                            </label>
 						</td>
 					</tr>
 					<tr class="tree_access_control">
@@ -428,6 +448,10 @@
 									</td>
 								</tr>
 							</table>
+                            <label class="mt05 mb05 ml25" for="aclGroupIds_recursive<{$id}>">
+                                <input type="checkbox" id="aclGroupIds_recursive<{$id}>" disabled/>
+                                <{$lang.repository_edittree_exclusive_acl_group_ids_recursive}>
+                            </label>
 						</td>
 					</tr>
 					
@@ -645,6 +669,13 @@
 		alert('<{$lang.repository_edittree_pubdate_error}>');
 	}
 	
+    <{* Add recursively uppdate flag 2015/01/21 S.Suzuki --start-- *}>
+	var pubdate_recursive = $('pubdate_recursive<{$id}>');
+	var create_cover_recursive = $('create_cover_recursive<{$id}>');
+	var aclRoleIds_recursive = $('aclRoleIds_recursive<{$id}>');
+	var aclRoomAuth_recursive = $('aclRoomAuth_recursive<{$id}>');
+	var aclGroupIds_recursive = $('aclGroupIds_recursive<{$id}>');
+    <{* Add recursively uppdate flag 2015/01/21 S.Suzuki --end-- *}>
 </script>
 
 <script class="nc_script" type="text/javascript">
@@ -833,19 +864,19 @@
 			for(ii=0; ii<cnt; ii++){
 				var jj = ++exclusive_acl_role_name.length;
 				if(list[ii] == '_AUTH_SYSADMIN_NAME'){
-					exclusive_acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_SYSADMIN_NAME}>';
+					exclusive_acl_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_SYSADMIN_NAME}>';
 				} else if(list[ii] == '_AUTH_ADMIN_NAME'){
-					exclusive_acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_ADMIN_NAME}>';
+					exclusive_acl_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_ADMIN_NAME}>';
 				} else if(list[ii] == '_AUTH_CHIEF_NAME'){
-					exclusive_acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_CHIEF_NAME}>';
+					exclusive_acl_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_CHIEF_NAME}>';
 				} else if(list[ii] == '_AUTH_MODERATE_NAME'){
-					exclusive_acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_MODERATE_NAME}>';
+					exclusive_acl_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_MODERATE_NAME}>';
 				} else if(list[ii] == '_AUTH_GENERAL_NAME'){
-					exclusive_acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GENERAL_NAME}>';
+					exclusive_acl_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_GENERAL_NAME}>';
 				} else if(list[ii] == '_AUTH_GUEST_NAME'){
-					exclusive_acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GUEST_NAME}>';
+					exclusive_acl_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_GUEST_NAME}>';
 				} else if(list[ii] != '') {
-					exclusive_acl_role_name.options[ jj - 1 ].text = list[ii];
+					exclusive_acl_role_name.options[ jj - 1 ].innerHTML = list[ii];
 				}
 			}
 		}
@@ -880,25 +911,25 @@
 				var jj = ++acl_role_name.length;
                 // Add tree access control list 2012/02/22 T.Koyasu -start-
 				if(list[ii] == '_AUTH_SYSADMIN_NAME'){
-					acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_SYSADMIN_NAME}>';
+					acl_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_SYSADMIN_NAME}>';
                     acl_role_name.options[ jj - 1 ].disabled = "true";
                     //acl_role_name.options[ jj - 1 ].style.color = "#000";
 				} else if(list[ii] == '_AUTH_ADMIN_NAME'){
-					acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_ADMIN_NAME}>';
+					acl_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_ADMIN_NAME}>';
 				} else if(list[ii] == '_AUTH_CHIEF_NAME'){
-					acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_CHIEF_NAME}>';
+					acl_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_CHIEF_NAME}>';
 				} else if(list[ii] == '_AUTH_MODERATE_NAME'){
-					acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_MODERATE_NAME}>';
+					acl_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_MODERATE_NAME}>';
 				} else if(list[ii] == '_AUTH_GENERAL_NAME'){
-					acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GENERAL_NAME}>';
+					acl_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_GENERAL_NAME}>';
 				} else if(list[ii] == '_AUTH_GUEST_NAME'){
-					acl_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GUEST_NAME}>';
+					acl_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_GUEST_NAME}>';
                 } else if(list[ii] == '管理者'){
-                    acl_role_name.options[ jj - 1 ].text = list[ii];
+                    acl_role_name.options[ jj - 1 ].innerHTML = list[ii];
                     acl_role_name.options[ jj - 1 ].disabled = "true";
                     //acl_role_name.options[ jj - 1 ].style.color = "#000";
 				} else if(list[ii] != '') {
-					acl_role_name.options[ jj - 1 ].text = list[ii];
+					acl_role_name.options[ jj - 1 ].innerHTML = list[ii];
 				}
                 // Add tree access control list 2012/02/22 T.Koyasu -end-
 			}
@@ -930,19 +961,19 @@
 			for(ii=0; ii<cnt; ii++){
 				var jj = ++exclusive_acl_group_name.length;
 				if(list[ii] == '_AUTH_SYSADMIN_NAME'){
-					exclusive_acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_SYSADMIN_NAME}>';
+					exclusive_acl_group_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_SYSADMIN_NAME}>';
 				} else if(list[ii] == '_AUTH_ADMIN_NAME'){
-					exclusive_acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_ADMIN_NAME}>';
+					exclusive_acl_group_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_ADMIN_NAME}>';
 				} else if(list[ii] == '_AUTH_CHIEF_NAME'){
-					exclusive_acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_CHIEF_NAME}>';
+					exclusive_acl_group_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_CHIEF_NAME}>';
 				} else if(list[ii] == '_AUTH_MODERATE_NAME'){
-					exclusive_acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_MODERATE_NAME}>';
+					exclusive_acl_group_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_MODERATE_NAME}>';
 				} else if(list[ii] == '_AUTH_GENERAL_NAME'){
-					exclusive_acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GENERAL_NAME}>';
+					exclusive_acl_group_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_GENERAL_NAME}>';
 				} else if(list[ii] == '_AUTH_GUEST_NAME'){
-					exclusive_acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GUEST_NAME}>';
+					exclusive_acl_group_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_GUEST_NAME}>';
 				} else if(list[ii] != '') {
-					exclusive_acl_group_name.options[ jj - 1 ].text = list[ii];
+					exclusive_acl_group_name.options[ jj - 1 ].innerHTML = list[ii];
 				}
 			}
 		}
@@ -973,19 +1004,19 @@
 			for(ii=0; ii<cnt; ii++){
 				var jj = ++acl_group_name.length;
 				if(list[ii] == '_AUTH_SYSADMIN_NAME'){
-					acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_SYSADMIN_NAME}>';
+					acl_group_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_SYSADMIN_NAME}>';
 				} else if(list[ii] == '_AUTH_ADMIN_NAME'){
-					acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_ADMIN_NAME}>';
+					acl_group_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_ADMIN_NAME}>';
 				} else if(list[ii] == '_AUTH_CHIEF_NAME'){
-					acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_CHIEF_NAME}>';
+					acl_group_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_CHIEF_NAME}>';
 				} else if(list[ii] == '_AUTH_MODERATE_NAME'){
-					acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_MODERATE_NAME}>';
+					acl_group_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_MODERATE_NAME}>';
 				} else if(list[ii] == '_AUTH_GENERAL_NAME'){
-					acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GENERAL_NAME}>';
+					acl_group_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_GENERAL_NAME}>';
 				} else if(list[ii] == '_AUTH_GUEST_NAME'){
-					acl_group_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GUEST_NAME}>';
+					acl_group_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_GUEST_NAME}>';
 				} else if(list[ii] != '') {
-					acl_group_name.options[ jj - 1 ].text = list[ii];
+					acl_group_name.options[ jj - 1 ].innerHTML = list[ii];
 				}
 			}
 		}
@@ -1044,7 +1075,7 @@
 			cnt = group.length;
 			for(ii=0; ii<cnt; ii++){
 				var jj = ++access_group_name.length;
-				access_group_name.options[ jj - 1 ].text = group[ii];
+				access_group_name.options[ jj - 1 ].innerHTML = group[ii];
 			}
 		}
 		///// access NG group /////
@@ -1065,7 +1096,7 @@
 			var cnt = group.length;
 			for(ii=0; ii<cnt; ii++){
 				var jj = ++not_access_group_name.length;
-				not_access_group_name.options[ jj - 1 ].text = group[ii];
+				not_access_group_name.options[ jj - 1 ].innerHTML = group[ii];
 			}
 		}
 		
@@ -1089,19 +1120,19 @@
 			for(ii=0; ii<cnt; ii++){
 				var jj = ++access_role_name.length;
 				if(auth[ii] == '_AUTH_SYSADMIN_NAME'){
-					access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_SYSADMIN_NAME}>';
+					access_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_SYSADMIN_NAME}>';
 				} else if(auth[ii] == '_AUTH_ADMIN_NAME'){
-					access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_ADMIN_NAME}>';
+					access_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_ADMIN_NAME}>';
 				} else if(auth[ii] == '_AUTH_CHIEF_NAME'){
-					access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_CHIEF_NAME}>';
+					access_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_CHIEF_NAME}>';
 				} else if(auth[ii] == '_AUTH_MODERATE_NAME'){
-					access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_MODERATE_NAME}>';
+					access_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_MODERATE_NAME}>';
 				} else if(auth[ii] == '_AUTH_GENERAL_NAME'){
-					access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GENERAL_NAME}>';
+					access_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_GENERAL_NAME}>';
 				} else if(auth[ii] == '_AUTH_GUEST_NAME'){
-					access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GUEST_NAME}>';
+					access_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_GUEST_NAME}>';
 				} else if(auth[ii] != '') {
-					access_role_name.options[ jj - 1 ].text = auth[ii];
+					access_role_name.options[ jj - 1 ].innerHTML = auth[ii];
 				}
 			}
 		}
@@ -1124,19 +1155,19 @@
 			for(ii=0; ii<cnt; ii++){
 				var jj = ++not_access_role_name.length;
 				if(auth[ii] == '_AUTH_SYSADMIN_NAME'){
-					not_access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_SYSADMIN_NAME}>';
+					not_access_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_SYSADMIN_NAME}>';
 				} else if(auth[ii] == '_AUTH_ADMIN_NAME'){
-					not_access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_ADMIN_NAME}>';
+					not_access_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_ADMIN_NAME}>';
 				} else if(auth[ii] == '_AUTH_CHIEF_NAME'){
-					not_access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_CHIEF_NAME}>';
+					not_access_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_CHIEF_NAME}>';
 				} else if(auth[ii] == '_AUTH_MODERATE_NAME'){
-					not_access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_MODERATE_NAME}>';
+					not_access_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_MODERATE_NAME}>';
 				} else if(auth[ii] == '_AUTH_GENERAL_NAME'){
-					not_access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GENERAL_NAME}>';
+					not_access_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_GENERAL_NAME}>';
 				} else if(auth[ii] == '_AUTH_GUEST_NAME'){
-					not_access_role_name.options[ jj - 1 ].text = '<{$smarty.const._AUTH_GUEST_NAME}>';
+					not_access_role_name.options[ jj - 1 ].innerHTML = '<{$smarty.const._AUTH_GUEST_NAME}>';
 				} else if(auth[ii] != '') {
-					not_access_role_name.options[ jj - 1 ].text = auth[ii];
+					not_access_role_name.options[ jj - 1 ].innerHTML = auth[ii];
 				}
 			}
 		}
@@ -1339,6 +1370,33 @@
             biblio_flag.checked = "";
         }
         // Add issn and biblio flag 2014/04/16 --end--
+        
+        // Add recursively uppdate flag 2015/01/21 S.Suzuki --start--
+        if(edit_id == "0"){
+            pubdate_recursive.disabled = "true";
+            pubdate_recursive.checked = false;
+            create_cover_recursive.disabled = "true";
+            create_cover_recursive.checked = false;
+            aclRoleIds_recursive.disabled = "true";
+            aclRoleIds_recursive.checked = false;
+            aclRoomAuth_recursive.disabled = "true";
+            aclRoomAuth_recursive.checked = false;
+            aclGroupIds_recursive.disabled = "true";
+            aclGroupIds_recursive.checked = false;
+        }
+        else {
+            pubdate_recursive.disabled = "";
+            pubdate_recursive.checked = "";
+            create_cover_recursive.disabled = "";
+            create_cover_recursive.checked = "";
+            aclRoleIds_recursive.disabled = "";
+            aclRoleIds_recursive.checked = "";
+            aclRoomAuth_recursive.disabled = "";
+            aclRoomAuth_recursive.checked = "";
+            aclGroupIds_recursive.disabled = "";
+            aclGroupIds_recursive.checked = "";
+        }
+        // Add recursively uppdate flag 2015/01/21 S.Suzuki --end--
 	}
 </script>
 
@@ -1355,7 +1413,7 @@
 				var elm = not_access_group_name.options[ii];
 				if (elm.selected) {
 					var jj = ++access_group_name.length;
-					access_group_name.options[ jj-1 ].text = elm.text;
+					access_group_name.options[ jj-1 ].innerHTML = elm.text;
 					not_access_group_name.options[ii] = null;
 					access_group_id_txt.push(not_access_group_id_txt[ii]);
 					not_access_group_id_txt.splice(ii,1);
@@ -1385,7 +1443,7 @@
 				var elm = access_group_name.options[ii];
 				if (elm.selected) {
 					var jj = ++not_access_group_name.length;
-					not_access_group_name.options[ jj-1 ].text = elm.text;
+					not_access_group_name.options[ jj-1 ].innerHTML = elm.text;
 					access_group_name.options[ii] = null;
 					not_access_group_id_txt.push(access_group_id_txt[ii]);
 					access_group_id_txt.splice(ii,1);
@@ -1417,7 +1475,7 @@
 				var elm = not_access_role_name.options[ii];
 				if (elm.selected) {
 					var jj = ++access_role_name.length;
-					access_role_name.options[ jj-1 ].text = elm.text;
+					access_role_name.options[ jj-1 ].innerHTML = elm.text;
 					not_access_role_name.options[ii] = null;
 					access_role_id_txt.push(not_access_role_id_txt[ii]);
 					not_access_role_id_txt.splice(ii,1);
@@ -1447,7 +1505,7 @@
 				var elm = access_role_name.options[ii];
 				if (elm.selected) {
 					var jj = ++not_access_role_name.length;
-					not_access_role_name.options[ jj-1 ].text = elm.text;
+					not_access_role_name.options[ jj-1 ].innerHTML = elm.text;
 					access_role_name.options[ii] = null;
 					not_access_role_id_txt.push(access_role_id_txt[ii]);
 					access_role_id_txt.splice(ii,1);
@@ -1770,6 +1828,19 @@
         online_issn.disabled = "true";
         biblio_flag.disabled = "true";
         // Add issn and biblio flag 2014/04/16 T.Ichikawa --end--
+        
+        // Add recursively uppdate flag 2015/01/21 S.Suzuki --start--
+        pubdate_recursive.checked = false;
+        pubdate_recursive.disabled = "true";
+        create_cover_recursive.checked = false;
+        create_cover_recursive.disabled = "true";
+        aclRoleIds_recursive.checked = false;
+        aclRoleIds_recursive.disabled = "true";
+        aclRoomAuth_recursive.checked = false;
+        aclRoomAuth_recursive.disabled = "true";
+        aclGroupIds_recursive.checked = false;
+        aclGroupIds_recursive.disabled = "true";
+        // Add recursively uppdate flag 2015/01/21 S.Suzuki --end--
 	}
 </script>
 <{* make new index and del index 2008/12/09 Y.Nakao --end-- *}>
@@ -1878,6 +1949,15 @@
         pars += '&thumbnail_del=' + thumbnail_del;
         pars += '&create_cover_flag=' + encodeURIComponent(create_cover_flag.checked);
         pars += '&harvest_public_state=' + encodeURIComponent(harvest_public_state.checked);
+        
+        // Add recursively uppdate flag 2015/01/21 S.Suzuki --start--
+        pars += '&pubdate_recursive=' + encodeURIComponent(pubdate_recursive.checked);
+        pars += '&create_cover_recursive=' + encodeURIComponent(create_cover_recursive.checked);
+        pars += '&aclRoleIds_recursive=' + encodeURIComponent(aclRoleIds_recursive.checked);
+        pars += '&aclRoomAuth_recursive=' + encodeURIComponent(aclRoomAuth_recursive.checked);
+        pars += '&aclGroupIds_recursive=' + encodeURIComponent(aclGroupIds_recursive.checked);
+        // Add recursively uppdate flag 2015/01/21 S.Suzuki --end--
+        
         if ('<{$smarty.session.MyPrivateTreeRootId}>' != "") {
 			repositoryCls['<{$id}>'].repositoryIndexThumbnailFileUpload(pars, "privateTree");
 		} else {
@@ -1926,10 +2006,15 @@
 	
 	dragMouseUp = function(drop_id, drop_index){
 		if(drag_id && drag_id!="" && drop_id!=drag_id){
-			var pars =  '&edit_mode=sort'+
-						'&drag_id='+drag_id+
-						'&drop_id='+drop_id+
-						'&drop_index='+drop_index;
+			if (ctrl_pressed) {
+				var pars = '&edit_mode=copy_tree';
+			}
+			else {
+				var pars = '&edit_mode=sort';
+			}
+			pars += '&drag_id='+drag_id+
+					'&drop_id='+drop_id+
+					'&drop_index='+drop_index;
 			if('<{$smarty.session.MyPrivateTreeRootId}>' != ""){
 				repositoryCls['<{$id}>'].onSubmitEdittree_repos(pars, "privateTree");
 			} else {
@@ -2088,7 +2173,7 @@
 				var elm = exclusive_acl_role_name.options[ii];
 				if (elm.selected || exclusive_acl_user_auth_id_txt[ii] >= minAuth) {
 					var jj = ++acl_role_name.length;
-					acl_role_name.options[ jj-1 ].text = elm.text;
+					acl_role_name.options[ jj-1 ].innerHTML = elm.text;
 					exclusive_acl_role_name.options[ii] = null;
 					acl_role_id_txt.push(exclusive_acl_role_id_txt[ii]);
                     acl_user_auth_id_txt.push(exclusive_acl_user_auth_id_txt[ii]);
@@ -2162,7 +2247,7 @@
 				var elm = acl_role_name.options[ii];
 				if (elm.selected || acl_user_auth_id_txt[ii] <= maxAuth) {
 					var jj = ++exclusive_acl_role_name.length;
-					exclusive_acl_role_name.options[ jj-1 ].text = elm.text;
+					exclusive_acl_role_name.options[ jj-1 ].innerHTML = elm.text;
 					acl_role_name.options[ii] = null;
 					exclusive_acl_role_id_txt.push(acl_role_id_txt[ii]);
                     exclusive_acl_user_auth_id_txt.push(acl_user_auth_id_txt[ii]);
@@ -2206,7 +2291,7 @@
 				var elm = exclusive_acl_group_name.options[ii];
 				if (elm.selected) {
 					var jj = ++acl_group_name.length;
-					acl_group_name.options[ jj-1 ].text = elm.text;
+					acl_group_name.options[ jj-1 ].innerHTML = elm.text;
 					exclusive_acl_group_name.options[ii] = null;
 					acl_group_id_txt.push(exclusive_acl_group_id_txt[ii]);
 					exclusive_acl_group_id_txt.splice(ii,1);
@@ -2236,7 +2321,7 @@
 				var elm = acl_group_name.options[ii];
 				if (elm.selected) {
 					var jj = ++exclusive_acl_group_name.length;
-					exclusive_acl_group_name.options[ jj-1 ].text = elm.text;
+					exclusive_acl_group_name.options[ jj-1 ].innerHTML = elm.text;
 					acl_group_name.options[ii] = null;
 					exclusive_acl_group_id_txt.push(acl_group_id_txt[ii]);
 					acl_group_id_txt.splice(ii,1);
@@ -2297,3 +2382,25 @@
 	
 </script>
 <{* Add hide tree access control list 2013/04/19 K.Matsuo --end-- *}>
+
+<{* Add copy index tree 2014/01/20 S.Suzuki --start-- *}>
+<script class="nc_script" type="text/javascript">
+// キー状態保持変数
+ctrl_pressed = false;
+
+// Ctrlキーを押したとき
+document.onkeydown = function (e){
+    if (e.ctrlKey){
+        if (!e) e = window.event;
+        ctrl_pressed = true;
+    }
+};
+
+// Ctrlキーを放したとき
+document.onkeyup = function (e){
+    if (!e) e = window.event;
+    ctrl_pressed = false;
+};
+</script>
+<{* Add copy index tree 2014/01/20 S.Suzuki --end-- *}>
+

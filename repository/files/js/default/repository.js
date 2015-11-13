@@ -590,24 +590,24 @@ clsRepository.prototype = {
 		commonCls.send(params);
 	},
 	// Goto ItemSelectEdit (S.Kawasaki)
-	repositoryItemSelectType: function() {
+	repositoryItemSelectType: function(mode) {
 		var top_el = $(this.id);
 		var form = top_el.getElementsByTagName("form")[0];
 		var params = new Object();
 		params["method"] = "post";
-		params["param"] = "action=repository_action_main_item_selecttype" + "&"+ Form.serialize(form);
+		params["param"] = "action=repository_action_main_item_selecttype" + "&"+ Form.serialize(form) + "&save_mode=" + mode;
 		params["top_el"] = top_el;
 		params["loading_el"] = top_el;
 		params["target_el"] = top_el;
 		commonCls.send(params);
 	},
 	// Goto ItemEditFiles (S.Kawasaki)
-	repositoryItemEditFiles: function() {
+	repositoryItemEditFiles: function(mode) {
 		var top_el = $(this.id);
 		var form = top_el.getElementsByTagName("form")[0];
 		var params = new Object();
 		params["method"] = "post";
-		params["param"] = "action=repository_action_main_item_editfiles" + "&"+ Form.serialize(form);
+		params["param"] = "action=repository_action_main_item_editfiles" + "&"+ Form.serialize(form) + "&save_mode=" + mode;
 		params["top_el"] = top_el;
 		params["loading_el"] = top_el;
 		params["target_el"] = top_el;
@@ -619,7 +619,7 @@ clsRepository.prototype = {
 		var form = document.getElementById('send_date');
 		var params = new Object();
 		params["method"] = "post";
-		params["param"] = "action=repository_action_main_item_editfiles" + "&"+ Form.serialize(form) + "&return_screen=1";
+		params["param"] = "action=repository_action_main_item_selecttype" + "&"+ Form.serialize(form) + "&return_screen=1&save_mode=next";
 		params["top_el"] = top_el;
 		params["loading_el"] = top_el;
 		params["target_el"] = top_el;
@@ -630,21 +630,23 @@ clsRepository.prototype = {
 		var top_el = $(this.id);
 		var params = new Object();
 		params["method"] = "post";
-		params["param"] = "action=repository_action_main_item_editfiles" + "&item_id=" + Item_Id + "&item_no=" + Item_No + "&workflow_active_tab=" + active_tab + "&return_screen=2";
+		params["param"] = "action=repository_action_main_item_selecttype" + "&item_id=" + Item_Id + "&item_no=" + Item_No + "&workflow_active_tab=" + active_tab + "&return_screen=2&save_mode=next";
 		params["top_el"] = top_el;
 		params["loading_el"] = top_el;
 		params["target_el"] = top_el;
 		commonCls.send(params);
 	},
 	// Goto ItemEditFilesLicense (S.Kawasaki)
-	repositoryItemEditFilesLicense: function() {
+	repositoryItemEditFilesLicense: function(mode) {
 		var top_el = $(this.id);
 		var form = top_el.getElementsByTagName("form")[0];
 		var params = new Object();
-		var add_params = new Object();		
+		var add_params = new Object();
+		// OK, check all text(textarea) element and if IsEmpty, set " ".
+		this.repositoryItemAddSpaceToEmptyText(form);
 //		var childelms = form.elements;
 		params["method"] = "post";
-		params["param"] = "action=repository_action_main_item_editfileslicense" + "&"+ Form.serialize(form);
+		params["param"] = "action=repository_action_main_item_editfileslicense" + "&"+ Form.serialize(form) + "&save_mode=" + mode;
 		params["top_el"] = top_el;
 		params["loading_el"] = top_el;
 		params["target_el"] = top_el;
@@ -746,7 +748,8 @@ clsRepository.prototype = {
 		var opt = "save_mode=" + mode + "&" + "target=" + target + "&" + "attridx=" + attridx;
 		// OK, check all text(textarea) element and if IsEmpty, set " ".
 		this.repositoryItemAddSpaceToEmptyText(form);
-		params["param"] = "action=repository_action_main_item_editfileslicense" + "&"+ Form.serialize(form) + "&" + opt;
+		
+		params["param"] = "action=repository_action_main_item_editfiles" + "&"+ Form.serialize(form) + "&" + opt;
 		params["top_el"] = top_el;
 		params["loading_el"] = top_el;
 		params["target_el"] = top_el;
@@ -755,24 +758,23 @@ clsRepository.prototype = {
 	// Goto ItemEditLinks (S.Kawasaki)
 	repositoryItemEditLinks: function(save_mode) {
 		var top_el = $(this.id);
-		var form = top_el.getElementsByTagName("form")[0];
+		var forms = top_el.getElementsByTagName("form");
 		var params = new Object();
 		params["method"] = "post";
-		// OK, check all text(textarea) element and if IsEmpty, set " ".
-		this.repositoryItemAddSpaceToEmptyText(form);
-		// Get Opend Node IDs & Checked Node Ids.
-		// change index tree view action 2008/12/03 Y.Nakao --start--
-		//var OpendIds = this.searchOpenNodeItemIndex();
-		//var CheckedIds = this.searchCheckedNodeItemIndex(); 
-		//var CheckedNames = this.searchCheckedNodeNameItemIndex(); 
-		params["param"] = "action=repository_action_main_item_editlinks" + "&" +
-						  Form.serialize(form) + "&save_mode=" + save_mode;
-						  //"OpendIds=" + OpendIds + "&" +
-						  //"CheckedIds=" + CheckedIds + "&" +
-						  //"CheckedNames=" + CheckedNames;
-		// change index tree view action 2008/12/03 Y.Nakao --end--
-//		var req_str = "action=repository_action_main_item_editlinks" + this.repositoryItemRequestStrMaker(form);
-//		params["param"] = req_str;
+		var OpendIds = "";
+		var CheckedIds = $('check_insert_idx').value;
+		var CheckedNames = $('check_insert_idx_name').value;
+		
+		var len = forms.length;
+		var form_data = "";
+		for (i=0; i<len; i++) {
+			form_data += "&" + Form.serialize(forms[i]);
+		}
+		params["param"] =   "action=repository_action_main_item_editlinks" + form_data + "&" +
+							"OpendIds=" + OpendIds + "&" +
+							"CheckedIds=" + CheckedIds + "&" +
+							"CheckedNames=" + CheckedNames + "&" + 
+							"save_mode=" + save_mode;
 		params["top_el"] = top_el;
 		params["loading_el"] = top_el;
 		params["target_el"] = top_el;
@@ -788,18 +790,8 @@ clsRepository.prototype = {
 		var opt = "save_mode=" + mode + "&" + "target=" + target + "&" + "attridx=" + attridx;
 		// OK, check all text(textarea) element and if IsEmpty, set " ".
 		this.repositoryItemAddSpaceToEmptyText(form);
-		// Get Opend Node IDs & Checked Node Ids.
-		// change index tree view action 2008/12/03 Y.Nakao --start--
-		//var OpendIds = this.searchOpenNodeItemIndex(); 
-		//var CheckedIds = this.searchCheckedNodeItemIndex(); 
-		//var CheckedNames = this.searchCheckedNodeNameItemIndex();
-		params["param"] = "action=repository_action_main_item_editlinks" + "&" +
+		params["param"] = "action=repository_action_main_item_edittexts" + "&" +
 						  Form.serialize(form) + "&" + opt;
-						  //"OpendIds=" + OpendIds + "&" +
-						  //"CheckedIds=" + CheckedIds + "&" +
-						  //"CheckedNames=" + CheckedNames;
-		// change index tree view action 2008/12/03 Y.Nakao --end--
-//		params["param"] = "action=repository_action_main_item_editlinks" + "&"+ Form.serialize(form) + "&" + opt;
 		params["top_el"] = top_el;
 		params["loading_el"] = top_el;
 		params["target_el"] = top_el;
@@ -840,58 +832,6 @@ clsRepository.prototype = {
 		}
 		return cnt;
 	},
-	// To Send All RequestParams, generate netsuzou serialized str (S.Kawasaki)
-	repositoryItemRequestStrMaker: function(formEl) {
-		// get "text", "textarea", "name"... elements from "item_attr_form" form.
-		var request_str = "";
-		var childelms = formEl.elements;
-		var len = childelms.length;
-		// OK, 2008/03/05/kokomade, 
-		for (ii=0; ii<len; ii++) {
-			if(childelms[ii].id == "base_attr") {
-				// basic information (title and language...)
-				request_str = request_str + "&" + "base_attr%5B%5D=%2520" + childelms[ii].value;		
-			} else {
-				// additional information (metadata)
-				switch(childelms[ii].tagName) {
-				case "INPUT":
-					switch(childelms[ii].type) {
-					case "text":
-						// texts id == "text", "link", "name_family", "name_given", "name_email"
-//						request_str = request_str + "&" + childelms[ii].id + "%5B%5D=%2520" + childelms[ii].value;
-						request_str = request_str + "&" + childelms[ii].id + "%5B%5D=%2520" + childelms[ii].value;
-						break;
-					case "checkbox":
-						// if checked, send "1", else send "0".
-						if(childelms[ii].checked) {
-							request_str = request_str + "&" + "item_attr_checkbox%5B%5D=%25201";
-						} else {
-							request_str = request_str + "&" + "item_attr_checkbox%5B%5D=%25200";
-						}
-						break;
-					case "radio":
-						// if checked, send value, else do not send.
-						if(childelms[ii].checked) {
-							request_str = request_str + "&" + "item_attr_radio%5B%5D=%2520" + childelms[ii].value;
-						}
-						break;
-					default:
-						break;
-					}	
-					break;
-				case "TEXTAREA":
-					request_str = request_str + "&" + "item_attr_textarea%5B%5D=%2520" + childelms[ii].value;
-					break;
-				case "SELECT":
-					request_str = request_str + "&" + "item_attr_select%5B%5D=%2520" + childelms[ii].value;
-					break;
-				default:
-					break;
-				}
-			}
-		}
-		return request_str;
-	},
 	// change next "hidden" value
 	changeNextHiddenVal: function(elm, IsChecked) {
 		if(IsChecked) {
@@ -925,29 +865,17 @@ clsRepository.prototype = {
 			}
 		}
 	},
-	// Goto ItemConfirm (S.Kawasaki)
 	repositoryItemEditDoi: function(save_mode) {
 		var top_el = $(this.id);
 		var forms = top_el.getElementsByTagName("form");
 		var params = new Object();
-		params["method"] = "post";
-		// Add join set insert index and set item links 2008/12/17 Y.Nakao --start--
-		var OpendIds = "";
-		var CheckedIds = $('check_insert_idx').value;
-		var CheckedNames = $('check_insert_idx_name').value;
-		
 		var len = forms.length;
 		var form_data = "";
 		for (i=0; i<len; i++) {
 			form_data += "&" + Form.serialize(forms[i]);
 		}
-		
-		params["param"] =   "action=repository_action_main_item_editdoi" + form_data + "&" +
-							"OpendIds=" + OpendIds + "&" +
-							"CheckedIds=" + CheckedIds + "&" +
-							"CheckedNames=" + CheckedNames + "&" + 
-							"save_mode=" + save_mode;
-		// Add join set insert index and set item links 2008/12/17 Y.Nakao --end--
+		params["method"] = "post";
+		params["param"] =   "action=repository_action_main_item_editdoi" + form_data + "&save_mode=" + save_mode;
 		params["top_el"] = top_el;
 		params["loading_el"] = top_el;
 		params["target_el"] = top_el;
@@ -956,30 +884,9 @@ clsRepository.prototype = {
 	// Goto ItemConfirm (S.Kawasaki)
 	repositoryItemConfirm: function(save_mode) {
 		var top_el = $(this.id);
-		var forms = top_el.getElementsByTagName("form");
 		var params = new Object();
 		params["method"] = "post";
-		
-		var len = forms.length;
-		var form_data = "";
-		for (i=0; i<len; i++) {
-			form_data += "&" + Form.serialize(forms[i]);
-		}
-		
-		params["param"] =   "action=repository_action_main_item_confirm" + form_data + "&" +
-							"save_mode=" + save_mode;
-		params["top_el"] = top_el;
-		params["loading_el"] = top_el;
-		params["target_el"] = top_el;
-		commonCls.send(params);
-	},
-	// Goto ItemAdddb(F.Arisaka)
-	repositoryItemAdddb: function() {
-		var top_el = $(this.id);
-		var form = top_el.getElementsByTagName("form")[0];
-		var params = new Object();
-		params["method"] = "post";
-		params["param"] = "action=repository_action_main_item_adddb" + "&"+ Form.serialize(form);
+		params["param"] =   "action=repository_action_main_item_confirm&save_mode=" + save_mode;
 		params["top_el"] = top_el;
 		params["loading_el"] = top_el;
 		params["target_el"] = top_el;
@@ -1668,7 +1575,6 @@ clsRepository.prototype = {
 		params["loading_el"] = top_el;
 		params["target_el"] = top_el;
 		// callback : action => view => template => callback...
-//		params["callbackfunc"] = this.repositoryItemEditLinks.bind(this);
 		commonCls.send(params);
 	},
 	// Generate Opening Index IDs, for ItemEditLink.
@@ -3176,9 +3082,10 @@ clsRepository.prototype = {
 	repositoryAddSupple: function(item_id, item_no, mode, weko_key){
 		var top_el = $(this.id);
 		var params = new Object();
+ 		var tmp_weko_key = encodeURIComponent(weko_key); // Add suppleContentsEntry 2015/03/23 Y.Yamazawa
 
 		params["method"] = "post";
-		params["param"] = "action=repository_action_main_item_supple" + "&item_id="+ item_id + "&item_no="+ item_no + "&mode=" + mode + "&weko_key=" + weko_key;
+		params["param"] = "action=repository_action_main_item_supple" + "&item_id="+ item_id + "&item_no="+ item_no + "&mode=" + mode + "&weko_key=" + tmp_weko_key; // Update suppleContentsEntry 2015/03/23 Y.Yamazawa
 		params["top_el"] = top_el;
 		params["loading_el"] = top_el;
 		params["target_el"] = top_el;
@@ -3439,6 +3346,7 @@ clsRepository.prototype = {
 		this.repositoryItemAddSpaceToEmptyText(form);
 		// Fix input suffix vulnerability. 2011/07/04 Y.Nakao --start--
 		suffix = encodeURIComponent(suffix);
+		fillStr = encodeURIComponent(fillStr);
 		// Fix input suffix vulnerability. 2011/07/04 Y.Nakao --end--
 		// Get Opend Node IDs & Checked Node Ids.
 		params["param"] = "action=repository_action_main_item_fillauthor" + "&" +
@@ -4048,12 +3956,72 @@ clsRepository.prototype = {
 		params["loading_el"] = top_el;
 		params["target_el"] = top_el;
 		commonCls.send(params);
-	}
+	},
 	//show multi language for item type popup 2013/07/17 K.Matsuo --end--
+	// Modify for itemtype authority 2014/12/15 T.Ichikawa --start--
+	repositoryItemTypeAuthorityAdd: function(param)
+	{
+		var top_el = $(this.id);
+		var params = new Object();
+		params["method"] = "post";
+		params["param"] = 'action=repository_action_edit_itemtype_auth_adddb'+param;
+		params["top_el"] = top_el;
+		params["loading_el"] = top_el;
+		params["target_el"] = top_el;
+		commonCls.send(params);
+	},
+	// Modify for itemtype authority 2014/12/15 T.Ichikawa --end--
+	// Add for search item delete function 2015/04/06 K.Matsushita --start--
+	repositoryDeleteSearchedItem: function(searchkeyword, search_type, elm)
+	{
+		var top_el = $(this.id);
+		
+		var form = document.getElementById('enter_search_delete_form' + this.id);
+		var params = new Object();
+		params["method"] = "post";
+		
+		params["param"] = "action=repository_action_edit_item_searchdelete" + 
+						  "&"+ Form.serialize(form) + 
+						  "&searchkeyword=" + searchkeyword + 
+						  "&search_type=" + search_type;
+		params["top_el"] = top_el;
+		params["loading_el"] = elm;
+		params["target_el"] = top_el;
+		commonCls.send(params);
+	},
+	// Add for search item delete function 2015/04/06 K.Matsushita --end--
 	// input " " to empty text element.
 	
 	// Other test logics
 	
 	// notice : we can see DOM object from this js code. also see "search.js" 
 	
+    repositoryRobotlistRun: function() {
+        var top_el = $(this.id);
+        var params = new Object();
+        var form = document.getElementsByName("robotlistValid[]");
+        
+        var forms = "";
+        for (ii = 0; ii < form.length; ii++){
+            forms += "&robotlistValid[]=" + form[ii].checked;
+        }
+        
+        params["method"] = "get";
+        params["param"] = "action=repository_action_common_robotlist" + forms;
+        params["top_el"] = top_el;
+        params["loading_el"] = top_el;
+        params["target_el"] = top_el;
+        commonCls.send(params);
+    },
+    repositoryRobotlistCancel: function() {
+        var top_el = $(this.id);
+        var params = new Object();
+        params["method"] = "get";
+        params["param"] = "action=repository_action_edit_logdeletecancel";
+        params["top_el"] = top_el;
+        params["loading_el"] = top_el;
+        params["target_el"] = top_el;
+        commonCls.send(params);
+    },
+
 }

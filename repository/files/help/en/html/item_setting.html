@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: item_setting.html 23711 2013-06-28 07:50:38Z yuko_nakao $          -->
+<!--// $Id: item_setting.html 53594 2015-05-28 05:25:53Z kaede_matsushita $          -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -70,13 +70,58 @@
 			<h3>一括削除</h3>
 			<div class="page_list">
 				<a name="listdelete"></a>
+				アイテムを一括削除することができます。<br/>
+				選択したインデックスに属するアイテムを一括削除する方法とキーワード検索で条件に一致したアイテムを選択して一括削除する方法の2通りがあります。<br/>
+				<br/>
+				「一括削除」タブをクリックすると左側にキーワード検索欄とインデックスツリーが表示されます。<br/>
+				<br/>
+				<br/>
+				<center><img src="./img/item_setting_bulk_deletion.png" alt="一括削除タブ" border="0" /></center><br/>
+				<br/>
+				
+				<h4>キーワード検索から一括削除</h4>
+				キーワード検索で条件に一致したアイテムを選択して一括削除することができます。<br/>
+				<br/>
+				「キーワード検索」と「全文検索」どちらかの検索方法を選択します。<br/>
+				キーワードを入力して「検索」ボタンをクリックすると、検索条件に一致したアイテムの一覧が表示されます。<br/>
+				削除したいアイテムのチェックボックスを選択します。<br/>
+				　※表のヘッダーにあるチェックボックスにチェックを入れると表示されているチェックボックス全てが選択されます。<br/>
+				「アイテムを削除」ボタンをクリックすると、アイテムの一括削除が実行されます。<br/>
+				<br/>
+				<center><img src="./img/item_setting_bulk_deletion_keyword_01.png" alt="検索削除_設定" border="0" /></center><br/>
+				<br/>
+				
+				一括削除を実行すると削除した件数が表示されます。<br/>
+				検索条件に一致するアイテムで削除されていないものがあれば表示されます。<br/>
+				<br/>
+				<center><img src="./img/item_setting_bulk_deletion_keyword_02.png" alt="検索削除_実行後" border="0" /></center><br/>
+				<br/>
+				
+				<h4>インデックスから一括削除</h4>
 				インデックスに属するアイテムを一括削除することができます。<br/>
 				<br/>
-				「一括削除」タブをクリックし、「インデックスツリー」からアイテムを一括削除するインデックスを選択します。<br/>
+				「インデックスツリー」からアイテムを一括削除するインデックスを選択します。<br/>
 				「サブインデックスのアイテムも削除する」にチェックが付いている場合、再帰的に子インデックスに所属するアイテムも削除されます。<br/>
 				「アイテムを削除」ボタンをクリックすると、アイテムの一括削除が実行されます。<br/>
 				<br/>
-				<center><img src="./img/item_setting_06.png" alt="一括削除" border="0" /></center><br/>
+				<center><img src="./img/item_setting_bulk_deletion_index.png" alt="一括削除" border="0" /></center><br/>
+				<br/>
+			</div>
+			
+			<h3>DOI一括付与</h3>
+			<div class="page_list">
+				<a name="doibulkgrant"></a>
+				インデックスに属するアイテムに一括でDOIを付与することができます。<br/>
+				<br/>
+				「DOI一括付与」タブをクリックし、「インデックスツリー」からDOI一括付与を行うインデックスを選択します。<br/>
+				 選択したインデックスの直下に配置されているアイテムのうち、DOIを付与できるアイテムの一覧が表示されます。<br/>
+				 DOIを付与したいアイテムのチェックボックスをONにし、「DOI付与」ボタンを押下するとDOIが一括付与されます。<br/>
+				<br/>
+				<center><img src="./img/item_setting_DOI_add.png" alt="DOI一括付与" width="600" border="0" /></center><br/>
+				<br/>
+				すべてにチェックを入れる場合は、DOI名下部のチェックボックスから実行することができます。<br/>
+				<br/>
+				<center><img src="./img/item_setting_DOI_check.png" alt="DOI一括付与" width="600" border="0" /></center><br/>
 				<br/>
 			</div>
 			

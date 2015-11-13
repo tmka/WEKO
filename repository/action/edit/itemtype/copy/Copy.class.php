@@ -1,9 +1,9 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Copy.class.php 21101 2013-02-04 23:45:34Z ayumi_jin $
+// $Id: Copy.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
-// Copyright (c) 2007 - 2008, National Institute of Informatics, 
+// Copyright (c) 2007 - 2008, National Institute of Informatics,
 // Research and Development Center for Scientific Information Resources
 //
 // This program is licensed under a Creative Commons BSD Licence
@@ -13,6 +13,8 @@
 
 /*vim:setexpandtabtabstop=4shiftwidth=4softtabstop=4:*/
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.php';
+require_once WEBAPP_DIR. '/modules/repository/components/ItemtypeManager.class.php';
+
 /**
 *Load item type metadata
 *
@@ -28,10 +30,10 @@ class Repository_Action_Edit_Itemtype_Copy extends RepositoryAction
 	// Get component
 	var $Session = null;
 	var $Db = null;
-	
+
 	// Request parameter
 	var $item_type_id = null;
-	
+
 	/**
 	*[[機能説明]]
 	*
@@ -50,20 +52,20 @@ class Repository_Action_Edit_Itemtype_Copy extends RepositoryAction
 				$this->failTrans();										//トランザクション失敗を設定(ROLLBACK)
 				throw$exception;
 			}
-			
+
 			///////////////////////////////////////////////////////////
 			//
 			// Get user ID
 			//
 			///////////////////////////////////////////////////////////
 			$user_id = $this->Session->getParameter("_user_id");
-			
+
 			///////////////////////////////////////////////////////////
-			// 
+			//
 			// Set item type data
 			//
 			///////////////////////////////////////////////////////////
-			
+
 			// Select load item type
 			$query = "SELECT * ".
 					 "FROM ". DATABASE_PREFIX ."repository_item_type ".
@@ -72,7 +74,7 @@ class Repository_Action_Edit_Itemtype_Copy extends RepositoryAction
 		   	$params = null;
 			$params[] = $this->item_type_id;
 			// Run select
-			$item_type_table = $this->Db->execute($query, $params);	
+			$item_type_table = $this->Db->execute($query, $params);
 			if($item_type_table === false) {
 				// Get DB error
 				$errMsg = $this->Db->ErrorMsg();
@@ -84,13 +86,13 @@ class Repository_Action_Edit_Itemtype_Copy extends RepositoryAction
 				$this->failTrans();
 				throw $exception;
 			}
-			
+
 			// Make copy name
 			$query = "SELECT item_type_name ".
 					 "FROM ". DATABASE_PREFIX ."repository_item_type ".
 					 "ORDER BY item_type_name; ";
 			// Run select
-			$result = $this->Db->execute($query);	
+			$result = $this->Db->execute($query);
 			if($result === false) {
 				// Get DB error
 				$errMsg = $this->Db->ErrorMsg();
@@ -142,8 +144,8 @@ class Repository_Action_Edit_Itemtype_Copy extends RepositoryAction
 			if(count($item_attr_type) > 0) {
 				$array_attr_candidate = array();
 				for($ii=0; $ii<count($item_attr_type); $ii++) {
-					if($item_attr_type[$ii]['input_type'] == "checkbox" || 
-					   $item_attr_type[$ii]['input_type'] == "radio" || 
+					if($item_attr_type[$ii]['input_type'] == "checkbox" ||
+					   $item_attr_type[$ii]['input_type'] == "radio" ||
 					   $item_attr_type[$ii]['input_type'] == "select"){
 						$query = "SELECT * ".
 					 		 	 "FROM ". DATABASE_PREFIX ."repository_item_attr_candidate ".
@@ -169,13 +171,13 @@ class Repository_Action_Edit_Itemtype_Copy extends RepositoryAction
 					  	for($nCnt=0;$nCnt<count($res_candidata);$nCnt++){
 		    				array_push($array_attr_candidate,$res_candidata[$nCnt]);
 		    			}
-						
+
 					}
 				}
 			}
-	 		
+
 	 		////////////////////////////////////////////////////////////////
-	 		// 
+	 		//
 			// Add item type data to DB
 			//
 			////////////////////////////////////////////////////////////////
@@ -199,7 +201,7 @@ class Repository_Action_Edit_Itemtype_Copy extends RepositoryAction
             $params[] = "";					// icon_extension
             $params[] = "";					// icon(BLOB) first = ""
             $params[] = $user_id;			// ins_user_id
-            $params[] = $user_id;			// mod_user_id  
+            $params[] = $user_id;			// mod_user_id
             $params[] = "";					// del_user_id
             $params[] = $this->TransStartDate;	// ins_date
             $params[] = $this->TransStartDate;	// mod_date
@@ -250,17 +252,18 @@ class Repository_Action_Edit_Itemtype_Copy extends RepositoryAction
             		if(!(isset($result[0]))){
             			break;
             		}
-            		
+
 		    		$item_type_attr_id++;
 		    	}
 		    	// Insert item attr type
-		    	$query = "INSERT INTO ". DATABASE_PREFIX ."repository_item_attr_type ". 
+		    	$query = "INSERT INTO ". DATABASE_PREFIX ."repository_item_attr_type ".
 		    			 "(item_type_id, attribute_id, show_order, ".
 		    			 " attribute_name, attribute_short_name, input_type, is_required, ".
-		    			 " plural_enable, line_feed_enable, list_view_enable, hidden, junii2_mapping, lom_mapping, ".
-		    			 " dublin_core_mapping, ins_user_id, mod_user_id, del_user_id, ".
+		    			 " plural_enable, line_feed_enable, list_view_enable, hidden, ".
+		    			 " junii2_mapping, dublin_core_mapping, lom_mapping, lido_mapping, spase_mapping, display_lang_type, ".
+		    			 " ins_user_id, mod_user_id, del_user_id, ".
 		    			 " ins_date, mod_date, del_date, is_delete) ".
-                		 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
+                		 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
 				$params = null;
 	            $params[] = $item_type_id;	// item_type_id
 	            $params[] = $item_attr_type[$ii]['attribute_id'];			// attribute_id
@@ -274,8 +277,11 @@ class Repository_Action_Edit_Itemtype_Copy extends RepositoryAction
 	            $params[] = $item_attr_type[$ii]['list_view_enable'];		// list_view_enable
 	            $params[] = $item_attr_type[$ii]['hidden'];					// hidden
 	            $params[] = $item_attr_type[$ii]['junii2_mapping'];			// junii2_mapping
-	            $params[] = $item_attr_type[$ii]['lom_mapping'];           // lom_mapping
 	            $params[] = $item_attr_type[$ii]['dublin_core_mapping'];	// dublin_core_mapping
+	            $params[] = $item_attr_type[$ii]['lom_mapping'];            // lom_mapping
+	            $params[] = $item_attr_type[$ii]['lido_mapping'];           // lido_mapping
+				$params[] = $item_attr_type[$ii]['spase_mapping'];           // spase_mapping
+	            $params[] = $item_attr_type[$ii]['display_lang_type'];      // display_lang_type
 	            $params[] = $user_id;						// ins_user_id
 	            $params[] = $user_id;						// mod_user_id
 	            $params[] = "";								// del_user_id
@@ -331,9 +337,26 @@ class Repository_Action_Edit_Itemtype_Copy extends RepositoryAction
 	                throw $exception;
 		    	}
 			}
+            // Add itemtype authority copy 2014/12/17 T.Ichikawa --start--
+            $itemtypeManager = new Repository_Components_Itemtypemanager($this->Session, $this->Db, $this->TransStartDate);
+            $base_auth = array();
+            $room_auth = array();
+            $itemtypeManager->getItemtypeAuthority($this->item_type_id, $base_auth, $room_auth);
+            // Insert itemtype auth
+            if(count($room_auth) > 0) {
+                $new_base_auth = array();
+                for($ii = 0; $ii < count($base_auth); $ii++) {
+                    $new_base_auth[] = $base_auth[$ii]["exclusive_base_auth_id"];
+                }
+                $new_room_auth = $room_auth[0]["exclusive_room_auth_id"];
+
+                $itemtypeManager->setExclusiveItemtypeAuthority($item_type_id, $new_base_auth, $new_room_auth);
+            }
+            // Add itemtype authority copy 2014/12/17 T.Ichikawa --end--
+
 	    	// エラーコード解除
 			$this->Session->removeParameter("error_code");
-			
+
 			//アクション終了処理
 			$result = $this->exitAction();     //トランザクションが成功していればCOMMITされる
 			if ( $result === false ) {
@@ -343,12 +366,12 @@ class Repository_Action_Edit_Itemtype_Copy extends RepositoryAction
 				//$exception->setDetailMsg( $DetailMsg );             //詳細メッセージ設定
 				throw $exception;
 			}
-			
+
 			// succsess
 			$this->Session->removeParameter("error_code");
-			
+
 			return'success';
-			
+
 		}
 		catch(RepositoryException$Exception){
 			// Erro log
@@ -360,10 +383,10 @@ class Repository_Action_Edit_Itemtype_Copy extends RepositoryAction
 				$Exception->getMessage(),		//主メッセージ
 				$Exception->getDetailMsg());	//詳細メッセージ
 			*/
-			
+
 			//アクション終了処理
 			$result=$this->exitAction();	//トランザクションが成功していればCOMMITされる
-		
+
 			//異常終了
 			return"error";
 		}

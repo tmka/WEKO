@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: repository_item_type_mapping.html 36229 2014-05-26 05:49:55Z satoshi_arata $          -->
+<!--// $Id: repository_item_type_mapping.html 47653 2015-02-03 05:28:56Z shota_suzuki $          -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -12,29 +12,29 @@
 <div class="mt10">
 <{*アイテムタイプマッピング設定*}>
 
-	<table class="box_center">
-		<{*ヘルプ*}>
-		<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
-			<tr>
-				<td align="right" class="ptb10">
-					<div>
-						<a href="#" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'itemtype_mapping'); return false;" style="cursor: help;">
-							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" align="right" alt="help">
-						</a>
-					</div>
-				</td>
-			</tr>
-		<{/if}>
-		<tr>
-			<td>
-				 <{if $smarty.session._lang == "japanese"}>
-					<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_type_settings5.png" />
-				 <{else}>
-					<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_type_settings5_eng.png" />
-				 <{/if}>
-			</td>
-		</tr>
-	</table>
+    <table class="box_center">
+        <{*ヘルプ*}>
+        <{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+            <tr>
+                <td align="right" class="ptb10">
+                    <div>
+                        <a href="#" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'itemtype_mapping'); return false;" style="cursor: help;">
+                            <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" align="right" alt="help">
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        <{/if}>
+        <tr>
+            <td>
+                 <{if $smarty.session._lang == "japanese"}>
+                    <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_type_settings5.png" />
+                 <{else}>
+                    <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_type_settings5_eng.png" />
+                 <{/if}>
+            </td>
+        </tr>
+    </table>
 
 <form name="mapping" method="post">
 
@@ -78,24 +78,26 @@
 <{*jin del*}>
 
 <div class="paging text_color mr10 ml10" align="center">
-  <table id="mapping_table" class="tb01 ac full">
-    <col align="left">
-    <col align="left">
+  <table id="mapping_table" class="tb01 ac">
+    <col align="left" width="100px">
     <col align="left" width="100px">
     <col align="left" width="120px">
-    <col align="left" width="200px">
-    <col align="left" width="100px">
-    <col align="left" width="50px">
+    <col align="left" width="300px">
    <tr>
     <{*どこまで表示するかはまた裁量による*}>
     <th class="item_edit_list ac"><{$lang.repository_mapping_name}></th>
     <th class="item_edit_list ac"><{$lang.repository_mapping_inputtype}></th>
     <th class="item_edit_list ac"><{$lang.repository_mapping_dublincore}></th>
-    <th class="item_edit_list ac"><{$lang.repository_mapping_junii2}></th>
-    <th class="item_edit_list ac"><{$lang.repository_lom_LearningObjectMetadata}></th>
-    <th class="item_edit_list ac"><{$lang.repository_mapping_lido}></th>
-    <th class="item_edit_list ac"><{$lang.repository_mapping_spase}></th>
-	<th class="item_edit_list ac"><{$lang.repository_mapping_language}></th>
+    <th class="item_edit_list ac">
+        <select id="typeSelector" onchange="changeColumns<{$id}>();">
+            <option selected><{$lang.repository_mapping_junii2}></option>
+            <option><{$lang.repository_lom_LearningObjectMetadata}></option>
+            <option><{$lang.repository_mapping_lido}></option>
+			<option><{$lang.repository_mapping_spase}></option>
+			<option><{$lang.repository_mapping_language}></option>
+        </select>
+    </th>
+    <th class="item_edit_list ac"><{$lang.repository_mapping_language}></th>
    </tr>
    <{*基本データ*}>
    <{*タイトル*}>
@@ -103,68 +105,68 @@
     <td class="item_edit_list al"><{$lang.repository_title}></td>
     <td class="item_edit_list al"><{$lang.repository_text}></td>
     <td class="item_edit_list al"><{$lang.repository_dublin_core_title}></td>
-    <td class="item_edit_list al"><{$lang.repository_junii2_title}>/<{$lang.repository_junii2_alternative}></td>
-    <td class="item_edit_list al">generalTitle</td>
-    <td class="item_edit_list al"><{$lang.repository_lido_title}></td>
-    <td class="item_edit_list al"><{$lang.repository_spase_title}></td>
-    <td class="item_edit_list al"><{$lang.repository_language_ja}></td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_mapping_junii2}>"><{$lang.repository_junii2_title}>/<{$lang.repository_junii2_alternative}></td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_lom_LearningObjectMetadata}>" style="display: none;">generalTitle</td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_mapping_lido}>" style="display: none;"><{$lang.repository_lido_title}></td>
+	<td class="item_edit_list al" name="display_<{$lang.repository_mapping_spase}>" style="display: none;"><{$lang.repository_spase_title}></td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_mapping_language}>"><{$lang.repository_language_ja}></td>
    </tr>
    <{*タイトル(英)*}>
    <tr>
     <td class="item_edit_list al"><{$lang.repository_title_english}></td>
     <td class="item_edit_list al"><{$lang.repository_text}></td>
     <td class="item_edit_list al"><{$lang.repository_dublin_core_title}></td>
-    <td class="item_edit_list al"><{$lang.repository_junii2_title}>/<{$lang.repository_junii2_alternative}></td>
-    <td class="item_edit_list al">generalTitle</td>
-    <td class="item_edit_list al"><{$lang.repository_lido_title}></td>
-    <td class="item_edit_list al"><{$lang.repository_spase_title}></td>
-    <td class="item_edit_list al"><{$lang.repository_language_en}></td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_mapping_junii2}>"><{$lang.repository_junii2_title}>/<{$lang.repository_junii2_alternative}></td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_lom_LearningObjectMetadata}>" style="display: none;">generalTitle</td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_mapping_lido}>" style="display: none;"><{$lang.repository_lido_title}></td>
+	<td class="item_edit_list al" name="display_<{$lang.repository_mapping_spase}>" style="display: none;"><{$lang.repository_lido_spase}></td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_mapping_language}>"><{$lang.repository_language_en}></td>
    </tr>
    <{*言語*}>
    <tr>
     <td class="item_edit_list al"><{$lang.repository_language}></td>
     <td class="item_edit_list al"><{$lang.repository_attribute_type_pulldown}></td>
     <td class="item_edit_list al"><{$lang.repository_dublin_core_language}></td>
-    <td class="item_edit_list al"><{$lang.repository_junii2_language}></td>
-    <td class="item_edit_list al">generalLanguage</td>
-    <td class="item_edit_list al"><{$lang.repository_lido_no_setting}></td>
-    <td class="item_edit_list al"><{$lang.repository_spase_no_setting}></td>
-    <td class="item_edit_list al"><{$lang.repository_language_no_mapping}></td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_mapping_junii2}>"><{$lang.repository_junii2_language}></td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_lom_LearningObjectMetadata}>" style="display: none;">generalLanguage</td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_mapping_lido}>" style="display: none;"><{$lang.repository_lido_no_setting}></td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_mapping_spase}>" style="display: none;"><{$lang.repository_spase_no_setting}></td>
+	<td class="item_edit_list al" name="display_<{$lang.repository_mapping_language}>"><{$lang.repository_language_no_mapping}></td>
    </tr>
    <{*公開日*}>
    <tr>
     <td class="item_edit_list al"><{$lang.repository_pub_date}></td>
     <td class="item_edit_list al"><{$lang.repository_attribute_type_date}></td>
     <td class="item_edit_list al"><{$lang.repository_dublin_core_date}></td>
-    <td class="item_edit_list al"><{$lang.repository_junii2_date}></td>
-    <td class="item_edit_list al">lifeCycleContribute</td>
-    <td class="item_edit_list al"><{$lang.repository_lido_no_setting}></td>
-    <td class="item_edit_list al"><{$lang.repository_spase_catalog_resourceheader_releasedata}></td>
-    <td class="item_edit_list al"><{$lang.repository_language_no_mapping}></td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_mapping_junii2}>"><{$lang.repository_junii2_date}></td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_lom_LearningObjectMetadata}>" style="display: none;">lifeCycleContribute</td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_mapping_lido}>" style="display: none;"><{$lang.repository_lido_no_setting}></td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_mapping_spase}>" style="display: none;"><{$lang.repository_spase_no_setting}></td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_mapping_language}>"><{$lang.repository_language_no_mapping}></td>
    </tr>
    <{*キーワード*}>
    <tr>
     <td class="item_edit_list al"><{$lang.repository_keyword}></td>
     <td class="item_edit_list al"><{$lang.repository_text}></td>
     <td class="item_edit_list al"><{$lang.repository_dublin_core_subject}></td>
-    <td class="item_edit_list al"><{$lang.repository_junii2_subject}></td>
-    <td class="item_edit_list al">generalKeyword</td>
-    <td class="item_edit_list al"><{$lang.repository_lido_keyword}></td>
-    <td class="item_edit_list al"><{$lang.repository_spase_no_setting}></td>
-    <td class="item_edit_list al"><{$lang.repository_language_ja}></td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_mapping_junii2}>"><{$lang.repository_junii2_subject}></td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_lom_LearningObjectMetadata}>" style="display: none;">generalKeyword</td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_mapping_lido}>" style="display: none;"><{$lang.repository_lido_keyword}></td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_mapping_spase}>" style="display: none;"><{$lang.repository_spase_keyword}></td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_mapping_language}>"><{$lang.repository_language_ja}></td>
    </tr>
    <{*キーワード(英)*}>
    <tr>
     <td class="item_edit_list al"><{$lang.repository_keyword_english}></td>
     <td class="item_edit_list al"><{$lang.repository_text}></td>
     <td class="item_edit_list al"><{$lang.repository_dublin_core_subject}></td>
-    <td class="item_edit_list al"><{$lang.repository_junii2_subject}></td>
-    <td class="item_edit_list al">generalKeyword</td>
-    <td class="item_edit_list al"><{$lang.repository_lido_keyword}></td>
-    <td class="item_edit_list al"><{$lang.repository_spase_no_setting}></td>
-    <td class="item_edit_list al"><{$lang.repository_language_en}></td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_mapping_junii2}>"><{$lang.repository_junii2_subject}></td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_lom_LearningObjectMetadata}>" style="display: none;">generalKeyword</td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_mapping_lido}>" style="display: none;"><{$lang.repository_lido_keyword}></td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_mapping_spase}>" style="display: none;"><{$lang.repository_spase_keyword}></td>
+    <td class="item_edit_list al" name="display_<{$lang.repository_mapping_language}>"><{$lang.repository_language_en}></td>
    </tr>
-   
+
    <{if count($smarty.session.metadata_table)!=0}>
    <{foreach from=$smarty.session.metadata_table item=metadata name=metad}>
     <{* 書誌情報追加 *}>
@@ -177,103 +179,103 @@
        <input type="hidden" name="dublin_core[]" value="identifier"/>identifier
       </td>
       <{*書誌情報のJuNii2は固定*}>
-      <td class="item_edit_list al">
+      <td class="item_edit_list al" name="display_<{$lang.repository_mapping_junii2}>">
        <input type="hidden" name="junii2[]" value="jtitle"/>jtitle
       </td>
       <{*書誌情報のLOMは固定*}>
-      <td class="item_edit_list al" rowspan="8">
+      <td class="item_edit_list al" rowspan="8" name="display_<{$lang.repository_lom_LearningObjectMetadata}>" style="display: none;">
        <input type="hidden" name="lom[]" value="generalIdentifier"/>generalIdentifier
       </td>
       <{*書誌情報のLIDOは固定*}>
-      <td class="item_edit_list al" rowspan="8">
+      <td class="item_edit_list al" rowspan="8" name="display_<{$lang.repository_mapping_lido}>" style="display: none;">
        <input type="hidden" name="lido[]" value="0"/><{$lang.repository_lido_no_setting}>
       </td>
       <{*書誌情報のSPASEは固定*}>
-      <td class="item_edit_list al" rowspan="8">
+      <td class="item_edit_list al" rowspan="8" name="display_<{$lang.repository_mapping_spase}>" style="display: none;">
        <input type="hidden" name="spase[]" value="0"/><{$lang.repository_spase_no_setting}>
       </td>
-	  <{*書誌情報の表示言語は固定*}>
-	  <td class="item_edit_list al">
-	   <input type="hidden" name="disp_lang[]" value="japanese"/><{$lang.repository_language_ja}>
-	  </td>
+      <{*書誌情報の表示言語は固定*}>
+      <td class="item_edit_list al" name="display_<{$lang.repository_mapping_language}>">
+       <input type="hidden" name="disp_lang[]" value="japanese"/><{$lang.repository_language_ja}>
+      </td>
      </tr>
-     
-		<{*雑誌名(英)*}>
-		<tr>
-		 <td class="item_edit_list al"><{$lang.repository_item_biblio_name_english}></td>
-		 <{*書誌情報のJuNii2は固定*}>
-		 <td class="item_edit_list al">
-		  <input type="hidden" name="junii2[]" value="jtitle"/>jtitle
-		 </td>
-		<{*書誌情報の表示言語は固定*}>
-		 <td class="item_edit_list al">
-		 <input type="hidden" name="disp_lang[]" value="english"/><{$lang.repository_language_en}>
-		 </td>
-		</tr>
+
+        <{*雑誌名(英)*}>
+        <tr>
+         <td class="item_edit_list al"><{$lang.repository_item_biblio_name_english}></td>
+         <{*書誌情報のJuNii2は固定*}>
+         <td class="item_edit_list al" name="display_<{$lang.repository_mapping_junii2}>">
+          <input type="hidden" name="junii2[]" value="jtitle"/>jtitle
+         </td>
+        <{*書誌情報の表示言語は固定*}>
+         <td class="item_edit_list al" name="display_<{$lang.repository_mapping_language}>">
+         <input type="hidden" name="disp_lang[]" value="english"/><{$lang.repository_language_en}>
+         </td>
+        </tr>
 
      <{*巻*}>
      <tr>
       <td class="item_edit_list al"><{$lang.repository_item_biblio_volume}></td>
       <{*書誌情報のJuNii2は固定*}>
-      <td class="item_edit_list al">
+      <td class="item_edit_list al" name="display_<{$lang.repository_mapping_junii2}>">
        <input type="hidden" name="junii2[]" value="volume"/>volume
       </td>
-		<{*書誌情報の表示言語は固定*}>
-		<td class="item_edit_list al">
-		 <input type="hidden" name="disp_lang[]" value=" "/><{$lang.repository_language_no_mapping}>
-		</td>
+        <{*書誌情報の表示言語は固定*}>
+        <td class="item_edit_list al" name="display_<{$lang.repository_mapping_language}>">
+         <input type="hidden" name="disp_lang[]" value=" "/><{$lang.repository_language_no_mapping}>
+        </td>
      </tr>
      <{*号*}>
      <tr>
       <td class="item_edit_list al"><{$lang.repository_item_biblio_issue}></td>
       <{*書誌情報のJuNii2は固定*}>
-      <td class="item_edit_list al">
+      <td class="item_edit_list al" name="display_<{$lang.repository_mapping_junii2}>">
        <input type="hidden" name="junii2[]" value="issue"/>issue
       </td>
-		<{*書誌情報の表示言語は固定*}>
-		<td class="item_edit_list al">
-		 <input type="hidden" name="disp_lang[]" value=" "/><{$lang.repository_language_no_mapping}>
-		</td>
+        <{*書誌情報の表示言語は固定*}>
+        <td class="item_edit_list al" name="display_<{$lang.repository_mapping_language}>">
+         <input type="hidden" name="disp_lang[]" value=" "/><{$lang.repository_language_no_mapping}>
+        </td>
      </tr>
      <{*開始ページ*}>
      <tr>
       <td class="item_edit_list al"><{$lang.repository_item_biblio_spage}></td>
       <{*書誌情報のJuNii2は固定*}>
-      <td class="item_edit_list al">
+      <td class="item_edit_list al" name="display_<{$lang.repository_mapping_junii2}>">
        <input type="hidden" name="junii2[]" value="spage"/>spage
       </td>
-		<{*書誌情報の表示言語は固定*}>
-		<td class="item_edit_list al">
-		 <input type="hidden" name="disp_lang[]" value=" "/><{$lang.repository_language_no_mapping}>
-		</td>
+        <{*書誌情報の表示言語は固定*}>
+        <td class="item_edit_list al" name="display_<{$lang.repository_mapping_language}>">
+         <input type="hidden" name="disp_lang[]" value=" "/><{$lang.repository_language_no_mapping}>
+        </td>
      </tr>
      <{*終了ページ*}>
      <tr>
       <td class="item_edit_list al"><{$lang.repository_item_biblio_epage}></td>
       <{*書誌情報のJuNii2は固定*}>
-      <td class="item_edit_list al">
+      <td class="item_edit_list al" name="display_<{$lang.repository_mapping_junii2}>">
        <input type="hidden" name="junii2[]" value="epage"/>epage
       </td>
-		<{*書誌情報の表示言語は固定*}>
-		<td class="item_edit_list al">
-		 <input type="hidden" name="disp_lang[]" value=" "/><{$lang.repository_language_no_mapping}>
-		</td>
+        <{*書誌情報の表示言語は固定*}>
+        <td class="item_edit_list al" name="display_<{$lang.repository_mapping_language}>">
+         <input type="hidden" name="disp_lang[]" value=" "/><{$lang.repository_language_no_mapping}>
+        </td>
      </tr>
      <{*発行年*}>
      <tr>
       <td class="item_edit_list al"><{$lang.repository_item_biblio_dateofissued}></td>
       <{*書誌情報のJuNii2は固定*}>
-      <td class="item_edit_list al">
+      <td class="item_edit_list al" name="display_<{$lang.repository_mapping_junii2}>">
        <input type="hidden" name="junii2[]" value="dateofissued"/>dateofissued
       </td>
-		<{*書誌情報の表示言語は固定*}>
-		<td class="item_edit_list al">
-		 <input type="hidden" name="disp_lang[]" value=" "/><{$lang.repository_language_no_mapping}>
-		</td>
+        <{*書誌情報の表示言語は固定*}>
+        <td class="item_edit_list al" name="display_<{$lang.repository_mapping_language}>">
+         <input type="hidden" name="disp_lang[]" value=" "/><{$lang.repository_language_no_mapping}>
+        </td>
      </tr>
    <{* 書誌情報以外 *}>
    <{else}>
-   
+
    <{*2012/2/15 jin add*}>
      <tr>
       <td class="item_edit_list al"><{$metadata.attribute_name}></td>
@@ -308,60 +310,60 @@
       <td class="item_edit_list al">
        <{if ($smarty.session.itemtype_id == 20001 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 17) ||
             ($smarty.session.itemtype_id >= 20002 && $smarty.session.itemtype_id <= 20015 && $metadata.show_order >= 1 && $metadata.show_order <= 61) ||
-            ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) || 
+            ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) ||
            ($smarty.session.itemtype_id == 20017 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 37) ||
-           ($smarty.session.itemtype_id == 20018 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 172)}>
+          ($smarty.session.itemtype_id == 20018 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 172)}>
         <input type="hidden" name="dublin_core[]" value="<{if $metadata.dublin_core_mapping==""}>0<{else}><{$metadata.dublin_core_mapping}><{/if}>"/>
        <{/if}>
 
        <{if ($smarty.session.itemtype_id == 20001 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 17) ||
          ($smarty.session.itemtype_id >= 20002 && $smarty.session.itemtype_id <= 20015 && $metadata.show_order >= 1 && $metadata.show_order <= 61) ||
-         ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) || 
+         ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) ||
            ($smarty.session.itemtype_id == 20017 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 37) ||
-           ($smarty.session.itemtype_id == 20018 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 172)}>
+          ($smarty.session.itemtype_id == 20018 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 172)}>
            <{if $metadata.dublin_core_mapping==""}>
                <{$lang.repository_dublin_core_no_setting}>
            <{else}>
                <{$metadata.dublin_core_mapping}>
            <{/if}>
        <{else}>
-	       <select class="full" name="dublin_core[]">
-	       <{foreach from=$action.dublinCoreArray item=dublinCore name=dcore}>
-	        <{* Mod insert 'undefine' to database in English 2012/02/14 T.Koyasu -start- *}>
-	        <{if $dublinCore=="0"}>
-	         <option value="0"><{$lang.repository_dublin_core_no_setting}></option>
-	        <{else}>
-	         <option value="<{$dublinCore}>" <{if $metadata.dublin_core_mapping==$dublinCore}>SELECTED<{/if}>><{$dublinCore}></option>
-	        <{/if}>
-	        <{* Mod insert 'undefine' to database in English 2012/02/14 T.Koyasu -end- *}>
-	       <{/foreach}>
-	       </select>
+           <select name="dublin_core[]" class="full">
+           <{foreach from=$action.dublinCoreArray item=dublinCore name=dcore}>
+            <{* Mod insert 'undefine' to database in English 2012/02/14 T.Koyasu -start- *}>
+            <{if $dublinCore=="0"}>
+             <option value="0"><{$lang.repository_dublin_core_no_setting}></option>
+            <{else}>
+             <option value="<{$dublinCore}>" <{if $metadata.dublin_core_mapping==$dublinCore}>SELECTED<{/if}>><{$dublinCore}></option>
+            <{/if}>
+            <{* Mod insert 'undefine' to database in English 2012/02/14 T.Koyasu -end- *}>
+           <{/foreach}>
+           </select>
        <{/if}>
-      </td> 
+      </td>
       <{*以下のJuNii2親セレクトボックス選択時にJavascriptを呼び出し、必要に応じて子セレクトボックスを表示＆値を設定したい*}>
       <{* td bgcolor="lightgrey" width="150" *}>
       <{* select style="width:150px" name="junii2_parent[]" onChange="repositoryCls['<{$id}>'].setJunii2ChildItem(this,<{$smarty.foreach.metad.iteration-1}>,this.selectedIndex)" *}>
-     
-      <td class="item_edit_list al">
+
+      <td class="item_edit_list al" name="display_<{$lang.repository_mapping_junii2}>">
        <{if ($smarty.session.itemtype_id == 20001 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 17) ||
             ($smarty.session.itemtype_id >= 20002 && $smarty.session.itemtype_id <= 20015 && $metadata.show_order >= 1 && $metadata.show_order <= 61) ||
-            ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) || 
-           ($smarty.session.itemtype_id == 20017 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 37)  ||
-           ($smarty.session.itemtype_id == 20018 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 172)}>
+            ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) ||
+           ($smarty.session.itemtype_id == 20017 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 37) ||
+          ($smarty.session.itemtype_id == 20018 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 172)}>
         <input type="hidden" name="junii2[]" value="<{if $metadata.junii2_mapping==""}>0<{else}><{$metadata.junii2_mapping}><{/if}>"/>
        <{/if}>
        <{if ($smarty.session.itemtype_id == 20001 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 17) ||
            ($smarty.session.itemtype_id >= 20002 && $smarty.session.itemtype_id <= 20015 && $metadata.show_order >= 1 && $metadata.show_order <= 61) ||
-           ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) || 
-           ($smarty.session.itemtype_id == 20017 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 37)  ||
-           ($smarty.session.itemtype_id == 20018 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 172)}>
+           ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) ||
+           ($smarty.session.itemtype_id == 20017 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 37) ||
+          ($smarty.session.itemtype_id == 20018 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 172)}>
            <{if $metadata.junii2_mapping==""}>
                <{$lang.repository_junii2_no_setting}>
            <{else}>
                <{$metadata.junii2_mapping}>
            <{/if}>
        <{else}>
-           <select class="full" name="junii2[]">
+           <select name="junii2[]" class="full">
            <{foreach from=$action.junii2Array item=junii2 name=jn2p}>
             <{* Mod insert 'undefine' to database in English 2012/02/14 T.Koyasu -start- *}>
             <{if $junii2=="0"}>
@@ -373,30 +375,30 @@
            <{/foreach}>
            </select>
        <{/if}>
-      </td>    
-      
-      
+      </td>
+
+
       <{* 2013/01/25 Add LOM A.Jin --start--*}>
-      <td class="item_edit_list al">
+      <td class="item_edit_list al" name="display_<{$lang.repository_lom_LearningObjectMetadata}>" style="display: none;">
        <{if ($smarty.session.itemtype_id == 20001 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 17) ||
             ($smarty.session.itemtype_id >= 20002 && $smarty.session.itemtype_id <= 20015 && $metadata.show_order >= 1 && $metadata.show_order <= 61) ||
-            ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) || 
-           ($smarty.session.itemtype_id == 20017 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 37)  ||
-           ($smarty.session.itemtype_id == 20018 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 172)}>
+            ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) ||
+           ($smarty.session.itemtype_id == 20017 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 37) ||
+            ($smarty.session.itemtype_id == 20018 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 172)}>
         <input type="hidden" name="lom[]" value="<{if $metadata.lom_mapping==""}>0<{else}><{$metadata.lom_mapping}><{/if}>"/>
        <{/if}>
        <{if ($smarty.session.itemtype_id == 20001 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 17) ||
            ($smarty.session.itemtype_id >= 20002 && $smarty.session.itemtype_id <= 20015 && $metadata.show_order >= 1 && $metadata.show_order <= 61) ||
-           ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) || 
-           ($smarty.session.itemtype_id == 20017 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 37)  ||
-           ($smarty.session.itemtype_id == 20018 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 172)}>
+           ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) ||
+           ($smarty.session.itemtype_id == 20017 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 37) ||
+            ($smarty.session.itemtype_id == 20018 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 172)}>
            <{if $metadata.lom_mapping==""}>
                <{$lang.repository_lom_no_setting}>
            <{else}>
                <{$metadata.lom_mapping}>
            <{/if}>
        <{else}>
-          <select name="lom[]" style="width: auto;">
+          <select name="lom[]" class="full">
           <{foreach from=$action.lomArray item=lom name=lomp}>
             <{if $lom=="0"}>
               <option value="0"><{$lang.repository_lom_no_setting}></option>
@@ -408,28 +410,28 @@
        <{/if}>
       </td>
       <{* 2013/01/25 Add A.Jin --end--*}>
-      
+
       <{* 2014/04/14 Add LIDO R.Matsuura --start--*}>
-      <td class="item_edit_list al">
+      <td class="item_edit_list al" name="display_<{$lang.repository_mapping_lido}>" style="display: none;">
        <{if ($smarty.session.itemtype_id == 20001 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 17) ||
             ($smarty.session.itemtype_id >= 20002 && $smarty.session.itemtype_id <= 20015 && $metadata.show_order >= 1 && $metadata.show_order <= 61) ||
-            ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) || 
+            ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) ||
             ($smarty.session.itemtype_id == 20017 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 37) ||
             ($smarty.session.itemtype_id == 20018 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 172)}>
         <input type="hidden" name="lido[]" value="<{if $metadata.lido_mapping==""}>0<{else}><{$metadata.lido_mapping}><{/if}>"/>
        <{/if}>
        <{if ($smarty.session.itemtype_id == 20001 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 17) ||
            ($smarty.session.itemtype_id >= 20002 && $smarty.session.itemtype_id <= 20015 && $metadata.show_order >= 1 && $metadata.show_order <= 61) ||
-           ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) || 
+           ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) ||
            ($smarty.session.itemtype_id == 20017 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 37) ||
-           ($smarty.session.itemtype_id == 20018 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 172)}>
+            ($smarty.session.itemtype_id == 20018 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 172)}>
            <{if $metadata.lido_mapping==""}>
                <{$lang.repository_lido_no_setting}>
            <{else}>
                <{$metadata.lido_mapping}>
            <{/if}>
        <{else}>
-          <select name="lido[]" style="width: 545px;">
+          <select name="lido[]" class="full">
           <{assign var="optgrp_flag" value="false"}>
           <{assign var="wrap_value" value=""}>
           <{foreach from=$action.lidoArray item=lido}>
@@ -463,14 +465,14 @@
       <td class="item_edit_list al">
        <{if ($smarty.session.itemtype_id == 20001 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 17) ||
             ($smarty.session.itemtype_id >= 20002 && $smarty.session.itemtype_id <= 20015 && $metadata.show_order >= 1 && $metadata.show_order <= 61) ||
-            ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) || 
+            ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) ||
             ($smarty.session.itemtype_id == 20017 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 37) ||
             ($smarty.session.itemtype_id == 20018 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 172)}>
         <input type="hidden" name="spase[]" value="<{if $metadata.spase_mapping==""}>0<{else}><{$metadata.spase_mapping}><{/if}>"/>
        <{/if}>
        <{if ($smarty.session.itemtype_id == 20001 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 17) ||
            ($smarty.session.itemtype_id >= 20002 && $smarty.session.itemtype_id <= 20015 && $metadata.show_order >= 1 && $metadata.show_order <= 61) ||
-           ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) || 
+           ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) ||
            ($smarty.session.itemtype_id == 20017 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 37) ||
            ($smarty.session.itemtype_id == 20018 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 172)}>
            <{if $metadata.spase_mapping==""}>
@@ -508,26 +510,27 @@
        <{/if}>
       </td>
       <{* 2015/01/13 Add SPASE T.Mabuchi --end--*}>
-      
-		<{* 表示言語 *}>
-		<td class="item_edit_list al nobr">
-		 <{* 表示言語 "指定なし" で固定*}>
-		 <{if $metadata.input_type=="thumbnail" || $metadata.input_type=="file" || $metadata.input_type=="file_price" || $metadata.input_type=="date" || $metadata.input_type=="supple" || $metadata.input_type=="heading"}>
-		 <input type="hidden" name="disp_lang[]" value=" "/><{$lang.repository_language_no_mapping}>
-		 <{else}>
+
+
+        <{* 表示言語 *}>
+        <td class="item_edit_list al nobr" name="display_<{$lang.repository_mapping_language}>" >
+         <{* 表示言語 "指定なし" で固定*}>
+         <{if $metadata.input_type=="thumbnail" || $metadata.input_type=="file" || $metadata.input_type=="file_price" || $metadata.input_type=="date" || $metadata.input_type=="supple" || $metadata.input_type=="heading"}>
+         <input type="hidden" name="disp_lang[]" value=" "/><{$lang.repository_language_no_mapping}>
+         <{else}>
           <{if ($smarty.session.itemtype_id == 20001 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 17) ||
             ($smarty.session.itemtype_id >= 20002 && $smarty.session.itemtype_id <= 20015 && $metadata.show_order >= 1 && $metadata.show_order <= 61) ||
-            ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) || 
+            ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) ||
            ($smarty.session.itemtype_id == 20017 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 37) ||
-           ($smarty.session.itemtype_id == 20018 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 172)}>
+          ($smarty.session.itemtype_id == 20018 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 172)}>
            <input type="hidden" name="disp_lang[]" value="<{if $metadata.display_lang_type==""}> <{else}><{$metadata.display_lang_type}><{/if}>"/>
           <{/if}>
-          
+
           <{if ($smarty.session.itemtype_id == 20001 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 17) ||
             ($smarty.session.itemtype_id >= 20002 && $smarty.session.itemtype_id <= 20015 && $metadata.show_order >= 1 && $metadata.show_order <= 61) ||
-            ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) || 
+            ($smarty.session.itemtype_id == 20016 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 86) ||
            ($smarty.session.itemtype_id == 20017 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 37) ||
-           ($smarty.session.itemtype_id == 20018 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 172)}>
+            ($smarty.session.itemtype_id == 20018 && $metadata.attribute_id >= 1 && $metadata.attribute_id <= 172)}>
               <{if $metadata.display_lang_type==""}>
                  <{$lang.repository_language_no_mapping}>
               <{else}>
@@ -535,17 +538,17 @@
                    <{elseif $metadata.display_lang_type == "english"}><{$lang.repository_language_en}>
                    <{/if}>
               <{/if}>
-          
+
           <{else}>
-		  <select name="disp_lang[]">
-		   <{foreach from=$action.disp_lang_array item=disp_lang}>
-		    <option value="<{$disp_lang[0]}>" <{if $metadata.display_lang_type==$disp_lang[0]}>SELECTED<{/if}>><{$disp_lang[1]}></option>
-		   <{/foreach}>
-		  </select>
-		  <{/if}>
-		  
-		 <{/if}>
-		</td>
+          <select name="disp_lang[]" class="full">
+           <{foreach from=$action.disp_lang_array item=disp_lang}>
+            <option value="<{$disp_lang[0]}>" <{if $metadata.display_lang_type==$disp_lang[0]}>SELECTED<{/if}>><{$disp_lang[1]}></option>
+           <{/foreach}>
+          </select>
+          <{/if}>
+
+         <{/if}>
+        </td>
      </tr>
     <{/if}>
    <{/foreach}>
@@ -564,3 +567,35 @@
 <{* mt10 *}>
 
 <{include file="repository_script.html"}>
+
+<script class="nc_script" type="text/javascript">
+changeColumns<{$id}> = function()
+{
+    // ヘッダ
+    var headers = ["display_<{$lang.repository_mapping_junii2}>",
+                   "display_<{$lang.repository_lom_LearningObjectMetadata}>",
+                   "display_<{$lang.repository_mapping_lido}>"];
+
+    // プルダウンの中身取得
+    var select = document.getElementById("typeSelector");
+    var options = document.getElementById("typeSelector").options;
+    var col = "display_" + options.item(select.selectedIndex).value;
+
+    // すべて非表示
+    for (ii = 0; ii < headers.length; ii++)
+    {
+        elems = document.getElementsByName(headers[ii]);
+
+        for(var jj = 0; jj < elems.length; jj++) {
+            elems[jj].style.display = "none";
+        }
+    }
+
+    // 選択された列を表示
+    elems = document.getElementsByName(col);
+
+    for(var ii = 0; ii < elems.length; ii++) {
+        elems[ii].style.display = "";
+    }
+}
+</script>

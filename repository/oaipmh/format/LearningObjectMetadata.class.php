@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: LearningObjectMetadata.class.php 36217 2014-05-26 04:22:11Z satoshi_arata $
+// $Id: LearningObjectMetadata.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -3311,7 +3311,7 @@ class Repository_Oaipmh_LOM_LangString
         if(strlen($this->string) > 0){
             // format language.
             $this->language = RepositoryOutputFilter::language($this->language);
-            if($this->language === 'other')
+            if($this->language === RepositoryConst::ITEM_LANG_OTHER)
             {
                 $this->language = '';
             }

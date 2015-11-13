@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Setting.class.php 3 2010-02-02 05:07:44Z atsushi_suzuki $
+// $Id: Setting.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -12,6 +12,7 @@
 // --------------------------------------------------------------------
 
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.php';
 
 /**
  * repositoryモジュール アイテムタイプ設定 アイテムタイプ選択
@@ -23,35 +24,32 @@
  * @project     NetCommons Project, supported by National Institute of Informatics
  * @access      public
  */
-class Repository_Action_Edit_Itemtype_Setting
+class Repository_Action_Edit_Itemtype_Setting extends RepositoryAction
 {
-	// コンポーネント用
-	var $session = null;
-	
     /**
      * [[機能説明]]
      *
      * @access  public
      */
-    function execute()
+    function executeApp()
     {
     	// セッション情報初期化 for アイテムタイプ設定
-    	$this->session->removeParameter("item_type_id");		// アイテムタイプID
-    	$this->session->removeParameter("item_type"); 		// アイテムタイプ
-    	$this->session->removeParameter("metadata_table");	// アイテムタイプ属性テーブル
+    	$this->Session->removeParameter("item_type_id");		// アイテムタイプID
+    	$this->Session->removeParameter("item_type"); 		// アイテムタイプ
+    	$this->Session->removeParameter("metadata_table");	// アイテムタイプ属性テーブル
     	
     	// セッション情報初期化 メタデータ 2008/03/04
-    	$this->session->removeParameter("metadata_num");
-    	$this->session->removeParameter("metadata_title");
-   		$this->session->removeParameter("metadata_type");
-    	$this->session->removeParameter("metadata_required");
-   		$this->session->removeParameter("metadata_disp");
-   		$this->session->removeParameter("metadata_candidate");
+    	$this->Session->removeParameter("metadata_num");
+    	$this->Session->removeParameter("metadata_title");
+   		$this->Session->removeParameter("metadata_type");
+    	$this->Session->removeParameter("metadata_required");
+   		$this->Session->removeParameter("metadata_disp");
+   		$this->Session->removeParameter("metadata_candidate");
    		
-   		$this->session->removeParameter("import_item_type_name");
+   		$this->Session->removeParameter("import_item_type_name");
    		
    		// エラーコード開放
-   		$this->session->removeParameter("error_code");
+   		$this->Session->removeParameter("error_code");
    		
         return 'success';
     }

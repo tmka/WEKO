@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Detaildownload.class.php 30197 2013-12-19 09:55:45Z rei_matsuura $
+// $Id: Detaildownload.class.php 57277 2015-08-28 04:30:00Z keiya_sugimoto $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -42,7 +42,7 @@ class Repository_Action_Main_Export_Detaildownload extends RepositoryAction
      *
      * @access  public
      */
-    function execute()
+    function executeApp()
     {
     	try {
 			if ($this->Session != null) {
@@ -56,8 +56,10 @@ class Repository_Action_Main_Export_Detaildownload extends RepositoryAction
 			//print("license_check=".$this->license_check.'<br>');
 			
 			// $this->license_checkを「_」で分割
-			$license_agree_file_no = explode("_", $this->license_check);
-			
+			$license_agree_file_no = array();
+            if(strlen($this->license_check) > 0){
+                $license_agree_file_no = explode("_", $this->license_check);
+            }
 
 			// 共通の初期処理
 			$result = $this->initAction();
@@ -110,18 +112,13 @@ class Repository_Action_Main_Export_Detaildownload extends RepositoryAction
             // Bugfix close item download 2011/06/09 --start--
 			
 			// 作業用ディレクトリ作成
-			//$date = date("YmdHis");
-			$query = "SELECT DATE_FORMAT(NOW(), '%Y%m%d%H%i%s') AS now_date;";
-			$result = $this->Db->execute($query);
-			if($result === false || count($result) != 1){
-				return false;
-			}
-			$date = $result[0]['now_date'];
-			$tmp_dir = WEBAPP_DIR."/uploads/repository/_".$date;
-			mkdir( $tmp_dir, 0777 );
-
+            $this->infoLog("businessWorkdirectory", __FILE__, __CLASS__, __LINE__);
+            $businessWorkdirectory = BusinessFactory::getFactory()->getBusiness("businessWorkdirectory");
+            
+            $tmp_dir = $businessWorkdirectory->create();
+            
 			// Exportファイルはimport.txt固定（仮）とする
-			$filename = $tmp_dir . "/import.xml";
+			$filename = $tmp_dir . "import.xml";
 
 			$buf = "<?xml version=\"1.0\"?>\n" .
 				   "	<export>\n";
@@ -140,8 +137,8 @@ class Repository_Action_Main_Export_Detaildownload extends RepositoryAction
 					if($nCnt != 0){
 						$where_clause .= " OR ";
 					}
-					$where_clause .= "(attribute_id = '" . $license_agree_file_no[$nCnt] ."' AND ";
-					$where_clause .= "file_no = '" . $license_agree_file_no[$nCnt+1] . "' )";
+					$where_clause .= "(attribute_id = " . $license_agree_file_no[$nCnt] ." AND ";
+					$where_clause .= "file_no = " . $license_agree_file_no[$nCnt+1] . " )";
 				}
 				$where_clause .= " ) ";				
 			}
@@ -183,18 +180,15 @@ class Repository_Action_Main_Export_Detaildownload extends RepositoryAction
 				
 			File_Archive::extract(
 				$output_files,
-				File_Archive::toArchive($zip_file, File_Archive::toFiles( $tmp_dir."/" ))
+				File_Archive::toArchive($zip_file, File_Archive::toFiles( $tmp_dir ))
 			);
 			
 			//ダウンロードアクション処理
 			// Add RepositoryDownload action 2010/03/30 A.Suzuki --start--
 			$repositoryDownload = new RepositoryDownload();
-			$repositoryDownload->downloadFile($tmp_dir."/".$zip_file, "export.zip");
+			$repositoryDownload->downloadFile($tmp_dir.$zip_file, "export.zip");
 			// Add RepositoryDownload action 2010/03/30 A.Suzuki --end--
-			
-			// ワークディレクトリ削除
-			$this->removeDirectory($tmp_dir);
-
+            
 			// アクション終了処理
 			$result = $this->exitAction();	// トランザクションが成功していればCOMMITされる
 			if ( $result == false ){

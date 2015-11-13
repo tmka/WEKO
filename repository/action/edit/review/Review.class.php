@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Review.class.php 22441 2013-05-08 07:01:15Z koji_matsuo $
+// $Id: Review.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -53,7 +53,9 @@ class Repository_Action_Edit_Review extends RepositoryAction
     	try {
     		//アクション初期化処理
 	        $result = $this->initAction();
-	        
+	        $container = & DIContainerFactory::getContainer();
+	        $this->mailMain = $container->getComponent("mailMain");
+
 	        if ( $result === false ) {
 	            $exception = new RepositoryException( "ERR_MSG_xxx-xxx1", 001 );	//主メッセージとログIDを指定して例外を作成
 	            //$DetailMsg = null;                              //詳細メッセージ文字列作成
@@ -411,114 +413,51 @@ class Repository_Action_Edit_Review extends RepositoryAction
 		            // 査読実施後に前回の更新者(編集者)の情報が消えるので保持しておく
 		            $ind_user_id = $ret[0]['ins_user_id'];
 		            $mod_user_id = $ret[0]['mod_user_id'];
-		            
-		            // UpDate OK
-		        	if($this->select_supple_review[$nCnt] == 1){
-		        		// 承認処理
-		        		$query = "UPDATE ". DATABASE_PREFIX ."repository_supple ".
-		                    	 "SET supple_review_status = ?, ".
-		        				 "supple_review_date = ?, ".
-		        				 "mod_user_id = ?, ".
-								 "mod_date = ? ".
-		                    	 "WHERE item_id = ? ".
-		        				 "AND item_no = ? ".
-		        				 "AND attribute_id = ? ".
-		            			 "AND supple_no = ?;";
-						$params = array();
-						$params[] = 1;						// supple_review_status
-						$params[] = $this->TransStartDate;	// supple_review_date
-						$params[] = $user_id;	// mod_user_id
-						$params[] = $this->TransStartDate;	// mod_date
-						$params[] = $supple_data[$nCnt]['item_id'];			// item_id
-						$params[] = $supple_data[$nCnt]['item_no'];			// item_no
-						$params[] = $supple_data[$nCnt]['attribute_id'];	// attribute_id
-						$params[] = $supple_data[$nCnt]['supple_no'];		// supple_no
-			            //UPDATE実行
-		        	    $result = $this->Db->execute($query,$params);
-						if($result === false){
-			                //必要であればSQLエラー番号・メッセージ取得
-			                $errNo = $this->Db->ErrorNo();
-			                $errMsg = $this->Db->ErrorMsg();
-			                $this->Session->setParameter("error_code", $errMsg);
-			                //エラー処理を行う
-			                $exception = new RepositoryException( "ERR_MSG_xxx-xxx1", 001 );	//主メッセージとログIDを指定して例外を作成
-			                //$DetailMsg = null;                              //詳細メッセージ文字列作成
-			                //sprintf( $DetailMsg, ERR_DETAIL_xxx-xxx1, $埋込み文字1, $埋込み文字2 );
-			                //$exception->setDetailMsg( $DetailMsg );             //詳細メッセージ設定
-			                $this->failTrans();                                 //トランザクション失敗を設定(ROLLBACK)
-			                throw $exception;
-						}
-						$update_count++;
-						
-						// メール送信用情報作成
-						array_push($review_item_supple, array(	"item_id" => $supple_data[$nCnt]['item_id'],
-																"item_no" => $supple_data[$nCnt]['item_no'],
-																"attribute_id" => $supple_data[$nCnt]['attribute_id'],
-																"supple_no" => $supple_data[$nCnt]['supple_no'],
-																"ins_user_id" => $ind_user_id,
-																"mod_user_id" => $mod_user_id,
-																"review" => 1,
-																"reject_reason" => "")
-									);
-						
-		        	} elseif($this->select_supple_review[$nCnt] == 2){
-		        		// 却下処理
-		        		$query = "UPDATE ". DATABASE_PREFIX ."repository_supple ".
-		                    	 "SET supple_review_status = ?, ".
-		        				 "supple_review_date = ?, ".
-		        				 "supple_reject_status = ?, ".
-		        				 "supple_reject_date = ?, ".
-		        				 "supple_reject_reason = ?, ".
-		        				 "mod_user_id = ?, ".
-								 "mod_date = ? ".
-		                    	 "WHERE item_id = ? ".
-		        				 "AND item_no = ? ".
-		        				 "AND attribute_id = ? ".
-		            			 "AND supple_no = ?;";
-						$params = array();
-						$params[] = 0;						// supple_review_status
-						$params[] = $this->TransStartDate;	// supple_review_date
-						$params[] = 1;						// supple_reject_status
-						$params[] = $this->TransStartDate;	// supple_reject_date
-		        		if($this->supple_reject_reason[$nCnt] == " "){
-							$params[] = "";
-						} else {
-							$params[] = $this->supple_reject_reason[$nCnt];	// supple_reject_reason
-						}
-						$params[] = $user_id;	// mod_user_id
-						$params[] = $this->TransStartDate;	// mod_date
-						$params[] = $supple_data[$nCnt]['item_id'];			// item_id
-						$params[] = $supple_data[$nCnt]['item_no'];			// item_no
-						$params[] = $supple_data[$nCnt]['attribute_id'];	// attribute_id
-						$params[] = $supple_data[$nCnt]['supple_no'];		// supple_no
-			            //UPDATE実行
-		        	    $result = $this->Db->execute($query,$params);
-						if($result === false){
-			                //必要であればSQLエラー番号・メッセージ取得
-			                $errNo = $this->Db->ErrorNo();
-			                $errMsg = $this->Db->ErrorMsg();
-			                $this->Session->setParameter("error_code", $errMsg);
-			                //エラー処理を行う
-			                $exception = new RepositoryException( "ERR_MSG_xxx-xxx1", 001 );	//主メッセージとログIDを指定して例外を作成
-			                //$DetailMsg = null;                              //詳細メッセージ文字列作成
-			                //sprintf( $DetailMsg, ERR_DETAIL_xxx-xxx1, $埋込み文字1, $埋込み文字2 );
-			                //$exception->setDetailMsg( $DetailMsg );             //詳細メッセージ設定
-			                $this->failTrans();                                 //トランザクション失敗を設定(ROLLBACK)
-			                throw $exception;
-						}
-						$update_count++;
-						
-						// メール送信用情報作成
-						array_push($review_item_supple, array(	"item_id" => $supple_data[$nCnt]['item_id'],
-																"item_no" => $supple_data[$nCnt]['item_no'],
-																"attribute_id" => $supple_data[$nCnt]['attribute_id'],
-																"supple_no" => $supple_data[$nCnt]['supple_no'],
-																"ins_user_id" => $ind_user_id,
-																"mod_user_id" => $mod_user_id,
-																"review" => 0,
-																"reject_reason" => $this->supple_reject_reason[$nCnt])
-									);
-		        	}// 0は未承認のため何もしない
+
+		            try
+		            {
+    		            // UpDate OK
+    		        	if($this->select_supple_review[$nCnt] == 1){
+    		        	    $businessSupple = BusinessFactory::getFactory()->getBusiness("businessSupple");
+    		        	    $businessSupple->acceptReview($supple_data[$nCnt]['item_id'],$supple_data[$nCnt]['item_no'],$supple_data[$nCnt]['attribute_id'],$supple_data[$nCnt]['supple_no']);
+    						$update_count++;
+
+    						// メール送信用情報作成
+    						array_push($review_item_supple, array(	"item_id" => $supple_data[$nCnt]['item_id'],
+    																"item_no" => $supple_data[$nCnt]['item_no'],
+    																"attribute_id" => $supple_data[$nCnt]['attribute_id'],
+    																"supple_no" => $supple_data[$nCnt]['supple_no'],
+    																"ins_user_id" => $ind_user_id,
+    																"mod_user_id" => $mod_user_id,
+    																"review" => 1,
+    																"reject_reason" => "")
+    									);
+
+    		        	} elseif($this->select_supple_review[$nCnt] == 2){
+    		        	    $businessSupple = BusinessFactory::getFactory()->getBusiness("businessSupple");
+    		        	    $businessSupple->rejectReview($supple_data[$nCnt]['item_id'],$supple_data[$nCnt]['item_no'],$supple_data[$nCnt]['attribute_id'],$supple_data[$nCnt]['supple_no'],$this->supple_reject_reason[$nCnt]);
+    						$update_count++;
+
+    						// メール送信用情報作成
+    						array_push($review_item_supple, array(	"item_id" => $supple_data[$nCnt]['item_id'],
+    																"item_no" => $supple_data[$nCnt]['item_no'],
+    																"attribute_id" => $supple_data[$nCnt]['attribute_id'],
+    																"supple_no" => $supple_data[$nCnt]['supple_no'],
+    																"ins_user_id" => $ind_user_id,
+    																"mod_user_id" => $mod_user_id,
+    																"review" => 0,
+    																"reject_reason" => $this->supple_reject_reason[$nCnt])
+    									);
+    		        	}// 0は未承認のため何もしない
+		            }
+		            catch(AppException $e)
+		            {
+		                $msg = $e->getMessage();
+                        $this->Session->setParameter("error_code", $msg);
+		                $exception = new RepositoryException( "ERR_MSG_xxx-xxx1", 001 );	//主メッセージとログIDを指定して例外を作成
+		                $this->failTrans();                                 //トランザクション失敗を設定(ROLLBACK)
+		                throw $exception;
+		            }
 		        }
 		        // Add review mail setting 2009/09/30 Y.Nakao --start--
 		        // 査読結果通知メール送信処理
@@ -761,7 +700,7 @@ class Repository_Action_Edit_Review extends RepositoryAction
 					// set Mail body
 					if($send_mail[$ins_user_id]['review_mail_flg'] === true){
 						// ヘッダ & フッタ
-						if($send_mail[$ins_user_id]['header'] == ""){
+						if(!isset($send_mail[$ins_user_id]['header']) || $send_mail[$ins_user_id]['header'] == ""){
 							$send_mail[$ins_user_id]['header'] = $smartyAssign->getLang("repository_mail_review_contents_body")."\n\n";
 							$send_mail[$ins_user_id]['header'] .= $smartyAssign->getLang("repository_mail_review_contents")."\n";
 							$send_mail[$ins_user_id]['body'] = "";
@@ -1075,7 +1014,12 @@ class Repository_Action_Edit_Review extends RepositoryAction
     	// 査読結果メール送信処理
 		foreach($send_mail as $val){
 			// ユーザ毎にメールを送信
-			
+
+		    if($val['review_mail_flg'] === false)
+		    {
+		        continue;
+		    }
+
 			// send review mail
 			// 査読通知メールを送信する
 			// 件名
@@ -1087,7 +1031,7 @@ class Repository_Action_Edit_Review extends RepositoryAction
 			$mail_body = "";
 			$mail_body .= $val['header'];
 			$mail_body .= $val['body'];
-			if($val['reject_flag']){
+			if(isset($val['reject_flag']) && $val['reject_flag']){
 				if($this->type == "item"){
 					$mail_body .= $smartyAssign->getLang("repository_mail_review_contents_reject_close")."\n\n";
 				} else {

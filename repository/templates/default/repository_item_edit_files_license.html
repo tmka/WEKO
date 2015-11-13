@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: repository_item_edit_files_license.html 39149 2014-07-28 08:37:06Z rei_matsuura $          -->
+<!--// $Id: repository_item_edit_files_license.html 53594 2015-05-28 05:25:53Z kaede_matsushita $          -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -27,19 +27,38 @@
 			<{* FLOW *}>
 			<tr>
 				<td align="center">
-					<{if $smarty.session._lang == "japanese"}>
-						<{if $smarty.session.doi_itemtype_flag == true}>
-							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_2.png" alt="" />
-						<{else}>
-							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_2.png" alt="" />
-						<{/if}>
-					<{else}>
-						<{if $smarty.session.doi_itemtype_flag == true}>
-							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_2_eng.png" alt="" />
-						<{else}>
-							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_2_eng.png" alt=""/>
-						<{/if}>
-					<{/if}>
+                    <{if $smarty.session._lang == "japanese"}>
+                        <{if $smarty.session.doi_itemtype_flag == true}>
+                            <img id="fileImg<{$id}>_JPN_DOI" usemap="#flowImgMap<{$id}>_doi" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_2.png" />
+                        <{else}>
+                            <img id="fileImg<{$id}>_JPN" usemap="#flowImgMap<{$id}>" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_2.png" />
+                        <{/if}>
+                    <{else}>
+                        <{if $smarty.session.doi_itemtype_flag == true}>
+                            <img id="fileImg<{$id}>_ENG_DOI" usemap="#flowImgMap<{$id}>_doi" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_2_eng.png" />
+                        <{else}>
+                            <img id="fileImg<{$id}>_ENG" usemap="#flowImgMap<{$id}>" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_2_eng.png" />
+                        <{/if}>
+                    <{/if}>
+                    <map name="flowImgMap<{$id}>">
+                        <{if $smarty.session.edit_flag != 1}>
+                            <area onclick="repositoryCls['<{$id}>'].repositoryItemEditFilesLicense('selecttype'); return false;" title="<{$lang.repository_item_selecttype}>" style="cursor: pointer;" shape="poly" coords="0,0,0,37,132,37,140,19,140,18,132,0">
+                        <{/if}>
+                        <{*<area onclick="repositoryCls['<{$id}>'].repositoryItemEditFilesLicense('files'); return false;" title="<{$lang.repository_item_editfiles}>" style="cursor: pointer;" shape="poly" coords="132,0,140,18,140,19,132,37,272,37,280,19,280,18,272,0">*}>
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemEditFilesLicense('texts'); return false;" title="<{$lang.repository_item_edittexts}>" style="cursor: pointer;" shape="poly" coords="272,0,280,18,280,19,272,37,412,37,420,19,420,18,412,0">
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemEditFilesLicense('links'); return false;" title="<{$lang.repository_item_editlinks}>" style="cursor: pointer;" shape="poly" coords="412,0,420,18,420,19,412,37,552,37,560,19,560,18,552,0">
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemEditFilesLicense('confirm'); return false;" title="<{$lang.repository_item_confirm}>" style="cursor: pointer;" shape="poly" coords="552,0,560,18,560,19,552,37,701,37,701,0">
+                    </map>
+                    <map name="flowImgMap<{$id}>_doi">
+                        <{if $smarty.session.edit_flag != 1}>
+                            <area onclick="repositoryCls['<{$id}>'].repositoryItemEditFilesLicense('selecttype'); return false;" title="<{$lang.repository_item_selecttype}>" style="cursor: pointer;" shape="poly" coords="0,0,0,37,132,37,140,19,140,18,132,0">
+                        <{/if}>
+                        <{*<area onclick="repositoryCls['<{$id}>'].repositoryItemEditFilesLicense('files'); return false;" title="<{$lang.repository_item_editfiles}>" style="cursor: pointer;" shape="poly" coords="132,0,140,18,140,19,132,37,272,37,280,19,280,18,272,0">*}>
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemEditFilesLicense('texts'); return false;" title="<{$lang.repository_item_edittexts}>" style="cursor: pointer;" shape="poly" coords="272,0,280,18,280,19,272,37,412,37,420,19,420,18,412,0">
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemEditFilesLicense('links'); return false;" title="<{$lang.repository_item_editlinks}>" style="cursor: pointer;" shape="poly" coords="412,0,420,18,420,19,412,37,552,37,560,19,560,18,552,0">
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemEditFilesLicense('doi'); return false;" title="<{$lang.repository_item_add_doi}>" style="cursor: pointer;" shape="poly" coords="552,0,560,18,560,19,552,37,692,37,700,19,700,18,692,0">
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemEditFilesLicense('confirm'); return false;" title="<{$lang.repository_item_confirm}>" style="cursor: pointer;" shape="poly" coords="692,0,700,18,700,19,692,37,841,37,841,0">
+                    </map>
 				</td>
 			</tr>
 		</table>
@@ -49,20 +68,27 @@
 	
 	<div class="mt10" align=center class="paging">
 		<input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_main_item_editfiles'); return false;"/>
-		<input type="button" class="btn_blue" value="<{$lang.repository_save}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditTexts('stay'); return false;"/>
-		<input type="button" class="btn_next" value="<{$lang.repository_page_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditTexts(); return false;" />
+		<input type="button" class="btn_blue" value="<{$lang.repository_save}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditFilesLicense('stay'); return false;"/>
+		<input type="button" class="btn_next" value="<{$lang.repository_page_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditFilesLicense('next'); return false;" />
 	</div>
   <div class="paging">
    <b><{$lang.repository_itemtype}> : <{$smarty.session.item_type_all.item_type_name}></b>
   </div>
-	
-	<{if $action.error_msg != null}>
-		<div class="error_msg al">
-			<{section name=i loop=$action.error_msg}>
-				<{$action.error_msg[i]}><br />
-			<{/section}>
-		</div>
-	<{/if}>
+
+    <{if $action.errMsg != null && count($action.errMsg) > 0}>
+    <div class="error_msg al">
+        <{foreach from=$action.errMsg item=msg}>
+        <{$msg|smarty:nodefaults}><br/>
+        <{/foreach}>
+    </div>
+    <{/if}>
+    <{if $action.warningMsg != null && count($action.warningMsg) > 0}>
+    <div class="warning_msg al">
+        <{foreach from=$action.warningMsg item=msg}>
+        <{$msg|smarty:nodefaults}><br/>
+        <{/foreach}>
+    </div>
+    <{/if}>
   
   <form id="attachment_form<{$id}>" target="attachment_form<{$id}>" enctype="multipart/form-data">
   
@@ -197,7 +223,21 @@
          <option value="licence_free" <{if $item_attr[i][j].licence == "licence_free"}>SELECTED<{/if}> ><{$lang.repository_licence_free}></option>
          <{*ライセンスマスタに登録されている分だけライセンスをプルダウンメニューに入れる*}>
          <{section name=k loop=$license_master}>
-          <option value="<{$smarty.section.k.index}>" <{if $item_attr[i][j].licence == $smarty.section.k.index}>SELECTED<{/if}> ><{$license_master[k].license_notation}></option>
+          <option value="<{$smarty.section.k.index}>" <{if $item_attr[i][j].licence == $smarty.section.k.index}>SELECTED<{/if}> >
+            <{if $license_master[k].license_id == 101}>
+              <{$lang.repository_item_file_license_notation_by}>
+            <{elseif $license_master[k].license_id == 102}>
+              <{$lang.repository_item_file_license_notation_by_sa}>
+            <{elseif $license_master[k].license_id == 103}>
+              <{$lang.repository_item_file_license_notation_by_nd}>
+            <{elseif $license_master[k].license_id == 104}>
+              <{$lang.repository_item_file_license_notation_by_nc}>
+            <{elseif $license_master[k].license_id == 105}>
+              <{$lang.repository_item_file_license_notation_by_nc_sa}>
+            <{elseif $license_master[k].license_id == 106}>
+              <{$lang.repository_item_file_license_notation_by_nc_nd}>
+            <{/if}>
+          </option>
          <{/section}>
         </select>
         <span style="<{if $item_attr[i][j].licence == "licence_free"}>display:block<{else}>display:none<{/if}>" id="span_<{$cnt1}>_<{$cnt2}>">
@@ -280,15 +320,16 @@
          </span>
         <{/if}>
         <input id="embargo_<{$cnt1}>_flag_<{$cnt2}>" name="embargo_flag[]" type="hidden" value="<{$item_attr[i][j].embargo_flag}>" >
+        <{* 課金ファイル *}>
         <{if $attr_type[i].input_type == 'file_price'}>
          <{if $item_attr[i][j].price_num>0}>
-          <div id="not_set_price_<{$cnt1}>_<{$cnt2}>" <{if $item_attr[i][j].embargo_flag==1}>style="display:block;"<{else}>style="display:none;"<{/if}>>
+          <div id="not_set_price_<{$cnt1}>_<{$cnt2}>" class="pl10" <{if $item_attr[i][j].embargo_flag==1}>style="display:block;"<{else}>style="display:none;"<{/if}>>
            <div class="ranking_paging"><{$lang.repository_item_embargo_open}></div>
           </div>
-          <div id="set_price_no_download_<{$cnt1}>_<{$cnt2}>" <{if $item_attr[i][j].display_type==2 && $item_attr[i][j].embargo_flag==4}>style="display:block;"<{else}>style="display:none;"<{/if}>>
+          <div id="set_price_no_download_<{$cnt1}>_<{$cnt2}>" class="pl10" <{if $item_attr[i][j].display_type==2 && $item_attr[i][j].embargo_flag==4}>style="display:block;"<{else}>style="display:none;"<{/if}>>
            <div class="ranking_paging"><{$lang.repository_item_embargo_no_download}></div>
           </div>
-          <div id="set_price_<{$cnt1}>_<{$cnt2}>" <{if $item_attr[i][j].embargo_flag==1 || ($item_attr[i][j].display_type==2 && $item_attr[i][j].embargo_flag==4)}>style="display:none;"<{else}>style="display:block;"<{/if}>>
+          <div id="set_price_<{$cnt1}>_<{$cnt2}>" class="pl10" <{if $item_attr[i][j].embargo_flag==1 || ($item_attr[i][j].display_type==2 && $item_attr[i][j].embargo_flag==4)}>style="display:none;"<{else}>style="display:block;"<{/if}>>
            <div class="ranking_paging"><{$lang.repository_item_set_price}></div>
            <div class="ranking_paging" style="color:#ff0000"><{$lang.repository_item_attention}></div>
            <div class="ranking_paging">
@@ -337,6 +378,61 @@
            <input type="button" class="btn_white" value="<{$lang.repository_item_add_price}>" onclick="javascript: repositoryCls['<{$id}>'].repositorySetPrice(1, <{$cnt1}>, <{$cnt2}>); return false;"/>
           </div>
          <{/if}>
+        <{* ファイル *}>
+        <{else if $attr_type[i].input_type == 'file'}>
+         <div id="embargo_file_authority_<{$cnt1}>_<{$cnt2}>" class="pl10">
+          <{if $item_attr[i][j].auth_num>0}>
+           <div id="not_set_price_<{$cnt1}>_<{$cnt2}>" <{if $item_attr[i][j].embargo_flag==1}>style="display:block;"<{else}>style="display:none;"<{/if}>>
+            <div class="ranking_paging"><{$lang.repository_item_emvargo_file_authority}></div>
+           </div>
+           <div id="set_price_no_download_<{$cnt1}>_<{$cnt2}>" <{if $item_attr[i][j].display_type==2 && $item_attr[i][j].embargo_flag==4}>style="display:block;"<{else}>style="display:none;"<{/if}>>
+            <div class="ranking_paging"><{$lang.repository_item_embargo_file_authority_no_download}></div>
+           </div>
+           <div id="set_price_<{$cnt1}>_<{$cnt2}>" <{if $item_attr[i][j].embargo_flag==1 || ($item_attr[i][j].display_type==2 && $item_attr[i][j].embargo_flag==4)}>style="display:none;"<{else}>style="display:block;"<{/if}>>
+            <div class="ranking_paging"><{$lang.repository_item_set_file_authority}></div>
+            <div class="ranking_paging" style="color:#ff0000"><{$lang.repository_item_file_authority_attention}></div>
+            <div class="ranking_paging">
+             <table>
+              <tr class="ranking_repos text_color">
+               <th class="item_edit_list ac full"><{$lang.repository_item_group_name}></th>
+               <th class="item_edit_list ac"><{$lang.repository_delete}></th>
+              </tr>
+              <{section name=p loop=$item_attr[i][j].auth_num}>
+              <{assign var="auth_cnt" value=$smarty.section.p.index}>
+               <tr>
+                <td class="item_edit_list">
+                 <select name="auth_room_ids[]" class="full">
+                  <option value="0" <{if $item_attr[i][j].auth_room_id[p]==0}>SELECTED<{/if}>><{$lang.repository_item_gest}></option>
+                  <{* NC2に存在するグループ分 *}>
+                  <{section name=k loop=$smarty.session.all_group}>
+                  <{assign var="all_group" value=$smarty.session.all_group}>
+                   <option value="<{$all_group[k].room_id}>" <{if $item_attr[i][j].auth_room_id[p]==$all_group[k].room_id}>SELECTED<{/if}>><{$all_group[k].page_name}></option>
+                  <{/section}>
+                 </select>
+                </td>
+                <td class="item_edit_list">
+                 <input type="button" class="btn_delete ar" value="<{$lang.repository_delete}>" 
+                  onclick="javascript: repositoryCls['<{$id}>'].repositorySetPrice(2, <{$cnt1}>, <{$cnt2}>, <{$auth_cnt}>); return false;"
+                 />
+                </td>
+               </tr>
+              <{/section}>
+             </table>
+            </div>
+            <{if $item_attr[i][j].auth_num!=(count($smarty.session.all_group)+1)}>
+             <div class="ranking_paging">
+              <input type="button" class="btn_white" value="<{$lang.repository_item_add_group}>" onclick="javascript: repositoryCls['<{$id}>'].repositorySetPrice(1, <{$cnt1}>, <{$cnt2}>); return false;"/>
+             </div>
+            <{/if}>
+           </div>
+          <{else}>
+           <div id="not_set_price_<{$cnt1}>_<{$cnt2}>" <{if $item_attr[i][j].embargo_flag==1}>style="display:block;"<{else}>style="display:none;"<{/if}>>
+            <div class="ranking_paging"><{$lang.repository_item_emvargo_file_authority}></div>
+           </div>
+           <div id="set_price_<{$cnt1}>_<{$cnt2}>" <{if $item_attr[i][j].embargo_flag==1}>style="display:none;"<{else}>style="display:block;"<{/if}>>
+            <input type="button" class="btn_white" value="<{$lang.repository_item_add_file_authority}>" onclick="javascript: repositoryCls['<{$id}>'].repositorySetPrice(1, <{$cnt1}>, <{$cnt2}>); return false;"/>
+           </div>
+          <{/if}>
         <{/if}>
        </td>
       </tr>
@@ -416,8 +512,8 @@
 
 <div align=center class="paging">
 	<input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_main_item_editfiles'); return false;"/>
-	<input type="button" class="btn_blue" value="<{$lang.repository_save}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditTexts('stay'); return false;"/>
-	<input type="button" class="btn_next" value="<{$lang.repository_page_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditTexts(); return false;" />
+	<input type="button" class="btn_blue" value="<{$lang.repository_save}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditFilesLicense('stay'); return false;"/>
+	<input type="button" class="btn_next" value="<{$lang.repository_page_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemEditFilesLicense('next'); return false;" />
 </div>
 
 <{*Add check invalid date 2011/06/17 A.Suzuki --start--*}>

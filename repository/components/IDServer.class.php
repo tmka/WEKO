@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: IDServer.class.php 31621 2014-02-13 02:06:16Z tomohiro_ichikawa $
+// $Id: IDServer.class.php 57182 2015-08-26 12:57:40Z tatsuya_koyasu $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -94,6 +94,7 @@ class IDServer extends RepositoryAction
 						}
 					}
 				}
+                closedir($handle);
 			}
 			if($prv_key_pass == ""){
 				return "";
@@ -265,6 +266,27 @@ class IDServer extends RepositoryAction
 		// suffix取得リクエストを最大3回行う 2009/09/03 A.Suzuki --end--
 	}
 	
+	/**
+	 * get Suffix stub
+	 * return item detail uri
+	 */
+/*
+	function getSuffix($title, $item_id, $transStartDate){
+		//////////////////////////////////
+		// get prefixID
+		//////////////////////////////////
+		$prefix_id = $this->getPrefixID();
+		if($prefix_id == ""){
+			return "";
+		}
+		
+		$prefixYHandle = "http://id.nii.ac.jp/";
+		$suffix = str_pad($item_id, 8, "0", STR_PAD_LEFT);
+		$url = $prefixYHandle.$prefix_id."/".$suffix."/";
+		return $url;
+	}
+*/
+	
 	function entrySuffix($title, $item_id, $prefix_id, $transStartDate){
 		////////////////////////////////
 		// check BASE_URL
@@ -319,6 +341,7 @@ class IDServer extends RepositoryAction
 					}
 				}
 			}
+            closedir($handle);
 		}
 		if($prv_key_pass == ""){
 			return "";
@@ -442,17 +465,10 @@ class IDServer extends RepositoryAction
 	 */
 	function prefixAutoEntry($cmdPath){
 		// ワークディレクトリ作成
-		//$date = date("YmdHis");
-		$query = "SELECT DATE_FORMAT(NOW(), '%Y%m%d%H%i%s') AS now_date;";
-		$result = $this->Db->execute($query);
-		if($result === false || count($result) != 1){
-			return false;
-		}
-		$date = $result[0]['now_date'];
-		// 一時ファイル保存先変更
-		//$tmp_dir = WEBAPP_DIR."/logs/weko/_".$date;
-		$tmp_dir = WEBAPP_DIR."/uploads/repository/_".$date;
-		mkdir( $tmp_dir, 0777 );
+        $this->infoLog("businessWorkdirectory", __FILE__, __CLASS__, __LINE__);
+        $businessWorkdirectory = BusinessFactory::getFactory()->getBusiness('businessWorkdirectory');
+        $tmp_dir = $businessWorkdirectory->create();
+        $tmp_dir = substr($tmp_dir, 0, -1);
 		
 		// ディレクトリのパスをセッションに保存
 		$this->Session->setParameter("tmp_dir", $tmp_dir);
@@ -462,7 +478,9 @@ class IDServer extends RepositoryAction
 		if($result === false){
 			// ワークディレクトリ削除
 			$this->removeDirectory($tmp_dir);
-			unlink("./.rnd");
+            if(file_exists("./.rnd")){
+                unlink("./.rnd");
+            }
 			$this->Session->removeParameter("tmp_dir");
 			return false;
 		}
@@ -471,7 +489,9 @@ class IDServer extends RepositoryAction
 		if($result === false){
 			// ワークディレクトリ削除
 			$this->removeDirectory($tmp_dir);
-			unlink("./.rnd");
+            if(file_exists("./.rnd")){
+                unlink("./.rnd");
+            }
 			
 			// 鍵ファイル削除
 			if ($handle = opendir($this->id_dir)) {
@@ -483,6 +503,7 @@ class IDServer extends RepositoryAction
 						}
 					}
 				}
+                closedir($handle);
 			}
 			$this->Session->removeParameter("tmp_dir");
 			return false;
@@ -732,15 +753,10 @@ class IDServer extends RepositoryAction
             // If file size over 100MB, do not convert to flash. 2012/11/19 A.Suzuki --end--
 			
 			// ワークディレクトリ作成
-			//$date = date("YmdHis");
-			$query = "SELECT DATE_FORMAT(NOW(), '%Y%m%d%H%i%s') AS now_date;";
-			$result = $this->Db->execute($query);
-			if($result === false || count($result) != 1){
-				return false;
-			}
-			$date = $result[0]['now_date'];
-			$tmp_dir = WEBAPP_DIR."/uploads/repository/_".$date;
-			mkdir( $tmp_dir, 0777 );
+            $this->infoLog("businessWorkdirectory", __FILE__, __CLASS__, __LINE__);
+            $businessWorkdirectory = BusinessFactory::getFactory()->getBusiness('businessWorkdirectory');
+            $tmp_dir = $businessWorkdirectory->create();
+            $tmp_dir = substr($tmp_dir, 0, -1);
 			
 			// IDサーバのアドレスを取得
 			$query = "SELECT param_value FROM ". DATABASE_PREFIX ."repository_parameter ".
@@ -795,6 +811,7 @@ class IDServer extends RepositoryAction
                         }
                     }
                 }
+                closedir($handle);
             }
             if($prv_key_pass == ""){
                 $this->removeDirectory($tmp_dir);
@@ -851,11 +868,21 @@ class IDServer extends RepositoryAction
                 $flashDir = $this->makeFlashFolder($item_attr['item_id'],
                                                    $item_attr['attribute_id'],
                                                    $item_attr['file_no']);
-                // decompress flash data.
-                File_Archive::extract(
-                    File_Archive::read($tmp_tar.'/'),       // 末尾は'/'
-                    File_Archive::appender($flashDir.'/')   // 解凍先
-                );
+                
+                // バージョン違いで解凍できない場合の対応
+                if (version_compare(PHP_VERSION, '5.3.0', '>='))
+                {
+                    $phar = new PharData($tmp_tar);
+                    $phar->extractTo($flashDir);
+                }
+                else {
+                    // decompress flash data.
+                    File_Archive::extract(
+                        File_Archive::read($tmp_tar.'/'),       // 末尾は'/'
+                        File_Archive::appender($flashDir.'/')   // 解凍先
+                    );
+                }
+                
                 $swf_path = $flashDir.'/weko1.swf';
                 $this->removeDirectory($tmp_dir);
                 if( !(file_exists($swf_path)) ){

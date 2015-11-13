@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Admin.class.php 20119 2012-11-02 10:33:38Z yuko_nakao $
+// $Id: Admin.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -104,7 +104,7 @@ class Repository_View_Edit_Cinii_Admin extends RepositoryAction
 	 *
 	 * @access  public
 	 */
-	function execute()
+	function executeApp()
 	{
 		// show result
 		$this->els_result = $this->Session->getParameter("els_result");

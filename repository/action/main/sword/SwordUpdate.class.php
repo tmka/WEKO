@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: SwordUpdate.class.php 42605 2014-10-03 01:02:01Z keiya_sugimoto $
+// $Id: SwordUpdate.class.php 58676 2015-10-10 12:33:17Z tatsuya_koyasu $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics,
 // Research and Development Center for Scientific Information Resources
@@ -21,6 +21,8 @@ require_once WEBAPP_DIR. '/modules/repository/components/NameAuthority.class.php
 require_once WEBAPP_DIR. '/components/mail/Main.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryOutputFilter.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositorySearchTableProcessing.class.php';
+require_once WEBAPP_DIR. '/modules/repository/components/RepositoryHandleManager.class.php';
+require_once WEBAPP_DIR. '/modules/repository/components/util/ZipUtility.class.php';
 
 /**
  * Sword update class
@@ -368,7 +370,7 @@ class SwordUpdate extends RepositoryAction
             }
 
             // 5. Update item
-            if(!$this->executeUpdateFromXmlData($xmlData, $tmpDir, $userId, $this->itemId, $this->itemNo, $insIndexArray))
+            if(!$this->executeUpdateFromXmlData($xmlData, $tmpDir, $userId, $this->itemId, $this->itemNo, $insIndexArray,$error_list))
             {
                 // Error
                 $statusCode = 500;
@@ -428,11 +430,12 @@ class SwordUpdate extends RepositoryAction
      * @param array $item_type_info
      * @param string $detailUrl
      * @param string $errorMsg
+     * @param string $waringMsg
      * @return bool
      */
     public function executeUpdate(
                 $xmlItemData, $xmlItemTypeData, $tmpDir, $userId,
-                $itemId, $itemNo, &$itemInfo, $insIndexArray, $item_type_info, &$detailUrl, &$errorMsg)
+                $itemId, $itemNo, &$itemInfo, $insIndexArray, $item_type_info, &$detailUrl, &$errorMsg, &$warningMsg)
     {
         $this->writeLog("-- Start executeUpdate (".date("Y/m/d H:i:s").") --\n");
 
@@ -484,7 +487,7 @@ class SwordUpdate extends RepositoryAction
 
         // ItemRegisterの更新処理実行
         $this->writeLog("  Call executeUpdateByItemRegister.\n");
-        $result = $this->executeUpdateByItemRegister($irBasic, $irMetadataArray, $indexInfo, $userId, $detailUrl, $errorMsg, $reviewStatus);
+        $result = $this->executeUpdateByItemRegister($irBasic, $irMetadataArray, $indexInfo, $userId, $detailUrl, $errorMsg, $reviewStatus, $warningMsg);
         if(strlen($errorMsg) > 0)
         {
             $this->writeLog("\n  ".$errorMsg."\n");
@@ -492,6 +495,10 @@ class SwordUpdate extends RepositoryAction
             return $result;
         }
         $this->writeLog("  executeUpdateByItemRegister complete.\n");
+
+        // Add suppleContentsEntry Y.Yamazawa --start-- 2015/03/24 --start--
+        $this->entrySupple($itemId,$itemNo,$xmlItemData['supple_info_array'], $warningMsg);
+        // Add suppleContentsEntry Y.Yamazawa --end-- 2015/03/24 --end--
 
         // Update review status
         $itemInfo[count($itemInfo)-1]["review_status"] = $reviewStatus;
@@ -637,40 +644,12 @@ class SwordUpdate extends RepositoryAction
         }
         if($code != 200 && $code != 204)
         {
-            header("X-Error-Code: ". $text);
-            
-            // responce body
-            $response = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" . "\n";
-            $response.= "<sword:error xmlns=\"". htmlspecialchars_self("http://www.w3.org/2005/Atom").
-                        "\" xmlns:sword=\""    . htmlspecialchars_self("http://purl.org/net/sword/") .
-                        "\" xmlns:arxiv=\""    . htmlspecialchars_self("http://arxiv.org/schemas/atom") .
-                        "\" href=\""           . htmlspecialchars_self("http://example.org/errors/BadManifest"). "\">" . "\n";
-            // title
-            $response.= "  <title>" . "ERROR" . "</title>" . "\n";
-            // date
-            $time = date("Y-m-dTH:i:sZ");
-            $response.= "  <updated>" . htmlspecialchars_self($time) . "</updated>" . "\n";
-            // ユーザー（設定しない）
-            $response.= "  <author>" . "\n";
-            $response.= "    <name></name>" . "\n";
-            $response.= "    <email></email>" . "\n";
-            $response.= "  </author>" . "\n";
-            // treatment
-            $response.= "  <sword:treatment>" . "processing failed" . "</sword:treatment>" . "\n";
-            // summary
-            $response.= "  <summary>" . "Contents update failed" . "</summary>" . "\n";
-            // description
-            $description = "";
-            for($ii = 0; $ii < count($error_list); $ii++) {
-                $description .= "ERROR: ".$error_list[$ii]->error." ";
-                if($error_list[$ii]->item_id > 0) {
-                    $description .= "at Item ID ".$error_list[$ii]->item_id.";";
-                }
-            }
-            $response.= "  <sword:verboseDescription>" . htmlspecialchars_self($description) . "</sword:verboseDescription>" . "\n";
-            $response.= "</sword:error>" . "\n";
-            
-            print $response;
+            // Update suppleContentsEntry Y.Yamazawa --start-- 2015/03/24 --start--
+            $this->outputErrorXML($error_list,$text);
+        }
+
+        if($code == 200){
+            $this->outputSuccessXML($this->itemId,$error_list);
         }
         return;
     }
@@ -707,16 +686,23 @@ class SwordUpdate extends RepositoryAction
     {
         // Extract zip file
         $xmlData = array();
-        $tmpDir = $filedata["upload_dir"].DIRECTORY_SEPARATOR."_".str_replace(".".$filedata["extension"], "", $filedata["physical_file_name"]);
+        
+        $this->infoLog("businessWorkdirectory", __FILE__, __CLASS__, __LINE__);
+        $businessWorkdirectory = BusinessFactory::getFactory()->getBusiness('businessWorkdirectory');
+        $tmpDir = $businessWorkdirectory->create();
+        $tmpDir = substr($tmpDir, 0, -1);
+        
         $filePath = $filedata["upload_dir"].DIRECTORY_SEPARATOR.$filedata["physical_file_name"];
         if(!$this->extraction($filePath, $tmpDir))
         {
+            $this->errorLog("Failed extraction", __FILE__, __CLASS__, __LINE__);
             return false;
         }
 
         // Get update data by xml
         if(!$this->importCommon_->XMLAnalysis($tmpDir, $xmlData, $error_list))
         {
+            $this->errorLog("Failed XMLAnalysis", __FILE__, __CLASS__, __LINE__);
             return false;
         }
 
@@ -733,7 +719,7 @@ class SwordUpdate extends RepositoryAction
      * @param array $insIndexArray
      * @return bool
      */
-    private function executeUpdateFromXmlData($xmlData, $tmpDir, $userId, $itemId, $itemNo, $insIndexArray)
+    private function executeUpdateFromXmlData($xmlData, $tmpDir, $userId, $itemId, $itemNo, $insIndexArray,&$error_list)
     {
         $this->writeLog("-- Start executeUpdateFromXmlData (".date("Y/m/d H:i:s").") --\n");
 
@@ -747,23 +733,32 @@ class SwordUpdate extends RepositoryAction
             // アップデートに成功したらループを抜ける
             $detailUrl = "";
             $errorMsg = "";
+            $warningMsg = "";
             $itemInfo = array();
 
+            // Update SuppleContentsEntry Y.Yamazawa 2015/04/06 --start--
             $result = $this->executeUpdate(
                                 $xmlData['item'][$nCnt], $xmlData['item_type'][$nCnt], $tmpDir,
-                                $userId, $itemId, $itemNo, $itemInfo, $insIndexArray, $item_type_info[$nCnt], $detailUrl, $errorMsg);
-            if($result && strlen($errorMsg)==0)
+                                $userId, $itemId, $itemNo, $itemInfo, $insIndexArray, $item_type_info[$nCnt], $detailUrl, $errorMsg, $warningMsg);
+            if($result && strlen($errorMsg)==0 && strlen($warningMsg)==0)
             {
                 $updateFlag = true;
                 $this->writeLog("  Success update and no error.\n");
                 break;
             }
-            else if($result)
+            else if($result && strlen($warningMsg) > 0){
+                $updateFlag = true;
+                array_push($error_list, $warningMsg);
+                $this->writeLog("  Success update and error.\n");
+                break;
+            }
+            else if(!$result)
             {
                 $this->writeLog("  Update error:\n");
                 $this->writeLog("    XML_item_id:".$xmlData['item'][$nCnt]["item_array"][0]["ITEM_ID"]."\n");
                 $this->writeLog("    ".$errorMsg."\n");
             }
+            // Update SuppleContentsEntry Y.Yamazawa 2015/04/06 --end--
         }
 
         if($updateFlag)
@@ -993,7 +988,7 @@ class SwordUpdate extends RepositoryAction
         
         // Bug Fix WEKO-2014-046 T.Koyasu 2014/08/07 --start--
         // xmlItemTypeDataを実際に登録してあるデータから修正する(アイテムタイプのメタデータセットのチェックはアイテムの存在確認時に行っているのでエラーはここでは出ないはず、この前で出る)
-        //$this->importCommon_->validateItemTypeXmlData($itemTypeId, $xmlItemTypeData);
+        $this->importCommon_->validateItemTypeXmlData($itemTypeId, $xmlItemTypeData);
         // Bug Fix WEKO-2014-046 T.Koyasu 2014/08/07 --end--
         
         return true;
@@ -1081,7 +1076,7 @@ class SwordUpdate extends RepositoryAction
             return false;
         }
         $query = "SELECT user_authority_id FROM ".DATABASE_PREFIX."authorities ".
-                 "WHERE role_authority_id = '".$result[0]["role_authority_id"]."' ";
+                 "WHERE role_authority_id = ".$result[0]["role_authority_id"]." ";
         $result = $this->Db->execute($query);
         if($result === false || count($result) != 1)
         {
@@ -1371,7 +1366,7 @@ class SwordUpdate extends RepositoryAction
             // when exist mail address
             if(strlen($xmlItemData["personal_name_array"][$ii]["E_MAIL_ADDRESS"]) > 0) {
                 $extAuthorIds = array(
-                                        self::KEY_PREFIX_ID => '0',
+                                        self::KEY_PREFIX_ID => 0,
                                         self::KEY_SUFFIX => $xmlItemData["personal_name_array"][$ii]["E_MAIL_ADDRESS"]
                                     );
                 array_push($externalAuthorIds, $extAuthorIds);
@@ -1388,7 +1383,7 @@ class SwordUpdate extends RepositoryAction
                                 self::KEY_FAMILY_RUBY => $xmlItemData["personal_name_array"][$ii]["FAMILY_RUBY"],
                                 self::KEY_NAME_RUBY => $xmlItemData["personal_name_array"][$ii]["NAME_RUBY"],
                                 self::KEY_EMAIL => $xmlItemData["personal_name_array"][$ii]["E_MAIL_ADDRESS"],
-                                self::KEY_AUTHOR_ID => '0',
+                                self::KEY_AUTHOR_ID => 0,
                                 self::KEY_LANGUAGE => $dispLangTypeList[$attrId],
                                 self::KEY_EX_AUTHOR_ID => $externalAuthorIds,
                                 self::KEY_INPUT_TYPE => $inputTypeList[$attrId]);
@@ -1493,8 +1488,9 @@ class SwordUpdate extends RepositoryAction
 
             // 1. XML内のfile_nameと一致するファイルが存在するかどうかをチェック
             //    -> 該当ファイルが無い場合はエラーとする。
-            $fileName = mb_convert_encoding($xmlItemData["thumbnail_array"][$ii]["FILE_NAME"], $this->encode_, "auto");
+            $fileName = mb_convert_encoding($xmlItemData["thumbnail_array"][$ii]["FILE_NAME"], $this->getEncodeByOS(), "auto");
             $tmpPath = $tmpDir.DIRECTORY_SEPARATOR.$fileName;
+            
             if(!file_exists($tmpPath))
             {
                 // [Warning]該当ファイルが無いためこのアイテムは更新しない
@@ -1606,8 +1602,9 @@ class SwordUpdate extends RepositoryAction
 
             // 1. XML内のfile_nameと一致するファイルが存在するかどうかをチェック
             //    -> 該当ファイルが無い場合はエラーとする。
-            $fileName = mb_convert_encoding($xmlItemData["file_array"][$ii]["FILE_NAME"], $this->encode_, "auto");
+            $fileName = mb_convert_encoding($xmlItemData["file_array"][$ii]["FILE_NAME"], $this->getEncodeByOS(), "auto");
             $tmpPath = $tmpDir.DIRECTORY_SEPARATOR.$fileName;
+            
             if(!file_exists($tmpPath))
             {
                 // [Warning]該当ファイルが無いためこのアイテムは更新しない
@@ -1797,9 +1794,10 @@ class SwordUpdate extends RepositoryAction
      * @param string $detailUrl
      * @param string $errorMsg
      * @param int $reviewStatus
+     * @param string $warningMsg
      * @return bool
      */
-    private function executeUpdateByItemRegister($irBasic, $irMetadataArray, $indexInfo, $userId, &$detailUrl, &$errorMsg, &$reviewStatus)
+    private function executeUpdateByItemRegister($irBasic, $irMetadataArray, $indexInfo, $userId, &$detailUrl, &$errorMsg, &$reviewStatus, &$warningMsg)
     {
         $this->writeLog("-- Start executeUpdateByItemRegister (".date("Y/m/d H:i:s").") --\n");
 
@@ -1829,7 +1827,7 @@ class SwordUpdate extends RepositoryAction
 
         // アイテム基本情報更新 / Update item data
         $this->writeLog("  Call updateItem at itemRegister.");
-        $result = $this->itemRegister_->updateItem($irBasic, $tmpErrorMsg);
+        $result = $this->itemRegister_->updateItem($irBasic, $tmpErrorMsg, $warningMsg);
         if($result === false)
         {
             // [Error]
@@ -1945,6 +1943,21 @@ class SwordUpdate extends RepositoryAction
             }
         }
         $this->writeLog("  End loop for metadata regist.\n");
+        
+        // BugFix when before and after update, assignment doi is failed T.Koyasu 2015/03/09 --start--
+        // must check self_doi when after update item metadatas
+        $this->writeLog("  Check self doi and Add self doi");
+        try{
+            $this->itemRegister_->updateSelfDoi($irBasic);
+        } catch(AppException $ex){
+            $smartyAssign = $this->Session->getParameter('smartyAssign');
+            if(strlen($warningMsg) > 0){
+                $warningMsg .= "/";
+            }
+            $warningMsg .= $smartyAssign->getLang($ex->getMessage());
+            $this->debugLog($ex->getMessage(). "::itemId=". $itemId, __FILE__, __CLASS__, __LINE__);
+        }
+        // BugFix when before and after update, assignment doi is failed T.Koyasu 2015/03/09 --end--
 
         // attribute_no 振り直し
         $this->writeLog("  Call reissueAttrNo at importCommon.");
@@ -2002,19 +2015,27 @@ class SwordUpdate extends RepositoryAction
             // suffix更新
             $this->writeLog("  Call setSuffix at importCommon.");
             $this->getRepositoryHandleManager();
-            if(!$this->repositoryHandleManager->setSuffix($irBasic[self::KEY_TITLE], $itemId, $itemNo))
+            
+            try{
+                $isGetSuffix = $this->repositoryHandleManager->setSuffix($irBasic[self::KEY_TITLE], $itemId, $itemNo);
+            } catch(AppException $ex){
+                $smartyAssign = $this->Session->getParameter('smartyAssign');
+                if(strlen($warningMsg) > 0){
+                    $warningMsg .= "/";
+                }
+                $this->debugLog($ex->getMessage(). "::itemId=". $itemId, __FILE__, __CLASS__, __LINE__);
+                $warningMsg .= $smartyAssign->getLang($ex->getMessage());
+                $isGetSuffix = false;
+            }
+            
+            if(!$isGetSuffix)
             {
                 // [Warning]
                 $errorMsg = "UPDATE WARNING: Failed to setSuffix.";
                 $this->writeLog("\n  ".$errorMsg."\n");
             }
             $this->writeLog("  ...complete.\n");
-
-            // PDFカバーページ作成
-            $this->writeLog("  Call executeCreatePdfCover.");
-            $this->importCommon_->executeCreatePdfCover($indexIds, $itemId, $itemNo, $userId, $errorMsg);
-            $this->writeLog("  ...complete.\n");
-
+            
             // ファイルFlash化
             $this->writeLog("  Call convertToFlash.");
             if(!$this->importCommon_->convertToFlash($itemId, $itemNo, $errorMsg))
@@ -2274,6 +2295,11 @@ class SwordUpdate extends RepositoryAction
         $swordImport = new Repository_Action_Main_Sword_Import($this->Session, $this->Db, $this->TransStartDate);
         $swordImport->setConfigAuthority();
 
+        // Add SuppleContents Y.Yamazawa 2015/04/06 --start--
+        $logName = WEBAPP_DIR."/logs/weko/sword/sword_import_update_log.txt";
+        $swordImport->createSwordUpdateLogFile($logName);
+        // Add SuppleContents Y.Yamazawa 2015/04/06 --end--
+
         // Fix check index authority 2013/06/12 Y.Nakao --start--
         // Set user_id
         if($swordImport->setSessionUserAuthority($this->loginId) === false)
@@ -2288,6 +2314,10 @@ class SwordUpdate extends RepositoryAction
         // Insert index and select check index
         $result = $swordImport->insertNewIndexAndSelectCheckIndex(
                         $newIndex, $checkedIds, $insIndexArray, $errorMsg, $userId, false);
+
+        // Add SuppleContents Y.Yamazawa 2015/04/06 --start--
+        $swordImport->closeLogFile();
+        // Add SuppleContents Y.Yamazawa 2015/04/06 --end--
 
         // Fix for private tree 2014/3/5 R.Matsuura --start--
         // get index_id and owner user id before update
@@ -2327,6 +2357,9 @@ class SwordUpdate extends RepositoryAction
 
     /*
      * zip file extract to tmpDirPath
+     * @param ファイルパス $filePath string
+     * @param 出力先パス $tmpDirPath string
+     * @return ファイルの出力の成功失敗
      */
     private function extraction($filePath, $tmpDirPath){
 
@@ -2334,18 +2367,15 @@ class SwordUpdate extends RepositoryAction
         if(!file_exists($filePath)){
             return false;
         }
-
-        // make dir for extract
-        if(file_exists($tmpDirPath)){
-            $this->removeDirectory($tmpDirPath);
-        }
-        mkdir($tmpDirPath, 0777);
-
+        
+        // Update SuppleContentsEntry Y.Yamazawa 2015/04/07 --satrt--
         // extract zip file
-        File_Archive::extract(
-            File_Archive::read($filePath . "/"),
-            File_Archive::appender($tmpDirPath)
-        );
+        $result = Repository_Components_Util_ZipUtility::extract($filePath, $tmpDirPath);
+        if($result === false){
+            unlink($filePath);
+            return false;
+        }
+        // Update SuppleContentsEntry Y.Yamazawa 2015/04/07 --end--
 
         unlink($filePath);
 
@@ -2445,6 +2475,225 @@ class SwordUpdate extends RepositoryAction
             $params[] = 0;
             
             $itemIndexData = $this->dbAccess->executeQuery($query, $params);
+        }
+    }
+
+    // Add suppleContentsEntry Y.Yamazawa --start-- 2015/03/30 --start--
+    /**
+     * サプリコンテンツを登録する
+     *
+     * @param アイテムID $itemId string
+     * @param アイテムNo $itemNo string
+     * @param XML内のサプリコンテンツ情報 $supple_info_array array
+     * @param エラーメッセージ string
+     */
+    private function entrySupple($itemId,$itemNo,$supple_info_array,&$error_msg)
+    {
+        // サプリコンテンツ情報を取得する。この時点では、ユーザーがサプリコンテンツの登録を行うか判断できないため
+        // ビジネスロジック内のメソッドは使用しない。
+        $suppleInfoList = $this->suppleContentInfo($itemId);
+
+        // サプリコンテンツURLが空か確認
+        if(((!isset($supple_info_array[0]) || !(strlen($supple_info_array[0]) > 0)) && count($suppleInfoList) == 0))
+        {
+            return false;
+        }
+
+        $smartyAssign = $this->Session->getParameter("smartyAssign");
+        try{
+            $this->writeLog("businessSupple", __FILE__, __CLASS__, __LINE__);
+            $businessSupple = BusinessFactory::getFactory()->getBusiness("businessSupple");
+        }
+        catch (AppException $e){
+            $msg = $e->getMessage();
+            $msg = $smartyAssign->getLang($msg);
+            $this->writeLog($msg, __FILE__, __CLASS__, __LINE__);
+            $error_msg .= $msg;
+            return false;
+        }
+
+        try {
+            $businessSupple->updateAllSuppleContentsOfOneItemForImport($itemId,$itemNo,$supple_info_array);
+        }
+        catch(AppException $e)
+        {
+            // サプリWEKO側のPrefixID情報の取得及びサプリコンテンツ登録・更新・削除に必要な情報の取得に失敗した場合
+            // 失敗した場合はcatchする
+            $code = $e->getMessage();
+            $msg = $smartyAssign->getLang($code);
+            $this->errorLog($msg, __FILE__, __CLASS__, __LINE__);
+            $error_msg .= $msg;
+
+            return false;
+        }
+        return true;
+    }
+    // Add suppleContentsEntry Y.Yamazawa --end-- 2015/03/30 --end--
+
+    // Add suppleContentsEntry Y.Yamazawa --start-- 2015/03/30 --start--
+    /**
+     * エラー時のXML出力
+     *
+     * @param エラー情報 $error_list array array
+     */
+    private function outputErrorXML($error_list,$text)
+    {
+        header("X-Error-Code: ". $text);
+
+        // header
+        header("Content-Type: text/xml; charset=utf-8");
+        // -------------------------
+        // XML
+        // -------------------------
+        $ret_xml = '<?xml version="1.0" encoding="UTF-8" ?>'."\n";
+        $ret_xml .= '<sword:error xmlns="http://www.w3.org/2005/Atom" xmlns:sword="http://purl.org/net/sword/" xmlns:arxiv="http://arxiv.org/schemas/atom" href="http://example.org/errors/BadManifest">'."\n";
+        $ret_xml .= '<title>ERROR</title>'."\n";
+        $ret_xml .= '<version>2.0</version>'."\n";
+        $ret_xml .= '<updated>2013-08-20JST16:46:0432400</updated>'."\n";
+        $ret_xml .= '<author>'."\n";
+        $ret_xml .= '<name></name>'."\n";
+        $ret_xml .= '<email></email>'."\n";
+        $ret_xml .= '</author>'."\n";
+        $ret_xml .= '<source>'."\n";
+        $ret_xml .= '<generator uri="'.BASE_URL.'/weko/sword/deposit.php" version="2"/>'."\n";
+        $ret_xml .= '</source>'."\n";
+        $ret_xml .= '<sword:treatment>Deposited items(zip) will be treated as WEKO import file which contains any WEKO contents information, and will be imported to WEKO.</sword:treatment>'."\n";
+        $ret_xml .= '<summary>Contents update failed</summary>'."\n";
+        if(count($error_list) > 0) {
+            // sword description
+            $description = "";
+            for($ii = 0; $ii < count($error_list); $ii++) {
+                $description .= "ERROR: ".$error_list[$ii]->error." ";
+                if($error_list[$ii]->item_id > 0) {
+                    $description .= "at Item ID ".$error_list[$ii]->item_id.";";
+                }
+            }
+            $ret_xml .= '<sword:verboseDescription>'.$description.'</sword:verboseDescription>';
+        }
+        $ret_xml .= "</sword:error>" . "\n";
+        
+        print $ret_xml;
+    }
+    // Add suppleContentsEntry Y.Yamazawa --end-- 2015/03/30 --end--
+
+    /**
+     * アイテム更新成功時のXML出力
+     *
+     * @param アイテムID $item_id string
+     * @param 警告 $warning_msg array
+     */
+    private function outputSuccessXML($item_id,$warning_msg)
+    {
+        // header
+        header("Content-Type: text/xml; charset=utf-8");
+        // -------------------------
+        // XML
+        // -------------------------
+        $ret_xml = '<?xml version="1.0" encoding="UTF-8" ?>'."\n";
+        $ret_xml .= '<entry xmlns="http://www.w3.org/2005/Atom" xmlns:sword="http://purl.org/net/sword/">'."\n";
+        $ret_xml .= '<title>Repository Review</title>'."\n";
+        $ret_xml .= '<version>2.0</version>'."\n";
+        $ret_xml .= '<id>'.$item_id.'-'.$item_id.'</id>'."\n";
+        $ret_xml .= '<updated>2013-08-20JST16:46:0432400</updated>'."\n";
+        $ret_xml .= '<author>'."\n";
+
+        // ユーザーIDの取得
+        $user_id = $this->Session->getParameter("_user_id");
+        $ret_xml .= '<name>'.$user_id.'</name>'."\n";
+
+        // Emailアドレスの取得
+        $result = $this->emailAddress($user_id, $login_email);
+        if($result === false){
+            $login_email = "";
+        }
+        $ret_xml .= '<email>'.$login_email.'</email>'."\n";
+        $ret_xml .= '</author>'."\n";
+
+        // アイテム詳細画面のURLと警告のメッセージ
+        foreach ($warning_msg as $msg){
+            $ret_xml .= '<content type="text/html" src="'.BASE_URL.'/?action=repository_uri&amp;item_id='.$item_id.'" message="'.$msg.'"/>'."\n";
+        }
+
+        $ret_xml .= '<source>'."\n";
+        $ret_xml .= '<generator uri="'.BASE_URL.'/weko/sword/deposit.php" version="2"/>'."\n";
+        $ret_xml .= '</source>'."\n";
+        $ret_xml .= '<sword:treatment>Deposited items(zip) will be treated as WEKO import file which contains any WEKO contents information, and will be imported to WEKO.</sword:treatment>'."\n";
+        $ret_xml .= '<sword:formatNamespace>WEKO</sword:formatNamespace>'."\n";
+        $ret_xml .= '<sword:userAgent>SWORD Client for WEKO V2.0</sword:userAgent>'."\n";
+        $ret_xml .= '</entry>';
+
+        print $ret_xml;
+    }
+
+    // Add suppleContentsEntry Y.Yamazawa --start-- 2015/03/24 --start--
+    /**
+     * Emailアドレスの取得
+     *
+     * @param ユーザーID $user_id string
+     * @param メールアドレス $email string
+     * @return boolean 取得結果
+     */
+    private function emailAddress($user_id, &$email)
+    {
+        // init
+        $email = "";
+        // SQL query for get email address from user_id
+        $query = "SELECT links.content ".
+                 "FROM ". DATABASE_PREFIX ."items AS items, ".
+                          DATABASE_PREFIX ."users_items_link AS links ".
+                 "WHERE items.type = 'email' ".
+                 "  AND items.item_id = links.item_id ".
+                 "  AND links.user_id = ?; ";
+        // get login user's email address
+        $params = array();
+        $params = $user_id;
+        $result = $this->Db->execute( $query, $params );
+        if($result === false){
+        // not user?
+            return false;
+        }
+        if(count($result) == 1){
+        // get email address
+            $email = $result[0]["content"];
+        }
+
+        return true;
+    }
+        // Add suppleContentsEntry Y.Yamazawa --end-- 2015/03/24 --end--
+
+    /**
+     * アイテムIDをキーとしてサプリコンテンツ情報を取得する
+     * @param string $itemID アイテムID
+     * @throws AppException
+     * @return boolean|mixed
+     */
+    private function suppleContentInfo($itemID)
+    {
+        $query = "SELECT uri FROM ".DATABASE_PREFIX."repository_supple ".
+                "WHERE item_id = ? " .
+                "AND is_delete = 0 ";
+        $params = array();
+        $params[] = $itemID;	// item_id
+        $result = $this->Db->execute($query,$params);
+        if($result === false){
+            return false;
+        }
+
+        return $result;
+    }
+    
+    /**
+     * get OS's encode
+     *
+     * @return string
+     */
+    private function getEncodeByOS(){
+        if(stristr(php_uname(), "Linux")){
+            return "UTF-8";
+        } else if(stristr(php_uname(), "Windows")){
+            return "SJIS";
+        } else {
+            return _CHARSET;
         }
     }
 }

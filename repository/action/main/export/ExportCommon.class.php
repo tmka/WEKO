@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: ExportCommon.class.php 40365 2014-08-25 04:54:42Z tatsuya_koyasu $
+// $Id: ExportCommon.class.php 57287 2015-08-28 07:15:27Z keiya_sugimoto $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -389,7 +389,6 @@ class ExportCommon extends RepositoryAction
                 "junii2_mapping=\"" .$item_attr_types["junii2_mapping"] . "\" " .               // junii2_mapping
                 "dublin_core_mapping=\"" .$item_attr_types["dublin_core_mapping"] . "\" " .     // dublin_core_mapping
                 "lom_mapping=\"" .$item_attr_types["lom_mapping"] . "\" " .                     // lom_mapping
-                "spase_mapping=\"" .$item_attr_types["spase_mapping"] . "\" " .                     // spase_mapping
                 "display_lang_type=\"" .$item_attr_types["display_lang_type"] . "\"/>\n";       // display_lang_type    add 2009/07/23 A.Suzuki
         
         // get item attr candidate
@@ -512,6 +511,7 @@ class ExportCommon extends RepositoryAction
         
         // when not file at export, not file download.
         $this->getAdminParam("export_is_include_files", $export_is_include_files, $error);
+        // 全てのファイルについて同意しない場合でも、管理者、登録ユーザはファイルをダウンロードできる
         if( ($has_license != "true" || $export_is_include_files == 0) && !$adminUser && !$insUser)
         {
             // not license OR repository_parameter is not file export => can't file download
@@ -573,6 +573,7 @@ class ExportCommon extends RepositoryAction
         if($Result_List["item_attr_type"][$attribute_id]["plural_enable"] != 1) {
             array_splice($result, 1);
         }
+        
         // ファイルが複数不可属性だった場合２つ目以降を削除 T.Ichikawa 2013/9/17 --end--
         // Modify Price method move validator K.Matsuo 2011/10/18 --start--
         for($ii=0; $ii<count($result);$ii++)
@@ -619,7 +620,7 @@ class ExportCommon extends RepositoryAction
                             "item_id=\"" . $result_file_price_Table[0]["item_id"] . "\" " .         // item_id
                             "item_no=\"" .$result_file_price_Table[0]["item_no"] . "\" " .          // item_no
                             "attribute_id=\"" .$result_file_price_Table[0]["attribute_id"] . "\" " .    // attribute_id
-                            "file_no=\"" ."1" . "\" " ;          // file_no
+                            "file_no=\"" . $result_file_price_Table[0]["file_no"] . "\" " ;          // file_no
                     // Add the management value is changed from room_id to page_name. Y.Nakao 2008/10/06 --start--
                     $price_export = "";
                     $price = explode("|", $result_file_price_Table[0]["price"]);
@@ -666,22 +667,27 @@ class ExportCommon extends RepositoryAction
                             $result[$ii]["attribute_id"].'_'.
                             $result[$ii]["file_no"].'.'.
                             $result[$ii]["extension"];
-                $output_file = $tmp_dir.DIRECTORY_SEPARATOR;
+                $output_file = $tmp_dir;
                 
                 // Add encode charset 2009/11/27 A.Suzuki --start--
                 $output_file .= mb_convert_encoding($result[$ii]["file_name"], $this->encode, "auto");
                 // Add encode charset 2009/11/27 A.Suzuki --end--
                 copy($file_path, $output_file);
                 // Add separate file from DB 2009/04/22 Y.Nakao --end--
+                if($result[$ii]["extension"] == "pdf") {
+                    $this->addPdfCover($output_file, 
+                                       $result[$ii]["item_id"], 
+                                       $result[$ii]["item_no"], 
+                                       $result[$ii]["attribute_id"], 
+                                       $result[$ii]["file_no"]);
+                }
                 
-                // Bug Fix WEKO-2014-047 T.Koyasu 2014/07/24 --start--
-                // restore to output download log in export
-                $this->entryLog(RepositoryConst::LOG_OPERATION_DOWNLOAD_FILE, 
-                                $result[$ii]["item_id"], 
-                                $result[$ii]["item_no"], 
-                                $result[$ii]["attribute_id"], 
-                                $result[$ii]["file_no"]);
-                // Bug Fix WEKO-2014-047 T.Koyasu 2014/07/24 --start--
+                // Mod entryLog T.Koyasu 2015/03/06 --start--
+                $this->infoLog("businessLogmanager", __FILE__, __CLASS__, __LINE__);
+                BusinessFactory::initialize($this->Session, $this->Db, $this->TransStartDate);
+                $logManager = BusinessFactory::getFactory()->getBusiness("businessLogmanager");
+                $logManager->entryLogForDownload($result[$ii]["item_id"], $result[$ii]["item_no"], $result[$ii]["attribute_id"], $result[$ii]["file_no"]);
+                // Mod entryLog T.Koyasu 2015/03/06 --end--
                 
                 array_push($output_files, $output_file);
             }
@@ -895,6 +901,24 @@ class ExportCommon extends RepositoryAction
         return $result;
     }
     // Add e-person 2013/10/23 R.Matsuura --end--
+    
+    /**
+     * PDFカバーページを付与する
+     *
+     * @param  string $file_path
+     */
+    private function addPdfCover($file_path, $itemId, $itemNo, $attributeId, $fileNo) {
+        // 一時ファイル作成先ディレクトリ
+        $this->infoLog("businessWorkdirectory", __FILE__, __CLASS__, __LINE__);
+        $businessWorkdirectory = BusinessFactory::getFactory()->getBusiness("businessWorkdirectory");
+        $tmpDirPath = $businessWorkdirectory->create();
+        
+        // PDFカバーページ作成クラス
+        $this->infoLog("businessPdfcover", __FILE__, __CLASS__, __LINE__);
+        $pdfCover = BusinessFactory::getFactory()->getBusiness("businessPdfcover");
+        $newFile = $pdfCover->grantPdfCover($itemId, $itemNo, $attributeId, $fileNo, $tmpDirPath);
+        copy($newFile, $file_path);
+    }
 }
 // Add xml escape string 2008/10/15 Y.Nakao --end--
 ?>

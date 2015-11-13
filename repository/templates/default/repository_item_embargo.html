@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: repository_item_embargo.html 23258 2013-06-11 10:10:06Z ayumi_jin $          -->
+<!--// $Id: repository_item_embargo.html 53594 2015-05-28 05:25:53Z kaede_matsushita $          -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -60,7 +60,7 @@
        <label for="embargo_flag2"><{$lang.repository_item_embargo_candidate2}></label>
        </input>
        <br/>
-       <span id="embargo_open_date" style="<{if $action.embargo_flag_chk.value==2}>display:block;<{else}>display:none;<{/if}>">
+       <span id="embargo_open_date" style="<{if $action.embargo_flag_chk=='2'}>display:block;<{else}>display:none;<{/if}>">
          <input class="w035em" type="text" id="embargo_year" value="<{$action.date.year}>" />
          <{$lang.repository_year}>
          <select id="embargo_month">
@@ -128,7 +128,19 @@
         <{section name=k loop=$action.licence_master}>
         <{assign var="cnt" value=$smarty.section.k.index}>
           <option id="licence_id_<{$cnt+1}>" value="<{$action.licence_master[k].license_id}>" <{if $action.licence_master[k].license_id==$action.license_id }>SELECTED<{/if}> >
-          <{$action.licence_master[k].license_notation}>
+            <{if $action.licence_master[k].license_id == 101}>
+              <{$lang.repository_item_file_license_notation_by}>
+            <{elseif $action.licence_master[k].license_id == 102}>
+              <{$lang.repository_item_file_license_notation_by_sa}>
+            <{elseif $action.licence_master[k].license_id == 103}>
+              <{$lang.repository_item_file_license_notation_by_nd}>
+            <{elseif $action.licence_master[k].license_id == 104}>
+              <{$lang.repository_item_file_license_notation_by_nc}>
+            <{elseif $action.licence_master[k].license_id == 105}>
+              <{$lang.repository_item_file_license_notation_by_nc_sa}>
+            <{elseif $action.licence_master[k].license_id == 106}>
+              <{$lang.repository_item_file_license_notation_by_nc_nd}>
+            <{/if}>
           </option>
         <{/section}>
        </select>

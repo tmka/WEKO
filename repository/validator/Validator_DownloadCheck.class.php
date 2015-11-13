@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Validator_DownloadCheck.class.php 43338 2014-10-29 05:14:00Z tomohiro_ichikawa $
+// $Id: Validator_DownloadCheck.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics,
 // Research and Development Center for Scientific Information Resources
@@ -16,6 +16,7 @@ require_once WEBAPP_DIR. '/modules/repository/components/RepositoryIndexAuthorit
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryDbAccess.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryCheckFileTypeUtility.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryHandleManager.class.php';
+require_once MAPLE_DIR. '/validator/Validator.interface.php';
 
 /**
  * validator file download.
@@ -42,6 +43,12 @@ class Repository_Validator_DownloadCheck extends Validator
     private $pdf_cover_header = "";
     // Add PDF cover page 2012/06/13 A.Suzuki --end--
     
+    // maple.iniを更新し、新しくValidateDefに変数を追加した場合、
+    // privateのメンバ変数を追加する。
+    // メンバ変数はNetCommons側から自動的に付与されず、
+    // validate関数の第一引数attributesに入る
+    // そのため、ValidateDefに変数を追加した場合、attributesから
+    // 忘れずに値を取ってくるようにする
     
     // for file download
     private $item_id = "";
@@ -54,6 +61,7 @@ class Repository_Validator_DownloadCheck extends Validator
     private $img = "";              // download thumbnail
     private $item_type_id = "";     // download item type icon
     private $flash = "";            // download flash
+    private $image_slide = "";      // download slide_image
     private $pay = "false";         // user agree pay for view file.
     
     // Fix jump to close detail page. 2012/01/30 Y.Nakao --start--
@@ -90,8 +98,7 @@ class Repository_Validator_DownloadCheck extends Validator
         $this->RepositoryAction = new RepositoryAction();
         $this->RepositoryAction->Session = $this->Session;
         $this->RepositoryAction->Db = $this->Db;
-        $result = $this->RepositoryAction->initAction();
-        $result = $this->RepositoryAction->exitAction();
+        $result = $this->RepositoryAction->initAction(false);
         if ( $result === false )
         {
             return false;
@@ -166,7 +173,7 @@ class Repository_Validator_DownloadCheck extends Validator
             // ----------------------------------------
             if($this->Session->getParameter("_mobile_flag") == _OFF)
             {
-                $this->Session->setParameter('repository'.$this->block_id.'FileDownloadKey', $this->item_no."_".$this->attribute_id."_".$this->file_no);
+                $this->Session->setParameter('repository'.$this->block_id.'FileDownloadKey', $this->item_id."_".$this->item_no."_".$this->attribute_id."_".$this->file_no);
             }
             
             // ----------------------------------------
@@ -230,7 +237,7 @@ class Repository_Validator_DownloadCheck extends Validator
                 }
                 if($this->closeCharge($trade_id_price[0]))
                 {
-                    $this->Session->setParameter('repository'.$this->block_id.'FileDownloadKey', $this->item_no."_".$this->attribute_id."_".$this->file_no);
+                    $this->Session->setParameter('repository'.$this->block_id.'FileDownloadKey', $this->item_id."_".$this->item_no."_".$this->attribute_id."_".$this->file_no);
                     
                     $url = BASE_URL.'/?action=pages_view_main'.
                             "&active_action=repository_view_main_item_detail".
@@ -291,7 +298,7 @@ class Repository_Validator_DownloadCheck extends Validator
         
         // ファイル/FLASHの公開状況をチェック
         $status = "close";
-        if($this->flash == "true")
+        if($this->flash == "true" || $this->image_slide == "true")
         {
             $status = $this->checkFlashAccessStatus($fileData);
         }
@@ -310,6 +317,10 @@ class Repository_Validator_DownloadCheck extends Validator
      */
     public function checkFlashAccessStatus($fileData)
     {
+        // set file pub date
+        $date = explode(" ", $fileData[RepositoryConst::DBCOL_REPOSITORY_FILE_PUB_DATE]);
+        $filePubDate = implode('', explode("-", $date[0]));
+        
         // set flash pub date in 'pub_date'
         if(strlen($fileData[RepositoryConst::DBCOL_REPOSITORY_FILE_FLASH_PUB_DATE]) > 0)
         {
@@ -331,9 +342,22 @@ class Repository_Validator_DownloadCheck extends Validator
         {
             return "close";
         }
-        
         // check file status.
-        return $this->checkFileAccessStatus($fileData);
+        $status = $this->checkFileAccessStatus($fileData);
+        
+        // アクセスが非公開のとき、Flash公開日に関わらずViewerを表示する
+        if($filePubDate === "99991231"){
+            // ファイル登録時、アクセスが非公開の場合、課金額が空のレコードが登録されるため、
+            // ログインしたユーザでは確定的にCloseとなる
+            // 未ログインの場合はLoginが返ってくるので、返り値を調べている
+            if($status === "close"){
+                return "free";
+            } else {
+                return $status;
+            }
+        } else {
+            return $status;
+        }
     }
     
     /**
@@ -869,26 +893,12 @@ class Repository_Validator_DownloadCheck extends Validator
     }
     
     // Add check site license 2008/10/20 Y.Nakao --start--
-    public function checkSiteLicense($item_id="", $item_no=""){
-        // get user ip address
-        if(isset($_SERVER['HTTP_X_FORWARDED_FOR']) && strlen($_SERVER['HTTP_X_FORWARDED_FOR']) > 0) {
-            $access_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        } else {
-            $access_ip = getenv("REMOTE_ADDR");
-        }
-        $ipaddress = explode(".", $access_ip);
-        // get param table data : site_license
-        $query = "SELECT param_value FROM ". DATABASE_PREFIX ."repository_parameter ".
-                 "WHERE param_name = 'site_license'; ";
-        $result = $this->Db->execute($query);
-        if($result === false){
-            return "false";
-        }
-        $site_license = explode("|", $result[0]['param_value']);
-        
+    public function checkSiteLicense($item_id="", $item_no="", &$sitelicense_id=0){
+        // サイトライセンス除外アイテムタイプのチェック（引数が設定されている場合のみ）
+        // 除外アイテムタイプであった場合はSLユーザーであってもfalseを返すので一番先に処理をする
         $site_license_item_type_id = "";
         $item_type_id = "";
-        if(strlen($item_id)>0 && strlen($item_no)>0)
+        if(strlen($item_id)>0 && strlen($item_no)>0 && $item_id > 0 && $item_no > 0)
         {
             // Add item_type_id for site license 2009/01/07 A.Suzuki --start--
             // get param table data : site_license_item_type_id
@@ -915,59 +925,76 @@ class Repository_Validator_DownloadCheck extends Validator
             }
             $item_type_id = $result[0]['item_type_id'];
             // Add item_type_id for site license 2009/01/07 A.Suzuki --end--
+            if(count($result) > 0) {
+                $item_type_id = $result[0]['item_type_id'];
+                // Add item_type_id for site license 2009/01/07 A.Suzuki --end--
+                for($jj=0; $jj<count($site_license_item_type_id); $jj++){
+                    if($site_license_item_type_id[$jj] == $item_type_id){
+                        return "false";
+                    }
+                }
+            }
         }
         
-        for($ii=0; $ii<count($site_license); $ii++){
-            $param_site_license = explode(",", $site_license[$ii]);
-            $ipaddress_from = array("");
-            if(isset($param_site_license[1])){
-                $ipaddress_from = explode(",", $param_site_license[1]);
-            }
-            if(isset($param_site_license[2]) && $param_site_license[2] != ""){
-                // from to
-                // Fix roop bug 2010/10/14 Y.Nakao --start--
-                $ip = sprintf("%03d", $ipaddress[0]).
-                      sprintf("%03d", $ipaddress[1]).
-                      sprintf("%03d", $ipaddress[2]).
-                      sprintf("%03d", $ipaddress[3]);
-                $ipaddress_to = explode(",", $param_site_license[2]);
-                $ipaddress_from = explode(".", $ipaddress_from[0]);
-                $ipaddress_to = explode(".", $ipaddress_to[0]);
-                $from = sprintf("%03d", $ipaddress_from[0]).
-                        sprintf("%03d", $ipaddress_from[1]).
-                        sprintf("%03d", $ipaddress_from[2]).
-                        sprintf("%03d", $ipaddress_from[3]);
-                $to   = sprintf("%03d", $ipaddress_to[0]).
-                        sprintf("%03d", $ipaddress_to[1]).
-                        sprintf("%03d", $ipaddress_to[2]).
-                        sprintf("%03d", $ipaddress_to[3]);  
-                if( $from <= $ip && $ip <= $to ){
-                    if(strlen($item_id)>0 && strlen($item_no)>0)
-                    {
-                        for($jj=0; $jj<count($site_license_item_type_id); $jj++){
-                            if($site_license_item_type_id[$jj] == $item_type_id){
-                                return "false";
-                            }
-                        }
+        // サイトライセンスユーザーであるかどうかのチェック
+        // ユーザーのIPアドレスの取得
+        if(isset($_SERVER['HTTP_X_FORWARDED_FOR']) && strlen($_SERVER['HTTP_X_FORWARDED_FOR']) > 0) {
+            $access_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } else {
+            $access_ip = getenv("REMOTE_ADDR");
+        }
+        // IPアドレスを0埋めの12桁の文字列にする
+        $ipaddress = explode(".", $access_ip);
+        $ip = sprintf("%03d", $ipaddress[0]).
+              sprintf("%03d", $ipaddress[1]).
+              sprintf("%03d", $ipaddress[2]).
+              sprintf("%03d", $ipaddress[3]);
+        // サイトライセンスに設定されたIPレンジの取得
+        $query = "SELECT organization_id, start_ip_address, finish_ip_address FROM ". DATABASE_PREFIX. "repository_sitelicense_ip_address ".
+                 "WHERE is_delete = ? ;";
+        $params = array();
+        $params[] = 0;
+        $sitelicense_ip = $this->Db->execute($query, $params);
+        if($sitelicense_ip === false){
+            return "false";
+        }
+        // チェック処理
+        for($ii=0; $ii<count($sitelicense_ip); $ii++){
+            if(isset($sitelicense_ip[$ii]["start_ip_address"]) && strlen($sitelicense_ip[$ii]["start_ip_address"]) > 0){
+                // IPレンジの始点を0埋め12ケタの文字列にする
+                $start_ip = explode(".", $sitelicense_ip[$ii]["start_ip_address"]);
+                $from = sprintf("%03d", $start_ip[0]).
+                        sprintf("%03d", $start_ip[1]).
+                        sprintf("%03d", $start_ip[2]).
+                        sprintf("%03d", $start_ip[3]);
+                if(isset($sitelicense_ip[$ii]["finish_ip_address"]) && strlen($sitelicense_ip[$ii]["finish_ip_address"]) > 0){
+                    // IPレンジの終点を0埋め12ケタの文字列にする
+                    $finish_ip = explode(".", $sitelicense_ip[$ii]["finish_ip_address"]);
+                    $to = sprintf("%03d", $finish_ip[0]).
+                          sprintf("%03d", $finish_ip[1]).
+                          sprintf("%03d", $finish_ip[2]).
+                          sprintf("%03d", $finish_ip[3]);
+                    // ユーザーのIPアドレスが範囲内に収まっていればtrueを返す
+                    if($from <= $ip && $ip <= $to){
+                        $sitelicense_id = $sitelicense_ip[$ii]["organization_id"];
+                        return "true";
                     }
-                    return "true";
-                }
-                // Fix roop bug 2010/10/14 Y.Nakao --end--
-            } else {
-                // same ip
-                if($access_ip == $ipaddress_from[0]){
-                    if(strlen($item_id)>0 && strlen($item_no)>0)
-                    {
-                        for($jj=0; $jj<count($site_license_item_type_id); $jj++){
-                            if($site_license_item_type_id[$jj] == $item_type_id){
-                                return "false";
-                            }
-                        }
-                    }
+                } elseif($ip == $from) {
+                    // IPが始点(=from)のみ設定されている場合はそれと一致するかどうかを判定する
+                    $sitelicense_id = $sitelicense_ip[$ii]["organization_id"];
                     return "true";
                 }
             }
         }
+        
+        // add Check users oraganization 2015/01/19 T.Ichikawa --start--
+        // ユーザーがサイトライセンス組織に所属しているかのチェック
+        $sitelicense_group = $this->checkSiteLicenseGroup($sitelicense_id);
+        // サイトライセンス組織に設定されている場合はtrueを返す
+        if($sitelicense_group === true) {
+            return "true";
+        }
+        // add Check users oraganization 2015/01/19 T.Ichikawa --end--
         return "false";
     }
     
@@ -1050,6 +1077,10 @@ class Repository_Validator_DownloadCheck extends Validator
         }
         if($this->pdf_cover_header != null){
             return;
+        }
+        // image_slide
+        if(isset($attributes[13]) && strlen($attributes[13]) > 0){
+            $this->image_slide = $attributes[13];
         }
     }
     
@@ -1695,5 +1726,48 @@ class Repository_Validator_DownloadCheck extends Validator
     }
     // Add check charge record from log table 2008/10/16 Y.Nakao --end--
     
+    // Add check sitelicense group 2015/01/19 T.Ichikawa --start--
+    /**
+     * check sitelicense group
+     *
+     * @return bool sitelicense_flag
+     */
+    public function checkSiteLicenseGroup(&$sitelicense_id)
+    {
+        // ユーザー所属組織情報の取得
+        $query = "SELECT content FROM ". DATABASE_PREFIX. "users_items_link ".
+                 "WHERE user_id = ? ".
+                 "AND item_id = ? ;";
+        $params = array();
+        $params[] = $this->Session->getParameter("_user_id");
+        $params[] = 8;
+        $result = $this->Db->execute($query, $params);
+        if($result == false) {
+            return false;
+        }
+        // ユーザーが組織に所属している場合、それがサイトライセンス組織であるか判定する
+        if(isset($result) && count($result) > 0 && strlen($result[0]["content"]) > 0) {
+            // サイトライセンス組織情報の取得
+            $query = "SELECT organization_id, group_name FROM ". DATABASE_PREFIX. "repository_sitelicense_info ".
+                     "WHERE is_delete = ? ;";
+            $params = array();
+            $params[] = 0;
+            $sitelicense_groups = $this->Db->execute($query, $params);
+            if($result == false) {
+                return false;
+            }
+            // チェック処理
+            for($ii = 0; $ii < count($sitelicense_groups); $ii++) {
+                // ユーザーの所属組織名がサイトライセンス組織名と一致した場合trueを返す
+                if($result[0]["content"] == $sitelicense_groups[$ii]["group_name"]) {
+                    $sitelicense_id = $sitelicense_groups[$ii]["organization_id"];
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+    // Add check sitelicense group 2015/01/19 T.Ichikawa --end--
 }
 ?>

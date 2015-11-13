@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Confirm.class.php 43857 2014-11-11 08:54:28Z tomohiro_ichikawa $
+// $Id: Confirm.class.php 58647 2015-10-10 08:13:31Z tatsuya_koyasu $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -16,6 +16,8 @@
 include_once MAPLE_DIR.'/includes/pear/File/Archive.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.php';
 require_once WEBAPP_DIR. '/modules/repository/action/edit/import/ImportCommon.class.php';;
+require_once WEBAPP_DIR. '/modules/repository/components/util/ZipUtility.class.php';
+
 
 /**
  * [[import終了時、確認画面表示用action]]
@@ -198,6 +200,50 @@ class Repository_Action_Edit_Import_Confirm extends RepositoryAction
                 $this->failTrans();
                 throw $exception;
             }
+            // check itemtype authority
+            // 権限IDを取得する
+            $query = "SELECT role_authority_id ".
+                     "FROM ".DATABASE_PREFIX. "users ".
+                     "WHERE user_id = ? ;";
+            $params = array();
+            $params[] = $this->Session->getParameter("_user_id");
+            $role_auth = $this->Db->execute($query, $params);
+            // ルーム権限を取得する
+            $room_auth = $this->getRoomAuthorityID($this->Session->getParameter("_user_id"));
+            // アイテムタイプIDリストを作成する
+            $item_type_id_list = array();
+            for($ii = 0; $ii < count($item_type_info); $ii++) {
+                $item_type_id_list[] = $item_type_info[$ii]["item_type_id"];
+            }
+            $result = $import_common->canUseItemtype($item_type_id_list, $role_auth[0]["role_authority_id"], $room_auth);
+            // アイテムタイプ使用チェック結果を確認する
+            $error_info = array();
+            $error_cnt = 0;
+            for($ii = 0; $ii < count($result); $ii++) {
+                if($result[$ii] == false) {
+                    $error_info[$error_cnt] = array();
+                    $error_info[$error_cnt]["error"] = "User do not have permission to use itemtype";
+                    if($this->Session->getParameter("_lang") == "english" && strlen($array_item_data["item"][$ii]["item_array"][0]["TITLE_ENGLISH"]) > 0) {
+                        $error_info[$error_cnt]["title"] = $array_item_data["item"][$ii]["item_array"][0]["TITLE_ENGLISH"]; 
+                    } else {
+                        $error_info[$error_cnt]["title"] = $array_item_data["item"][$ii]["item_array"][0]["TITLE"]; 
+                    }
+                    $error_info[$error_cnt]["item_id"] = $array_item_data["item"][$ii]["item_array"][0]["ITEM_ID"];
+                    $error_info[$error_cnt]["attr_name"] = "";
+                    $error_info[$error_cnt]["input_value"] = $item_type_info[$ii]["item_type_name"];
+                    $error_info[$error_cnt]["regist_value"] = "";
+                    $error_info[$error_cnt]["error_no"] = 20;
+                    $error_cnt++;
+                }
+            }
+            if(count($error_info) > 0) {
+                $this->Session->setParameter("error_info", $error_info);
+                // error action
+                $exception = new RepositoryException( "ERR_MSG_xxx-xxx1", 001 );
+                // ROLLBACK
+                $this->failTrans();
+                throw $exception;
+            }
             
             ////////////////////////////////////////
             // insert item
@@ -206,15 +252,22 @@ class Repository_Action_Edit_Import_Confirm extends RepositoryAction
             $array_item = array();
             for($nCnt=0;$nCnt<count($array_item_data['item']);$nCnt++){
                 $error_msg = "";
+                $warningMsg = "";
                 // insert 1 item
-                $ret = $import_common->itemEntry($array_item_data['item'][$nCnt], $tmp_dir, $array_item, $this->index_id, $item_type_info[$nCnt], $array_item_data['item_type'][$nCnt], $error_msg, $item_id, $detail_uri);
+                $ret = $import_common->itemEntry($array_item_data['item'][$nCnt], $tmp_dir, $array_item, $this->index_id, $item_type_info[$nCnt], $array_item_data['item_type'][$nCnt], $error_msg, $item_id, $detail_uri, $warningMsg);
                 if($ret === false){
                     $exception = new RepositoryException( "ERR_MSG_xxx-xxx1", 001 );
+                    $this->Session->setParameter("error_msg", $error_msg);
                     // ROLLBACK
                     $this->failTrans();
                     throw $exception;
                 }
-                $array_item[$nCnt]["error_msg"] = $error_msg;
+                
+                if(strlen($warningMsg) > 0){
+                    $array_item[$nCnt]["error_msg"] = $warningMsg;
+                } else {
+                    $array_item[$nCnt]["error_msg"] = $error_msg;
+                }
                 
                 // Add review mail setting 2009/09/30 Y.Nakao --start--
                 // 査読対象のコンテンツ情報をメール本文に記載する
@@ -356,12 +409,12 @@ class Repository_Action_Edit_Import_Confirm extends RepositoryAction
     /*
      * zip file extract
      */
-    function extraction(){
+    private function extraction(){
 
         // get upload file
         $tmp_file = $this->Session->getParameter("filelist");
-
-        //$dir_path = WEBAPP_DIR. "\\uploads\\repository\\";
+        $this->Session->removeParameter("filelist");
+        
         $dir_path = WEBAPP_DIR. "/uploads/repository/";
         $file_path = $dir_path . $tmp_file[0]['physical_file_name'];
         
@@ -372,19 +425,19 @@ class Repository_Action_Edit_Import_Confirm extends RepositoryAction
         
         // make dir for extract
         $dir = $dir_path . $tmp_file[0]['upload_id'];
-        if (!mkdir($dir, 0777)){
-            // error
-            $exception = new RepositoryException( "ERR_MSG_xxx-xxx1", 001 );
-            $this->failTrans(); // ROLLBACK
-            throw $exception;
-        }
-
-        // extract zip file
-        File_Archive::extract(
-        File_Archive::read($file_path . "/"),
-        File_Archive::appender($dir)
-        );
+        $this->infoLog("businessWorkdirectory", __FILE__, __CLASS__, __LINE__);
+        $businessWorkdirectory = BusinessFactory::getFactory()->getBusiness('businessWorkdirectory');
+        $dir = $businessWorkdirectory->create();
+        $dir = substr($dir, 0, -1);
         
+        // Update SuppleContentsEntry Y.Yamazawa 2015/04/02 --satrt--
+        // extract zip file
+        $result = Repository_Components_Util_ZipUtility::extract($file_path, $dir);
+        if($result === false){
+            return false;
+        }
+        // Update SuppleContentsEntry Y.Yamazawa 2015/04/02 --end--
+
         // delete upload xip file
         unlink($file_path);
         

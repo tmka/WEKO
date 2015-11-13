@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: RepositoryUserAuthorityManager.class.php 38124 2014-07-01 06:56:02Z rei_matsuura $
+// $Id: RepositoryUserAuthorityManager.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -45,7 +45,7 @@ class RepositoryUserAuthorityManager extends RepositoryLogicBase
                     "   AND room_id = ( ".
                     "       SELECT room_id ". 
                     "       FROM ".DATABASE_PREFIX."pages ". 
-                    "       WHERE page_id = '".$block_id['page_id']."' ".
+                    "       WHERE page_id = ".$block_id['page_id']." ".
                     "   ) ".
                     " ); ";
             $result = $this->dbAccess->executeQuery($query);
@@ -298,6 +298,24 @@ class RepositoryUserAuthorityManager extends RepositoryLogicBase
         }
         $param_value = $result[0]['param_value'];
         return true;
+    }
+    
+    /**
+     *  Get all user authority
+     * 
+     * @return result(array)
+     */
+    public function getAllAuthority()
+    {
+        $query = "SELECT * FROM ". DATABASE_PREFIX ."authorities ;";
+        // execute SQL
+        $result = $this->dbAccess->executeQuery($query);
+        
+        if(count($result) > 0) {
+            return $result;
+        } else {
+            return array();
+        }
     }
 }
 ?>

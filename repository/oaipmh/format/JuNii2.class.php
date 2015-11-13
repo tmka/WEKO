@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: JuNii2.class.php 42605 2014-10-03 01:02:01Z keiya_sugimoto $
+// $Id: JuNii2.class.php 49321 2015-03-03 12:15:32Z keiya_sugimoto $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -61,6 +61,7 @@ class Repository_Oaipmh_JuNii2 extends Repository_Oaipmh_FormatAbstract
                                 RepositoryConst::JUNII2_SELFDOI=>1,
                                 RepositoryConst::JUNII2_SELFDOI_JALC=>1,
                                 RepositoryConst::JUNII2_SELFDOI_CROSSREF=>1,
+                                RepositoryConst::JUNII2_SELFDOI_DATACITE=>1,
                                 RepositoryConst::JUNII2_NAID=>1,
                                 RepositoryConst::JUNII2_ICHUSHI=>1,
                                 RepositoryConst::JUNII2_GRANTID=>1,
@@ -1292,8 +1293,7 @@ class Repository_Oaipmh_JuNii2 extends Repository_Oaipmh_FormatAbstract
     {
         $tag = RepositoryConst::JUNII2_LANGUAGE;
         // Add JuNii2 ver3 R.Matsuura 2013/09/24 --start--
-        //$language = RepositoryOutputFilterJuNii2::languageToISO($language);
-         $language = 'ja';
+        $language = RepositoryOutputFilterJuNii2::languageToISO($language);
         // Add JuNii2 ver3 R.Matsuura 2013/09/24 --end--
         return $this->outputElement($tag, $language);
     }
@@ -1783,6 +1783,13 @@ class Repository_Oaipmh_JuNii2 extends Repository_Oaipmh_FormatAbstract
             // selfdoi(crossref) is min occurs = 0, maxOccurs=1.
             return false;
         }
+        // Add DataCite 2015/02/10 K.Sugimoto --start--
+        if($this->occurs[RepositoryConst::JUNII2_SELFDOI_DATACITE] < 0)
+        {
+            // selfdoi(datacite) is min occurs = 0, maxOccurs=1.
+            return false;
+        }
+        // Add DataCite 2015/02/10 K.Sugimoto --end--
         if($this->occurs[RepositoryConst::JUNII2_NAID] < 0)
         {
             // NAID is min occurs = 0, maxOccurs=1.
@@ -1845,23 +1852,33 @@ class Repository_Oaipmh_JuNii2 extends Repository_Oaipmh_FormatAbstract
         $this->getRepositoryHandleManager();
         $uri_jalcdoi = $this->repositoryHandleManager->createSelfDoiUri($item_id, $item_no, RepositoryHandleManager::ID_JALC_DOI);
         $uri_crossref = $this->repositoryHandleManager->createSelfDoiUri($item_id, $item_no, RepositoryHandleManager::ID_CROSS_REF_DOI);
+        // Add DataCite 2015/02/10 K.Sugimoto --start--
+        $uri_datacite = $this->repositoryHandleManager->createSelfDoiUri($item_id, $item_no, RepositoryHandleManager::ID_DATACITE_DOI);
         $uri_library_jalcdoi = $this->repositoryHandleManager->createSelfDoiUri($item_id, $item_no, RepositoryHandleManager::ID_LIBRARY_JALC_DOI);
         
-        if(strlen($uri_jalcdoi) > 0 && strlen($uri_crossref) < 1 && strlen($uri_library_jalcdoi) < 1)
+        if(strlen($uri_jalcdoi) > 0 && strlen($uri_crossref) < 1 && strlen($uri_datacite) < 1 && strlen($uri_library_jalcdoi) < 1)
         {
             $option = array();
             $option[RepositoryConst::JUNII2_SELFDOI_ATTRIBUTE_JALC_DOI] = RepositoryConst::JUNII2_SELFDOI_RA_JALC;
             $xml .= $this->outputElement($tag, $uri_jalcdoi, $option);
             
         }
-        else if(strlen($uri_crossref) > 0 && strlen($uri_jalcdoi) < 1 && strlen($uri_library_jalcdoi) < 1)
+        else if(strlen($uri_crossref) > 0 && strlen($uri_jalcdoi) < 1 && strlen($uri_datacite) < 1 && strlen($uri_library_jalcdoi) < 1)
         {
             $option = array();
             $option[RepositoryConst::JUNII2_SELFDOI_ATTRIBUTE_JALC_DOI] = RepositoryConst::JUNII2_SELFDOI_RA_CROSSREF;
             $xml = $this->outputElement($tag, $uri_crossref, $option);
             
         }
-        else if(strlen($uri_library_jalcdoi) > 0 && strlen($uri_jalcdoi) < 1 && strlen($uri_crossref) < 1)
+        else if(strlen($uri_datacite) > 0 && strlen($uri_jalcdoi) < 1 && strlen($uri_crossref) < 1 && strlen($uri_library_jalcdoi) < 1)
+        {
+            $option = array();
+            $option[RepositoryConst::JUNII2_SELFDOI_ATTRIBUTE_JALC_DOI] = RepositoryConst::JUNII2_SELFDOI_RA_DATACITE;
+            $xml = $this->outputElement($tag, $uri_datacite, $option);
+            
+        }
+        // Add DataCite 2015/02/10 K.Sugimoto --end--
+        else if(strlen($uri_library_jalcdoi) > 0 && strlen($uri_jalcdoi) < 1 && strlen($uri_crossref) < 1 && strlen($uri_datacite) < 1)
         {
             $option = array();
             $option[RepositoryConst::JUNII2_SELFDOI_ATTRIBUTE_JALC_DOI] = RepositoryConst::JUNII2_SELFDOI_RA_JALC;

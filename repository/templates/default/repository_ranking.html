@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: repository_ranking.html 22981 2013-05-30 05:43:08Z ayumi_jin $          -->
+<!--// $Id: repository_ranking.html 56591 2015-08-18 01:37:11Z keiya_sugimoto $          -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -441,11 +441,21 @@
 
 
 <{*{ Add ranking empty's comment K.Ando 2010/02/18 --start-- *}>
-<{if count($action.newitem_ranking) <= 0 && count($action.keyword_ranking) <= 0 && count($action.user_ranking) <= 0 && count($action.download_ranking ) <= 0 && count($action.refer_ranking) <= 0 }>
+<{if count($action.newitem_ranking) <= 0 && count($action.keyword_ranking) <= 0 && count($action.user_ranking) <= 0 && count($action.download_ranking ) <= 0 && count($action.refer_ranking) <= 0 && $action.errMsg == null && count($action.errMsg) == 0}>
 <div class="pb10 ac">
 	<{$lang.repository_ranking_no_data}>
 </div>
 <{/if}>
+<{if $action.errMsg != null && count($action.errMsg) > 0}>
+<center>
+	<div class="error_msg al">
+		<{foreach from=$action.errMsg item=msg}>
+		<{$msg|smarty:nodefaults}><br/>
+		<{/foreach}>
+	</div>
+</center>
+<{/if}>
+
 </div>
 
 <{include file="repository_script.html"}>

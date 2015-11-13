@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: log.html 32710 2014-03-11 09:28:04Z shota_suzuki $          -->
+<!--// $Id: log.html 54835 2015-06-25 04:10:46Z keiya_sugimoto $          -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -23,6 +23,9 @@
 			<div class="page_list">
 				「ログ解析」タブをクリックするとログ解析画面が表示されます。<br/>
 				ログの集計、解析を行い、その結果を表示またはダウンロードすることができます。<br/>
+				<a href="./setting.html#run_log">管理画面</a>にて除外対象に設定されているアドレスなどを除いて集計されます。<br/>
+				また、30秒以内に同一ユーザが同じ操作をした場合、集計から除外されます。
+				<br/>
 				<br/>
 				<center><img src="./img/log_01.png" alt="定型レポート" border="0"/></center><br/>
 				<br/>
@@ -36,29 +39,121 @@
 				<h3><a name="report">定型レポート</a></h3>
 				<div class="page_list">
 					指定した期間の定型レポートをTSV(タブ区切りテキスト)形式でダウンロードすることができます。<br/>
-					定型レポートは下記4種類です。<br/>
+					定型レポートは下記10種類です。<br/>
 					<br/>
-					<table class="table_border" border="0" alt="Downloadクリック" align="center" cellspacing="0">
+					<table class="table_border" border="0" alt="Downloadクリック" align="center" cellspacing="0" style="border-collapse: collapse" cellpadding="5">
 						<tr>
 							<th nowrap>ファイル名</th>
 							<th nowrap>ログ内容</th>
 						</tr>
 						<tr>
 							<td>logReport_IndexAccess_YYYYMM.tsv</td>
-							<td>各インデックスに所属するアイテムのアイテム詳細画面アクセス数</td>
+							<td>
+								各インデックスに所属するアイテムのアイテム詳細画面アクセス数を表示します</br>
+								インデックス名はツリー構造を&yen;区切りで表示します
+								</br>
+								</br>
+								<img src="./img/log_18.png" alt="インデックスごとの詳細画面アクセス数" border="0"/>
+							</td>
 						</tr>
 						<tr>
 							<td>logReport_PayPerView_YYYYMM.tsv</td>
-							<td>課金およびオープンアクセスファイルのダウンロード数</td>
+							<td>
+								課金およびオープンアクセスファイルのダウンロード数を表示します<br/>
+								また、NetCommonsの各グループ毎のファイルダウンロード数を表示します
+								</br>
+								</br>
+								<img style="width:100%" src="./img/log_19.png" alt="課金ファイルダウンロード数" border="0"/>
+							</td>
+						</tr>
+						<tr>
+							<td>logReport_SearchCount_YYYYMM.tsv</td>
+							<td>
+								各検索キーワードの検索回数を表示します<br/>
+								下記にあたる詳細カテゴリーの検索キーワードのみを表示します<br/>
+								<ul>
+									<li>タイトル</li>
+									<li>著者 OR 著者ID</li>
+									<li>キーワード</li>
+									<li>抄録・内容記述</li>
+									<li>公開者 OR 著者ID</li>
+									<li>寄与者 OR 著者ID</li>
+									<li>雑誌名</li>
+								</ul>
+								<img src="./img/log_20.png" alt="検索キーワードランキング" border="0"/>
+							</td>
 						</tr>
 						<tr>
 							<td>logReport_SiteAccess_YYYYMM.tsv</td>
-							<td>サイトライセンスを設定しているホストからのアクセスとサイトライセンス以外からのアクセス数</td>
+							<td>
+								サイトライセンスを設定しているホストまたはユーザとサイトライセンス以外からの下記アクセス数を表示します
+								<ul>
+									<li>キーワード検索</li>
+									<li>アイテム詳細画面</li>
+									<li>ファイルダウンロード</li>
+								</ul>
+								<img src="./img/log_21.png" alt="サイトライセンス別アクセス数" border="0"/>
+							</td>
 						</tr>
-						<tr>
-							<td>logReport_SuppleAccess_YYYYMM.tsv</td>
-							<td>サプリメンタルコンテンツアクセス数およびダウンロード数</td>
-						</tr>
+                        <tr>
+                            <td>logReport_SuppleAccess_YYYYMM.tsv</td>
+                            <td>
+                            	サプリメンタルコンテンツアクセス数およびダウンロード数を表示します<br/>
+                            	本レポートに記載されているサプリメンタルコンテンツの詳細画面アクセス数およびダウンロード数はサプリWEKOでのアイテム詳細画面アクセス数とダウンロード数となります
+								</br>
+								</br>
+								<img src="./img/log_22.png" alt="サプリメンタルコンテンツアクセス数およびダウンロード数" border="0"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>logReport_DetailView_YYYYMM.tsv</td>
+                            <td>
+                            	アイテム詳細画面のアクセス数を表示します<br/>
+								また、NetCommonsの各グループ毎のアイテム詳細画面のアクセス数を表示します
+								</br>
+								</br>
+								<img src="./img/log_14.png" alt="詳細画面閲覧数" border="0"/>
+							</td>
+                        </tr>
+                        <tr>
+                            <td>logReport_FileView_YYYYMM.tsv</td>
+                            <td>
+                            	オープンアクセスおよびオープンアクセスでないファイルのダウンロード数をインデックスごとに表示します<br/>
+                            	また、ユーザの所属グループ、未ログイン、管理者およびアイテムの登録者毎のダウンロード数の内訳を表示します
+								</br>
+								</br>
+								<img style="width:100%;" src="./img/log_15.png" alt="ファイルダウンロード数" border="0"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>logReport_FileViewPerUser_YYYYMM.tsv</td>
+                            <td>
+                            	ユーザー別のダウンロード数を表示します<br/>
+                            	また、各ユーザのログインID、ハンドル名、会員氏名、NC2の権限、所属している全グループも表示します
+								</br>
+								</br>
+								<img src="./img/log_16.png" alt="ユーザ別ダウンロード数" border="0"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>logReport_HostAccess_YYYYMM.tsv</td>
+                            <td>
+                            	ホスト別のトップページアクセス数を表示します
+								</br>
+								</br>
+								<img src="./img/log_17.png" alt="ホスト別アクセス数" border="0"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>logReport_UserAffiliate_YYYYMM.tsv</td>
+                            <td>
+                            	権限別の登録ユーザ数を表示します<br/>
+                            	また、研究会(NetCommonsのグループ)に所属しているユーザを表示します
+								</br>
+								</br>
+								<img src="./img/log_23.png" alt="ユーザ所属情報" border="0"/>
+                            </td>
+                        </tr>
 					</table>
 					<br/>
 					集計年月をセレクトボックスから指定し、「Download」リンクをクリックします。<br/>
@@ -69,10 +164,10 @@
 					<br/>
 					【注意事項】
 					<ul>
-						<li>定型レポートでダウンロードできるファイルは、4種類のTSV(タブ区切りテキスト)形式ファイルを圧縮したZIPアーカイブとなります。</li>
+						<li>定型レポートでダウンロードできるファイルは、10種類のTSV(タブ区切りテキスト)形式ファイルを圧縮したZIPアーカイブとなります。</li>
 					</ul>
 				</div>
-				<h4>定型レポート メール送信</h4>
+				<h4><a name="sendmail">定型レポート メール送信</h4>
 				<div class="page_list">
 					指定した期間の定型レポートを登録したメールアドレスで受信することができます。<br/>
 					<br/>
@@ -85,7 +180,7 @@
 					<center><img src="./img/log_04.png" alt="定型レポート メール送信" border="0"/></center><br/>
 					<br/>
 				</div>
-				<h3>カスタムレポート</h3>
+				<h3><a name="custom">カスタムレポート</h3>
 				<div class="page_list">
 					下記3種類のデータを指定した期間のログから集計することができます。<br/>
 					また、集計データを「日」「週」「月」「年」「アイテム」「ホスト」ごとに区切ったヒストグラムで表示またはダウンロードすることができます。<br/>
@@ -118,6 +213,14 @@
 					<br/>
 					<center><img src="./img/log_12.png" alt="Downloadクリック" border="0"/></center><br/>
 					<br/>
+					ダウンロード回数および閲覧回数にて、単位に「ホスト」を指定して表示すると下記のようになります<br/>
+					解析から除外したいアクセスを選択することができます。<br/>
+					<br/>
+					<center><img src="./img/log_13.png" alt="ホスト別カスタムレポート" border="0"/></center><br/>
+					<br/>
+					【注意事項】<br/>
+					解析から除外したいアクセスを設定した後、<a href="./setting.html#run_log">管理画面</a>にてログ削除の実行を実施する必要があります。<br/>
+					実行方法については<a href="./setting.html#run_log">WEKO管理</a>をご覧ください。
 				</div>
 				<h3>ログ削除</h3>
 				<div class="page_list">

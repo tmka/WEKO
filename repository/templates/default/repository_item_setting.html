@@ -12,16 +12,52 @@
 <{strip}>
 	<{if $action.authCheckFlg==true}>
 	<div class="mt10 min-w1000px">
-		<div id="repo_side_navi" class="fl">
-			<div id="repository_index_tree">
+		
+		<{if $action.errMsg != null  && count($action.errMsg) > 0 }>
+		<p class="error_msg">
+			<span class="red">
+				<{foreach from=$action.errMsg item=msg}>
+					<{$msg|smarty:nodefaults}><br/>
+				<{/foreach}>
+			</span>
+		</p>
+		<{/if}>
+		
+		<div id="repo_side_navi" class="fl" style="width: <{$smarty.const._SNIPPET_WIDTH}>px; overflow:auto;">
+			<!-- キーワード検索 -->
+			<div id="_repository_keyword"  style="display:none;">
+				<h3 id="item_setting<{$id}>_title" class="th_repos_title_bar nc_block_title c"><span class="pl05"><{$lang.repository_admin_keyword_search}></span></h3>
+				<form name="id_form_search_delete_search_keyword" name="form_search_delete_search_keyword" method="post">
+					<div class="plr05 ptb10">
+						<div class="keyword_bk">
+							<em>
+								<input type="text" class="<{if $smarty.session._lang == "japanese"}>keyword_text<{else}>keyword_text_eng<{/if}>" onkeypress="return clickSearch<{$id}>(event);" name="search_keyword" id="id_search_delete_keyword<{$id}>" value="<{$action.searchkeywordForDelete}>">
+							</em>
+						</div>
+						<input type="text" name="dummy" style="position:absolute;visibility:hidden">
+						<div class="fl">
+							<input type="button" class="btn_blue mg00" value="<{$lang.repository_search_start}>" onclick="repositorySearchKeyword( encodeURIComponent($('id_search_delete_keyword<{$id}>').value)); return false;">
+						</div>
+						<div class="clear">
+							<label for="search_type_simple"><input type="radio" name="search_type<{$id}>" id="search_type_simple" value="simple" <{if $action.search_type=="simple"}>checked<{/if}>><{$lang.repository_search_type_simple}></label>&nbsp;
+							<label for="search_type_detail"><input type="radio" name="search_type<{$id}>" id="search_type_detail" value="detail" <{if $action.search_type!="simple"}>checked<{/if}>><{$lang.repository_search_type_detail}></label><br/>
+						</div>
+					</div>
+				</form>
+			</div>
+			<!-- キーワード検索 -->
+			<!-- インデックスツリー -->
+			<div id="repository_index_tree" style="display:none;">
 				<h3 id="item_setting<{$id}>_title" class="th_repos_title_bar nc_block_title c"><span class="pl05"><{$lang.repository_index_tree}></span></h3>
 				<div>
-					<div class="th_classic_content content" id="itemSettingTree<{$id}>panel" style="width: <{$smarty.const._SNIPPET_WIDTH}>px; overflow:auto;"></div>
+					<div class="th_classic_content content" id="itemSettingTree<{$id}>panel">
 					<{include file="repository_item_search_tree.html"}>
+					</div>
 				</div>
 			</div>
+			<!-- インデックスツリー -->
 		</div>
-
+		
 	    <div id="item_setting<{$id}>_tabs_id" class="repository_right_header pr05">
 			<div class="comp_tabset"></div>
 			<div class="comp_tabset_content">
@@ -32,18 +68,38 @@
 					<{include file="repository_item_embargo.html"}>
 				</div>
 				<div class="th_classic_content content text_color" id="itemSettingTab3" align="center">
-					<{include file="repository_item_listdelete.html"}>
+					<{if strlen($action.meta) > 0 || strlen($action.all) > 0 || strlen($action.searchkeywordForDelete) > 0 }>
+						<{include file="repository_item_searchdelete.html"}>
+					<{elseif $action.sortIndexId != 0 }>
+						<{include file="repository_item_listdelete.html"}>
+					<{else}>
+						<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+							<div class="fr">
+								<a style="cursor: help;" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'item_doibulkgrant'); return false;" href="#">
+									<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" alt="help">
+								</a>
+							</div>
+						<{/if}>
+						<div style="height: 40px;">
+							<font style="color:#f00;"><{$lang.repository_item_listdelete_selsect_index_or_search_keyword}></font>
+						</div>
+					<{/if}>
 				</div>
+				
 				<div class="th_classic_content content text_color" id="itemSettingTab4" align="center">
 					<{include file="repository_item_doi.html"}>
 				</div>
+				
 			</div>
 			<input type="hidden" value="0" id="item_setting_active_tab_id" />
-
 		</div>
 	</div>
 	<{else}>
-		<{$lang._invalid_auth}>
+		<p class="error_msg">
+			<span class="red">
+				<{$lang._invalid_auth}>
+			</span>
+		</p>
 	<{/if}>
 <{/strip}>
 <{include file="repository_script.html"}>
@@ -54,21 +110,25 @@
 		var active_tab = "item_setting_active_tab_id";
 		$(active_tab).value = 0;
 		initSettingTree<{$id}>(1);
+		changeSideDiv<{$id}>(1);
 	}
 	changeActiveTab2 = function(){
 		var active_tab = "item_setting_active_tab_id";
 		$(active_tab).value = 1;
 		initSettingTree<{$id}>(2);
+		changeSideDiv<{$id}>(2);
 	}
 	changeActiveTab3 = function(){
 		var active_tab = "item_setting_active_tab_id";
 		$(active_tab).value = 2;
 		initSettingTree<{$id}>(3);
+		changeSideDiv<{$id}>(3);
 	}
 	changeActiveTab4 = function(){
 		var active_tab = "item_setting_active_tab_id";
 		$(active_tab).value = 3;
 		initSettingTree<{$id}>(4);
+		changeSideDiv<{$id}>(4);
 	}
 
 	initSettingTree<{$id}> = function(num){
@@ -94,6 +154,20 @@
 
 		$('itemSettingTree<{$id}>panel').style.width = <{$smarty.const._SNIPPET_WIDTH}>+"px";
 	}
+	
+	changeSideDiv<{$id}> = function(tabNumber){
+		
+		if( tabNumber == 3 ){
+			document.getElementById("repository_index_tree").style.display="block";
+			document.getElementById("_repository_keyword").style.display="block";
+		}
+		else
+		{
+			document.getElementById("repository_index_tree").style.display="block";
+			document.getElementById("_repository_keyword").style.display="none";
+		}
+	}
+	
 </script>
 
 <script class="nc_script" type="text/javascript">
@@ -168,4 +242,31 @@
 		}
 	}
 </script>
-
+<script class="nc_script" type="text/javascript">
+	repositorySearchKeyword = function(keyword){
+		var search_type = "";
+		var radioList = document.getElementsByName("search_type<{$id}>");
+		for(var i=0; i<radioList.length; i++){
+			if (radioList[i].checked) {
+				search_type = radioList[i].value;
+				break;
+			}
+		}
+		
+		if( search_type == "simple" ){
+			commonCls.sendView('<{$id}>', {'action':'repository_view_edit_item_setting',  'item_setting_active_tab':2, 'meta':keyword });
+		}
+		else{
+			commonCls.sendView('<{$id}>', {'action':'repository_view_edit_item_setting',  'item_setting_active_tab':2, 'all':keyword });
+		}
+	}
+</script>
+<script class="nc_script" type="text/javascript">
+	clickSearch<{$id}> = function(event) {
+		if ( event.keyCode == 13 ) {
+			// push key is 'enter'
+			repositorySearchKeyword( encodeURIComponent($('id_search_delete_keyword<{$id}>').value));
+			return false;
+		}
+	}
+</script>

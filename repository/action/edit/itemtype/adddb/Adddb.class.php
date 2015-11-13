@@ -1,9 +1,9 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Adddb.class.php 30197 2013-12-19 09:55:45Z rei_matsuura $
+// $Id: Adddb.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
-// Copyright (c) 2007 - 2008, National Institute of Informatics, 
+// Copyright (c) 2007 - 2008, National Institute of Informatics,
 // Research and Development Center for Scientific Information Resources
 //
 // This program is licensed under a Creative Commons BSD Licence
@@ -27,24 +27,20 @@ require_once WEBAPP_DIR. '/modules/repository/components/RepositorySearchTablePr
  */
 class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 {
-	// 使用コンポーネントを受け取るため
-	//var $session = null;
-	//var $db = null;
-	
 	// リクエストパラメタ
 	var $metadata_title = null;		// メタデータ項目名配列
 	var $metadata_type = null;		// メタデータタイプ配列
 	var $metadata_required = null;	// メタデータ必須フラグ列
 	var $metadata_disp = null;		// メタデータ一覧表示フラグ列
-	
+
 	// 2008/02/28
 	var $metadata_candidate = null;	// メタデータ選択候補配列
 	var $metadata_plural = null;	// メタデータ複数可否配列
 	var $metadata_newline = null;	// メタデータ改行指定配列
-	
+
 	// 2009/01/28
 	var $metadata_hidden = null;	// メタデータ非表示設定配列
-		
+
     /**
      * [[機能説明]]
      *
@@ -55,7 +51,7 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
     	try {
 	        //アクション初期化処理
 	        $result = $this->initAction();
-	        
+
 	        if ( $result === false ) {
 	            $exception = new RepositoryException( "ERR_MSG_xxx-xxx1", 001 );	//主メッセージとログIDを指定して例外を作成
 	            //$DetailMsg = null;                              //詳細メッセージ文字列作成
@@ -66,7 +62,7 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 	        }
 	    	// 注:このアクションに飛ぶ場合、全てのDBバリデートはすんでいるものとする。
 	    	// つまり、即座にレコードを追加できるものとする。
-	    	
+
 	    	//
 	    	// 準備処理, セッション情報の取得
 	    	//
@@ -86,53 +82,14 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 	    	// ユーザID取得
 	    	$user_id = $this->Session->getParameter("_user_id");
             $attrMultiID = array();
-	    	
+
 	    	//////////////////// 新規登録の場合 //////////////////////
 	    	if($this->Session->getParameter("item_type_edit_flag") == 0){
-		
+
 		    	//
 		    	// アイテムタイプIDを決める
 		    	//
 		    	$item_type_id = $this->Db->nextSeq("repository_item_type");
-		    	/*
-		    	while(1) {
-		    		/* 2008/03/06 クエリー変更
-					$count = $this->db->countExecute(
-						"repository_item_type",array("item_type_id" => $item_type_id)
-					);
-					if($count === false){
-						return 'error';
-					}
-		    	    if ($count == 0) {
-						break;
-		    		}
-					
-		    		$query = "SELECT * ".
-                     		 "FROM ". DATABASE_PREFIX ."repository_item_type ".
-                     		 "WHERE item_type_id = ?; ";
-		    		$params = null;
-		            $params[] = $item_type_id;
-            		//SELECT実行
-            		$result = $this->Db->execute($query, $params);
-            		if($result === false){
-		                //必要であればSQLエラー番号・メッセージ取得
-		                $errNo = $this->Db->ErrorNo();
-		                $errMsg = $this->Db->ErrorMsg();
-		                //エラー処理を行う
-		                //$exception = new RepositoryException( ERR_MSG_xxx-xxx1, xxx-xxx1 );	//主メッセージとログIDを指定して例外を作成
-		                //$DetailMsg = null;                              //詳細メッセージ文字列作成
-		                //sprintf( $DetailMsg, ERR_DETAIL_xxx-xxx1);
-		                //$exception->setDetailMsg( $DetailMsg );             //詳細メッセージ設定
-		                $this->failTrans();                                        //トランザクション失敗を設定(ROLLBACK)
-		                //throw $exception;
-		                return 'error';
-            		}
-            		if(!(isset($result[0]))){
-            			break;
-            		}
-		    		$item_type_id++;
-		    	}
-		    	*/
 			    $query = "INSERT INTO ". DATABASE_PREFIX ."repository_item_type ".
 			    		 "(item_type_id, item_type_name, item_type_short_name, ".
 			    		 "explanation, mapping_info, icon_name , icon_mime_type, icon_extension, icon, ".
@@ -162,7 +119,7 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 	            $params[] = $user_id;			// ins_user_id
 	            $params[] = $user_id;			// mod_user_id
 	            // user_idのString対応 2008/06/03 Y.Nakao --Start--
-	            //$params[] = 0;					// del_user_id  
+	            //$params[] = 0;					// del_user_id
 	            $params[] = "";					// del_user_id
 	            // user_idのString対応 2008/06.03 Y.Nakao --End--
 	            $params[] = $this->TransStartDate;	// ins_date
@@ -194,7 +151,7 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 		    		$ret = $this->Db->updateBlobFile(
 						'repository_item_type',
 						'icon',
-						$filePath . $icon_name, 
+						$filePath . $icon_name,
 						'item_type_id = '. $item_type_id,
 						'LONGBLOB'
 					);
@@ -217,20 +174,20 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 		    	}
 		    	// Mod fix a glitch with upload icon is deleted when back from repository_item_type_confirm 2012/02/16 T.Koyasu -end-
 				// アイコンがあればBLOBを登録 2008/07/22 Y.Nakao --end--
-						    	
+
 				//
 				// アイテムタイプ属性テーブル登録 (n個)
 				//
 				for($ii=0; $ii<$metadata_num; $ii++) {
 				    //
 					// アイテムタイプ属性IDを決める(本当は主キーなどいらんと思うが、何故か主キーの無いテーブルで登録がうまくいかない)
-					// 
+					//
 					$item_type_attr_id = 1;
 			    	while(1) {
 			    		/* 2008/03/06 クエリー変更
 						$count = $this->Db->countExecute(
 							"repository_item_attr_type",array("item_type_id" => $item_type_id, "attribute_id" => $item_type_attr_id)
-						);			    		
+						);
 						if($count === false){
 							return 'error';
 						}
@@ -263,16 +220,16 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
             			if(!(isset($result[0]))){
             				break;
             			}
-            			
+
 			    		$item_type_attr_id++;
 			    	}
-			    	$query = "INSERT INTO ". DATABASE_PREFIX ."repository_item_attr_type ". 
+			    	$query = "INSERT INTO ". DATABASE_PREFIX ."repository_item_attr_type ".
 			    			 "(item_type_id, attribute_id, show_order, ".
 			    			 " attribute_name, attribute_short_name, input_type, is_required, ".
 			    			 " plural_enable, line_feed_enable, list_view_enable, hidden, ".
-			    			 " junii2_mapping, dublin_core_mapping, lom_mapping, display_lang_type, ins_user_id, mod_user_id, ".
+			    			 " junii2_mapping, dublin_core_mapping, lom_mapping, lido_mapping, spase_mapping, display_lang_type, ins_user_id, mod_user_id, ".
 			    			 " del_user_id, ins_date, mod_date, del_date, is_delete) ".
-	                		 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
+	                		 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
 					$params = null;
 		            $params[] = $item_type_id;				// item_type_id
 		            $params[] = $ii+1;						// attribute_id
@@ -280,14 +237,16 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 		            $params[] = $this->metadata_title[$ii];	// attribute_name
 		            $params[] = $this->metadata_title[$ii];	// attribute_short_name
 		            $params[] = $this->metadata_type[$ii];	// input_type
-		            $params[] = $this->metadata_required[$ii];	// is_required
-		            $params[] = $this->metadata_plural[$ii];	// plural_enable
-		            $params[] = $this->metadata_newline[$ii];	// line_feed_enable
-		            $params[] = $this->metadata_disp[$ii];		// list_view_enable
-		            $params[] = $this->metadata_hidden[$ii];	// hidden
+		            $params[] = (int)$this->metadata_required[$ii];	// is_required
+		            $params[] = (int)$this->metadata_plural[$ii];	// plural_enable
+		            $params[] = (int)$this->metadata_newline[$ii];	// line_feed_enable
+		            $params[] = (int)$this->metadata_disp[$ii];		// list_view_enable
+		            $params[] = (int)$this->metadata_hidden[$ii];	// hidden
 		            $params[] = "";								// junii2_mapping
 		            $params[] = "";								// dublin_core_mapping
 		            $params[] = "";                             // lom_mapping
+		            $params[] = "";                             // lido_mapping
+		            $params[] = "";                             // spase_mapping
 		            $params[] = "";								// display_lang_type
 		            $params[] = $user_id;						// ins_user_id
 		            $params[] = $user_id;						// mod_user_id
@@ -300,7 +259,7 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 		            $params[] = 0;								// is_delete
 		            //INSERT実行
 		            $result = $this->Db->execute($query, $params);
-		            
+
 			    	// ↑ 2008/02/26
 				   	if ($result === false) {
 		                //必要であればSQLエラー番号・メッセージ取得
@@ -315,7 +274,7 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 		                $this->failTrans();                                 //トランザクション失敗を設定(ROLLBACK)
 		                throw $exception;
 			    	}
-			    	
+
 			    	// 選択候補のある属性の場合、アイテム属性入力候補テーブルに追加
 					if($this->metadata_candidate[$ii] != ""){
 						// データ有
@@ -370,13 +329,13 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 				                $this->failTrans();                                 //トランザクション失敗を設定(ROLLBACK)
 				                throw $exception;
 					    	}
-						}	
+						}
 					}
 					array_push($attrMultiID, $ii+1);
 		    	}
 		    	// エラーコード解除
 				$this->Session->removeParameter("error_code");
-				
+
 				//アクション終了処理
 				$result = $this->exitAction();     //トランザクションが成功していればCOMMITされる
 				if ( $result === false ) {
@@ -399,13 +358,13 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 		    	$this->Session->removeParameter("metadata_disp");	// メタデータ一覧表示フラグ削除
 		    	$this->Session->removeParameter("metadata_hidden");	// メタデータ非表示フラグ削除
 		    	$this->Session->removeParameter("metadata_num");	// アイテムメタデータ数を1に
-		    	
+
 		    	// Add id server connect check for "file_price" 2009/04/01 Y.Nakao --start--
 		        $this->Session->removeParameter("id_server");
 		        // Add id server connect check for "file_price" 2009/04/01 Y.Nakao --end--
-		    	
+
 		        $this->Session->setParameter("redirect_flg", "itemtype");	// Add update OK message 2009/01/23 A.Suzuki
-		        
+
 		        return 'redirect';
 //		    	return 'success_create';
 	    	}
@@ -418,7 +377,7 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 				}
 				// Sessionから、attrbute_id配列を取得
 				$attribute_id = $this->Session->getParameter("attribute_id");
-				
+
 				//////////////////// データ更新 ///////////////////////
 	    		//更新前に対象レコードをロックする。
 	            //最低限、更新日時（mod_date）のみ取得すれば良い。
@@ -474,7 +433,7 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 	            }
 	            // item_type更新
 	    		$query = "UPDATE ". DATABASE_PREFIX ."repository_item_type ".
-                    	 "SET item_type_name = ?, ". 
+                    	 "SET item_type_name = ?, ".
                     	 "mod_user_id = ?, ".
 						 "mod_date = ?, ".
 						 "is_delete = ? ";
@@ -510,7 +469,7 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 		            $params[] = "";					// icon(BLOB)変更ありはNULL
 	            }
                 // Mod fix a glitch with upload icon is deleted when back from repository_item_type_confirm 2012/02/16 T.Koyasu -end-
-	            
+
 				$params[] = $item_type_id;						// item_type_id
 	            //UPDATE実行
         	    $result = $this->Db->execute($query,$params);
@@ -536,7 +495,7 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 		    		$ret = $this->Db->updateBlobFile(
 						'repository_item_type',
 						'icon',
-						$filePath . $icon_name, 
+						$filePath . $icon_name,
 						'item_type_id = '. $item_type_id,
 						'LONGBLOB'
 					);
@@ -555,8 +514,8 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 		    	}
                 // Mod fix a glitch with upload icon is deleted when back from repository_item_type_confirm 2012/02/16 T.Koyasu -end-
 				// アイコンがあればBLOBを登録 2008/07/22 Y.Nakao --end--
-				
-	            
+
+
 	            //　アイテム属性タイプ更新
 				for($nCnt=0;$nCnt<$metadata_num;$nCnt++){
 					if($attribute_id[$nCnt] != -1){
@@ -579,14 +538,14 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 								 "attribute_id = ?; ";
 						$params = null;
 						$params[] = $this->metadata_type[$nCnt];		// input_type
-						$params[] = $this->metadata_required[$nCnt];	// is_required
-						$params[] = $this->metadata_disp[$nCnt];		//　list_view_enable
+						$params[] = (int)$this->metadata_required[$nCnt];	// is_required
+						$params[] = (int)$this->metadata_disp[$nCnt];		//　list_view_enable
 						$params[] = $this->metadata_title[$nCnt];		// attribute_name
 						$params[] = $this->metadata_title[$nCnt];		// attribute_short_name
 						$params[] = $count;								// show_order
-						$params[] = $this->metadata_newline[$nCnt];		// line_feed_enable
-						$params[] = $this->metadata_plural[$nCnt];		// plural_enable
-						$params[] = $this->metadata_hidden[$nCnt];		// hidden
+						$params[] = (int)$this->metadata_newline[$nCnt];		// line_feed_enable
+						$params[] = (int)$this->metadata_plural[$nCnt];		// plural_enable
+						$params[] = (int)$this->metadata_hidden[$nCnt];		// hidden
 						$params[] = $user_id;							// mod_user_id
 						$params[] = $this->TransStartDate;				// mod_date
 						$params[] = 0;									// is_delete
@@ -633,7 +592,7 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
                             $this->failTrans();
                             throw $exception;
                         }
-                        
+
                         // 更新された選択肢を新規登録
                         if($this->metadata_candidate[$nCnt] != "")
                         {
@@ -706,7 +665,7 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
                                     $params[] = "";                     // del_date
                                     $params[] = 0;                      // is_delete
                                 }
-                                // update or insert 
+                                // update or insert
                                 $result = $this->Db->execute($query, $params);
                                 if($result === false)
                                 {
@@ -751,7 +710,7 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 				    	}
 				    	//
 			   			// 必須、一覧表示チェックをDB登録用のデータに修正
-			   			// ""-> 0 , "on"->1に 
+			   			// ""-> 0 , "on"->1に
 			   			//
 			   			for($nn=0;$nn<count($this->metadata_required);$nn++){
 			   				if($this->metadata_required[$nn] == ""){
@@ -769,17 +728,17 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 			   					$this->metadata_disp[$nn] = 1;
 			   				}
 			   			}
-			   			
+
 			   			// 追加登録データ
-			   			$query = "INSERT INTO ". DATABASE_PREFIX ."repository_item_attr_type ". 
+			   			$query = "INSERT INTO ". DATABASE_PREFIX ."repository_item_attr_type ".
 			    			 "(item_type_id, attribute_id, show_order, ".
-			    			 " attribute_name, attribute_short_name, ". 
+			    			 " attribute_name, attribute_short_name, ".
 			    			 " input_type, is_required, ".
 			    			 " plural_enable, line_feed_enable, list_view_enable, hidden, ".
-			   				 " junii2_mapping, dublin_core_mapping, lom_mapping,".
+			   				 " junii2_mapping, dublin_core_mapping, lom_mapping, lido_mapping, spase_mapping, display_lang_type, ".
 			   				 " ins_user_id, mod_user_id, del_user_id, ".
 			   				 " ins_date, mod_date, del_date, is_delete) ".
-	                		 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
+	                		 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
 			   			$params = null;
 			            $params[] = $item_type_id;					// item_type_id
 			            $params[] = $attr_id;						// attribute_id
@@ -787,14 +746,17 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 			            $params[] = $this->metadata_title[$nCnt];	// attribute_name
 			            $params[] = $this->metadata_title[$nCnt];	// attribute_short_name
 			            $params[] = $this->metadata_type[$nCnt];	// input_type
-			            $params[] = $this->metadata_required[$nCnt];// is_required
-			            $params[] = $this->metadata_plural[$nCnt];	// plural_enable
+			            $params[] = (int)$this->metadata_required[$nCnt];// is_required
+			            $params[] = (int)$this->metadata_plural[$nCnt];	// plural_enable
 			            $params[] = 0;								// line_feed_enable
-			            $params[] = $this->metadata_disp[$nCnt];	// list_view_enable
-			            $params[] = $this->metadata_hidden[$nCnt];	// hidden
+			            $params[] = (int)$this->metadata_disp[$nCnt];	// list_view_enable
+			            $params[] = (int)$this->metadata_hidden[$nCnt];	// hidden
 			            $params[] = "";								// junii2_mapping
 			            $params[] = "";								// dublin_core_mapping
 			            $params[] = "";                             // lom_mapping
+			            $params[] = "";                             // lido_mapping
+			            $params[] = "";                             // spase_mapping
+    		            $params[] = "";								// display_lang_type
 			            $params[] = $user_id;						// ins_user_id
 			            $params[] = $user_id;						// mod_user_id
 			            // user_idのString対応 2008/06/03 Y.Nakao --Start--
@@ -806,7 +768,7 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 			            $params[] = 0;								// is_delete
 			            //INSERT実行
 			            $result = $this->Db->execute($query, $params);
-						
+
 						//　メタデータをアイテムタイプ属性テーブルに追加
 					   	if ($result === false) {
 			                //必要であればSQLエラー番号・メッセージ取得
@@ -821,7 +783,7 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 			                $this->failTrans();                                 //トランザクション失敗を設定(ROLLBACK)
 			                throw $exception;
 				    	}
-				    	
+
 				    	// 選択候補のある属性の場合、アイテム属性入力候補テーブルに追加
 						if($this->metadata_candidate[$nCnt] != " "){
 							// データ有
@@ -899,8 +861,8 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 					$params = null;
 					$params[] = $user_id;				// del_user_id
 					$params[] = $this->TransStartDate;	// del_date
-					$params[] = $user_id;				// mod_user_id  
-					$params[] = $this->TransStartDate;	// mod_date 
+					$params[] = $user_id;				// mod_user_id
+					$params[] = $this->TransStartDate;	// mod_date
 					$params[] = 1;						// is_delete
 					$params[] = $item_type_id;			// item_type_id
 					$params[] = $del_attribute_id[$nCnt];	// attribute_id
@@ -933,8 +895,8 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
                     $params = null;
                     $params[] = $user_id;               // del_user_id
                     $params[] = $this->TransStartDate;  // del_date
-                    $params[] = $user_id;               // mod_user_id  
-                    $params[] = $this->TransStartDate;  // mod_date 
+                    $params[] = $user_id;               // mod_user_id
+                    $params[] = $this->TransStartDate;  // mod_date
                     $params[] = 1;                      // is_delete
                     $params[] = $item_type_id;
                     $params[] = $del_attribute_id[$nCnt];
@@ -963,7 +925,7 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
                 // Add detail search 2013/11/25 K.Matsuo --end--
 				// エラーコード解除
 				$this->Session->removeParameter("error_code");
-				
+
 				//アクション終了処理
 				$result = $this->exitAction();     //トランザクションが成功していればCOMMITされる
 				if ( $result === false ) {
@@ -984,12 +946,12 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 		    	$this->Session->removeParameter("metadata_disp");	// メタデータ一覧表示フラグ削除
 		    	$this->Session->removeParameter("metadata_hidden");	// メタデータ非表示フラグ削除
 		    	$this->Session->removeParameter("metadata_num");	// アイテムメタデータ数を1に
-		    	
+
 		    	$this->Session->setParameter("redirect_flg", "itemtype");	// Add update OK message 2009/01/23 A.Suzuki
 				return 'redirect';
 //		    	return 'success_edit';
 	    	}
-	    	
+
 	    	// 2008/03/03
 	    }
 		catch ( RepositoryException $Exception) {
@@ -1004,12 +966,12 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
 	        */
         	//アクション終了処理
       		$this->exitAction();                   //トランザクションが失敗していればROLLBACKされる
-        
+
 	        //異常終了
     	    return "error";
 		}
     }
-    
+
     // Add multi language K.Matsuo 2013/07/24 --start--
     /**
      * Add Multi language to DB
@@ -1038,7 +1000,7 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
         $params[] = $itemTypeId;
         $params[] = 0;
         $result = $this->Db->execute($query,$params);
-        
+
         if($result === false){
             //必要であればSQLエラー番号・メッセージ取得
             $errMsg = $this->Db->ErrorMsg();
@@ -1086,7 +1048,7 @@ class Repository_Action_Edit_Itemtype_Adddb extends RepositoryAction
         if($cont != 0){
             $result = $this->Db->execute($query,$params);
         }
-        
+
         if($result === false){
             //必要であればSQLエラー番号・メッセージ取得
             $errMsg = $this->Db->ErrorMsg();

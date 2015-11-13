@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Export.class.php 22784 2013-05-22 02:59:13Z yuko_nakao $
+// $Id: Export.class.php 56708 2015-08-19 13:08:03Z tomohiro_ichikawa $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -54,17 +54,11 @@ class Repository_Action_Edit_Itemtype_Export extends RepositoryAction
 			$export_common = new ExportCommon($this->Db, $this->Session, $this->TransStartDate);
 			
 			////////// mkdir //////////
-			//$date = date("YmdHis");
-			$query = "SELECT DATE_FORMAT(NOW(), '%Y%m%d%H%i%s') AS now_date;";
-			$result = $this->Db->execute($query);
-			if($result === false || count($result) != 1){
-				return false;
-			}
-			$date = $result[0]['now_date'];
-			
-			$tmp_dir = WEBAPP_DIR."/uploads/repository/_".$date;
-			mkdir( $tmp_dir, 0777 );
-
+            $this->infoLog("businessWorkdirectory", __FILE__, __CLASS__, __LINE__);
+            $businessWorkdirectory = BusinessFactory::getFactory()->getBusiness('businessWorkdirectory');
+            $tmp_dir = $businessWorkdirectory->create();
+            $tmp_dir = substr($tmp_dir, 0, -1);
+            
 			////////// make xml text & icon file ///////////
 			$buf = "<?xml version=\"1.0\"?>\n" .
 					"<export>\n";

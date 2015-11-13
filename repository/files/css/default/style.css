@@ -3,7 +3,7 @@
 /**
 // --------------------------------------------------------------------
 //
-// $Id: style.css 31729 2014-02-18 00:32:14Z tomohiro_ichikawa $
+// $Id: style.css 49367 2015-03-05 00:45:00Z shota_suzuki $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics,
 // Research and Development Center for Scientific Information Resources
@@ -780,12 +780,12 @@ a.white:hover { color:#fff !important; }
 .btn_blue:hover,
 .btn_back,
 .btn_back:hover,
-.btn_next,
-.btn_next:hover,
 .btn_upload,
 .btn_upload:hover,
 .btn_delete,
-.btn_delete:hover {
+.btn_delete:hover,
+.btn_delete_doi,
+.btn_delete_doi:hover {
 	margin:6px 3px;
 	padding:5px 10px 5px 25px;
 	background-color:#555;
@@ -796,6 +796,23 @@ a.white:hover { color:#fff !important; }
 	border-width:1px;
 	color:#fff;
 	cursor:pointer;
+	font-weight:bold;
+    text-decoration: none;
+    line-height:1.5;
+}
+
+.btn_next,
+.btn_next:hover {
+    margin:6px 3px;
+    padding:5px 25px 5px 10px;
+    background-color:#555;
+    background-position:right 0;
+    background-repeat:no-repeat;
+    border-color:#868686 #555 #555 #868686;
+    border-style:solid;
+    border-width:1px;
+    color:#fff;
+    cursor:pointer;
 	font-weight:bold;
     text-decoration: none;
     line-height:1.5;
@@ -860,6 +877,19 @@ a.white:hover { color:#fff !important; }
 	border-color:#660404 #e18e8e #e18e8e #660404;
 }
 
+.btn_delete_doi,
+.btn_delete_doi:hover {
+	background-repeat:repeat-x;
+	background-color:#9d0606;
+	border-color:#e18e8e #660404 #660404 #e18e8e;
+	background-image:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/btn_delete_long.png");
+}
+.btn_delete_doi:hover {
+	background-color:#d55f5f;
+	background-image:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/btn_delete_long_hover.png");
+	border-color:#660404 #e18e8e #e18e8e #660404;
+}
+
 .btn_back {
 	background-image:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/btn_back.gif");
 	font-size:96%;
@@ -886,7 +916,8 @@ a.white:hover { color:#fff !important; }
 
 .btn_blue[disabled], .btn_blue[disabled]:hover,
 .btn_white[disabled], .btn_white[disabled]:hover,
-.btn_delete[disabled], .btn_delete[disabled]:hover {
+.btn_delete[disabled], .btn_delete[disabled]:hover,
+.btn_delete_doi[disabled], .btn_delete_doi[disabled]:hover {
 	background-image:url("<{$smarty.const.CORE_BASE_URL}>/images/repository/default/btn_white.gif");
 	color:#ccc !important;
 	border-color:#f0f0f0 #d5d5d5 #d5d5d5 #f0f0f0;

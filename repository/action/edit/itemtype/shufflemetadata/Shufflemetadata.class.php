@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Shufflemetadata.class.php 24559 2013-08-02 00:47:17Z koji_matsuo $
+// $Id: Shufflemetadata.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -12,6 +12,7 @@
 // --------------------------------------------------------------------
 
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.php';
 
 /**
  * repositoryモジュール アイテムタイプ作成 編集画面でメタデータ追入れ替えクリック時に呼ばれるアクション
@@ -23,10 +24,9 @@
  * @project     NetCommons Project, supported by National Institute of Informatics
  * @access      public
  */
-class Repository_Action_Edit_Itemtype_Shufflemetadata
+class Repository_Action_Edit_Itemtype_Shufflemetadata extends RepositoryAction
 {
 	// 使用コンポーネントを受け取るため
-	var $session = null;
 	var $request = null;
     // アイテムタイプ名保持用変数　追加 2009/12/10 K.Ando --start--
 	//var $itemtype_name = null;		//前画面で入力したアイテムタイプ名(新規作成時)
@@ -53,7 +53,7 @@ class Repository_Action_Edit_Itemtype_Shufflemetadata
      *
      * @access  public
      */
-    function execute()
+    function executeApp()
     {
     	$metadata_title = $this->metadata_title;
     	$metadata_type = $this->metadata_type;
@@ -63,7 +63,7 @@ class Repository_Action_Edit_Itemtype_Shufflemetadata
     	$metadata_plural = $this->metadata_plural;
     	$metadata_newline = $this->metadata_newline;
     	$metadata_hidden = $this->metadata_hidden;
-        $array_metadata_multi_title = $this->session->getParameter("metadata_multi_title");
+        $array_metadata_multi_title = $this->Session->getParameter("metadata_multi_title");
     	
 	    // チェックボックスはチェックの入ったnameのvalueのみが送信されるため、データを調整
 	   	$array_req = array();
@@ -153,13 +153,13 @@ class Repository_Action_Edit_Itemtype_Shufflemetadata
     				$array_metadata_multi_title[$this->shuffle_idx-1] = $tmp;
                     // アイテムタイプ項目名多言語 2013/7/24 K.Matsuo --end--
     				// 既存編集の場合
-    				if($this->session->getParameter("item_type_edit_flag") == 1){
+    				if($this->Session->getParameter("item_type_edit_flag") == 1){
     					// attribute_id配列入れ替え
-    					$array_attri_id = $this->session->getParameter("attribute_id");
+    					$array_attri_id = $this->Session->getParameter("attribute_id");
 	    				$tmp = $array_attri_id[$this->shuffle_idx];
 	    				$array_attri_id[$this->shuffle_idx] = $array_attri_id[$this->shuffle_idx-1];
 	    				$array_attri_id[$this->shuffle_idx-1] = $tmp;
-	    				$this->session->setParameter("attribute_id",$array_attri_id);
+	    				$this->Session->setParameter("attribute_id",$array_attri_id);
     				}
     				break;
     			}    			
@@ -208,13 +208,13 @@ class Repository_Action_Edit_Itemtype_Shufflemetadata
     				$array_metadata_multi_title[$this->shuffle_idx+1] = $tmp;
                     // アイテムタイプ項目名多言語 2013/7/24 K.Matsuo --end--
     				// 既存編集の場合
-    				if($this->session->getParameter("item_type_edit_flag") == 1){
+    				if($this->Session->getParameter("item_type_edit_flag") == 1){
     					// attribute_id配列入れ替え
-    					$array_attri_id = $this->session->getParameter("attribute_id");
+    					$array_attri_id = $this->Session->getParameter("attribute_id");
 	    				$tmp = $array_attri_id[$this->shuffle_idx];
 	    				$array_attri_id[$this->shuffle_idx] = $array_attri_id[$this->shuffle_idx+1];
 	    				$array_attri_id[$this->shuffle_idx+1] = $tmp;
-	    				$this->session->setParameter("attribute_id",$array_attri_id);
+	    				$this->Session->setParameter("attribute_id",$array_attri_id);
     				}
     				break;
     			}    			
@@ -246,29 +246,29 @@ class Repository_Action_Edit_Itemtype_Shufflemetadata
     		}
     	}
     	
-		// sessionの保存
+		// Sessionの保存
 		// metadata_titleをまとめて配列でセッションに保存
-        $this->session->setParameter("metadata_title", $array_title);
+        $this->Session->setParameter("metadata_title", $array_title);
 	   	// metadata_typeをまとめて配列でセッションに保存
-	   	$this->session->setParameter("metadata_type", $metadata_type);
+	   	$this->Session->setParameter("metadata_type", $metadata_type);
 	   	// 選択肢をまとめて配列でセッションに保存
-	   	$this->session->setParameter("metadata_candidate",$array_candidate);
+	   	$this->Session->setParameter("metadata_candidate",$array_candidate);
     	// 必須チェック
-		$this->session->setParameter("metadata_required", $array_req);
+		$this->Session->setParameter("metadata_required", $array_req);
 		// 一覧表示チェック
-	   	$this->session->setParameter("metadata_disp", $array_dis);
+	   	$this->Session->setParameter("metadata_disp", $array_dis);
 	   	// 複数可否チェック
-	   	$this->session->setParameter("metadata_plural", $array_plu);
+	   	$this->Session->setParameter("metadata_plural", $array_plu);
 	   	// 改行指定チェック
-	   	$this->session->setParameter("metadata_newline", $array_newline);
+	   	$this->Session->setParameter("metadata_newline", $array_newline);
 	   	// 非表示指定チェック
-	   	$this->session->setParameter("metadata_hidden", $array_hidden);
+	   	$this->Session->setParameter("metadata_hidden", $array_hidden);
     	// アイテムタイプ名保存処理　追加 2009/12/10 K.Ando --start--
-    	//$this->session->setParameter("itemtype_name", $this->item_type_name);
-    	$this->session->setParameter("item_type_name", $this->item_type_name);
+    	//$this->Session->setParameter("itemtype_name", $this->item_type_name);
+    	$this->Session->setParameter("item_type_name", $this->item_type_name);
     	// アイテムタイプ名保存処理　追加 2009/12/10 K.Ando --end--	   	
     	// アイテムタイプ項目名多言語 2013/7/24 K.Matsuo --start--
-        $this->session->setParameter("metadata_multi_title", $array_metadata_multi_title);
+        $this->Session->setParameter("metadata_multi_title", $array_metadata_multi_title);
     	// アイテムタイプ項目名多言語 2013/7/24 K.Matsuo --end--
 	   	return 'success';
 		

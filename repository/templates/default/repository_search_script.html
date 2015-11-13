@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: repository_search_script.html 43295 2014-10-28 11:06:42Z tomohiro_ichikawa $          -->
+<!--// $Id: repository_search_script.html 47574 2015-02-02 07:33:54Z tomohiro_ichikawa $          -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -9,27 +9,6 @@
 <!--// http://creativecommons.org/licenses/BSD/                            -->
 <!--//                                                                     -->
 <!--// ---------------------------------------------------------------------->
-<{* for Author Search --start-- *}>
-<script class="nc_script" type="text/javascript">
-	redirectAuthorSearch<{$id}> = function(authorLinkId) {
-		var elm = $(authorLinkId);
-		var keyword = encodeURIComponent(elm.text);
-		keyword = keyword.replace("%C2%A0", " ");
-		if(keyword != "undefined" && keyword != null && keyword != "")
-		{
-			var sort_order = 0;
-			sort_order = "<{$smarty.session.sort_order}>";
-		    location.href = "<{$smarty.const.BASE_URL}>" + "/?action=pages_view_main&active_action=repository_view_main_item_snippet"
-		    				+ "&creator=" + keyword
-		    				+ "&count=" + "<{$smarty.session.list_view_num}>"
-		    				+ "&order=" + sort_order
-		    				+ "&pn=1"
-	    					+ "&page_id=<{$page_id}>&block_id=<{$block_id}>";
-		}
-		return false;
-	}
-</script>
-<{* for Author Search --end-- *}>
 <script class="nc_script" type="text/javascript">
 	redirctSearchKeyword<{$id}> = function() {
         <{* Bug Fix WEKO-2014-042 2014/07/18 T.Koyasu --start-- *}>

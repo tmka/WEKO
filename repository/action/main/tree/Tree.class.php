@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Tree.class.php 42844 2014-10-10 06:27:30Z yuko_nakao $
+// $Id: Tree.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics,
 // Research and Development Center for Scientific Information Resources
@@ -400,15 +400,15 @@ class Repository_Action_Main_Tree extends RepositoryAction
                     $tree_html .= "</div>";
                 }
             }
-            if($this->sel_mode == ""){
-                // get root open tree data
-                $view_tree_html = "";
-                if(isset($tmpArray[0]["session_html"]))
-                {
-                    $view_tree_html = str_replace("'", "\'", $tmpArray[0]["session_html"]);
-                }
-                $this->Session->setParameter("view_tree_html", $view_tree_html);
-            }
+//            if($this->sel_mode == ""){
+//                // get root open tree data
+//                $view_tree_html = "";
+//                if(isset($tmpArray[0]["session_html"]))
+//                {
+//                    $view_tree_html = str_replace("'", "\'", $tmpArray[0]["session_html"]);
+//                }
+//                $this->Session->setParameter("view_tree_html", $view_tree_html);
+//            }
 
         }
         ///////////////////////////////
@@ -459,8 +459,8 @@ class Repository_Action_Main_Tree extends RepositoryAction
     function getIndexData($id){
         // get click node data for make html
         $query = "SELECT * FROM ". DATABASE_PREFIX ."repository_index ".
-                 "WHERE index_id = '". $id ."' AND ".
-                 "is_delete = '0'; ";
+                 "WHERE index_id = ". $id ." AND ".
+                 "is_delete = 0; ";
         $result = $this->Db->execute($query);
         if($result === false || count($result)==0) {
             return "";
@@ -619,8 +619,8 @@ class Repository_Action_Main_Tree extends RepositoryAction
      */
     function checkPublic($idx_id){
         $query = "SELECT index_id FROM ". DATABASE_PREFIX ."repository_index ".
-                " WHERE index_id = '".$idx_id."' ".
-                " AND `public_state` = '1' ".
+                " WHERE index_id = ".$idx_id." ".
+                " AND `public_state` = 1 ".
                 //" AND `pub_date` <= '".date('Y-m-d 00:00:00.000',mktime())."'; ";
                 " AND `pub_date` <= NOW() ".
                 " AND `owner_user_id` = '';";   // Add not show privateTree K.Matsuo 2013/04/10

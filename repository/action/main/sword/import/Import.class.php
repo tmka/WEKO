@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Import.class.php 42307 2014-09-29 06:18:07Z tomohiro_ichikawa $
+// $Id: Import.class.php 58647 2015-10-10 08:13:31Z tatsuya_koyasu $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics,
 // Research and Development Center for Scientific Information Resources
@@ -20,6 +20,8 @@ require_once WEBAPP_DIR. '/components/mail/Main.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryIndexManager.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryIndexAuthorityManager.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryOutputFilter.class.php';
+require_once WEBAPP_DIR. '/modules/repository/components/util/ZipUtility.class.php';
+
 
 /**
  * **********************************************
@@ -96,6 +98,10 @@ class Repository_Action_Main_Sword_Import extends RepositoryAction
     function execute()
     {
         try {
+            // Add suppleContentsEntry  Y.Yamazawa --start-- 2015/04/01 --start--
+            $this->setLangResource();
+            // Add suppleContentsEntry  Y.Yamazawa --end-- 2015/04/01 --end--
+
             // Create log file
             if($this->isCreateLog)
             {
@@ -531,7 +537,59 @@ class Repository_Action_Main_Sword_Import extends RepositoryAction
                 $this->exitAction();
                 exit();
             }
+            // check itemtype authority
+            // 権限IDを取得する
+            $query = "SELECT role_authority_id ".
+                     "FROM ".DATABASE_PREFIX. "users ".
+                     "WHERE user_id = ? ;";
+            $params = array();
+            $params[] = $this->Session->getParameter("_user_id");
+            $role_auth = $this->Db->execute($query, $params);
+            // ルーム権限を取得する
+            $room_auth = $this->getRoomAuthorityID($this->Session->getParameter("_user_id"));
+            // アイテムタイプIDリストを作成する
+            $item_type_id_list = array();
+            for($ii = 0; $ii < count($item_type_info); $ii++) {
+                $item_type_id_list[] = $item_type_info[$ii]["item_type_id"];
+            }
+            $result = $import_common->canUseItemtype($item_type_id_list, $role_auth[0]["role_authority_id"], $room_auth);
+            // アイテムタイプ使用チェック結果を確認する
+            $error_list = array();
+            $error_cnt = 0;
+            for($ii = 0; $ii < count($result); $ii++) {
+                if($result[$ii] == false) {
+                    // タイトル設定
+                    if(strlen($array_item_data["item"][$ii]["item_array"][0]["TITLE"]) > 0) {
+                        $title = $error_list[$error_cnt]["title"] = $array_item_data["item"][$ii]["item_array"][0]["TITLE"]; 
+                    } else {
+                        $title = $error_list[$error_cnt]["title"] = $array_item_data["item"][$ii]["item_array"][0]["TITLE_ENGLISH"]; 
+                    }
+                    // エラー情報
+                    $error_list[$error_cnt] = new DetailErrorInfo(-1,                                                        // item id
+                                                                  $title,                                                    // title
+                                                                  "You do not have permission to use the item type",         // error
+                                                                  "",                                                        // attr name
+                                                                  $item_type_info[$ii]["item_type_name"],                    // input value
+                                                                  "",                                                        // regist value
+                                                                  20                                                         // error number
+                                                                  );
+                    $error_cnt++;
+                }
+            }
+            if(count($error_list) > 0){
+                $this->outputError("ErrorXML", "ERROR XML : User do not have permission to use the item type.", $error_list);
+                $this->removeDirectory($tmp_dir);
+                if(isset($this->logFh))
+                {
+                    fwrite($this->logFh, "ERROR XML : User do not have permission to use the item type. (".date("Y/m/d H:i:s").")\n");
 
+                    fclose($this->logFh);
+                }
+                $this->failTrans();
+                $this->exitAction();
+                exit();
+            }
+            
             ////////////////////////////////////////
             // insert item
             ////////////////////////////////////////
@@ -549,6 +607,7 @@ class Repository_Action_Main_Sword_Import extends RepositoryAction
             for($nCnt=0;$nCnt<count($array_item_data['item']);$nCnt++){
                 // insert 1 item
                 $msg = "";
+                $warningMsg = "";
                 $ret = $import_common->itemEntry($array_item_data['item'][$nCnt],
                                                 $tmp_dir,
                                                 $array_item,
@@ -557,7 +616,8 @@ class Repository_Action_Main_Sword_Import extends RepositoryAction
                                                 $array_item_data['item_type'][$nCnt],
                                                 $msg,
                                                 $ins_item_id,
-                                                $uri);
+                                                $uri, 
+                                                $warningMsg);
                 if($ret === false){
                     $this->outputError("ErrorInsertItem", $msg);
                     $this->removeDirectory($tmp_dir);
@@ -571,8 +631,13 @@ class Repository_Action_Main_Sword_Import extends RepositoryAction
                     $this->exitAction();
                     exit();
                 }
-
-                array_push($error_msg, $msg);
+                
+                if(strlen($warningMsg) > 0){
+                    array_push($error_msg, $warningMsg);
+                } else {
+                    array_push($error_msg, $msg);
+                }
+                
                 if($start_item_id == ""){
                     $start_item_id = $ins_item_id;
                 }
@@ -696,10 +761,25 @@ class Repository_Action_Main_Sword_Import extends RepositoryAction
                 if(isset($this->logFh))
                 {
                     fwrite($this->logFh, "Check Point 12-A1: Before send ReviewMail. (".date("Y/m/d H:i:s").")\n");
-                    fwrite($this->logFh, "  email: ".$users["email"]."\n");
-                    fwrite($this->logFh, "  handle: ".$users["handle"]."\n");
-                    fwrite($this->logFh, "  type: ".$users["type"]."\n");
-                    fwrite($this->logFh, "  lang_dirname: ".$users["lang_dirname"]."\n");
+                    foreach ($users as $user)
+                    {
+                        if(isset($user))
+                        {
+                            fwrite($this->logFh, "  email: ".$user["email"]."\n");
+                        }
+                        if(isset($users["handle"]))
+                        {
+                            fwrite($this->logFh, "  handle: ".$users["handle"]."\n");
+                        }
+                        if(isset($users["type"]))
+                        {
+                            fwrite($this->logFh, "  type: ".$users["type"]."\n");
+                        }
+                        if(isset($users["lang_dirname"]))
+                        {
+                            fwrite($this->logFh, "  lang_dirname: ".$users["lang_dirname"]."\n");
+                        }
+                    }
                 }
                 // ---------------------------------------------
                 // 送信先を設定
@@ -742,25 +822,10 @@ class Repository_Action_Main_Sword_Import extends RepositoryAction
                 fwrite($this->logFh, "  start_item_id: ".$start_item_id."\n");
                 fwrite($this->logFh, "  end_item_id: ".$end_item_id."\n");
             }
-            // header
-            header("Content-Type: text/xml; charset=utf-8");
-            // XML
-            $ret_xml = '<?xml version="1.0" encoding="UTF-8" ?>';
-            $ret_xml .= '<result>';
-            $ret_xml .= '<status>success</status>';
-            $ret_xml .= '<start_id>'.$start_item_id.'</start_id>';
-            $ret_xml .= '<end_id>'.$end_item_id.'</end_id>';
-            // detail uri list
-            for($ii=0; $ii<count($detail_uri); $ii++){
-                $ret_xml .= '<contents_uri>'.htmlspecialchars($detail_uri[$ii], ENT_QUOTES, 'UTF-8').'</contents_uri>';
-                if(isset($this->logFh))
-                {
-                    fwrite($this->logFh, "  contents_uri: ".$detail_uri[$ii]."\n");
-                }
-            }
-            $ret_xml .= '</result>';
 
-            print $ret_xml;
+            // Update suppleContentsEntry Y.Yamazawa --start-- 2015/03/24 --start--
+            $this->outputSuccess($detail_uri,$start_item_id,$end_item_id,$error_msg);
+            // Update suppleContentsEntry Y.Yamazawa --end-- 2015/03/24 --end--
 
             if(isset($this->logFh))
             {
@@ -786,7 +851,7 @@ class Repository_Action_Main_Sword_Import extends RepositoryAction
     /*
      * zip file extract
      */
-    function extraction($tmp_file){
+    private function extraction($tmp_file){
 
         // check file kind
         //if($tmp_file != "zip"){
@@ -800,17 +865,19 @@ class Repository_Action_Main_Sword_Import extends RepositoryAction
         }
 
         // make dir for extract
-        $dir = $dir_path . $tmp_file;
-        if(file_exists($dir)){
-            $this->removeDirectory($dir);
-        }
-        mkdir($dir, 0777);
+        $this->infoLog("businessWorkdirectory", __FILE__, __CLASS__, __LINE__);
+        $businessWorkdirectory = BusinessFactory::getFactory()->getBusiness('businessWorkdirectory');
+        $dir = $businessWorkdirectory->create();
+        $dir = substr($dir, 0, -1);
 
+        // Update SuppleContentsEntry Y.Yamazawa 2015/04/02 --satrt--
         // extract zip file
-        File_Archive::extract(
-        File_Archive::read($file_path . "/"),
-        File_Archive::appender($dir)
-        );
+        $result = Repository_Components_Util_ZipUtility::extract($file_path, $dir);
+        if($result === false){
+            $this->errorLog("Not found zip file. File name : ".$tmp_file.".zip", __FILE__, __CLASS__, __LINE__);
+            return false;
+        }
+        // Update SuppleContentsEntry Y.Yamazawa 2015/04/02 --end--
 
         // delete upload file
         if($this->deleteUploadFile)
@@ -822,54 +889,33 @@ class Repository_Action_Main_Sword_Import extends RepositoryAction
     }
 
     /**
-     * get New Index ID
-     *
-     * transplant from getNewId function in tree_repository.js
-     *
+     * エラー内容をXML出力
+     * @param エラーステータス $error_msg string
+     * @param エラーに応じたサマリー $summary string
+     * @param 区切で登録アイテムごとのエラー情報 $error_list array
      */
-    function getNewIndexID(){
-        // get ID list
-        $query = "SELECT index_id FROM ". DATABASE_PREFIX ."repository_index; ";
-        $result = $this->Db->execute($query);
-        if($result == false){
-            return "";
-        }
-
-        $cnt_id = 1;
-        $len = count($result);
-        for ( $ii=0; $ii<$len+2; $ii++ ) {
-            $flag=0;
-            for ( $jj=0; $jj<$len; $jj++ ) {
-                $node_id = $result[$jj]["index_id"];
-                if ( $node_id == $cnt_id )
-                {
-                    $flag = 1;
-                    break;
-                }
-            }
-            if ($flag == 0) {
-                return $cnt_id;
-            }
-            $cnt_id++;
-        }
-        return -1;
-    }
-
-    /**
-     * output error xml
-     */
-    function outputError($error_msg, $summary, $error_list=array()){
+    private function outputError($error_msg, $summary, $error_list=array()){
+        // Update suppleContentsEntry Y.Yamazawa --start-- 2015/03/24 --start--
         // header
         header("Content-Type: text/xml; charset=utf-8");
+        // -------------------------
         // XML
-        $ret_xml = '<?xml version="1.0" encoding="UTF-8" ?>';
-        $ret_xml .= '<result>';
-        $ret_xml .= '<status>'. $error_msg .'</status>';
-        $ret_xml .= '<summary>'. $summary .'</summary>';
-        // Add for error check 2014/09/12 T.Ichikawa --start--
+        // -------------------------
+        $ret_xml = '<?xml version="1.0" encoding="UTF-8" ?>'."\n";
+        $ret_xml .= '<sword:error xmlns="http://www.w3.org/2005/Atom" xmlns:sword="http://purl.org/net/sword/" xmlns:arxiv="http://arxiv.org/schemas/atom" href="http://example.org/errors/BadManifest">'."\n";
+        $ret_xml .= '<title>ERROR</title>'."\n";
+        $ret_xml .= '<version>2.0</version>'."\n";
+        $ret_xml .= '<updated>2013-08-20JST16:46:0432400</updated>'."\n";
+        $ret_xml .= '<author>'."\n";
+        $ret_xml .= '<name></name>'."\n";
+        $ret_xml .= '<email></email>'."\n";
+        $ret_xml .= '</author>'."\n";
+        $ret_xml .= '<source>'."\n";
+        $ret_xml .= '<generator uri="'.BASE_URL.'/weko/sword/deposit.php" version="2"/>'."\n";
+        $ret_xml .= '</source>'."\n";
+        $ret_xml .= '<sword:treatment>Deposited items(zip) will be treated as WEKO import file which contains any WEKO contents information, and will be imported to WEKO.</sword:treatment>'."\n";
+        $ret_xml .= '<summary>'.$error_msg.'</summary>'."\n";
         if(count($error_list) > 0) {
-            // sword treatment
-            $ret_xml .= '<treatment>XML Analysis Failed</treatment>';
             // sword description
             $description = "";
             for($ii = 0; $ii < count($error_list); $ii++) {
@@ -878,15 +924,107 @@ class Repository_Action_Main_Sword_Import extends RepositoryAction
                     $description .= "at Item ID ".$error_list[$ii]->item_id.";";
                 }
             }
-            $ret_xml .= '<description>'.$description.'</description>';
+            $ret_xml .= '<sword:verboseDescription>'.$description.'</sword:verboseDescription>'."\n";
         }
-        // Add for error check 2014/09/12 T.Ichikawa --end--
-        $ret_xml .= '</result>';
-
+        $ret_xml .= '</sword:error>';
+        // Update suppleContentsEntry Y.Yamazawa --end-- 2015/03/24 --end--
         print $ret_xml;
 
         return;
     }
+
+    // Add suppleContentsEntry Y.Yamazawa --start-- 2015/03/24 --start--
+    /**
+     * アイテム登録成功時のXML作成
+     * @param アイテムID（配列） $item_id_array
+     * @param 最初に登録したアイテムのアイテムID $start_item_id string
+     * @param 最後に登録したアイテムのアイテムID $end_item_id string
+     * @param 警告メッセージ（配列） $warning_msg array
+     */
+    private function outputSuccess($detail_uri,$start_item_id,$end_item_id,$warning_msg)
+    {
+        // header
+        header("Content-Type: text/xml; charset=utf-8");
+        // -------------------------
+        // XML
+        // -------------------------
+        $ret_xml = '<?xml version="1.0" encoding="UTF-8" ?>'."\n";
+        $ret_xml .= '<entry xmlns="http://www.w3.org/2005/Atom" xmlns:sword="http://purl.org/net/sword/">'."\n";
+        $ret_xml .= '<title>Repository Review</title>'."\n";
+        $ret_xml .= '<version>2.0</version>'."\n";
+        $ret_xml .= '<id>'.$start_item_id.'-'.$end_item_id.'</id>'."\n";
+        $ret_xml .= '<updated>2013-08-20JST16:46:0432400</updated>'."\n";
+        $ret_xml .= '<author>'."\n";
+
+        // ユーザーIDの取得
+        $user_id = $this->Session->getParameter("_user_id");
+        $ret_xml .= '<name>'.$user_id.'</name>'."\n";
+
+        // Emailアドレスの取得
+        $result = $this->emailAddress($user_id, $login_email);
+        if($result === false){
+            $login_email = "";
+        }
+
+        $ret_xml .= '<email>'.$login_email.'</email>'."\n";
+
+        $ret_xml .= '</author>'."\n";
+
+        // アイテム詳細画面のURLと警告のメッセージ
+        for($ii = 0; $ii < count($detail_uri); $ii++) {
+            $msg = "";
+            if(isset($warning_msg[$ii])){
+                $msg = $warning_msg[$ii];
+            }
+            $ret_xml .= '<content type="text/html" src="'.htmlspecialchars($detail_uri[$ii], ENT_QUOTES, 'UTF-8').'" message="'.$msg.'"/>'."\n";
+        }
+
+        $ret_xml .= '<source>'."\n";
+        $ret_xml .= '<generator uri="'.BASE_URL.'/weko/sword/deposit.php" version="2"/>'."\n";
+        $ret_xml .= '</source>'."\n";
+        $ret_xml .= '<sword:treatment>Deposited items(zip) will be treated as WEKO import file which contains any WEKO contents information, and will be imported to WEKO.</sword:treatment>'."\n";
+        $ret_xml .= '<sword:formatNamespace>WEKO</sword:formatNamespace>'."\n";
+        $ret_xml .= '<sword:userAgent>SWORD Client for WEKO V2.0</sword:userAgent>'."\n";
+        $ret_xml .= '</entry>';
+
+        print $ret_xml;
+    }
+    // Add suppleContentsEntry Y.Yamazawa --end-- 2015/03/24 --end--
+
+    // Add suppleContentsEntry Y.Yamazawa --start-- 2015/03/24 --start--
+    /**
+     * Emailアドレスの取得
+     *
+     * @param ユーザーID $user_id string
+     * @param メールアドレス $email string
+     * @return boolean
+     */
+    private function emailAddress($user_id, &$email){
+        // init
+        $email = "";
+        // SQL query for get email address from user_id
+        $query = "SELECT links.content ".
+                "FROM ". DATABASE_PREFIX ."items AS items, ".
+                DATABASE_PREFIX ."users_items_link AS links ".
+                "WHERE items.type = 'email' ".
+                "  AND items.item_id = links.item_id ".
+                "  AND links.user_id = ?; ";
+        // get login user's email address
+        $params = array();
+        $params = $user_id;
+        $result = $this->Db->execute( $query, $params );
+        if($result === false){
+            // not user?
+            return false;
+        }
+        if(count($result) == 1){
+            // get email address
+            $email = $result[0]["content"];
+        }
+
+        return true;
+    }
+    // Add suppleContentsEntry Y.Yamazawa --end-- 2015/03/24 --end--
 
     /**
      * check access right for insert item
@@ -1090,7 +1228,7 @@ class Repository_Action_Main_Sword_Import extends RepositoryAction
                         // check index name = "import" from parent index is root
                         $query = "SELECT index_id FROM ". DATABASE_PREFIX ."repository_index ".
                                  "WHERE index_name = 'import' ".
-                                 "AND parent_index_id = '0' ".
+                                 "AND parent_index_id = 0 ".
                                 " AND is_delete = 0; ";
                         $result = $this->Db->execute( $query );
                         if($result === false){
@@ -1105,8 +1243,8 @@ class Repository_Action_Main_Sword_Import extends RepositoryAction
                             $index = array(
                                 "index_name"              => "import",
                                 "index_name_english"      => "import",
-                                "parent_index_id"         => "0",
-                                "public_state"            => "1",
+                                "parent_index_id"         => 0,
+                                "public_state"            => 1,
                                 "pub_date"                => $pubDate,
                                 "access_role"             => $this->getInsertAuthIds()."|".$this->Session->getParameter("_auth_id"),
                                 "access_group"            => "",
@@ -1154,7 +1292,7 @@ class Repository_Action_Main_Sword_Import extends RepositoryAction
                         "index_name"              => $index_info[1],
                         "index_name_english"      => $index_info[1],
                         "parent_index_id"         => $index_info[0],
-                        "public_state"            => "1",
+                        "public_state"            => 1,
                         "pub_date"                => $pubDate,
                         "access_role"             => $this->getInsertAuthIds()."|".$this->Session->getParameter("_auth_id"),
                         "access_group"            => "",
@@ -1221,9 +1359,9 @@ class Repository_Action_Main_Sword_Import extends RepositoryAction
             }
             $query = " SELECT index_id, access_role, access_group, owner_user_id ".
                     " FROM ". DATABASE_PREFIX ."repository_index ".
-                     " WHERE index_id = '". $indexIdList[$ii]. "' ".
-                     // " AND public_state = '1' ". // 後で閲覧権限および投稿権限を参照するのでここの判定は削除（ゆくゆくは非公開インデックスも指定可能にするため） 2013/06/07 Y.Nakao// TODO
-                     " AND is_delete = '0'; ";
+                     " WHERE index_id = ". $indexIdList[$ii]. " ".
+                     // " AND public_state = 1 ". // 後で閲覧権限および投稿権限を参照するのでここの判定は削除（ゆくゆくは非公開インデックスも指定可能にするため） 2013/06/07 Y.Nakao// TODO
+                     " AND is_delete = 0; ";
             $result = $this->Db->execute( $query );
             if($result === false){
                 // not select index
@@ -1312,7 +1450,9 @@ class Repository_Action_Main_Sword_Import extends RepositoryAction
             }
             return false;
         }
-        $this->Session->setParameter("_user_id", $result[0]["user_id"]);
+        // Update SuppleContentsEntry 2015/04/01 --start --
+        $userId = $result[0]["user_id"];
+        $this->Session->setParameter("_user_id", $userId);
         $this->Session->setParameter("_role_authority_id", $result[0]["role_authority_id"]);
         // get user user_authority_id
         $query = "SELECT user_authority_id FROM ". DATABASE_PREFIX ."authorities ".
@@ -1332,12 +1472,36 @@ class Repository_Action_Main_Sword_Import extends RepositoryAction
 
         $user_auth_id = $result[0]["user_authority_id"];
         $this->Session->setParameter("_user_auth_id", $user_auth_id);
-        $auth_id = $this->getRoomAuthorityID($result[0]["user_id"]);
+        $auth_id = $this->getRoomAuthorityID($userId);
         $this->Session->setParameter("_auth_id", $auth_id);
+        // Update SuppleContentsEntry 2015/04/01 --end --
 
         return true;
     }
     // Fix check index_id Y.Nakao 2013/06/07 --end--
+
+    // Add SuppleContentsEntry Y.Yamazawa --start--
+    /**
+     * ログファイルの作成
+     * @param ログファイルのパス $logName
+     */
+    public function createSwordUpdateLogFile($logName)
+    {
+        $this->logFh = fopen($logName, "w");
+        chmod($logName, 0600);
+        fwrite($this->logFh, "Start SWORD update. (".date("Y/m/d H:i:s").")\n");
+        fwrite($this->logFh, "\n");
+        fwrite($this->logFh, "[Sword Update]\n");
+    }
+
+    /**
+     * ログファイルを閉じる
+     */
+    public function closeLogFile()
+    {
+        fclose($this->logFh);
+    }
+    // Add SuppleContentsEntry Y.Yamazawa --end--
 
 }
 ?>

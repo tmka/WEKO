@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: RepositoryImportXmlValidator.class.php 43911 2014-11-13 04:28:03Z tatsuya_koyasu $
+// $Id: RepositoryImportXmlValidator.class.php 47749 2015-02-04 04:03:14Z tomohiro_ichikawa $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -62,6 +62,9 @@ class RepositoryImportXmlValidator
     const ERROR_NUM_EDIT_ITEM_URL = 18;
     const ERROR_NUM_EDIT_ITEM_NUM = 19;
     // Add for import error list 2014/11/04 T.Koyasu --end--
+    // Add for itemtype check 2014/01/08 T.Ichikawa --start--
+    const ERROR_NUM_CAN_NOT_USEITEM_TYPE = 20;
+    // Add for itemtype check 2014/01/08 T.Ichikawa --end--
     
     /**
      * execute check XML
@@ -110,8 +113,15 @@ class RepositoryImportXmlValidator
      * @param Object $item_type_nodes  item type node list
      */
     private function compareNodeNum($item_nodes, $item_type_nodes, &$error_list) {
-        // アイテムタブとアイテムタイプタグの長さが一致しない場合、エラー
-        if($item_nodes->length != $item_type_nodes->length) {
+        // Add for item type check 2014/12/22 T.Ichikawa --start--
+        if($item_nodes->length == 0 && $item_type_nodes->length > 0){
+            // アイテムタイプインポート時は何もしない
+        } else if($item_nodes->length == 0 && $item_type_nodes->length == 0){
+            // アイテムタグもアイテムタイプタグも無い時
+            $error_list[] = new DetailErrorInfo(0, "", self::ERROR_TAG_NUM, "", "", "", self::ERROR_NUM_TAG_NUM);
+        // Add for item type check 2014/12/22 T.Ichikawa --end--
+        } else if($item_nodes->length != $item_type_nodes->length) {
+            // アイテムタブとアイテムタイプタグの長さが一致しない場合、エラー
             // Add for import error list 2014/11/04 T.Koyasu --start--
             $error_list[] = new DetailErrorInfo(0, "", self::ERROR_TAG_NUM, "", "", "", self::ERROR_NUM_TAG_NUM);
             // Add for import error list 2014/11/04 T.Koyasu --end--

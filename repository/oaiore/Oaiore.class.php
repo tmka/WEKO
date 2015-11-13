@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Oaiore.class.php 36229 2014-05-26 05:49:55Z satoshi_arata $
+// $Id: Oaiore.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -142,7 +142,7 @@ class Repository_Oaiore extends RepositoryAction
 	    	// Add check close index 2009/12/21 Y.Nakao --start--
 					 //" AND pub_date <= '".date('Y-m-d 00:00:00.000',mktime())."' ".
 					 " AND pub_date <= NOW() ".
-	    			 " AND public_state = '1' ".
+	    			 " AND public_state = 1 ".
 					 " AND is_delete = 0; ";
 	    	// Add check close index 2009/12/21 Y.Nakao --end--
 	    	$retRef = $this->Db->execute($query);
@@ -301,7 +301,7 @@ class Repository_Oaiore extends RepositoryAction
 		    			// Add check close index 2009/12/21 Y.Nakao --start--
 						 //" AND pub_date <= '".date('Y-m-d 00:00:00.000',mktime())."' ".
 		    			 " AND pub_date <= NOW() ".
-		    			 " AND public_state = '1' ".
+		    			 " AND public_state = 1 ".
 						 " AND is_delete = 0; ";
 	    				// Add check close index 2009/12/21 Y.Nakao --end--
 		    	$params = null;
@@ -878,12 +878,12 @@ class Repository_Oaiore extends RepositoryAction
 						 "  AND item.item_type_id = attr_type.item_type_id ".
 						 "  AND name.attribute_id = attr_type.attribute_id ".
 						 "  AND attr_type.junii2_mapping = 'creator' ".
-						 "  AND item.is_delete != '1' ".
+						 "  AND item.is_delete != 1 ".
 						 "  AND item.item_id = ? ".
 						 // Fix output hidden metadata 2011/11/28 Y.Nakao --start--
 						 "  AND attr_type.hidden = 0 ".
 						 // Fix output hidden metadata 2011/11/28 Y.Nakao --end--
-						 "  AND name.is_delete = '0' ;";
+						 "  AND name.is_delete = 0 ;";
 			$params1 = null;
 			$params1[] = $itemId;
 			$ret_personal_name = $this->Db->execute($query, $params1);
@@ -918,13 +918,13 @@ class Repository_Oaiore extends RepositoryAction
 					 "  AND (item_type.mapping_info != null OR  item_type.mapping_info != '') ".
 					 "  AND item.item_type_id = attr_type.item_type_id ".
 					 "  AND attr.attribute_id = attr_type.attribute_id ".
-					 "  AND item.is_delete != '1' ".
+					 "  AND item.is_delete != 1 ".
 					 "  AND attr_type.junii2_mapping = 'creator' ".
 					 "  AND item.item_id = ? ".
 					 // Fix output hidden metadata 2011/11/28 Y.Nakao --start--
 					 "  AND attr_type.hidden = 0 ".
 					 // Fix output hidden metadata 2011/11/28 Y.Nakao --end--
-					 "  AND attr.is_delete = '0' ;";
+					 "  AND attr.is_delete = 0 ;";
 			$ret_item_attr = $this->Db->execute($query, $params1);
 			if ($ret_item_attr === false) {
 				$this->outputError();

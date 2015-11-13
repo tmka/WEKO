@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: repository_item_search_result.html 30197 2013-12-19 09:55:45Z rei_matsuura $          -->
+<!--// $Id: repository_item_search_result.html 47574 2015-02-02 07:33:54Z tomohiro_ichikawa $          -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -282,20 +282,6 @@
 		</div><!-- // item_title -->
     </div><!-- // list_title_line -->
     
-    <{* Add alternative language setting 2009/08/12 A.Suzuki --start-- *}>
-    <{* 他言語タイトル *}>
-    <{if $action.alter_flg == "1" && $action.array_title[$loop_item] != "" && $action.array_title_english[$loop_item] != ""}>
-     <div class="pd05">
-      <{if $smarty.session._lang=="japanese"}>
-       <{$action.array_title_english[$loop_item]}>
-      <{else}>
-       <{$action.array_title[$loop_item]}>
-      <{/if}>
-      <br/>
-     </div>
-    <{/if}>
-    <{* Add alternative language setting 2009/08/12 A.Suzuki --end-- *}>
-    
     <{* 属性値 *}>
      <{* 改行分 *}>
      <{foreach from=$action.array_item_attr_list[$loop_item] item=list_data name=loop_list}>
@@ -318,7 +304,7 @@
              <{if $action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][0]=="link"}>
                <a href="<{$action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][$loop_str].attr_value[0]}>" target="_blank"><{if $action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][$loop_str].attr_value[1] != ""}><{$action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][$loop_str].attr_value[1]}><{else}><{$action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][$loop_str].attr_value[0]}><{/if}></a>
              <{elseif $action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][0]=="name"}>
-               <a href="" id="searchAuthor<{$id}>_<{$loop_item}>_<{$loop_list}>_<{$loop_attr}>_<{$loop_str}>" onclick="javascript: redirectAuthorSearch<{$id}>('searchAuthor<{$id}>_<{$loop_item}>_<{$loop_list}>_<{$loop_attr}>_<{$loop_str}>'); return false; " ><{$action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][$loop_str].attr_value}></a>
+               <a href="<{$action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][$loop_str].url}>" ><{$action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][$loop_str].attr_value}></a>
              <{elseif $action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][0]=="textarea"}>
 	             <{section name=i loop=$action.array_item_attr_list[$loop_item][$loop_list][$loop_attr][$loop_str].attr_value}>
 		             <{if $smarty.section.i.index!=0}><br/><{/if}>
@@ -373,11 +359,11 @@
             <{* item_title *}>
             <{foreach from=$action.arrayListThumbnail[$loop_item] item=thumbnail}>
                 <img class="vab" 
-                <{if $thumbnail.height > 200 || $thumbnail.width > 200}>
+                <{if $thumbnail.height > 100 || $thumbnail.width > 100}>
                     <{if $thumbnail.width > $thumbnail.height}>
-                        width="200px"
+                        width="50px"
                     <{else}>
-                        height="200px"
+                        height="50px"
                     <{/if}>
                 <{/if}>
                 src="<{$smarty.const.BASE_URL}>/?action=repository_action_common_download&item_id=<{$thumbnail.item_id}>&item_no=<{$thumbnail.item_no}>&attribute_id=<{$thumbnail.attribute_id}>&file_no=<{$thumbnail.file_no}>&img=true"

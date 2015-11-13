@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: repository_item_contents.html 30197 2013-12-19 09:55:45Z rei_matsuura $          -->
+<!--// $Id: repository_item_contents.html 47574 2015-02-02 07:33:54Z tomohiro_ichikawa $          -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -243,8 +243,9 @@
 												<{if $k > 0}>
 													, 
 												<{/if}>
-												<a href="" id="searchAuthorContents<{$id}>_<{$i}>_<{$j}>_<{$k}>" onclick="javascript: redirectAuthorSearch<{$id}>( 'searchAuthorContents<{$id}>_<{$i}>_<{$j}>_<{$k}>' ); return false; " >
-													<{$attr[k].family}>&nbsp;<{$attr[k].name}>
+												<a href="<{$attr[k].url}>" >
+													<{*目次形式の著者名から検索できない不具合修正 2015/01/21 K.Sugimoto --start--*}>
+													<{$attr[k].family}> <{$attr[k].name}>
 												</a>
 											<{/section}>
 											<br/>
@@ -256,8 +257,9 @@
 												<{if $k > 0}>
 													, 
 												<{/if}>
-												<a href="" id="searchAuthorContentsAnother<{$id}>_<{$i}>_<{$j}>_<{$k}>" onclick="javascript: redirectAuthorSearch<{$id}>( 'searchAuthorContentsAnother<{$id}>_<{$i}>_<{$j}>_<{$k}>' ); return false; " >
-													<{$attr[k].family}>&nbsp;<{$attr[k].name}>
+												<a href="<{$attr[k].url}>" >
+													<{$attr[k].family}> <{$attr[k].name}>
+													<{*目次形式の著者名から検索できない不具合修正 2015/01/21 K.Sugimoto --end--*}>
 												</a>
 											<{/section}>
 											<br/>

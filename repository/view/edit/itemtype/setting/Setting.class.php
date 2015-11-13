@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Setting.class.php 21002 2013-01-25 05:04:29Z atsushi_suzuki $
+// $Id: Setting.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics,
 // Research and Development Center for Scientific Information Resources
@@ -41,7 +41,7 @@ class Repository_View_Edit_Itemtype_Setting extends RepositoryAction
 	 *
 	 * @access  public
 	 */
-	function execute()
+	function executeApp()
 	{
 	    
             // Add theme_name for image file Y.Nakao 2011/08/03 --start--

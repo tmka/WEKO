@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Tree.class.php 39149 2014-07-28 08:37:06Z rei_matsuura $
+// $Id: Tree.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -45,6 +45,7 @@ class Repository_Action_Edit_Tree extends RepositoryAction
                                     // 'update' : edit index
                                     // 'delete' : delete index
                                     // 'sort' : sort index
+                                    // 'copy_tree' : copy index tree
     // request parameter for now edit index data
     var $name_jp = null;                // now edit index japanese name
     var $name_en = null;                // now edit index english name
@@ -60,8 +61,8 @@ class Repository_Action_Edit_Tree extends RepositoryAction
     var $access_role_ids = null;        // now edit index entry item auth id
     var $not_access_role_ids = null;    // now edit index not entry item auth id
     var $mod_date = null;               // now edit index mod date
-    var $drag_id = null;                // drag index id at drag ivent
-    var $drop_id = null;                // drop index id at drop ivent
+    var $drag_id = null;                // drag index id at drag event
+    var $drop_id = null;                // drop index id at drop event
     var $drop_index = null;             // true  : index drop in index
                                         // false : index drop in sentry
     // Add child index display more 2009/01/16 Y.Nakao --start--
@@ -145,6 +146,19 @@ class Repository_Action_Edit_Tree extends RepositoryAction
     public $biblio_flag = null;
     public $online_issn = null;
     // Add issn and biblio flag 2014/04/16 T.Ichikawa --end--
+    
+    // Add recursively uppdate flag 2015/01/21 S.Suzuki --start--
+    public $pubdate_recursive = null;
+    public $create_cover_recursive = null;
+    public $aclRoleIds_recursive = null;
+    public $aclRoomAuth_recursive = null;
+    public $aclGroupIds_recursive = null;
+    // Add recursively uppdate flag 2015/01/21 S.Suzuki --end--
+    
+    // Add change view role flag 2015/03/10 T.Ichikawa --start--
+    public $changeBrowsingAuthorityFlag = false;
+    // Add change view role flag 2015/03/10 T.Ichikawa --end--
+    
     function execute()
     {
         try {
@@ -264,7 +278,7 @@ class Repository_Action_Edit_Tree extends RepositoryAction
                 $new_index_data["access_role_id"] = $auth_data["access_role_id"];
                 $new_index_data["comment"] = "";
                 $new_index_data["display_more"] = ""; // Add child index display more 2009/01/16 Y.Nakao
-                $new_index_data["rss_display"] = "";    // Add RSS icon display 2009/07/06 A.Suzuki
+                $new_index_data["rss_display"] = 0;    // Add RSS icon display 2009/07/06 A.Suzuki
                 // Add config management authority 2010/02/23 Y.Nakao --start--
                 $new_index_data["access_role_room"] = $this->defaultAccessRoleRoom_;
                 // Add config management authority 2010/02/23 Y.Nakao --end--
@@ -282,9 +296,9 @@ class Repository_Action_Edit_Tree extends RepositoryAction
                 $new_index_data["exclusive_acl_room_auth"] = $this->defaultExclusiveAclRoleRoom_;
                 $new_index_data["exclusive_acl_group_id"] = $this->defaultExclusiveAclGroups_;
                 // Add tree access control list 2012/02/22 T.Koyasu -end-
-                $new_index_data["repository_id"] = "";
+                $new_index_data["repository_id"] = 0;
                 $new_index_data["set_spec"] = "";
-                $new_index_data["create_cover_flag"] = "";
+                $new_index_data["create_cover_flag"] = 0;
                 // Add PrivateTree owner 2013/04/10 K.Matsuo --start--
                 $owner_user_id = "";
                 if($this->edit_id != 0){
@@ -539,7 +553,13 @@ class Repository_Action_Edit_Tree extends RepositoryAction
                 $edit_index_data["parent_index_id"] = $this->pid;
                 $edit_index_data["show_order"] = $this->show_order;
                 $edit_index_data["mod_date"] = $this->mod_date;
-                $edit_index_data["public_state"] = $this->pub_chk;
+                // mod recursive update child index 2015/02/10 S.Arata --start--
+                if ($this->pub_chk == "true") {
+                    $edit_index_data["public_state"] = "1";
+                } else {
+                    $edit_index_data["public_state"] = "0";
+                }
+                // mod recursive update child index 2015/02/10 S.Arata  --end--
                 // Bugfix input scrutiny heck pubdate 2011/06/17 Y.Nakao --start--
                 $edit_index_data["pub_year"] = $this->pub_year;
                 $edit_index_data["pub_month"] = $this->pub_month;
@@ -594,6 +614,13 @@ class Repository_Action_Edit_Tree extends RepositoryAction
                 // set exclusive_acl_group in repository_index
                 $edit_index_data["exclusive_acl_group_id"] = $this->exclusiveAclGroupIds;
                 // Add tree access control list 2012/02/22 T.Koyasu -end-
+                // Add change view role flag 2015/03/10 T.Ichikawa --start--
+                // 閲覧権限に変更があった場合フラグをtrueにする
+                $this->changeBrowsingAuthorityFlag = $this->checkChangeBrowsingAuthority($edit_index_data["index_id"], 
+                                                                                         $edit_index_data["exclusive_acl_role_id"], 
+                                                                                         $edit_index_data["exclusive_acl_room_auth"], 
+                                                                                         $edit_index_data["exclusive_acl_group_id"]);
+                // Add change view role flag 2015/03/10 T.Ichikawa --end--
                 // Add RSS icon display 2009/07/06 A.Suzuki --start--
                 if($this->create_cover_flag == "true"){
                     $edit_index_data["create_cover_flag"] = "1";
@@ -630,13 +657,53 @@ class Repository_Action_Edit_Tree extends RepositoryAction
                     $this->Session->setParameter("tree_error_msg", $this->smartyAssign->getLang("repository_tree_wrongFormatIssn"));
                     return 'error';
                 }
+                
+                // Add recursively uppdate flag 2015/01/21 S.Suzuki --start--
+                if ($this->pubdate_recursive == "true") {
+                    $pubdate_recursive = true;
+                } else {
+                    $pubdate_recursive = false;
+                }
+                if ($this->create_cover_recursive == "true") {
+                    $create_cover_recursive = true;
+                } else {
+                    $create_cover_recursive = false;
+                }
+                if ($this->aclRoleIds_recursive == "true") {
+                    $aclRoleIds_recursive = true;
+                } else {
+                    $aclRoleIds_recursive = false;
+                }
+                if ($this->aclRoomAuth_recursive == "true") {
+                    $aclRoomAuth_recursive = true;
+                } else {
+                    $aclRoomAuth_recursive = false;
+                }
+                if ($this->aclGroupIds_recursive == "true") {
+                    $aclGroupIds_recursive = true;
+                } else {
+                    $aclGroupIds_recursive = false;
+                }
+                
+                if ($pubdate_recursive || $create_cover_recursive || $aclRoleIds_recursive || 
+                    $aclRoomAuth_recursive || $aclGroupIds_recursive){
+                        
+                        $indexManager->recursiveUpdate($edit_index_data, 
+                                                       $pubdate_recursive, 
+                                                       $create_cover_recursive, 
+                                                       $aclRoleIds_recursive, 
+                                                       $aclRoomAuth_recursive, 
+                                                       $aclGroupIds_recursive);
+                }
+                // Add recursively uppdate flag 2015/01/21 S.Suzuki --end--
+                
                 // Add issn and biblio flag 2014/04/18 T.Ichikawa --end--
                 // Add count contents for unpublic index 2009/02/13 A.Suzuki --start--
-                // 上位インデックスが公開のときのみコンテンツ数は変化する
+                // 上位インデックスが公開であるか閲覧権限が変更された時のみ再集計を行う
                 if($old_state != "unpublic_parent"){
                     if($old_state == "public_all"){
                         if($this->pub_chk == "false"){
-                            // 公開　->　非公開
+                            // 公開 -> 非公開
                             // 親インデックスのコンテンツ数から自身のコンテンツ数を引く
                             $result = $this->subIndexContents($parent_id, $this->edit_id);
                             if($result === false){
@@ -664,11 +731,36 @@ class Repository_Action_Edit_Tree extends RepositoryAction
                             // Add private_contents count K.Matsuo 2013/05/07 --end--
                         } else {
                             // 公開 -> 公開
-                            // コンテンツ数に変化なし
+                            // Add private_contents count K.Matsuo 2013/05/07 --start--
+                            // 親インデックスの非公開コンテンツ数から自身の非公開コンテンツ数を引く
+                            $result = $this->subIndexContents($parent_id, $this->edit_id);
+                            if($result === false){
+                                $error = $this->Db->ErrorMsg();
+                                return false; 
+                            }
+                            // 自身以下のコンテンツ数を再取得する
+                            $result = $this->recountContents($this->edit_id);
+                            if($result === false){
+                                $error = $this->Db->ErrorMsg();
+                                return false; 
+                            }
+                            // このインデックス以下の非公開コンテンツ数を再計算
+                            $result = $this->recountPrivateContents($this->edit_id);
+                            if($result === false){
+                                $error = $this->Db->ErrorMsg();
+                                return false; 
+                            }
+                            // 親インデックスのコンテンツ数に自身のコンテンツ数を足す
+                            $result = $this->addIndexContents($parent_id, $this->edit_id);
+                            if($result === false){
+                                $error = $this->Db->ErrorMsg();
+                                return false; 
+                            }
+                            // Add private_contents count K.Matsuo 2013/05/07 --end--
                         }
                     } else if($old_state == "unpublic"){
                         if($this->pub_chk != "false"){
-                            // 非公開　->　公開
+                            // 非公開 -> 公開
                             // Add private_contents count K.Matsuo 2013/05/07 --start--
                             // 親インデックスの非公開コンテンツ数から自身の非公開コンテンツ数を引く
                             $result = $this->subIndexContents($parent_id, $this->edit_id);
@@ -697,7 +789,31 @@ class Repository_Action_Edit_Tree extends RepositoryAction
                             // Add private_contents count K.Matsuo 2013/05/07 --end--
                         } else {
                             // 非公開 -> 非公開
-                            // コンテンツ数に変化なし
+                            // 親インデックスのコンテンツ数から自身のコンテンツ数を引く
+                            $result = $this->subIndexContents($parent_id, $this->edit_id);
+                            if($result === false){
+                                $error = $this->Db->ErrorMsg();
+                                return false; 
+                            }
+                            // 自身以下のコンテンツ数をリセットする
+                            $result = $this->resetContents($this->edit_id);
+                            if($result === false){
+                                $error = $this->Db->ErrorMsg();
+                                return false; 
+                            }
+                            // このインデックス以下の非公開コンテンツ数を再計算
+                            $result = $this->recountPrivateContents($this->edit_id);
+                            if($result === false){
+                                $error = $this->Db->ErrorMsg();
+                                return false; 
+                            }
+                            // 上位インデックスに非公開コンテンツ数追加 add index private_contents num for after move index parent index
+                            $result = $this->addIndexContents($parent_id, $this->edit_id);
+                            if($result === false){
+                                $error = $this->Db->ErrorMsg();
+                                return false; 
+                            }
+                            // Add private_contents count K.Matsuo 2013/05/07 --end--
                         }
                     }
                 }
@@ -706,9 +822,38 @@ class Repository_Action_Edit_Tree extends RepositoryAction
                     $this->deleteWhatsnewForIndex($this->edit_id);
                 }
                 // Add deleteWhatsnew 2009/02/09 A.Suzuki --end--
+                // Add change view role flag 2015/03/10 T.Ichikawa --start--
+                if($this->changeBrowsingAuthorityFlag) {
+                    $result = $this->subIndexContents($parent_id, $this->edit_id);
+                    if($result === false){
+                        $error = $this->Db->ErrorMsg();
+                        return false; 
+                    }
+                    // 自身以下のコンテンツ数を再取得する
+                    $result = $this->recountContents($this->edit_id);
+                    if($result === false){
+                        $error = $this->Db->ErrorMsg();
+                        return false; 
+                    }
+                    // このインデックス以下の非公開コンテンツ数を再計算
+                    $result = $this->recountPrivateContents($this->edit_id);
+                    if($result === false){
+                        $error = $this->Db->ErrorMsg();
+                        return false; 
+                    }
+                    // 親インデックスのコンテンツ数に自身のコンテンツ数を足す
+                    $result = $this->addIndexContents($parent_id, $this->edit_id);
+                    if($result === false){
+                        $error = $this->Db->ErrorMsg();
+                        return false; 
+                    }
+                }
+                // Add change view role flag 2015/03/10 T.Ichikawa --end--
                 // Add count contents for unpublic index 2009/02/13 A.Suzuki --end--
                 // $this->Session->setParameter("repository_edit_update", "update");
                 $this->Session->setParameter("redirect_flg", "tree_update");
+            } else if($this->edit_mode == "copy_tree"){
+                $indexManager->copyIndexTree($this->drag_id, $this->drop_id);
             } else { 
                 //////////////////////////////////
                 // get edit index data
@@ -786,8 +931,8 @@ class Repository_Action_Edit_Tree extends RepositoryAction
     function getShowOrder($pid){
         // get new parent index bottom's max show_order
         $query = "SELECT COUNT(show_order) FROM ". DATABASE_PREFIX ."repository_index ".
-                 "WHERE `is_delete` = '0' AND ".
-                 "parent_index_id = '". $pid ."'; ";
+                 "WHERE `is_delete` = 0 AND ".
+                 "parent_index_id = ". $pid ."; ";
         $ret_show = $this->Db->execute($query);
         if($ret_show === false || $ret_show[0]["COUNT(show_order)"]<=0){
             $show_order = 0;
@@ -1130,8 +1275,8 @@ class Repository_Action_Edit_Tree extends RepositoryAction
      */
     function hasChild($pid){
         $query = "SELECT DISTINCT index_id FROM ". DATABASE_PREFIX ."repository_index ".
-                 "WHERE parent_index_id = '". $pid ."' AND ".
-                 "is_delete = '0'; ";
+                 "WHERE parent_index_id = ". $pid ." AND ".
+                 "is_delete = 0; ";
         $result = $this->Db->execute($query);
         if($result === false) {
             return false;
@@ -1889,8 +2034,8 @@ class Repository_Action_Edit_Tree extends RepositoryAction
         // 編集に必要な情報
         // index_id、名前(日/英)、公開/非公開、公開日、投稿権限あり、投稿権限なし、下にアイテム/インデックスがあるかないか
         $query = "SELECT * FROM ". DATABASE_PREFIX ."repository_index ".
-                 "WHERE index_id = '". $id ."' AND ".
-                 "is_delete = '0'; ";
+                 "WHERE index_id = ". $id ." AND ".
+                 "is_delete = 0; ";
         $result = $this->Db->execute($query);
         if($result === false || count($result)!=1) {
             return "";
@@ -1971,8 +2116,8 @@ class Repository_Action_Edit_Tree extends RepositoryAction
         // 既存の$parent_index_id直下の子インデックス情報を取得 get parent index's child index data from DB
         $query = "SELECT * ".
                  "FROM ". DATABASE_PREFIX ."repository_index ".
-                 "WHERE `is_delete` = '0' AND ".
-                 "`parent_index_id` = '". $parent_index_id."' ".
+                 "WHERE `is_delete` = 0 AND ".
+                 "`parent_index_id` = ". $parent_index_id." ".
                  "ORDER BY `show_order`; ";
         $result = $this->Db->execute($query);
         if($result === false) {
@@ -2353,19 +2498,13 @@ class Repository_Action_Edit_Tree extends RepositoryAction
     function recountContents($index_id=0){
         $contents = 0;
         if($index_id != 0) {    // ルートインデックス以外
-            // インデックスの公開状況取得
-            $query = "SELECT public_state ".
-                     "FROM ".DATABASE_PREFIX."repository_index ".
-                     "WHERE index_id = ? ".
-                     "AND is_delete = 0;";
-            $params = array();
-            $params[] = $index_id;
-            $result = $this->Db->execute($query, $params);
-            if($result === false) {
-                $errMsg = $this->Db->ErrorMsg();
+            // インデックス公開フラグ
+            $index_public_flag = $this->checkIndexState($index_id);
+            if($index_public_flag === false) {
                 return false;
             }
-            if($result[0]['public_state'] == "1"){
+            
+            if($index_public_flag == "public"){
                 // インデックス直下のコンテンツ数取得
                 $query = "SELECT ".DATABASE_PREFIX."repository_position_index.item_id, ".
                          "       ".DATABASE_PREFIX."repository_position_index.item_no, ".
@@ -2440,20 +2579,14 @@ class Repository_Action_Edit_Tree extends RepositoryAction
     function recountPrivateContents($index_id=0){
         $contents = 0;
         if($index_id != 0) {    // ルートインデックス以外
-            // インデックスの公開状況取得
-            $query = "SELECT public_state ".
-                     "FROM ".DATABASE_PREFIX."repository_index ".
-                     "WHERE index_id = ? ".
-                     "AND is_delete = 0;";
-            $params = array();
-            $params[] = $index_id;
-            $result = $this->Db->execute($query, $params);
-            if($result === false) {
-                $errMsg = $this->Db->ErrorMsg();
+            // インデックス公開フラグ
+            $index_public_flag = $this->checkIndexState($index_id);
+            if($index_public_flag === false) {
                 return false;
             }
-            if($result[0]['public_state'] == "1" && $this->checkParentPublicState($index_id)){
-                // インデックス直下の非公開コンテンツ数取得
+            
+            if($index_public_flag == "public"){
+                // インデックスが公開状態の場合、非公開設定のアイテムのみ取得する
                 $query = "SELECT ".DATABASE_PREFIX."repository_position_index.item_id, ".
                          "       ".DATABASE_PREFIX."repository_position_index.item_no, ".
                          "       ".DATABASE_PREFIX."repository_position_index.index_id ".
@@ -2477,7 +2610,7 @@ class Repository_Action_Edit_Tree extends RepositoryAction
                     $contents++;
                 }
             } else {
-                // インデックス直下の公開・非公開コンテンツ数取得
+                // インデックスが非公開状態の場合、全てのアイテムを取得する
                 $query = "SELECT ".DATABASE_PREFIX."repository_position_index.item_id, ".
                          "       ".DATABASE_PREFIX."repository_position_index.item_no, ".
                          "       ".DATABASE_PREFIX."repository_position_index.index_id ".
@@ -2879,6 +3012,142 @@ class Repository_Action_Edit_Tree extends RepositoryAction
         $repositoryDownload->download($index_json, "index_json.txt");
     }
     // Add new prefix id 2013/12/24 T.Ichikawa --end--
+    
+    // Add change view authority flag 2015/03/10 T.Ichikawa --start--
+    /**
+     * 閲覧権限が変更されたかチェックする
+     * 
+     * @param int $indexId             インデックスID
+     * @param int $exclusiveRoleId     除外閲覧権限ID
+     * @param int $exclusiveRoomAuth   除外ルーム権限
+     * @param string $exclusiveGroupId 除外グループID
+     * @return bool
+     */
+    private function checkChangeBrowsingAuthority($indexId, $exclusiveRoleId, $exclusiveRoomAuth, $exclusiveGroupId)
+    {
+        // 閲覧除外権限情報の取得
+        $query = "SELECT exclusive_acl_role, exclusive_acl_group ".
+                 "FROM ".DATABASE_PREFIX. "repository_index ".
+                 "WHERE index_id = ? ".
+                 "AND is_delete = ? ;";
+        $params = array();
+        $params[] = $indexId;
+        $params[] = 0;
+        $result = $this->Db->execute($query, $params);
+        if($result === false) {
+            // 何か起きたら処理しない
+            return false;
+        }
+        
+        // ベース権限とルーム権限に分ける
+        $roles = explode("|", $result[0]["exclusive_acl_role"]);
+        $exclusive_acl_role_id = $roles[0];
+        $exclusive_acl_room_auth = $roles[1];
+        
+        // 画面上で設定した値とDBの値が違う場合はtrueを返す
+        // ベース権限の変更チェック
+        if($exclusive_acl_role_id != $exclusiveRoleId) {
+            return true;
+        }
+        // ルーム権限の変更チェック
+        if($exclusive_acl_room_auth != $exclusiveRoomAuth) {
+            return true;
+        }
+        
+        // 画面上で設定した除外グループ権限
+        $exclusiveGroupIds = explode(",", $exclusiveGroupId);
+        // DBに保存された除外グループ権限
+        $exclusive_acl_group_id = explode(",", $result[0]["exclusive_acl_group"]);
+        // 除外グループ数が違う場合は変更があったという事なのでtrueを返す
+        if(count($exclusive_acl_group_id) != count($exclusiveGroupIds)) {
+            return true;
+        } else {
+            for($ii = 0; $ii < count($exclusive_acl_group_id); $ii++) {
+                // DBの値と除外グループ配列の値をチェックして、一致しない値がある場合はtrueを返す
+                if(!in_array($exclusive_acl_group_id[$ii], $exclusiveGroupIds)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * 指定インデックスの公開状況をチェックする
+     *
+     * @param  int $index_id インデックスID
+     * @return string "public" "private"
+     */
+    private function checkIndexState($index_id) {
+        // インデックス自身の公開状況取得
+        $query = "SELECT public_state ".
+                 "FROM ".DATABASE_PREFIX."repository_index ".
+                 "WHERE index_id = ? ".
+                 "AND is_delete = 0;";
+        $params = array();
+        $params[] = $index_id;
+        $result = $this->Db->execute($query, $params);
+        if($result === false) {
+            $errMsg = $this->Db->ErrorMsg();
+            return false;
+        }
+        // インデックス自身の公開フラグのチェック
+        if($result[0]["public_state"] == 0) {
+            return "private";
+        }
+        
+        // ユーザー閲覧権限取得
+        $query = "SELECT exclusive_acl_role_id, exclusive_acl_room_auth, public_state ".
+                 "FROM ". DATABASE_PREFIX. "repository_index_browsing_authority ".
+                 "WHERE index_id = ? ".
+                 "AND is_delete = ? ;";
+        $params = array();
+        $params[] = $index_id;
+        $params[] = 0;
+        $result = $this->Db->execute($query, $params);
+        if($result === false) {
+            $errMsg = $this->Db->ErrorMsg();
+            return false;
+        }
+        // インデックス閲覧権限のチェック
+        // なんらかの権限情報が存在する場合
+        if(count($result) > 0) {
+            if($result[0]["public_state"] == 0 ||          // 公開フラグが非公開状態
+               $result[0]["exclusive_acl_role_id"] > 0 ||  // 閲覧ベース権限に制限がかかっている
+               $result[0]["exclusive_acl_room_auth"] > -1) // 閲覧ルーム権限に制限がかかっている
+            {
+                return "private";
+            }
+        }
+        
+        // 閲覧グループ権限取得
+        $query = "SELECT exclusive_acl_group_id ".
+                 "FROM ". DATABASE_PREFIX. "repository_index_browsing_groups ".
+                 "WHERE index_id = ? ".
+                 "AND is_delete = ? ;";
+        $params = array();
+        $params[] = $index_id;
+        $params[] = 0;
+        $result = $this->Db->execute($query, $params);
+        if($result === false) {
+            $errMsg = $this->Db->ErrorMsg();
+            return false;
+        }
+        // インデックス閲覧権限のチェック
+        // なんらかの権限情報が存在する場合
+        if(count($result) > 0) {
+            for($ii=0; $ii < count($result); $ii++) {
+                // 「非会員」のグループ権限が除外権限に設定されている場合
+                if($result[$ii]["exclusive_acl_group_id"] == 0) {
+                    return "private";
+                }
+            }
+        }
+        
+        return "public";
+    }
+    // Add change view authority flag 2015/03/10 T.Ichikawa --end--
 }
 
 ?>

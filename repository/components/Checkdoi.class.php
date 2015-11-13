@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Checkdoi.class.php 42605 2014-10-03 01:02:01Z keiya_sugimoto $
+// $Id: Checkdoi.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -29,6 +29,7 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
     const JUNII2_MAPPING_PUBLISHER = RepositoryConst::JUNII2_PUBLISHER;
     const JUNII2_MAPPING_LANGUAGE = RepositoryConst::JUNII2_LANGUAGE;
     const JUNII2_MAPPING_FULL_TEXT_URL = RepositoryConst::JUNII2_FULL_TEXT_URL;
+    const JUNII2_MAPPING_CREATOR = RepositoryConst::JUNII2_CREATOR;
     const JUNII2_MAPPING_BIBLIO = 'jtitle,volume,issue,spage,epage,dateofissued';
     const PARAMETER_REVIEW_FLG = 'review_flg';
     const PARAMETER_ITEM_AUTO_PUBLIC = 'item_auto_public';
@@ -42,6 +43,7 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
     const TYPE_JALC_DOI = 0;
     const TYPE_CROSS_REF = 1;
     const TYPE_LIBRARY_JALC_DOI = 2;
+    const TYPE_DATACITE = 3;
     
     const CAN_GRANT_DOI = 0;
     const CANNOT_GRANT_DOI = 1;
@@ -58,12 +60,13 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
         parent::__construct($session, $Db, $transStartDate);
     }
     
+    // Add DataCite 2015/02/10 K.Sugimoto --start--
     /**
      * check being able to give the item JaLC DOI for Departmental Bulletin Paper
      *
      * @param int $item_id
      * @param int $item_no
-     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @param int $status 0:登録・編集, 1:アイテム管理
      * @return bool
      */
@@ -71,131 +74,67 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
     {
         $item_type_id = $this->getItemTypeId($item_id, $item_no);
         $nii_type = $this->getNiiType($item_type_id);
+        $result = $this->canRegistDoi($nii_type, $type);
+        if(!$result)
+        {
+        	return false;
+        }
+       
         switch($nii_type)
         {
             case RepositoryConst::NIITYPE_JOURNAL_ARTICLE:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_journal_article");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiForJournalArticle($item_id, $item_no, $type, $status);
                 break;
             
             case RepositoryConst::NIITYPE_ARTICLE:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_article");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiForArticle($item_id, $item_no, $type, $status);
                 break;
             
             case RepositoryConst::NIITYPE_PREPRINT:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_preprint");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiForPreprint($item_id, $item_no, $type, $status);
                 break;
             
             case RepositoryConst::NIITYPE_DEPARTMENTAL_BULLETIN_PAPER:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_departmental_bulletin_paper");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiForDepartmentalBulletinPaper($item_id, $item_no, $type, $status);
                 break;
             
             case RepositoryConst::NIITYPE_THESIS_OR_DISSERTATION:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_thesis_or_dissertation");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiForThesisOrDissertation($item_id, $item_no, $type, $status);
                 break;
             
             case RepositoryConst::NIITYPE_CONFERENCE_PAPER:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_conference_paper");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiForConferencePaper($item_id, $item_no, $type, $status);
                 break;
             
             case RepositoryConst::NIITYPE_BOOK:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_book");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiForBook($item_id, $item_no, $type, $status);
                 break;
             
             case RepositoryConst::NIITYPE_TECHNICAL_REPORT:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_technical_report");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiForTechnicalReport($item_id, $item_no, $type, $status);
                 break;
             
             case RepositoryConst::NIITYPE_RESEARCH_PAPER:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_research_paper");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiForResearchPaper($item_id, $item_no, $type, $status);
                 break;
             
             case RepositoryConst::NIITYPE_LEARNING_MATERIAL:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_learning_material");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiForLearningMaterial($item_id, $item_no, $type, $status);
                 break;
             
             case RepositoryConst::NIITYPE_DATA_OR_DATASET:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_data_or_dataset");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiForDataOrDataset($item_id, $item_no, $type, $status);
                 break;
             
             case RepositoryConst::NIITYPE_SOFTWARE:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_software");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiForSoftware($item_id, $item_no, $type, $status);
                 break;
             
             case RepositoryConst::NIITYPE_PRESENTATION:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_presentation");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiForPresentation($item_id, $item_no, $type, $status);
                 break;
             
             case RepositoryConst::NIITYPE_OTHERS:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_others");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiForOthers($item_id, $item_no, $type, $status);
                 break;
             
@@ -203,13 +142,14 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
                 return false;
         }
     }
+    // Add DataCite 2015/02/10 K.Sugimoto --end--
     
     /**
      * check being able to give the item JaLC DOI for Journal Article
      *
      * @param int $item_id
      * @param int $item_no
-     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @param int $status 0:登録・編集, 1:アイテム管理
      * @return bool
      */
@@ -231,7 +171,8 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
                $this->canOutputOaipmh($item_id, $item_no, $status) &&
                $this->isNotEnteredDoi($item_id, $item_no) &&
                $this->existYHandleAndUri($item_id, $item_no) &&
-               $this->existJalcdoiPrefix() ) 
+               $this->existJalcdoiPrefix() &&
+               _REPOSITORY_JALC_DOI == true ) 
             {
                 $can_grant = true;
             }
@@ -240,14 +181,13 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
         else if($type == self::TYPE_CROSS_REF)
         {
             // Cross Ref DOI付与可能アイテムである条件を満たす
-            if($this->existJunii2MappingMetadata($item_id, $item_no, $item_type_id, 
-                   self::JUNII2_MAPPING_FULL_TEXT_URL, false, false) &&
-               $this->existJunii2TitleMetadata($item_id, $item_no, true) &&
+            if($this->existJunii2TitleMetadata($item_id, $item_no, true) &&
                $this->isJournalArticleCrossRefDoiJunii2Required($item_id, $item_no) &&
                $this->canOutputOaipmh($item_id, $item_no, $status) &&
                $this->isNotEnteredDoi($item_id, $item_no) &&
                $this->existYHandleAndUri($item_id, $item_no) &&
-               $this->existCrossrefPrefix() ) 
+               $this->existCrossrefPrefix() &&
+               _REPOSITORY_JALC_CROSSREF_DOI == true ) 
             {
                 $can_grant = true;
             }
@@ -260,7 +200,7 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
      *
      * @param int $item_id
      * @param int $item_no
-     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @param int $status 0:登録・編集, 1:アイテム管理
      * @return bool
      */
@@ -274,7 +214,7 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
      *
      * @param int $item_id
      * @param int $item_no
-     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @param int $status 0:登録・編集, 1:アイテム管理
      * @return bool
      */
@@ -288,7 +228,7 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
      *
      * @param int $item_id
      * @param int $item_no
-     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @param int $status 0:登録・編集, 1:アイテム管理
      * @return bool
      */
@@ -302,7 +242,7 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
      *
      * @param int $item_id
      * @param int $item_no
-     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @param int $status 0:登録・編集, 1:アイテム管理
      * @return bool
      */
@@ -321,7 +261,8 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
                $this->canOutputOaipmh($item_id, $item_no, $status) &&
                $this->isNotEnteredDoi($item_id, $item_no) &&
                $this->existYHandleAndUri($item_id, $item_no) &&
-               $this->existJalcdoiPrefix() ) 
+               $this->existJalcdoiPrefix() &&
+               _REPOSITORY_JALC_DOI == true ) 
             {
                 $can_grant = true;
             }
@@ -335,7 +276,8 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
                $this->existJunii2TitleMetadata($item_id, $item_no, false) &&
                $this->canOutputOaipmh($item_id, $item_no, $status) &&
                $this->isNotEnteredDoi($item_id, $item_no) &&
-               $this->existYHandleAndUri($item_id, $item_no)) 
+               $this->existYHandleAndUri($item_id, $item_no) &&
+               _REPOSITORY_JALC_DOI == true ) 
             {
                 $can_grant = true;
             }
@@ -348,7 +290,7 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
      *
      * @param int $item_id
      * @param int $item_no
-     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @param int $status 0:登録・編集, 1:アイテム管理
      * @return bool
      */
@@ -367,7 +309,8 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
                $this->canOutputOaipmh($item_id, $item_no, $status) &&
                $this->isNotEnteredDoi($item_id, $item_no) &&
                $this->existYHandleAndUri($item_id, $item_no) &&
-               $this->existJalcdoiPrefix() ) 
+               $this->existJalcdoiPrefix() &&
+               _REPOSITORY_JALC_DOI == true ) 
             {
                 $can_grant = true;
             }
@@ -376,14 +319,13 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
         else if($type == self::TYPE_CROSS_REF)
         {
             // Cross Ref DOI付与可能アイテムである条件を満たす
-            if($this->existJunii2MappingMetadata($item_id, $item_no, $item_type_id, 
-                   self::JUNII2_MAPPING_FULL_TEXT_URL, false, false) &&
-               $this->existJunii2TitleMetadata($item_id, $item_no, true) &&
+            if($this->existJunii2TitleMetadata($item_id, $item_no, true) &&
                $this->isBookCrossRefDoiJunii2Required($item_id, $item_no) &&
                $this->canOutputOaipmh($item_id, $item_no, $status) &&
                $this->isNotEnteredDoi($item_id, $item_no) &&
                $this->existYHandleAndUri($item_id, $item_no) &&
-               $this->existCrossrefPrefix() ) 
+               $this->existCrossrefPrefix() &&
+               _REPOSITORY_JALC_CROSSREF_DOI == true ) 
             {
                 $can_grant = true;
             }
@@ -396,7 +338,7 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
      *
      * @param int $item_id
      * @param int $item_no
-     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @param int $status 0:登録・編集, 1:アイテム管理
      * @return bool
      */
@@ -410,7 +352,7 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
      *
      * @param int $item_id
      * @param int $item_no
-     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @param int $status 0:登録・編集, 1:アイテム管理
      * @return bool
      */
@@ -424,7 +366,7 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
      *
      * @param int $item_id
      * @param int $item_no
-     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @param int $status 0:登録・編集, 1:アイテム管理
      * @return bool
      */
@@ -438,7 +380,7 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
      *
      * @param int $item_id
      * @param int $item_no
-     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @param int $status 0:登録・編集, 1:アイテム管理
      * @return bool
      */
@@ -457,7 +399,62 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
                $this->canOutputOaipmh($item_id, $item_no, $status) &&
                $this->isNotEnteredDoi($item_id, $item_no) &&
                $this->existYHandleAndUri($item_id, $item_no) &&
-               $this->existJalcdoiPrefix() ) 
+               $this->existJalcdoiPrefix() &&
+               _REPOSITORY_JALC_DOI == true ) 
+            {
+                $can_grant = true;
+            }
+        }
+        return $can_grant;
+    }
+    
+    // Add DataCite 2015/02/10 K.Sugimoto --start--
+    /**
+     * check being able to give the item JaLC DOI for Data or Dataset
+     *
+     * @param int $item_id
+     * @param int $item_no
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
+     * @param int $status 0:登録・編集, 1:アイテム管理
+     * @return bool
+     */
+    private function checkDoiForDataOrDataset($item_id, $item_no, $type, $status=0)
+    {
+        $can_grant = false;
+        // アイテムタイプID取得
+        $item_type_id = $this->getItemTypeId($item_id, $item_no);
+        
+        // JaLC DOI
+        if($type == self::TYPE_JALC_DOI)
+        {
+            // JaLC DOI付与可能アイテムである条件を満たす
+            if($this->existJunii2MappingMetadata($item_id, $item_no, $item_type_id, 
+                   self::JUNII2_MAPPING_FULL_TEXT_URL, false, false) &&
+               $this->existJunii2TitleMetadata($item_id, $item_no, false) &&
+               $this->existJunii2MappingMetadata($item_id, $item_no, $item_type_id, 
+                   self::JUNII2_MAPPING_CREATOR, false, false) &&
+               $this->existJunii2MappingMetadata($item_id, $item_no, $item_type_id, 
+                   self::JUNII2_MAPPING_PUBLISHER, true, false) &&
+               $this->canOutputOaipmh($item_id, $item_no, $status) &&
+               $this->isNotEnteredDoi($item_id, $item_no) &&
+               $this->existYHandleAndUri($item_id, $item_no) &&
+               $this->existJalcdoiPrefix() &&
+               _REPOSITORY_JALC_DOI == true ) 
+            {
+                $can_grant = true;
+            }
+        }
+        // DataCite
+        else if($type == self::TYPE_DATACITE)
+        {
+            // DataCite DOI付与可能アイテムである条件を満たす
+            if($this->existJunii2TitleMetadata($item_id, $item_no, true) &&
+               $this->isResearchDataDataCiteDoiJunii2Required($item_id, $item_no) &&
+               $this->canOutputOaipmh($item_id, $item_no, $status) &&
+               $this->isNotEnteredDoi($item_id, $item_no) &&
+               $this->existYHandleAndUri($item_id, $item_no) &&
+               $this->existDatacitePrefix() &&
+               _REPOSITORY_JALC_DATACITE_DOI == true ) 
             {
                 $can_grant = true;
             }
@@ -466,39 +463,26 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
     }
     
     /**
-     * check being able to give the item JaLC DOI for Data or Dataset
-     *
-     * @param int $item_id
-     * @param int $item_no
-     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI
-     * @param int $status 0:登録・編集, 1:アイテム管理
-     * @return bool
-     */
-    private function checkDoiForDataOrDataset($item_id, $item_no, $type, $status=0)
-    {
-        return $this->checkDoiForLearningMaterial($item_id, $item_no, $type, $status);
-    }
-    
-    /**
      * check being able to give the item JaLC DOI for Software
      *
      * @param int $item_id
      * @param int $item_no
-     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @param int $status 0:登録・編集, 1:アイテム管理
      * @return bool
      */
     private function checkDoiForSoftware($item_id, $item_no, $type, $status=0)
     {
-        return $this->checkDoiForLearningMaterial($item_id, $item_no, $type, $status);
+        return $this->checkDoiForDataOrDataset($item_id, $item_no, $type, $status);
     }
+    // Add DataCite 2015/02/10 K.Sugimoto --end--
     
     /**
      * check being able to give the item JaLC DOI for Presentation
      *
      * @param int $item_id
      * @param int $item_no
-     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @param int $status 0:登録・編集, 1:アイテム管理
      * @return bool
      */
@@ -512,7 +496,7 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
      *
      * @param int $item_id
      * @param int $item_no
-     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @param int $status 0:登録・編集, 1:アイテム管理
      * @return bool
      */
@@ -635,6 +619,9 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
     {
         $is_having = false;
         $item_type_id = $this->getItemTypeId($item_id, $item_no);
+    	// Add DataCite 2015/02/10 K.Sugimoto --start--
+        // <fullTextURL>に値が入力されているか
+		$existFullTextURL = $this->existJunii2MappingMetadata($item_id, $item_no, $item_type_id, self::JUNII2_MAPPING_FULL_TEXT_URL, false, false);
         // <publisher>に値が入力されているか
         $existPublisher = $this->existJunii2MappingMetadata($item_id, $item_no, $item_type_id, self::JUNII2_MAPPING_PUBLISHER, true, true);
         // <jtitle>に値が入力されているか
@@ -645,11 +632,12 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
         $existSpage = $this->existJunii2MappingMetadata($item_id, $item_no, $item_type_id, self::JUNII2_MAPPING_SPAGE, false, false);
         // <language>に値が入力されているか
         $existLanguage = $this->existJunii2LanguageMetadata($item_id, $item_no, $item_type_id, true);
-        // JuNii2メタデータ項目の<publisher>, <jtitle>, <ISSN>, <spage>, <language>が入力されている
-        if($existPublisher && $existJtitle && $existIssn && $existSpage && $existLanguage)
+        // JuNii2メタデータ項目の<fullTextURL>, <publisher>, <jtitle>, <ISSN>, <spage>, <language>が入力されている
+        if($existFullTextURL && $existPublisher && $existJtitle && $existIssn && $existSpage && $existLanguage)
         {
             $is_having = true;
         }
+    	// Add DataCite 2015/02/10 K.Sugimoto --end--
         return $is_having;
     }
     
@@ -664,20 +652,53 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
     {
         $is_having = false;
         $item_type_id = $this->getItemTypeId($item_id, $item_no);
+    	// Add DataCite 2015/02/10 K.Sugimoto --start--
+        // <fullTextURL>に値が入力されているか
+		$existFullTextURL = $this->existJunii2MappingMetadata($item_id, $item_no, $item_type_id, self::JUNII2_MAPPING_FULL_TEXT_URL, false, false);
         // <publisher>に値が入力されているか
         $existPublisher = $this->existJunii2MappingMetadata($item_id, $item_no, $item_type_id, self::JUNII2_MAPPING_PUBLISHER, true, true);
         // <ISBN>に値が入力されているか
         $existIsbn = $this->existJunii2MappingMetadata($item_id, $item_no, $item_type_id, self::JUNII2_MAPPING_ISBN, true, false);
         // <language>に値が入力されているか
         $existLanguage = $this->existJunii2LanguageMetadata($item_id, $item_no, $item_type_id, true);
-        // JuNii2メタデータ項目の<publisher>, <ISBN>, <language>が入力されている
-        if($existPublisher && $existIsbn && $existLanguage)
+        // JuNii2メタデータ項目の<fullTextURL>, <publisher>, <ISBN>, <language>が入力されている
+        if($existFullTextURL && $existPublisher && $existIsbn && $existLanguage)
+        {
+            $is_having = true;
+        }
+    	// Add DataCite 2015/02/10 K.Sugimoto --end--
+        return $is_having;
+    }
+    
+    // Add DataCite 2015/02/10 K.Sugimoto --start--
+    /**
+     * 研究データのDataCite付与に必要なJuNii2メタデータ項目が入力されているか
+     *
+     * @param int $item_id
+     * @param int $item_no
+     * @return bool
+     */
+    private function isResearchDataDataCiteDoiJunii2Required($item_id, $item_no)
+    {
+        $is_having = false;
+        $item_type_id = $this->getItemTypeId($item_id, $item_no);
+        // <fullTextURL>に値が入力されているか
+		$existFullTextURL = $this->existJunii2MappingMetadata($item_id, $item_no, $item_type_id, self::JUNII2_MAPPING_FULL_TEXT_URL, false, false);
+        // <creator>に値が入力されているか
+        $existCreator = $this->existJunii2MappingMetadata($item_id, $item_no, $item_type_id, self::JUNII2_MAPPING_CREATOR, false, true);
+        // <publisher>に値が入力されているか
+        $existPublisher = $this->existJunii2MappingMetadata($item_id, $item_no, $item_type_id, self::JUNII2_MAPPING_PUBLISHER, true, true);
+        // <language>に値が入力されているか
+        $existLanguage = $this->existJunii2LanguageMetadata($item_id, $item_no, $item_type_id, true);
+        // JuNii2メタデータ項目の<fullTextURL>, <creator>, <publisher>, <language>が入力されている
+        if($existFullTextURL && $existCreator && $existPublisher && $existLanguage)
         {
             $is_having = true;
         }
         return $is_having;
     }
-    
+     // Add DataCite 2015/02/10 K.Sugimoto --end--
+
     /**
      * 指定したJuNii2マッピングの属性IDを取得する
      *
@@ -792,6 +813,29 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
     {
         $num = 0;
         $exist_data = false;
+        
+        // 言語メタデータの値を取得
+        $query = "SELECT language ".
+                 "FROM ".DATABASE_PREFIX."repository_item ".
+                 "WHERE item_id = ? ".
+                 "AND item_no = ? ".
+                 "AND is_delete = ? ;";
+        $params = array();
+        $params[] = $item_id;
+        $params[] = $item_no;
+        $params[] = 0;
+        $result = $this->dbAccess->executeQuery($query, $params);
+        
+        // 言語がenである時true
+        if(count($result) != 0)
+        {
+        	if($result[0]['language'] === "en")
+        	{
+            	$exist_data = true;
+        	}
+        	$num++;
+        }
+        
         // アイテムタイプ中の指定したマッピングの属性IDを取得する
         $attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id, self::JUNII2_MAPPING_LANGUAGE);
         
@@ -1477,141 +1521,98 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
         }
     }
     
+    // Add DataCite 2015/02/10 K.Sugimoto --start--
+    /**
+     * DataCiteのプレフィックスが登録されているかをチェックする
+     *
+     * @param int $item_id
+     * @param int $item_no
+     * @return bool
+     */
+    public function existDatacitePrefix()
+    {
+        $repositoryHandleManager = new RepositoryHandleManager($this->Session, $this->dbAccess, $this->transStartDate);
+        $prefix = $repositoryHandleManager->getDataCitePrefix();
+        if(isset($prefix) && strlen($prefix) > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
     /**
      * DOI付与可能になり得るアイテムタイプであるかを調べる
      *
      * @param int $item_type_id
-     * @param int $type   0:JaLC DOI, 1:Cross Ref
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @return bool
      */
     public function checkDoiGrantItemtype($item_type_id, $type)
     {
         $nii_type = $this->getNiiType($item_type_id);
+        $result = $this->canRegistDoi($nii_type, $type);
+        if(!$result)
+        {
+        	return false;
+        }
         switch($nii_type)
         {
             case RepositoryConst::NIITYPE_JOURNAL_ARTICLE:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_journal_article");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiGrantItemtypeForJournalArticle($item_type_id, $type);
                 break;
             
             case RepositoryConst::NIITYPE_ARTICLE:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_article");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiGrantItemtypeForArticle($item_type_id, $type);
                 break;
             
             case RepositoryConst::NIITYPE_PREPRINT:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_preprint");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiGrantItemtypeForPreprint($item_type_id, $type);
                 break;
             
             case RepositoryConst::NIITYPE_DEPARTMENTAL_BULLETIN_PAPER:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_departmental_bulletin_paper");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiGrantItemtypeForDepartmentalBulletinPaper($item_type_id, $type);
                 break;
             
             case RepositoryConst::NIITYPE_THESIS_OR_DISSERTATION:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_thesis_or_dissertation");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiGrantItemtypeForThesisOrDissertation($item_type_id, $type);
                 break;
             
             case RepositoryConst::NIITYPE_CONFERENCE_PAPER:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_conference_paper");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiGrantItemtypeForConferencePaper($item_type_id, $type);
                 break;
             
             case RepositoryConst::NIITYPE_BOOK:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_book");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiGrantItemtypeForBook($item_type_id, $type);
                 break;
             
             case RepositoryConst::NIITYPE_TECHNICAL_REPORT:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_technical_report");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiGrantItemtypeForTechnicalReport($item_type_id, $type);
                 break;
             
             case RepositoryConst::NIITYPE_RESEARCH_PAPER:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_research_paper");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiGrantItemtypeForResearchPaper($item_type_id, $type);
                 break;
             
             case RepositoryConst::NIITYPE_LEARNING_MATERIAL:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_learning_material");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiGrantItemtypeForLearningMaterial($item_type_id, $type);
                 break;
             
             case RepositoryConst::NIITYPE_DATA_OR_DATASET:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_data_or_dataset");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiGrantItemtypeForDataOrDataset($item_type_id, $type);
                 break;
             
             case RepositoryConst::NIITYPE_SOFTWARE:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_software");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiGrantItemtypeForSoftware($item_type_id, $type);
                 break;
             
             case RepositoryConst::NIITYPE_PRESENTATION:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_presentation");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiGrantItemtypeForPresentation($item_type_id, $type);
                 break;
             
             case RepositoryConst::NIITYPE_OTHERS:
-                $editdoi_flag = $this->getNiiTypeFlag("edit_doi_flag_others");
-                if($editdoi_flag == 0)
-                {
-                    return false;
-                }
                 return $this->checkDoiGrantItemtypeForOthers($item_type_id, $type);
                 break;
             
@@ -1619,12 +1620,13 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
                 return false;
         }
     }
+    // Add DataCite 2015/02/10 K.Sugimoto --end--
     
     /**
      * アイテムタイプのNII typeがJournal Articleである時、必要なマッピングのメタデータが存在するか
      *
      * @param int $item_type_id
-     * @param int $type   0:JaLC DOI, 1:Cross Ref
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @return bool
      */
     private function checkDoiGrantItemtypeForJournalArticle($item_type_id, $type)
@@ -1633,12 +1635,16 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
         if($type == self::TYPE_JALC_DOI)
         {
             $isExistJalcdoiPrefix = $this->existJalcdoiPrefix();
+            $fulltexturl_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id,
+                self::JUNII2_MAPPING_FULL_TEXT_URL);
             $spage_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id, 
                 self::JUNII2_MAPPING_SPAGE);
             $biblio_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id, 
                 self::JUNII2_MAPPING_BIBLIO);
             
             if($isExistJalcdoiPrefix &&
+               _REPOSITORY_JALC_DOI == true &&
+               count($fulltexturl_attr_id_array) > 0 &&
                (count($spage_attr_id_array) > 0 || 
                count($biblio_attr_id_array) > 0))
             {
@@ -1648,6 +1654,8 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
         else if($type == self::TYPE_CROSS_REF)
         {
             $isExistCrossrefPrefix = $this->existCrossrefPrefix();
+            $fulltexturl_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id,
+                self::JUNII2_MAPPING_FULL_TEXT_URL);
             $publisher_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id, 
                 self::JUNII2_MAPPING_PUBLISHER);
             $jtitle_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id, 
@@ -1656,19 +1664,22 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
                 self::JUNII2_MAPPING_ISSN);
             $spage_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id, 
                 self::JUNII2_MAPPING_SPAGE);
-            $language_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id, 
-                self::JUNII2_MAPPING_LANGUAGE);
             $biblio_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id, 
                 self::JUNII2_MAPPING_BIBLIO);
+            $publisher_lang_array = $this->getDisplayLangTypeInArray($publisher_attr_id_array);
+            $jtitle_lang_array = $this->getDisplayLangTypeInArray($jtitle_attr_id_array);
             
             if($isExistCrossrefPrefix && 
+               _REPOSITORY_JALC_CROSSREF_DOI == true && 
+               count($fulltexturl_attr_id_array) > 0 &&
                count($publisher_attr_id_array) > 0 && 
-               (count($jtitle_attr_id_array) > 0 || 
+               in_array("english", $publisher_lang_array) &&
+               (count($jtitle_attr_id_array) > 0 && 
+               in_array("english", $jtitle_lang_array) ||
                count($biblio_attr_id_array) > 0) && 
                count($issn_attr_id_array) > 0 && 
                (count($spage_attr_id_array) > 0 || 
-               count($biblio_attr_id_array) > 0) && 
-               count($language_attr_id_array) > 0)
+               count($biblio_attr_id_array) > 0))
             {
                 $can_grant = true;
             }
@@ -1680,7 +1691,7 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
      * アイテムタイプのNII typeがArticleである時、必要なマッピングのメタデータが存在するか
      *
      * @param int $item_type_id
-     * @param int $type   0:JaLC DOI, 1:Cross Ref
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @return bool
      */
     private function checkDoiGrantItemtypeForArticle($item_type_id, $type)
@@ -1692,7 +1703,7 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
      * アイテムタイプのNII typeがPreprintである時、必要なマッピングのメタデータが存在するか
      *
      * @param int $item_type_id
-     * @param int $type   0:JaLC DOI, 1:Cross Ref
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @return bool
      */
     private function checkDoiGrantItemtypeForPreprint($item_type_id, $type)
@@ -1704,7 +1715,7 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
      * アイテムタイプのNII typeがDepartmental Bulletin Paperである時、必要なマッピングのメタデータが存在するか
      *
      * @param int $item_type_id
-     * @param int $type   0:JaLC DOI, 1:Cross Ref
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @return bool
      */
     private function checkDoiGrantItemtypeForDepartmentalBulletinPaper($item_type_id, $type)
@@ -1716,7 +1727,7 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
      * アイテムタイプのNII typeがThesis or Dissertationである時、必要なマッピングのメタデータが存在するか
      *
      * @param int $item_type_id
-     * @param int $type   0:JaLC DOI, 1:Cross Ref
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @return bool
      */
     private function checkDoiGrantItemtypeForThesisOrDissertation($item_type_id, $type)
@@ -1725,8 +1736,23 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
         if($type == self::TYPE_JALC_DOI)
         {
             $isExistJalcdoiPrefix = $this->existJalcdoiPrefix();
+            $fulltexturl_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id,
+                self::JUNII2_MAPPING_FULL_TEXT_URL);
             
-            if($isExistJalcdoiPrefix)
+            if($isExistJalcdoiPrefix &&
+               _REPOSITORY_JALC_DOI == true &&
+               count($fulltexturl_attr_id_array) > 0)
+            {
+                $can_grant = true;
+            }
+        }
+        else if($type == self::TYPE_LIBRARY_JALC_DOI)
+        {
+            $fulltexturl_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id,
+                self::JUNII2_MAPPING_FULL_TEXT_URL);
+            
+            if(_REPOSITORY_JALC_DOI == true &&
+               count($fulltexturl_attr_id_array) > 0)
             {
                 $can_grant = true;
             }
@@ -1738,7 +1764,7 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
      * アイテムタイプのNII typeがConference Paperである時、必要なマッピングのメタデータが存在するか
      *
      * @param int $item_type_id
-     * @param int $type   0:JaLC DOI, 1:Cross Ref
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @return bool
      */
     private function checkDoiGrantItemtypeForConferencePaper($item_type_id, $type)
@@ -1747,8 +1773,12 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
         if($type == self::TYPE_JALC_DOI)
         {
             $isExistJalcdoiPrefix = $this->existJalcdoiPrefix();
+            $fulltexturl_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id,
+                self::JUNII2_MAPPING_FULL_TEXT_URL);
             
-            if($isExistJalcdoiPrefix)
+            if($isExistJalcdoiPrefix &&
+               _REPOSITORY_JALC_DOI == true &&
+               count($fulltexturl_attr_id_array) > 0)
             {
                 $can_grant = true;
             }
@@ -1756,17 +1786,20 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
         else if($type == self::TYPE_CROSS_REF)
         {
             $isExistCrossrefPrefix = $this->existCrossrefPrefix();
+            $fulltexturl_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id,
+                self::JUNII2_MAPPING_FULL_TEXT_URL);
             $publisher_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id, 
                 self::JUNII2_MAPPING_PUBLISHER);
             $isbn_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id, 
                 self::JUNII2_MAPPING_ISBN);
-            $language_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id, 
-                self::JUNII2_MAPPING_LANGUAGE);
+            $publisher_lang_array = $this->getDisplayLangTypeInArray($publisher_attr_id_array);
             
             if($isExistCrossrefPrefix && 
+               _REPOSITORY_JALC_CROSSREF_DOI == true && 
+               count($fulltexturl_attr_id_array) > 0 &&
                count($publisher_attr_id_array) > 0 && 
-               count($isbn_attr_id_array) > 0 && 
-               count($language_attr_id_array) > 0)
+               in_array("english", $publisher_lang_array) &&
+               count($isbn_attr_id_array) > 0)
             {
                 $can_grant = true;
             }
@@ -1778,7 +1811,7 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
      * アイテムタイプのNII typeがBookである時、必要なマッピングのメタデータが存在するか
      *
      * @param int $item_type_id
-     * @param int $type   0:JaLC DOI, 1:Cross Ref
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @return bool
      */
     private function checkDoiGrantItemtypeForBook($item_type_id, $type)
@@ -1790,7 +1823,7 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
      * アイテムタイプのNII typeがTechnical Reportである時、必要なマッピングのメタデータが存在するか
      *
      * @param int $item_type_id
-     * @param int $type   0:JaLC DOI, 1:Cross Ref
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @return bool
      */
     private function checkDoiGrantItemtypeForTechnicalReport($item_type_id, $type)
@@ -1802,7 +1835,7 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
      * アイテムタイプのNII typeがResearch Paperである時、必要なマッピングのメタデータが存在するか
      *
      * @param int $item_type_id
-     * @param int $type   0:JaLC DOI, 1:Cross Ref
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @return bool
      */
     private function checkDoiGrantItemtypeForResearchPaper($item_type_id, $type)
@@ -1814,89 +1847,188 @@ class Repository_Components_Checkdoi extends RepositoryLogicBase
      * アイテムタイプのNII typeがLearning Materialである時、必要なマッピングのメタデータが存在するか
      *
      * @param int $item_type_id
-     * @param int $type   0:JaLC DOI, 1:Cross Ref
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @return bool
      */
     private function checkDoiGrantItemtypeForLearningMaterial($item_type_id, $type)
     {
-        return $this->checkDoiGrantItemtypeForThesisOrDissertation($item_type_id, $type);
+        $can_grant = false;
+        if($type == self::TYPE_JALC_DOI)
+        {
+            $isExistJalcdoiPrefix = $this->existJalcdoiPrefix();
+            $fulltexturl_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id,
+                self::JUNII2_MAPPING_FULL_TEXT_URL);
+            
+            if($isExistJalcdoiPrefix &&
+               _REPOSITORY_JALC_DOI == true &&
+               count($fulltexturl_attr_id_array) > 0)
+            {
+                $can_grant = true;
+            }
+        }
+        return $can_grant;
     }
 
+    // Add DataCite 2015/02/10 K.Sugimoto --start--
     /**
      * アイテムタイプのNII typeがData or Datasetである時、必要なマッピングのメタデータが存在するか
      *
      * @param int $item_type_id
-     * @param int $type   0:JaLC DOI, 1:Cross Ref
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @return bool
      */
     private function checkDoiGrantItemtypeForDataOrDataset($item_type_id, $type)
     {
-        return $this->checkDoiGrantItemtypeForThesisOrDissertation($item_type_id, $type);
+        $can_grant = false;
+        if($type == self::TYPE_JALC_DOI)
+        {
+            $isExistJalcdoiPrefix = $this->existJalcdoiPrefix();
+            $fulltexturl_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id,
+                self::JUNII2_MAPPING_FULL_TEXT_URL);
+            $creator_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id, 
+                self::JUNII2_MAPPING_CREATOR);
+            $publisher_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id, 
+                self::JUNII2_MAPPING_PUBLISHER);
+            
+            if($isExistJalcdoiPrefix &&
+               _REPOSITORY_JALC_DOI == true && 
+               count($fulltexturl_attr_id_array) > 0 &&
+               count($creator_attr_id_array) > 0 && 
+               count($publisher_attr_id_array) > 0)
+            {
+                $can_grant = true;
+            }
+        }
+        else if($type == self::TYPE_DATACITE)
+        {
+            $isExistDatacitePrefix = $this->existDatacitePrefix();
+            $fulltexturl_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id,
+                self::JUNII2_MAPPING_FULL_TEXT_URL);
+            $creator_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id, 
+                self::JUNII2_MAPPING_CREATOR);
+            $publisher_attr_id_array = $this->getAttributeIdFromJuNii2Mapping($item_type_id, 
+                self::JUNII2_MAPPING_PUBLISHER);
+            $creator_lang_array = $this->getDisplayLangTypeInArray($creator_attr_id_array);
+            $publisher_lang_array = $this->getDisplayLangTypeInArray($publisher_attr_id_array);
+            
+            if($isExistDatacitePrefix && 
+               _REPOSITORY_JALC_DATACITE_DOI == true && 
+               count($fulltexturl_attr_id_array) > 0 &&
+               count($creator_attr_id_array) > 0 && 
+               in_array("english", $creator_lang_array) &&
+               count($publisher_attr_id_array) > 0 &&
+               in_array("english", $publisher_lang_array))
+            {
+                $can_grant = true;
+            }
+        }
+        return $can_grant;
     }
 
     /**
      * アイテムタイプのNII typeがSoftwareである時、必要なマッピングのメタデータが存在するか
      *
      * @param int $item_type_id
-     * @param int $type   0:JaLC DOI, 1:Cross Ref
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @return bool
      */
     private function checkDoiGrantItemtypeForSoftware($item_type_id, $type)
     {
-        return $this->checkDoiGrantItemtypeForThesisOrDissertation($item_type_id, $type);
+        return $this->checkDoiGrantItemtypeForDataOrDataset($item_type_id, $type);
     }
+    // Add DataCite 2015/02/10 K.Sugimoto --end--
 
     /**
      * アイテムタイプのNII typeがPresentationである時、必要なマッピングのメタデータが存在するか
      *
      * @param int $item_type_id
-     * @param int $type   0:JaLC DOI, 1:Cross Ref
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @return bool
      */
     private function checkDoiGrantItemtypeForPresentation($item_type_id, $type)
     {
-        return $this->checkDoiGrantItemtypeForThesisOrDissertation($item_type_id, $type);
+        return $this->checkDoiGrantItemtypeForLearningMaterial($item_type_id, $type);
     }
 
     /**
      * アイテムタイプのNII typeがOthersである時、必要なマッピングのメタデータが存在するか
      *
      * @param int $item_type_id
-     * @param int $type   0:JaLC DOI, 1:Cross Ref
+     * @param int $type   0:JaLC DOI, 1:Cross Ref, 2:国会図書館JaLC DOI, 3:DataCite
      * @return bool
      */
     private function checkDoiGrantItemtypeForOthers($item_type_id, $type)
     {
-        return $this->checkDoiGrantItemtypeForThesisOrDissertation($item_type_id, $type);
+        return $this->checkDoiGrantItemtypeForLearningMaterial($item_type_id, $type);
     }
     
+    // Add DataCite 2015/02/10 K.Sugimoto --start--
     /**
-     * 指定したNII typeのDOI付与フラグを取得する
+     * 指定したNII type、DOI種別でDOI付与できるかを判定する
      *
-     * @param string $record_name
+     * @param string $nii_type
+     * @param string $type
      * @return int
      */
-    private function getNiiTypeFlag($record_name)
+    private function canRegistDoi($nii_type, $type)
     {
-        $editdoi_flag = 0;
+        $nii_type = strtolower($nii_type);
+        
+        if($type == self::TYPE_JALC_DOI)
+        {
+        	$doi = "jalc";
+        }
+        else if($type == self::TYPE_CROSS_REF)
+        {
+        	$doi = "crossref";
+        }
+        else if($type == self::TYPE_LIBRARY_JALC_DOI)
+        {
+        	$doi = "multiple_resolution";
+        }
+        else if($type == self::TYPE_DATACITE)
+        {
+        	$doi = "datacite";
+        }
         
         // DOI付与フラグを取得
-        $query = "SELECT param_value ".
-                 "FROM ".DATABASE_PREFIX."repository_parameter ".
-                 "WHERE param_name = ? ".
+        $query = "SELECT ".$doi." ".
+                 "FROM ".DATABASE_PREFIX."repository_doi_flag ".
+                 "WHERE nii_type = ? ".
                  "AND is_delete = ? ;";
         $params = array();
-        $params[] = $record_name;
+        $params[] = $nii_type;
         $params[] = 0;
         $result = $this->dbAccess->executeQuery($query, $params);
         
-        if(count($result) > 0)
+        if(count($result) > 0 && $result[0][$doi] == 1)
         {
-            $editdoi_flag = $result[0]["param_value"];
+            return true;
         }
-        
-        return $editdoi_flag;
+        else
+        {
+        	return false;
+        }
     }
+    // Add DataCite 2015/02/10 K.Sugimoto --end--
+    
+    /**
+     * アイテム属性配列から表示言語を取得する
+     *
+     * @param Array $attr_id_array
+     * @return Array
+     */
+    private function getDisplayLangTypeInArray($attr_id_array)
+    {
+        $display_lang_type_array = array();
+        for($num = 0; $num < count($attr_id_array); $num++)
+        {
+            $display_lang_type_array[] = $attr_id_array[$num]["display_lang_type"];
+        }
+
+        return $display_lang_type_array;
+    }
+
 }
 
 ?>

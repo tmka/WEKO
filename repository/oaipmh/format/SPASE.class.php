@@ -14,7 +14,7 @@ require_once WEBAPP_DIR. '/modules/repository/oaipmh/format/FormatAbstract.class
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.php';
 
 class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
-{   
+{
     /*
      * SPASE variable values
      *
@@ -31,7 +31,6 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
 
     // const xml value
     const SPASE_VALUE_SOURCE = RepositoryConst::SPASE_VERSION;
-
 
     /*
      * コンストラクタ
@@ -71,20 +70,17 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
         //$this->service = new Repository_Oaipmh_SPASE_Service($this->RepositoryAction);
 
         //1.基本情報設定処理
-        //$this->setBaseData($itemData[RepositoryConst::ITEM_DATA_KEY_ITEM][0]);
         $this->setBaseData($itemData[RepositoryConst::ITEM_DATA_KEY_ITEM]);
 
         //2. マッピング情報設定処理
         $this->setMappingInfo($itemData[RepositoryConst::ITEM_DATA_KEY_ITEM_ATTR_TYPE], $itemData[RepositoryConst::ITEM_DATA_KEY_ITEM_ATTR]);
-
-        //3. リファレンス設定処理
 
         //4. 初期化
         $xml = '';
 
         //5. header出力処理
         $xml .= $this->outputHeader();
-        
+
         //6. SPASEmetadata出力処理
         $xml .= $this->catalog->output();
         $xml .= $this->displaydata->output();
@@ -94,6 +90,7 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
         $xml .= $this->observatory->output();
         $xml .= $this->person->output();
         $xml .= $this->repository->output();
+        //$xml .= $this->service->output();
 
         //7. footer出力処理
         $xml .= $this->outputFooter();
@@ -173,15 +170,16 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
           }
           // Add data filter parameter Y.Nakao 2013/05/17 --end--
           $spaseMap = $mapping[$ii][RepositoryConst::DBCOL_REPOSITORY_ITEM_ATTR_TYPE_SPASE_MAPPING];
+
           if(preg_match('/^Catalog/', $spaseMap)==1){
             $this->setCatalog($mapping[$ii], $metadata[$ii]);
-            }else if(preg_match('/^Displaydata/', $spaseMap)==1){
+            }else if(preg_match('/^DisplayData/', $spaseMap)==1){
               $this->setDisplaydata($mapping[$ii], $metadata[$ii]);
             }else if(preg_match('/^Granule/', $spaseMap)==1){
               $this->setGranule($mapping[$ii], $metadata[$ii]);
             }else if(preg_match('/^Instrument/', $spaseMap)==1){
               $this->setInstrument($mapping[$ii], $metadata[$ii]);
-            }else if(preg_match('/^Numericaldata/', $spaseMap)==1){
+            }else if(preg_match('/^NumericalData/', $spaseMap)==1){
               $this->setNumericaldata($mapping[$ii], $metadata[$ii]);
             }else if(preg_match('/^Observatory/', $spaseMap)==1){
               $this->setObservatory($mapping[$ii], $metadata[$ii]);
@@ -189,17 +187,17 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
               $this->setPerson($mapping[$ii], $metadata[$ii]);
             }else if(preg_match('/^Repository/', $spaseMap)==1){
               $this->setRepository($mapping[$ii], $metadata[$ii]);
-            /*
+              /*
             }else if(preg_match('/^Service/', $spaseMap)==1){
               $this->setService($mapping[$ii], $metadata[$ii]);
-            */
+              */
             }else{
-              //何もしない 
+              //何もしない
             }
       }
     }
 
-    ///SPASE 
+    ///SPASE
     private function setCatalog($mapping_item, $metadata_item){
         $language = $mapping_item[RepositoryConst::DBCOL_REPOSITORY_ITEM_ATTR_TYPE_DISPLAY_LANG_TYPE];
         $spaseMap = $mapping_item[RepositoryConst::DBCOL_REPOSITORY_ITEM_ATTR_TYPE_SPASE_MAPPING];
@@ -211,7 +209,6 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
             switch($spaseMap)
             {
                 case RepositoryConst::SPASE_CATALOG_RESOURCEID:
-                    //$this->catalog->addResourceID($value);
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
                     $this->catalog->addResourceID($tmp);
                     break;
@@ -236,8 +233,10 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                     $this->catalog->addResourceheader_Contact_PersonID($tmp);
                     break;
                 case RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_CONTACT_ROLE:
-                    $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
-                    $this->catalog->addResourceheader_Contact_Role($tmp);
+                    $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction);
+					$tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+					$tmp->addArray($tmp2);
+					$this->catalog->addResourceheader_Contact_Role($tmp);
                     break;
                 case RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_REPOSITORYID:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
@@ -405,8 +404,10 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                     $this->catalog->addResourceheader_Contact_PersonID($tmp);
                     break;
                 case RepositoryConst::SPASE_DISPLAYDATA_RESOURCEHEADER_CONTACT_ROLE:
-                    $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
-                    $this->catalog->addResourceheader_Contact_Role($tmp);
+                    $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction);
+					$tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+					$tmp->addArray($tmp2);
+					$this->catalog->addResourceheader_Contact_Role($tmp);
                     break;
                 case RepositoryConst::SPASE_DISPLAYDATA_ACCESSINFORMATION_REPOSITORYID:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
@@ -657,16 +658,20 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                     $this->instrument->addResourceheader_Contact_PersonID($tmp);
                     break;
                 case RepositoryConst::SPASE_INSTRUMENT_RESOURCEHEADER_CONTACT_ROLE:
-                    $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction, $value, $language);
-                    $this->instrument->addResourceheader_Contact_Role($tmp);
+                    $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction);
+					$tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+					$tmp->addArray($tmp2);
+					$this->instrument->addResourceheader_Contact_Role($tmp);
                     break;
                 case RepositoryConst::SPASE_INSTRUMENT_TYPE:
                     $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction, $value, $language);
                     $this->instrument->addInstrumenttype($tmp);
                     break;
                 case RepositoryConst::SPASE_INSTRUMENT_INVESTIGATIONNAME:
-                    $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction, $value, $language);
-                    $this->instrument->addInvestigationname($tmp);
+                    $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction);
+					$tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+					$tmp->addArray($tmp2);
+					$this->instrument->addInvestigationname($tmp);
                     break;
                 case RepositoryConst::SPASE_INSTRUMENT_OBSEVATORYID:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
@@ -713,8 +718,10 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                     $this->numericaldata->addResourceheader_Contact_PersonID($tmp);
                     break;
                 case RepositoryConst::SPASE_NUMERICALDATA_CONTACT_ROLE:
-                    $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
-                    $this->numericaldata->addResourceheader_Contact_Role($tmp);
+                    $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction);
+					$tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+					$tmp->addArray($tmp2);
+					$this->numericaldata->addResourceheader_Contact_Role($tmp);
                     break;
                 case RepositoryConst::SPASE_NUMERICALDATA_ACCESSINFORMATION_REPOSITORYID:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
@@ -877,12 +884,16 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                     $this->observatory->addResourceheader_Contact_PersonID($tmp);
                     break;
                 case RepositoryConst::SPASE_OBSERVATORY_RESOURCEHEADER_CONTACT_ROLE:
-                    $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction, $value, $language);
-                    $this->observatory->addResourceheader_Contact_Role($tmp);
+                    $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction);
+					$tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+					$tmp->addArray($tmp2);
+					$this->observatory->addResourceheader_Contact_Role($tmp);
                     break;
                 case RepositoryConst::SPASE_OBSERVATORY_LOCATION_OBSERVATORYREGION:
-                    $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction, $value, $language);
-                    $this->observatory->addLocation_Observatoryregion($tmp);
+                    $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction);
+					$tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+					$tmp->addArray($tmp2);
+					$this->observatory->addLocation_Observatoryregion($tmp);
                     break;
                 case RepositoryConst::SPASE_OBSERVATORY_LOCATION_COORDINATESYSTEMNAME_LATITUDE:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
@@ -929,17 +940,10 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                     $this->person->addOrganizationname($tmp);
                     break;
                 case RepositoryConst::SPASE_PERSON_EMAIL:
-                    //echo $value;  ... $valueには値が入ってる
                     $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction);
-                    //$tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction, $value);
-                    //$tmp->addSource(new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value));
-                    $tmp->addArray(new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value));
-                    //array_push($this->tmp, $tmp);
-                    //$tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction);
-                    //array_push($this->$tmp, $tmp);
-                    //$this->person->addEmail($tmp);
-                    //$this->person->addEmail($tmp);
-                    
+					          $tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+					          $tmp->addArray($tmp2);
+					          $this->person->addEmail($tmp);
                     break;
                 default :
                     break;
@@ -978,8 +982,10 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                     $this->repository->addResourceheader_Contact_PersonID($tmp);
                     break;
                 case RepositoryConst::SPASE_REPOSITORY_RESOURCEHEADER_CONTACT_ROLE:
-                    $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
-                    $this->repository->addResourceheader_Contact_Role($tmp);
+                    $tmp = new Repository_Oaipmh_SPASE_Array($this->RepositoryAction);
+					$tmp2 = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+					$tmp->addArray($tmp2);
+					$this->repository->addResourceheader_Contact_Role($tmp);
                     break;
                 case RepositoryConst::SPASE_REPOSITORY_ACCESSURL_URL:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
@@ -990,6 +996,7 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
             }
         }
     }
+
 
     /*
      * ヘッダ出力処理
@@ -1022,7 +1029,7 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
 class Repository_Oaipmh_SPASE_Catalog
 {
   /*
-   * メンバ変数 SPASE
+   * メンバ変数 LOM
    */
   private $identifier = array();
   private $contribute = array();
@@ -1067,7 +1074,7 @@ class Repository_Oaipmh_SPASE_Catalog
   private $Phenomenontype = null;
   private $Measurementtype = null;
   private $Observedregion = null;
-  
+
   private $Spatialcoverage_Coordinatesystem_Coordinatesystemname = null;
   private $Spatialcoverage_Coordinatesystem_Coordinaterepresentation = null;
   private $Spatialcoverage_Northernmostlatitude = null;
@@ -1079,6 +1086,15 @@ class Repository_Oaipmh_SPASE_Catalog
   private $Spatialcoverage_Maximumaltitude = null;
   private $Spatialcoverage_Reference = null;
 
+/*
+  private $Phenomenontype = array();
+  private $Measurementtype = array();
+  private $Temporaldescription_Startdate = array();
+  private $Temporaldescription_Stopdate = array();
+  private $Temporaldescription_Relativestopdate = array();
+  private $Observedregion = array();
+*/
+
   private $repositoryAction = null;
 
   /*
@@ -1089,8 +1105,13 @@ class Repository_Oaipmh_SPASE_Catalog
   }
 
 /*   SPASE   */
-  
-  
+
+  /*
+  public function addSomething(Repository_Oaipmh_SPASE_Catalog $val){
+    array_push($this->val, $val);
+  }
+  */
+
   public function addResourceID(Repository_Oaipmh_SPASE_LangString $ResourceID){
     if($this->ResourceID == null){
         $this->ResourceID = $ResourceID;
@@ -1127,8 +1148,11 @@ class Repository_Oaipmh_SPASE_Catalog
     }
   }
 
-  public function addResourceheader_Contact_Role(Repository_Oaipmh_SPASE_LangString $Resourceheader_Contact_Role){
-    array_push($this->Resourceheader_Contact_Role, $Resourceheader_Contact_Role);
+  public function addResourceheader_Contact_Role(Repository_Oaipmh_SPASE_Array $Resourceheader_Contact_Role){
+  $tmp = RepositoryOutputFilterSPASE::retValue($Resourceheader_Contact_Role->getArrayCount());
+    if(strlen($tmp)>0){
+      array_push($this->Resourceheader_Contact_Role, $Resourceheader_Contact_Role);
+    }
   }
 
   public function addAccessinformation_Repositoryid(Repository_Oaipmh_SPASE_LangString $Accessinformation_Repositoryid){
@@ -1347,7 +1371,7 @@ class Repository_Oaipmh_SPASE_Catalog
     //encording
     $language = $this->repositoryAction->forXmlChange($language);
     $language = RepositoryOutputFilter::language($language);
-     
+
     if($this->language == null && strlen($language)>0){
       $this->language = $language;
     }
@@ -1357,10 +1381,11 @@ class Repository_Oaipmh_SPASE_Catalog
   {
     $xmlStr = '';
 
+    /*
     $xmlStr .= '<Version>';
     $xmlStr .= RepositoryConst::SPASE_VERSION;
     $xmlStr .= '</Version>'. "\n";
-
+	*/
     /*
     for($ii=0;$ii<count($this->identifier);$ii++){
       $xmlStr .= $this->identifier[$ii]->output();
@@ -1376,8 +1401,8 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.RepositoryConst::SPASE_C_RESOURCEID.'>'."\n";
         }
     }
-  
-    
+
+
     if($this->Resourceheader_Resourcename != null)
     {
       $xmlStr .= '<ResourceHeader>'."\n";
@@ -1395,7 +1420,7 @@ class Repository_Oaipmh_SPASE_Catalog
             */
         }
     }
-  
+
     if($this->Resourceheader_Releasedate != null)
     {
         $xml = $this->Resourceheader_Releasedate->output();
@@ -1406,7 +1431,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Resourceheader_Description != null)
     {
         $xml = $this->Resourceheader_Description->output();
@@ -1417,7 +1442,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Resourceheader_Acknowledgement != null)
     {
         $xml = $this->Resourceheader_Acknowledgement->output();
@@ -1428,7 +1453,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Resourceheader_Contact_PersonID != null || $this->Resourceheader_Contact_Role != null){
     $xmlStr .= '<Contact>'."\n";
     if($this->Resourceheader_Contact_PersonID != null)
@@ -1442,6 +1467,7 @@ class Repository_Oaipmh_SPASE_Catalog
         }
     }
 
+
     for($ii=0;$ii<count($this->Resourceheader_Contact_Role);$ii++){
           $xml = $this->Resourceheader_Contact_Role[$ii]->output();
           if(strlen($xml)>0){
@@ -1450,7 +1476,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= $xml;
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
           }
-      }
+
     $xmlStr .= '</Contact>'."\n";
     }
 
@@ -1458,9 +1484,9 @@ class Repository_Oaipmh_SPASE_Catalog
     {
     $xmlStr .= '</ResourceHeader>'."\n";
     }
-  
-    
-    
+
+
+
     if($this->Accessinformation_Repositoryid != null)
     {
       $xmlStr .= '<AccessInformation>'."\n";
@@ -1472,7 +1498,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Accessinformation_Availability != null)
     {
         $xml = $this->Accessinformation_Availability->output();
@@ -1494,7 +1520,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
 
     if($this->Accessinformation_Accessurl_Name != null || $this->Accessinformation_Accessurl_URL != null ||
       $this->Accessinformation_Accessurl_Description != null){
@@ -1510,7 +1536,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Accessinformation_Accessurl_URL != null)
     {
         $xml = $this->Accessinformation_Accessurl_URL->output();
@@ -1535,7 +1561,7 @@ class Repository_Oaipmh_SPASE_Catalog
 
     $xmlStr .= '</AccessURL>'."\n";
     }
-  
+
       if($this->Accessinformation_Format != null)
     {
         $xml = $this->Accessinformation_Format->output();
@@ -1546,11 +1572,11 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
-    
+
+
 
     if($this->Accessinformation_Dataextent_Quantity != null)
-    { 
+    {
       $xmlStr .= '<DataExtent>'."\n";
         $xml = $this->Accessinformation_Dataextent_Quantity->output();
         if(strlen($xml)>0){
@@ -1566,12 +1592,12 @@ class Repository_Oaipmh_SPASE_Catalog
     {
     $xmlStr .= '</AccessInformation>'."\n";
     }
-    
 
-    if($this->Temporaldescription_Startdate != NULL || $this->Temporaldescription_Stopdate != NULL 
+
+    if($this->Temporaldescription_Startdate != NULL || $this->Temporaldescription_Stopdate != NULL
       || $this->Temporaldescription_Relativestopdate != NULL){
       $xmlStr .= '<Temporaldescription>'."\n";
-  
+
     if($this->Temporaldescription_Startdate != null)
     {
         $xml = $this->Temporaldescription_Startdate->output();
@@ -1582,7 +1608,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Temporaldescription_Stopdate != null)
     {
         $xml = $this->Temporaldescription_Stopdate->output();
@@ -1593,7 +1619,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
       if($this->Temporaldescription_Relativestopdate != null)
     {
         $xml = $this->Temporaldescription_Relativestopdate->output();
@@ -1606,9 +1632,9 @@ class Repository_Oaipmh_SPASE_Catalog
     }
       $xmlStr .= '</Temporaldescription>'."\n";
     }
-  
 
-    
+
+
     if($this->Parameter_Name != null)
     {
       $xmlStr .= '<Parameter>'."\n";
@@ -1620,7 +1646,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Parameter_Description != null)
     {
         $xml = $this->Parameter_Description->output();
@@ -1631,8 +1657,8 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
-    
+
+
 
     if($this->Parameter_Field_Fieldquantity != null)
     {
@@ -1646,7 +1672,7 @@ class Repository_Oaipmh_SPASE_Catalog
         }
       $xmlStr .= '</Field>'."\n";
     }
-  
+
 
     if($this->Parameter_Particle_Particletype != NULL || $this->Parameter_Particle_Particlequantity != NULL){
       $xmlStr .= '<Particle>'."\n";
@@ -1660,7 +1686,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Parameter_Particle_Particlequantity != null)
     {
         $xml = $this->Parameter_Particle_Particlequantity->output();
@@ -1674,10 +1700,10 @@ class Repository_Oaipmh_SPASE_Catalog
       $xmlStr .= '</Particle>'."\n";
     }
 
-  
+
     if($this->Parameter_Wave_Wavetype != NULL || $this->Parameter_Wave_Wavequantity != NULL){
       $xmlStr .= '<Wave>'."\n";
-    
+
 
     if($this->Parameter_Wave_Wavetype != null)
     {
@@ -1689,7 +1715,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Parameter_Wave_Wavequantity != null)
     {
         $xml = $this->Parameter_Wave_Wavequantity->output();
@@ -1702,7 +1728,7 @@ class Repository_Oaipmh_SPASE_Catalog
     }
       $xmlStr .= '</Wave>'."\n";
     }
-  
+
     if($this->Parameter_Mixed_Mixedquantity != null)
     {
       $xmlStr .= '<Mixed>'."\n";
@@ -1715,7 +1741,7 @@ class Repository_Oaipmh_SPASE_Catalog
         }
       $xmlStr .= '</Mixed>'."\n";
     }
-  
+
     if($this->Parameter_Support_Supportquantity != null)
     {
       $xmlStr .= '<Support>'."\n";
@@ -1727,7 +1753,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
         $xmlStr .= '</Support>'."\n";
-  
+
     }
 
     if($this->Parameter_Name != null)
@@ -1735,7 +1761,7 @@ class Repository_Oaipmh_SPASE_Catalog
     $xmlStr .= '</Parameter>'."\n";
     }
 
-    
+
     if($this->Phenomenontype != null)
     {
         $xml = $this->Phenomenontype->output();
@@ -1746,7 +1772,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Measurementtype != null)
     {
         $xml = $this->Measurementtype->output();
@@ -1757,8 +1783,8 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
-    if($this->Temporaldescription_Startdate != null || $this->Temporaldescription_Stopdate != null 
+
+    if($this->Temporaldescription_Startdate != null || $this->Temporaldescription_Stopdate != null
       ||$this->Temporaldescription_Relativestopdate != null){
 
       $xmlStr .= '<Temporaldescription>'."\n";
@@ -1772,7 +1798,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Temporaldescription_Stopdate != null)
     {
         $xml = $this->Temporaldescription_Stopdate->output();
@@ -1783,7 +1809,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Temporaldescription_Relativestopdate != null)
     {
         $xml = $this->Temporaldescription_Relativestopdate->output();
@@ -1796,7 +1822,7 @@ class Repository_Oaipmh_SPASE_Catalog
     }
     $xmlStr .= '</Temporaldescription>'."\n";
     }
-  
+
     if($this->Observedregion != null)
     {
         $xml = $this->Observedregion->output();
@@ -1807,10 +1833,10 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
-    
 
-    if($this->Spatialcoverage_Coordinatesystem_Coordinatesystemname != null || 
+
+
+    if($this->Spatialcoverage_Coordinatesystem_Coordinatesystemname != null ||
       $this->Spatialcoverage_Coordinatesystem_Coordinaterepresentation != null){
 
     $xmlStr .= '<SpatialCoverage>'."\n";
@@ -1825,7 +1851,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Coordinatesystem_Coordinaterepresentation != null)
     {
         $xml = $this->Spatialcoverage_Coordinatesystem_Coordinaterepresentation->output();
@@ -1838,7 +1864,7 @@ class Repository_Oaipmh_SPASE_Catalog
     }
       $xmlStr .= '</CoordinateSystem>'."\n";
     }
-  
+
     if($this->Spatialcoverage_Northernmostlatitude != null)
     {
         $xml = $this->Spatialcoverage_Northernmostlatitude->output();
@@ -1849,7 +1875,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Southernmostlatitude != null)
     {
         $xml = $this->Spatialcoverage_Southernmostlatitude->output();
@@ -1860,7 +1886,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
       if($this->Spatialcoverage_Easternmostlongitude != null)
     {
         $xml = $this->Spatialcoverage_Easternmostlongitude->output();
@@ -1871,7 +1897,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Westernmostlongitude != null)
     {
         $xml = $this->Spatialcoverage_Westernmostlongitude->output();
@@ -1882,7 +1908,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Unit != null)
     {
         $xml = $this->Spatialcoverage_Unit->output();
@@ -1893,7 +1919,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Minimumaltitude != null)
     {
         $xml = $this->Spatialcoverage_Minimumaltitude->output();
@@ -1904,7 +1930,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
       if($this->Spatialcoverage_Maximumaltitude != null)
     {
         $xml = $this->Spatialcoverage_Maximumaltitude->output();
@@ -1915,7 +1941,7 @@ class Repository_Oaipmh_SPASE_Catalog
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Reference != null)
     {
         $xml = $this->Spatialcoverage_Reference->output();
@@ -1927,7 +1953,7 @@ class Repository_Oaipmh_SPASE_Catalog
         }
     }
 
-    if($this->Spatialcoverage_Coordinatesystem_Coordinatesystemname != null || 
+    if($this->Spatialcoverage_Coordinatesystem_Coordinatesystemname != null ||
       $this->Spatialcoverage_Coordinatesystem_Coordinaterepresentation != null){
     $xmlStr .= '</SpatialCoverage>'."\n";
     }
@@ -1936,10 +1962,11 @@ class Repository_Oaipmh_SPASE_Catalog
       if($this->ResourceID != null)
     {
     $xmlStr .= '</'.RepositoryConst::SPASE_CATALOG.'>';
-  }
+  	}
 
     return $xmlStr;
   }
+}
 }
 
 //DisplayData Class
@@ -2006,7 +2033,7 @@ class Repository_Oaipmh_SPASE_Displaydata
   }
 
 /*   SPASE   */
-  
+
   public function addResourceID(Repository_Oaipmh_SPASE_LangString $ResourceID){
     if($this->ResourceID == null){
         $this->ResourceID = $ResourceID;
@@ -2043,8 +2070,11 @@ class Repository_Oaipmh_SPASE_Displaydata
     }
   }
 
-  public function addResourceheader_Contact_Role(Repository_Oaipmh_SPASE_LangString $Resourceheader_Contact_Role){
-    array_push($this->Resourceheader_Contact_Role, $Resourceheader_Contact_Role);
+  public function addResourceheader_Contact_Role(Repository_Oaipmh_SPASE_Array $Resourceheader_Contact_Role){
+  	$tmp = RepositoryOutputFilterSPASE::retValue($Resourceheader_Contact_Role->getArrayCount());
+  	if(strlen($tmp)>0){
+  	array_push($this->Resourceheader_Contact_Role, $Resourceheader_Contact_Role);
+  	}
   }
 
   public function addAccessinformation_Repositoryid(Repository_Oaipmh_SPASE_LangString $Accessinformation_Repositoryid){
@@ -2236,7 +2266,6 @@ class Repository_Oaipmh_SPASE_Displaydata
     }
   }
 
-
   public function addSpatialcoverage_Maximumaltitude(Repository_Oaipmh_SPASE_LangString $Spatialcoverage_Maximumaltitude){
     if($this->Spatialcoverage_Maximumaltitude == null){
         $this->Spatialcoverage_Maximumaltitude = $Spatialcoverage_Maximumaltitude;
@@ -2256,12 +2285,12 @@ class Repository_Oaipmh_SPASE_Displaydata
       array_push($this->metadataSchema, $metadataSchema);
     }
   }
-  
+
   public function addLanguage($language){
     //encording
     $language = $this->repositoryAction->forXmlChange($language);
     $language = RepositoryOutputFilter::language($language);
-     
+
     if($this->language == null && strlen($language)>0){
       $this->language = $language;
     }
@@ -2270,8 +2299,6 @@ class Repository_Oaipmh_SPASE_Displaydata
   public function output(){
     $xmlStr = '';
 
-    
-  
     if($this->ResourceID != null)
     {
       $xmlStr .= '<'.RepositoryConst::SPASE_DISPLAYDATA.'>';
@@ -2282,8 +2309,8 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.RepositoryConst::SPASE_DD_RESOURCEID.'>'."\n";
         }
     }
-  
-    
+
+
     if($this->Resourceheader_Resourcename != null)
     {
       $xmlStr .= '<ResourceHeader>'."\n";
@@ -2301,7 +2328,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             */
         }
     }
-  
+
     if($this->Resourceheader_Releasedate != null)
     {
         $xml = $this->Resourceheader_Releasedate->output();
@@ -2312,7 +2339,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Resourceheader_Description != null)
     {
         $xml = $this->Resourceheader_Description->output();
@@ -2323,7 +2350,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Resourceheader_Acknowledgement != null)
     {
         $xml = $this->Resourceheader_Acknowledgement->output();
@@ -2334,7 +2361,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Resourceheader_Contact_PersonID != null || $this->Resourceheader_Contact_Role != null){
     $xmlStr .= '<Contact>'."\n";
     if($this->Resourceheader_Contact_PersonID != null)
@@ -2365,8 +2392,8 @@ class Repository_Oaipmh_SPASE_Displaydata
     $xmlStr .= '</ResourceHeader>'."\n";
     }
 
-    
-    
+
+
     if($this->Accessinformation_Repositoryid != null)
     {
       $xmlStr .= '<AccessInformation>'."\n";
@@ -2378,7 +2405,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Accessinformation_Availability != null)
     {
         $xml = $this->Accessinformation_Availability->output();
@@ -2400,7 +2427,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
 
     if($this->Accessinformation_Accessurl_Name != null || $this->Accessinformation_Accessurl_URL != null ||
       $this->Accessinformation_Accessurl_Description != null){
@@ -2416,7 +2443,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Accessinformation_Accessurl_URL != null)
     {
         $xml = $this->Accessinformation_Accessurl_URL->output();
@@ -2441,7 +2468,7 @@ class Repository_Oaipmh_SPASE_Displaydata
 
     $xmlStr .= '</AccessURL>'."\n";
     }
-  
+
       if($this->Accessinformation_Format != null)
     {
         $xml = $this->Accessinformation_Format->output();
@@ -2452,11 +2479,11 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
-    
+
+
 
     if($this->Accessinformation_Dataextent_Quantity != null)
-    { 
+    {
       $xmlStr .= '<DataExtent>'."\n";
         $xml = $this->Accessinformation_Dataextent_Quantity->output();
         if(strlen($xml)>0){
@@ -2472,12 +2499,12 @@ class Repository_Oaipmh_SPASE_Displaydata
     {
     $xmlStr .= '</AccessInformation>'."\n";
     }
-    
 
-    if($this->Temporaldescription_Startdate != NULL || $this->Temporaldescription_Stopdate != NULL 
+
+    if($this->Temporaldescription_Startdate != NULL || $this->Temporaldescription_Stopdate != NULL
       || $this->Temporaldescription_Relativestopdate != NULL){
       $xmlStr .= '<Temporaldescription>'."\n";
-  
+
     if($this->Temporaldescription_Startdate != null)
     {
         $xml = $this->Temporaldescription_Startdate->output();
@@ -2488,7 +2515,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Temporaldescription_Stopdate != null)
     {
         $xml = $this->Temporaldescription_Stopdate->output();
@@ -2499,7 +2526,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
       if($this->Temporaldescription_Relativestopdate != null)
     {
         $xml = $this->Temporaldescription_Relativestopdate->output();
@@ -2512,9 +2539,9 @@ class Repository_Oaipmh_SPASE_Displaydata
     }
       $xmlStr .= '</Temporaldescription>'."\n";
     }
-  
 
-    
+
+
 
     if($this->Parameter_Name != null)
     {
@@ -2527,7 +2554,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Parameter_Description != null)
     {
         $xml = $this->Parameter_Description->output();
@@ -2538,8 +2565,8 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
-    
+
+
 
     if($this->Parameter_Field_Fieldquantity != null)
     {
@@ -2553,7 +2580,7 @@ class Repository_Oaipmh_SPASE_Displaydata
         }
       $xmlStr .= '</Field>'."\n";
     }
-  
+
 
     if($this->Parameter_Particle_Particletype != NULL || $this->Parameter_Particle_Particlequantity != NULL){
       $xmlStr .= '<Particle>'."\n";
@@ -2567,7 +2594,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Parameter_Particle_Particlequantity != null)
     {
         $xml = $this->Parameter_Particle_Particlequantity->output();
@@ -2581,10 +2608,10 @@ class Repository_Oaipmh_SPASE_Displaydata
       $xmlStr .= '</Particle>'."\n";
     }
 
-  
+
     if($this->Parameter_Wave_Wavetype != NULL || $this->Parameter_Wave_Wavequantity != NULL){
       $xmlStr .= '<Wave>'."\n";
-    
+
 
     if($this->Parameter_Wave_Wavetype != null)
     {
@@ -2596,7 +2623,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Parameter_Wave_Wavequantity != null)
     {
         $xml = $this->Parameter_Wave_Wavequantity->output();
@@ -2609,7 +2636,7 @@ class Repository_Oaipmh_SPASE_Displaydata
     }
       $xmlStr .= '</Wave>'."\n";
     }
-  
+
     if($this->Parameter_Mixed_Mixedquantity != null)
     {
       $xmlStr .= '<Mixed>'."\n";
@@ -2622,7 +2649,7 @@ class Repository_Oaipmh_SPASE_Displaydata
         }
       $xmlStr .= '</Mixed>'."\n";
     }
-  
+
     if($this->Parameter_Support_Supportquantity != null)
     {
       $xmlStr .= '<Support>'."\n";
@@ -2634,7 +2661,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
         $xmlStr .= '</Support>'."\n";
-  
+
     }
 
     if($this->Parameter_Name != null)
@@ -2642,7 +2669,7 @@ class Repository_Oaipmh_SPASE_Displaydata
     $xmlStr .= '</Parameter>'."\n";
   }
 
-    
+
     if($this->Phenomenontype != null)
     {
         $xml = $this->Phenomenontype->output();
@@ -2653,7 +2680,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Measurementtype != null)
     {
         $xml = $this->Measurementtype->output();
@@ -2664,8 +2691,8 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
-    if($this->Temporaldescription_Startdate != null || $this->Temporaldescription_Stopdate != null 
+
+    if($this->Temporaldescription_Startdate != null || $this->Temporaldescription_Stopdate != null
       ||$this->Temporaldescription_Relativestopdate != null){
 
       $xmlStr .= '<Temporaldescription>'."\n";
@@ -2679,7 +2706,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Temporaldescription_Stopdate != null)
     {
         $xml = $this->Temporaldescription_Stopdate->output();
@@ -2690,7 +2717,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Temporaldescription_Relativestopdate != null)
     {
         $xml = $this->Temporaldescription_Relativestopdate->output();
@@ -2703,7 +2730,7 @@ class Repository_Oaipmh_SPASE_Displaydata
     }
     $xmlStr .= '</Temporaldescription>'."\n";
     }
-  
+
     if($this->Observedregion != null)
     {
         $xml = $this->Observedregion->output();
@@ -2714,10 +2741,10 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
-    
 
-    if($this->Spatialcoverage_Coordinatesystem_Coordinatesystemname != null || 
+
+
+    if($this->Spatialcoverage_Coordinatesystem_Coordinatesystemname != null ||
       $this->Spatialcoverage_Coordinatesystem_Coordinaterepresentation != null){
 
     $xmlStr .= '<SpatialCoverage>'."\n";
@@ -2732,7 +2759,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Coordinatesystem_Coordinaterepresentation != null)
     {
         $xml = $this->Spatialcoverage_Coordinatesystem_Coordinaterepresentation->output();
@@ -2745,7 +2772,7 @@ class Repository_Oaipmh_SPASE_Displaydata
     }
       $xmlStr .= '</CoordinateSystem>'."\n";
     }
-  
+
     if($this->Spatialcoverage_Northernmostlatitude != null)
     {
         $xml = $this->Spatialcoverage_Northernmostlatitude->output();
@@ -2756,7 +2783,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Southernmostlatitude != null)
     {
         $xml = $this->Spatialcoverage_Southernmostlatitude->output();
@@ -2767,7 +2794,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
       if($this->Spatialcoverage_Easternmostlongitude != null)
     {
         $xml = $this->Spatialcoverage_Easternmostlongitude->output();
@@ -2778,7 +2805,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Westernmostlongitude != null)
     {
         $xml = $this->Spatialcoverage_Westernmostlongitude->output();
@@ -2789,7 +2816,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Unit != null)
     {
         $xml = $this->Spatialcoverage_Unit->output();
@@ -2800,7 +2827,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Minimumaltitude != null)
     {
         $xml = $this->Spatialcoverage_Minimumaltitude->output();
@@ -2811,7 +2838,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
       if($this->Spatialcoverage_Maximumaltitude != null)
     {
         $xml = $this->Spatialcoverage_Maximumaltitude->output();
@@ -2822,7 +2849,7 @@ class Repository_Oaipmh_SPASE_Displaydata
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Reference != null)
     {
         $xml = $this->Spatialcoverage_Reference->output();
@@ -2834,7 +2861,7 @@ class Repository_Oaipmh_SPASE_Displaydata
         }
     }
 
-    if($this->Spatialcoverage_Coordinatesystem_Coordinatesystemname != null || 
+    if($this->Spatialcoverage_Coordinatesystem_Coordinatesystemname != null ||
       $this->Spatialcoverage_Coordinatesystem_Coordinaterepresentation != null){
     $xmlStr .= '</SpatialCoverage>'."\n";
     }
@@ -2888,7 +2915,7 @@ class Repository_Oaipmh_SPASE_NumericalData
   private $Phenomenontype = null;
   private $Measurementtype = null;
   private $Observedregion = null;
-  
+
   private $Spatialcoverage_Coordinatesystem_Coordinatesystemname = null;
   private $Spatialcoverage_Coordinatesystem_Coordinaterepresentation = null;
   private $Spatialcoverage_Northernmostlatitude = null;
@@ -2910,13 +2937,13 @@ class Repository_Oaipmh_SPASE_NumericalData
   }
 
 /*   SPASE   */
-  
+
   /*
   public function addSomething(Repository_Oaipmh_SPASE_Catalog $val){
     array_push($this->val, $val);
   }
   */
-  
+
   public function addResourceID(Repository_Oaipmh_SPASE_LangString $ResourceID){
     if($this->ResourceID == null){
         $this->ResourceID = $ResourceID;
@@ -2953,8 +2980,11 @@ class Repository_Oaipmh_SPASE_NumericalData
     }
   }
 
-  public function addResourceheader_Contact_Role(Repository_Oaipmh_SPASE_LangString $Resourceheader_Contact_Role){
-    array_push($this->Resourceheader_Contact_Role, $Resourceheader_Contact_Role);
+  public function addResourceheader_Contact_Role(Repository_Oaipmh_SPASE_Array $Resourceheader_Contact_Role){
+  	$tmp = RepositoryOutputFilterSPASE::retValue($Resourceheader_Contact_Role->getArrayCount());
+  	if(strlen($tmp)>0){
+  	array_push($this->Resourceheader_Contact_Role, $Resourceheader_Contact_Role);
+  	}
   }
 
   public function addAccessinformation_Repositoryid(Repository_Oaipmh_SPASE_LangString $Accessinformation_Repositoryid){
@@ -3158,7 +3188,7 @@ class Repository_Oaipmh_SPASE_NumericalData
         $this->Spatialcoverage_Reference = $Spatialcoverage_Reference;
     }
   }
-  
+
   //add metadata schema and language
   public function addMetadataSchema($metadataSchema){
     $metadataSchema = $this->repositoryAction->forXmlChange($metadataSchema);
@@ -3170,7 +3200,7 @@ class Repository_Oaipmh_SPASE_NumericalData
     //encording
     $language = $this->repositoryAction->forXmlChange($language);
     $language = RepositoryOutputFilter::language($language);
-     
+
     if($this->language == null && strlen($language)>0){
       $this->language = $language;
     }
@@ -3179,8 +3209,6 @@ class Repository_Oaipmh_SPASE_NumericalData
   public function output(){
     $xmlStr = '';
 
-    
-    
     if($this->ResourceID != null)
     {
       $xmlStr .= '<'.RepositoryConst::SPASE_NUMERICALDATA.'>';
@@ -3191,8 +3219,8 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.RepositoryConst::SPASE_ND_RESOURCEID.'>'."\n";
         }
     }
-  
-    
+
+
     if($this->Resourceheader_Resourcename != null)
     {
       $xmlStr .= '<ResourceHeader>'."\n";
@@ -3210,7 +3238,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             */
         }
     }
-  
+
     if($this->Resourceheader_Releasedate != null)
     {
         $xml = $this->Resourceheader_Releasedate->output();
@@ -3221,7 +3249,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Resourceheader_Description != null)
     {
         $xml = $this->Resourceheader_Description->output();
@@ -3232,7 +3260,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Resourceheader_Acknowledgement != null)
     {
         $xml = $this->Resourceheader_Acknowledgement->output();
@@ -3243,7 +3271,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Resourceheader_Contact_PersonID != null || $this->Resourceheader_Contact_Role != null){
     $xmlStr .= '<Contact>'."\n";
     if($this->Resourceheader_Contact_PersonID != null)
@@ -3273,8 +3301,8 @@ class Repository_Oaipmh_SPASE_NumericalData
     {
     $xmlStr .= '</ResourceHeader>'."\n";
     }
-   
-    
+
+
     if($this->Accessinformation_Repositoryid != null)
     {
        $xmlStr .= '<AccessInformation>'."\n";
@@ -3286,7 +3314,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Accessinformation_Availability != null)
     {
         $xml = $this->Accessinformation_Availability->output();
@@ -3308,7 +3336,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
 
     if($this->Accessinformation_Accessurl_Name != null || $this->Accessinformation_Accessurl_URL != null ||
       $this->Accessinformation_Accessurl_Description != null){
@@ -3324,7 +3352,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Accessinformation_Accessurl_URL != null)
     {
         $xml = $this->Accessinformation_Accessurl_URL->output();
@@ -3349,7 +3377,7 @@ class Repository_Oaipmh_SPASE_NumericalData
 
     $xmlStr .= '</AccessURL>'."\n";
     }
-  
+
       if($this->Accessinformation_Format != null)
     {
         $xml = $this->Accessinformation_Format->output();
@@ -3360,11 +3388,11 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
-    
+
+
 
     if($this->Accessinformation_Dataextent_Quantity != null)
-    { 
+    {
       $xmlStr .= '<DataExtent>'."\n";
         $xml = $this->Accessinformation_Dataextent_Quantity->output();
         if(strlen($xml)>0){
@@ -3380,12 +3408,12 @@ class Repository_Oaipmh_SPASE_NumericalData
     {
     $xmlStr .= '</AccessInformation>'."\n";
     }
-    
 
-    if($this->Temporaldescription_Startdate != NULL || $this->Temporaldescription_Stopdate != NULL 
+
+    if($this->Temporaldescription_Startdate != NULL || $this->Temporaldescription_Stopdate != NULL
       || $this->Temporaldescription_Relativestopdate != NULL){
       $xmlStr .= '<Temporaldescription>'."\n";
-  
+
     if($this->Temporaldescription_Startdate != null)
     {
         $xml = $this->Temporaldescription_Startdate->output();
@@ -3396,7 +3424,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Temporaldescription_Stopdate != null)
     {
         $xml = $this->Temporaldescription_Stopdate->output();
@@ -3407,7 +3435,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
       if($this->Temporaldescription_Relativestopdate != null)
     {
         $xml = $this->Temporaldescription_Relativestopdate->output();
@@ -3420,9 +3448,9 @@ class Repository_Oaipmh_SPASE_NumericalData
     }
       $xmlStr .= '</Temporaldescription>'."\n";
     }
-  
 
-    
+
+
 
     if($this->Parameter_Name != null)
     {
@@ -3435,7 +3463,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Parameter_Description != null)
     {
         $xml = $this->Parameter_Description->output();
@@ -3446,8 +3474,8 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
-    
+
+
 
     if($this->Parameter_Field_Fieldquantity != null)
     {
@@ -3461,7 +3489,7 @@ class Repository_Oaipmh_SPASE_NumericalData
         }
       $xmlStr .= '</Field>'."\n";
     }
-  
+
 
     if($this->Parameter_Particle_Particletype != NULL || $this->Parameter_Particle_Particlequantity != NULL){
       $xmlStr .= '<Particle>'."\n";
@@ -3475,7 +3503,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Parameter_Particle_Particlequantity != null)
     {
         $xml = $this->Parameter_Particle_Particlequantity->output();
@@ -3489,10 +3517,10 @@ class Repository_Oaipmh_SPASE_NumericalData
       $xmlStr .= '</Particle>'."\n";
     }
 
-  
+
     if($this->Parameter_Wave_Wavetype != NULL || $this->Parameter_Wave_Wavequantity != NULL){
       $xmlStr .= '<Wave>'."\n";
-    
+
 
     if($this->Parameter_Wave_Wavetype != null)
     {
@@ -3504,7 +3532,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Parameter_Wave_Wavequantity != null)
     {
         $xml = $this->Parameter_Wave_Wavequantity->output();
@@ -3517,7 +3545,7 @@ class Repository_Oaipmh_SPASE_NumericalData
     }
       $xmlStr .= '</Wave>'."\n";
     }
-  
+
     if($this->Parameter_Mixed_Mixedquantity != null)
     {
       $xmlStr .= '<Mixed>'."\n";
@@ -3530,7 +3558,7 @@ class Repository_Oaipmh_SPASE_NumericalData
         }
       $xmlStr .= '</Mixed>'."\n";
     }
-  
+
     if($this->Parameter_Support_Supportquantity != null)
     {
       $xmlStr .= '<Support>'."\n";
@@ -3542,7 +3570,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
         $xmlStr .= '</Support>'."\n";
-  
+
     }
 
     if($this->Parameter_Name != null)
@@ -3550,7 +3578,7 @@ class Repository_Oaipmh_SPASE_NumericalData
     $xmlStr .= '</Parameter>'."\n";
     }
 
-    
+
     if($this->Phenomenontype != null)
     {
         $xml = $this->Phenomenontype->output();
@@ -3561,7 +3589,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Measurementtype != null)
     {
         $xml = $this->Measurementtype->output();
@@ -3572,8 +3600,8 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
-    if($this->Temporaldescription_Startdate != null || $this->Temporaldescription_Stopdate != null 
+
+    if($this->Temporaldescription_Startdate != null || $this->Temporaldescription_Stopdate != null
       ||$this->Temporaldescription_Relativestopdate != null){
 
       $xmlStr .= '<Temporaldescription>'."\n";
@@ -3587,7 +3615,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Temporaldescription_Stopdate != null)
     {
         $xml = $this->Temporaldescription_Stopdate->output();
@@ -3598,7 +3626,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Temporaldescription_Relativestopdate != null)
     {
         $xml = $this->Temporaldescription_Relativestopdate->output();
@@ -3611,7 +3639,7 @@ class Repository_Oaipmh_SPASE_NumericalData
     }
     $xmlStr .= '</Temporaldescription>'."\n";
     }
-  
+
     if($this->Observedregion != null)
     {
         $xml = $this->Observedregion->output();
@@ -3622,10 +3650,10 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
-    
 
-    if($this->Spatialcoverage_Coordinatesystem_Coordinatesystemname != null || 
+
+
+    if($this->Spatialcoverage_Coordinatesystem_Coordinatesystemname != null ||
       $this->Spatialcoverage_Coordinatesystem_Coordinaterepresentation != null){
 
       $xmlStr .= '<SpatialCoverage>'."\n";
@@ -3640,7 +3668,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Coordinatesystem_Coordinaterepresentation != null)
     {
         $xml = $this->Spatialcoverage_Coordinatesystem_Coordinaterepresentation->output();
@@ -3653,7 +3681,7 @@ class Repository_Oaipmh_SPASE_NumericalData
     }
       $xmlStr .= '</CoordinateSystem>'."\n";
     }
-  
+
     if($this->Spatialcoverage_Northernmostlatitude != null)
     {
         $xml = $this->Spatialcoverage_Northernmostlatitude->output();
@@ -3664,7 +3692,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Southernmostlatitude != null)
     {
         $xml = $this->Spatialcoverage_Southernmostlatitude->output();
@@ -3675,7 +3703,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
       if($this->Spatialcoverage_Easternmostlongitude != null)
     {
         $xml = $this->Spatialcoverage_Easternmostlongitude->output();
@@ -3686,7 +3714,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Westernmostlongitude != null)
     {
         $xml = $this->Spatialcoverage_Westernmostlongitude->output();
@@ -3697,7 +3725,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Unit != null)
     {
         $xml = $this->Spatialcoverage_Unit->output();
@@ -3708,7 +3736,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Minimumaltitude != null)
     {
         $xml = $this->Spatialcoverage_Minimumaltitude->output();
@@ -3719,7 +3747,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
       if($this->Spatialcoverage_Maximumaltitude != null)
     {
         $xml = $this->Spatialcoverage_Maximumaltitude->output();
@@ -3730,7 +3758,7 @@ class Repository_Oaipmh_SPASE_NumericalData
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Reference != null)
     {
         $xml = $this->Spatialcoverage_Reference->output();
@@ -3742,7 +3770,7 @@ class Repository_Oaipmh_SPASE_NumericalData
         }
     }
 
-    if($this->Spatialcoverage_Coordinatesystem_Coordinatesystemname != null || 
+    if($this->Spatialcoverage_Coordinatesystem_Coordinatesystemname != null ||
       $this->Spatialcoverage_Coordinatesystem_Coordinaterepresentation != null){
     $xmlStr .= '</SpatialCoverage>'."\n";
     }
@@ -3752,7 +3780,7 @@ class Repository_Oaipmh_SPASE_NumericalData
     $xmlStr .= '</'.RepositoryConst::SPASE_NUMERICALDATA.'>';
     }
 
-    return $xmlStr;
+    return $xmlStr; // $xmlStrに何も入ってない...
   }
 }
 
@@ -3785,8 +3813,8 @@ class Repository_Oaipmh_SPASE_Instrument
   }
 
 /*   SPASE   */
-  
-  
+
+
   public function addResourceID(Repository_Oaipmh_SPASE_LangString $ResourceID){
     if($this->ResourceID == null){
         $this->ResourceID = $ResourceID;
@@ -3824,7 +3852,7 @@ class Repository_Oaipmh_SPASE_Instrument
   }
 
   public function addResourceheader_Contact_Role(Repository_Oaipmh_SPASE_Array $Resourceheader_Contact_Role){
-    $tmp = RepositoryOutputFilterSPASE::retValue($Resourceheader_Contact_Role->getValue());
+    $tmp = RepositoryOutputFilterSPASE::retValue($Resourceheader_Contact_Role->getArrayCount());
     if(strlen($tmp)>0){
       array_push($this->Resourceheader_Contact_Role, $Resourceheader_Contact_Role);
     }
@@ -3838,7 +3866,7 @@ class Repository_Oaipmh_SPASE_Instrument
   }
 
   public function addInvestigationname(Repository_Oaipmh_SPASE_Array $Investigationname){
-    $tmp = RepositoryOutputFilterSPASE::retValue($Investigationname->getValue());
+    $tmp = RepositoryOutputFilterSPASE::retValue($Investigationname->getArrayCount());
     if(strlen($tmp)>0){
       array_push($this->Investigationname, $Investigationname);
     }
@@ -3849,7 +3877,6 @@ class Repository_Oaipmh_SPASE_Instrument
         $this->ObsevatoryID = $ObsevatoryID;
     }
   }
-
 
   //add metadata schema and language
   public function addMetadataSchema($metadataSchema){
@@ -3862,7 +3889,7 @@ class Repository_Oaipmh_SPASE_Instrument
     //encording
     $language = $this->repositoryAction->forXmlChange($language);
     $language = RepositoryOutputFilter::language($language);
-     
+
     if($this->language == null && strlen($language)>0){
       $this->language = $language;
     }
@@ -3882,8 +3909,8 @@ class Repository_Oaipmh_SPASE_Instrument
             $xmlStr .= '</'.RepositoryConst::SPASE_I_RESOURCEID.'>'."\n";
         }
     }
-    
-    
+
+
     if($this->Resourceheader_Resourcename != null)
     {
       $xmlStr .= '<ResourceHeader>'."\n";
@@ -3901,7 +3928,7 @@ class Repository_Oaipmh_SPASE_Instrument
             */
         }
     }
-  
+
     if($this->Resourceheader_Releasedate != null)
     {
         $xml = $this->Resourceheader_Releasedate->output();
@@ -3912,7 +3939,7 @@ class Repository_Oaipmh_SPASE_Instrument
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Resourceheader_Description != null)
     {
         $xml = $this->Resourceheader_Description->output();
@@ -3923,7 +3950,7 @@ class Repository_Oaipmh_SPASE_Instrument
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Resourceheader_Acknowledgement != null)
     {
         $xml = $this->Resourceheader_Acknowledgement->output();
@@ -3934,7 +3961,7 @@ class Repository_Oaipmh_SPASE_Instrument
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Resourceheader_Contact_PersonID != null || $this->Resourceheader_Contact_Role != null){
     $xmlStr .= '<Contact>'."\n";
     if($this->Resourceheader_Contact_PersonID != null)
@@ -4041,13 +4068,13 @@ class Repository_Oaipmh_SPASE_Observatory
   }
 
 /*   SPASE   */
-  
+
   /*
   public function addSomething(Repository_Oaipmh_SPASE_Catalog $val){
     array_push($this->val, $val);
   }
   */
-  
+
   public function addResourceID(Repository_Oaipmh_SPASE_LangString $ResourceID){
     if($this->ResourceID == null){
         $this->ResourceID = $ResourceID;
@@ -4085,18 +4112,18 @@ class Repository_Oaipmh_SPASE_Observatory
   }
 
   public function addResourceheader_Contact_Role(Repository_Oaipmh_SPASE_Array $Resourceheader_Contact_Role){
-    $tmp = RepositoryOutputFilterSPASE::retValue($Resourceheader_Contact_Role->getValue());
+    $tmp = RepositoryOutputFilterSPASE::retValue($Resourceheader_Contact_Role->getArrayCount());
     if(strlen($tmp)>0){
       array_push($this->Resourceheader_Contact_Role, $Resourceheader_Contact_Role);
-    }  
+    }
   }
 
 
   public function addLocation_Observatoryregion(Repository_Oaipmh_SPASE_Array $Location_Observatoryregion){
-    $tmp = RepositoryOutputFilterSPASE::retValue($Location_Observatoryregion->getValue());
+    $tmp = RepositoryOutputFilterSPASE::retValue($Location_Observatoryregion->getArrayCount());
     if(strlen($tmp)>0){
       array_push($this->Location_Observatoryregion, $Location_Observatoryregion);
-    }    
+    }
   }
 
   public function addLocation_CoordinateSystemName_Latitude(Repository_Oaipmh_SPASE_LangString $Location_CoordinateSystemName_Latitude){
@@ -4128,7 +4155,7 @@ class Repository_Oaipmh_SPASE_Observatory
     //encording
     $language = $this->repositoryAction->forXmlChange($language);
     $language = RepositoryOutputFilter::language($language);
-     
+
     if($this->language == null && strlen($language)>0){
       $this->language = $language;
     }
@@ -4147,8 +4174,8 @@ class Repository_Oaipmh_SPASE_Observatory
             $xmlStr .= '</'.RepositoryConst::SPASE_O_RESOURCEID.'>'."\n";
         }
     }
-  
-    
+
+
     if($this->Resourceheader_Resourcename != null)
     {
       $xmlStr .= '<ResourceHeader>'."\n";
@@ -4161,7 +4188,7 @@ class Repository_Oaipmh_SPASE_Observatory
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Resourceheader_Releasedate != null)
     {
         $xml = $this->Resourceheader_Releasedate->output();
@@ -4172,7 +4199,7 @@ class Repository_Oaipmh_SPASE_Observatory
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Resourceheader_Description != null)
     {
         $xml = $this->Resourceheader_Description->output();
@@ -4183,7 +4210,7 @@ class Repository_Oaipmh_SPASE_Observatory
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Resourceheader_Acknowledgement != null)
     {
         $xml = $this->Resourceheader_Acknowledgement->output();
@@ -4194,7 +4221,7 @@ class Repository_Oaipmh_SPASE_Observatory
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Resourceheader_Contact_PersonID != null || $this->Resourceheader_Contact_Role != null){
     $xmlStr .= '<Contact>'."\n";
     if($this->Resourceheader_Contact_PersonID != null)
@@ -4226,7 +4253,7 @@ class Repository_Oaipmh_SPASE_Observatory
   }
 
 
-  if($this->Location_Observatoryregion != null || $this->Location_CoordinateSystemName_Latitude != null 
+  if($this->Location_Observatoryregion != null || $this->Location_CoordinateSystemName_Latitude != null
     || $this->Location_CoordinateSystemName_Longitude != null){
   $xmlStr .= '<Location>'."\n";
 
@@ -4238,7 +4265,7 @@ class Repository_Oaipmh_SPASE_Observatory
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
     }
   }
-  
+
   $xmlStr .= '<CoordinateSystemName>'."\n";
   if($this->Location_CoordinateSystemName_Latitude != null)
   {
@@ -4262,7 +4289,7 @@ class Repository_Oaipmh_SPASE_Observatory
       }
   }
   $xmlStr .= '</CoordinateSystemName>'."\n";
-  
+
   $xmlStr .= '</Location>'."\n";
   }
 
@@ -4315,7 +4342,7 @@ class Repository_Oaipmh_SPASE_Person
   }
 
 /*   SPASE   */
-  
+
   public function addResourceID(Repository_Oaipmh_SPASE_LangString $ResourceID){
     if($this->ResourceID == null){
         $this->ResourceID = $ResourceID;
@@ -4341,7 +4368,7 @@ class Repository_Oaipmh_SPASE_Person
   }
 
   public function addEmail(Repository_Oaipmh_SPASE_Array $Email){
-    $tmp = RepositoryOutputFilterSPASE::retValue($Email->getValue());
+    $tmp = RepositoryOutputFilterSPASE::retValue($Email->getArrayCount());
     if(strlen($tmp)>0){
       array_push($this->Email, $Email);
     }
@@ -4358,7 +4385,7 @@ class Repository_Oaipmh_SPASE_Person
     //encording
     $language = $this->repositoryAction->forXmlChange($language);
     $language = RepositoryOutputFilter::language($language);
-     
+
     if($this->language == null && strlen($language)>0){
       $this->language = $language;
     }
@@ -4366,8 +4393,6 @@ class Repository_Oaipmh_SPASE_Person
 
   public function output(){
     $xmlStr = '';
-
-    
 
   if($this->ResourceID != null)
   {
@@ -4403,7 +4428,7 @@ class Repository_Oaipmh_SPASE_Person
         }
   }
 
-  
+
   if($this->Organizationname != null)
   {
         $xml = $this->Organizationname->output();
@@ -4415,13 +4440,30 @@ class Repository_Oaipmh_SPASE_Person
         }
   }
 
-  //print_r($this->Email); // ... 何も入ってない
+/*
   for($ii=0;$ii<count($this->Email);$ii++){
-    $value = explode(".",RepositoryConst::SPASE_P_EMAIL);
-    $xmlStr .= '<'.$value[count($value)-1].'>';
-    $xmlStr .= $xml;
-    $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
+  	$xml = $this->Email[$ii]->output();
+  	if(strlen($xml)>0){
+  		$xmlStr .= '<'.RepositoryConst::SPASE_P_EMAIL.'>';
+  		$xmlStr .= $xml;
+  		$xmlStr .= '</'.RepositoryConst::SPASE_P_EMAIL.'>'."\n";
+  	}
   }
+  */
+
+  if($this->Email != null)
+  {
+	  for($ii=0;$ii<count($this->Email);$ii++){
+	  	$xml = $this->Email[$ii]->output();
+	  	if(strlen($xml)>0){
+		    $value = explode(".",RepositoryConst::SPASE_P_EMAIL);
+		    $xmlStr .= '<'.$value[count($value)-1].'>';
+		    $xmlStr .= $xml;
+		    $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
+	  	}
+	  }
+  }
+
 
   if($this->ResourceID != null)
   {
@@ -4458,13 +4500,13 @@ class Repository_Oaipmh_SPASE_Repository
   }
 
 /*   SPASE   */
-  
+
   /*
   public function addSomething(Repository_Oaipmh_SPASE_Catalog $val){
     array_push($this->val, $val);
   }
   */
-  
+
   public function addResourceID(Repository_Oaipmh_SPASE_LangString $ResourceID){
     if($this->ResourceID == null){
         $this->ResourceID = $ResourceID;
@@ -4501,8 +4543,8 @@ class Repository_Oaipmh_SPASE_Repository
     }
   }
 
-  public function addResourceheader_Contact_Role(Repository_Oaipmh_SPASE_LangString $Resourceheader_Contact_Role){
-    $tmp = RepositoryOutputFilterSPASE::retValue($Resourceheader_Contact_Role->getValue());
+  public function addResourceheader_Contact_Role(Repository_Oaipmh_SPASE_Array $Resourceheader_Contact_Role){
+    $tmp = RepositoryOutputFilterSPASE::retValue($Resourceheader_Contact_Role->getArrayCount());
     if(strlen($tmp)>0){
       array_push($this->Resourceheader_Contact_Role, $Resourceheader_Contact_Role);
     }
@@ -4526,7 +4568,7 @@ class Repository_Oaipmh_SPASE_Repository
     //encording
     $language = $this->repositoryAction->forXmlChange($language);
     $language = RepositoryOutputFilter::language($language);
-     
+
     if($this->language == null && strlen($language)>0){
       $this->language = $language;
     }
@@ -4547,7 +4589,7 @@ class Repository_Oaipmh_SPASE_Repository
       }
   }
 
-  
+
     if($this->Resourceheader_Resourcename != null)
     {
       $xmlStr .= '<ResourceHeader>'."\n";
@@ -4560,7 +4602,7 @@ class Repository_Oaipmh_SPASE_Repository
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Resourceheader_Releasedate != null)
     {
         $xml = $this->Resourceheader_Releasedate->output();
@@ -4571,7 +4613,7 @@ class Repository_Oaipmh_SPASE_Repository
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Resourceheader_Description != null)
     {
         $xml = $this->Resourceheader_Description->output();
@@ -4582,7 +4624,7 @@ class Repository_Oaipmh_SPASE_Repository
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Resourceheader_Acknowledgement != null)
     {
         $xml = $this->Resourceheader_Acknowledgement->output();
@@ -4593,7 +4635,7 @@ class Repository_Oaipmh_SPASE_Repository
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Resourceheader_Contact_PersonID != null || $this->Resourceheader_Contact_Role != null){
     $xmlStr .= '<Contact>'."\n";
     if($this->Resourceheader_Contact_PersonID != null)
@@ -4679,13 +4721,13 @@ class Repository_Oaipmh_SPASE_Granule
   }
 
 /*   SPASE   */
-  
+
   /*
   public function addSomething(Repository_Oaipmh_SPASE_Catalog $val){
     array_push($this->val, $val);
   }
   */
-  
+
   public function addResourceID(Repository_Oaipmh_SPASE_LangString $ResourceID){
     if($this->ResourceID == null){
         $this->ResourceID = $ResourceID;
@@ -4809,7 +4851,7 @@ class Repository_Oaipmh_SPASE_Granule
     //encording
     $language = $this->repositoryAction->forXmlChange($language);
     $language = RepositoryOutputFilter::language($language);
-     
+
     if($this->language == null && strlen($language)>0){
       $this->language = $language;
     }
@@ -4912,7 +4954,11 @@ class Repository_Oaipmh_SPASE_Granule
   $xmlStr .= '</Source>'."\n";
   }
 
-    if($this->Spatialcoverage_Coordinatesystem_Coordinatesystemname != null || 
+
+
+
+
+    if($this->Spatialcoverage_Coordinatesystem_Coordinatesystemname != null ||
       $this->Spatialcoverage_Coordinatesystem_Coordinaterepresentation != null){
       $xmlStr .= '<SpatialCoverage>'."\n";
     $xmlStr .= '<CoordinateSystem>'."\n";
@@ -4926,7 +4972,7 @@ class Repository_Oaipmh_SPASE_Granule
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Coordinatesystem_Coordinaterepresentation != null)
     {
         $xml = $this->Spatialcoverage_Coordinatesystem_Coordinaterepresentation->output();
@@ -4939,7 +4985,7 @@ class Repository_Oaipmh_SPASE_Granule
     }
       $xmlStr .= '</CoordinateSystem>'."\n";
     }
-  
+
     if($this->Spatialcoverage_Northernmostlatitude != null)
     {
         $xml = $this->Spatialcoverage_Northernmostlatitude->output();
@@ -4950,7 +4996,7 @@ class Repository_Oaipmh_SPASE_Granule
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Southernmostlatitude != null)
     {
         $xml = $this->Spatialcoverage_Southernmostlatitude->output();
@@ -4961,7 +5007,7 @@ class Repository_Oaipmh_SPASE_Granule
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
       if($this->Spatialcoverage_Easternmostlongitude != null)
     {
         $xml = $this->Spatialcoverage_Easternmostlongitude->output();
@@ -4972,7 +5018,7 @@ class Repository_Oaipmh_SPASE_Granule
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Westernmostlongitude != null)
     {
         $xml = $this->Spatialcoverage_Westernmostlongitude->output();
@@ -4983,7 +5029,7 @@ class Repository_Oaipmh_SPASE_Granule
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Unit != null)
     {
         $xml = $this->Spatialcoverage_Unit->output();
@@ -4994,7 +5040,7 @@ class Repository_Oaipmh_SPASE_Granule
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Minimumaltitude != null)
     {
         $xml = $this->Spatialcoverage_Minimumaltitude->output();
@@ -5005,7 +5051,7 @@ class Repository_Oaipmh_SPASE_Granule
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
       if($this->Spatialcoverage_Maximumaltitude != null)
     {
         $xml = $this->Spatialcoverage_Maximumaltitude->output();
@@ -5016,7 +5062,7 @@ class Repository_Oaipmh_SPASE_Granule
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
         }
     }
-  
+
     if($this->Spatialcoverage_Reference != null)
     {
         $xml = $this->Spatialcoverage_Reference->output();
@@ -5028,7 +5074,7 @@ class Repository_Oaipmh_SPASE_Granule
         }
     }
 
-    if($this->Spatialcoverage_Coordinatesystem_Coordinatesystemname != null || 
+    if($this->Spatialcoverage_Coordinatesystem_Coordinatesystemname != null ||
       $this->Spatialcoverage_Coordinatesystem_Coordinaterepresentation != null){
     $xmlStr .= '</SpatialCoverage>'."\n";
     }
@@ -5043,8 +5089,10 @@ class Repository_Oaipmh_SPASE_Granule
 
 /************************************************ The point of a branch  **********************************************/
 
+
 class Repository_Oaipmh_SPASE_LangString
 {
+
     /*
      * メンバ変数
      */
@@ -5097,11 +5145,23 @@ class Repository_Oaipmh_SPASE_LangString
             {
                 $this->language = '';
             }
+            // set language
+            if(strlen($this->language) == 0)
+            {
+                //$xmlStr .= '<'.RepositoryConst::LOM_TAG_STRING.'>'."\n";
+            }
+            else
+            {
+                //$xmlStr .= '<'.RepositoryConst::LOM_TAG_STRING.'>'."\n";
+                //$xmlStr .= '<'.RepositoryConst::LOM_TAG_STRING.' '.RepositoryConst::LOM_TAG_LANGUAGE.'="'.$this->language.'">'."\n";
+            }
+            //$xmlStr .= $this->string.'</'.RepositoryConst::LOM_TAG_STRING.'>'."\n";
             $xmlStr .= $this->string . "\n";
         }
         return $xmlStr;
     }
 }
+
 
 class Repository_Oaipmh_SPASE_Vocabulary
 {
@@ -5153,14 +5213,12 @@ class Repository_Oaipmh_SPASE_Vocabulary
 
         if(strlen($this->source)>0){
             //$xmlStr .= '<'.RepositoryConst::LOM_TAG_SOURCE.'>'.$this->source.'</'.RepositoryConst::LOM_TAG_SOURCE.'>'."\n";
-          $xmlStr .= $this->source."\n";
         }
         if(strlen($this->value)>0){
             //$xmlStr .= '<'.RepositoryConst::LOM_TAG_VALUE.'>'.$this->value.'</'.RepositoryConst::LOM_TAG_VALUE.'>'."\n";
-          $xmlStr .= $this->value."\n";
         }
 
-        //$xmlStr .= $this->value . "\n";
+        $xmlStr .= $this->value . "\n";
 
         return $xmlStr;
     }
@@ -5181,7 +5239,7 @@ class Repository_Oaipmh_SPASE_Identifier
      * @param string $entry [single]
      * @param string $catalog [single] default -> 'identifier'
      */
-    public function __construct($repositoryAction, $entry, $catalog=RepositoryConst::SPASE_URI)
+    public function __construct($repositoryAction, $entry, $catalog=RepositoryConst::LOM_TAG_IDENTIFIER)
     {
         $this->repositoryAction = $repositoryAction;
         $this->entry = $entry;
@@ -5200,16 +5258,14 @@ class Repository_Oaipmh_SPASE_Identifier
         $this->catalog = $this->repositoryAction->forXmlChange($this->catalog);
         $this->entry = $this->repositoryAction->forXmlChange($this->entry);
         if(strlen($this->entry) > 0){
-            //$xmlStr .= '<'.RepositoryConst::LOM_TAG_IDENTIFIER.'>';
+            $xmlStr .= '<'.RepositoryConst::LOM_TAG_IDENTIFIER.'>';
             if(strlen($this->catalog) > 0)
             {
-                //$xmlStr .= '<'.RepositoryConst::LOM_TAG_CATALOG.'>'.$this->catalog.'</'.RepositoryConst::LOM_TAG_CATALOG.'>'."\n";
-              $xmlStr .= $this->catalog."\n";
+                $xmlStr .= '<'.RepositoryConst::LOM_TAG_CATALOG.'>'.$this->catalog.'</'.RepositoryConst::LOM_TAG_CATALOG.'>'."\n";
             }
 
-            //$xmlStr .= '<'.RepositoryConst::LOM_TAG_ENTRY.'>'.$this->entry.'</'.RepositoryConst::LOM_TAG_ENTRY.'>'."\n";
-            $xmlStr .= $this->entry."\n";
-            //$xmlStr .= '</'.RepositoryConst::LOM_TAG_IDENTIFIER.'>';
+            $xmlStr .= '<'.RepositoryConst::LOM_TAG_ENTRY.'>'.$this->entry.'</'.RepositoryConst::LOM_TAG_ENTRY.'>'."\n";
+            $xmlStr .= '</'.RepositoryConst::LOM_TAG_IDENTIFIER.'>';
         }
 
         return $xmlStr;
@@ -5249,7 +5305,7 @@ class Repository_Oaipmh_SPASE_Array{
     /*
      * addTaxon
      */
-    
+
     public function addArray(Repository_Oaipmh_SPASE_LangString $val){
         array_push($this->ar, $val);
     }
@@ -5269,7 +5325,7 @@ class Repository_Oaipmh_SPASE_Array{
     }
 
     public function getValue(){
-       if($this->source == null){
+       if($this->ar == null){
             return '';
         }
         return $this->source->getString();
@@ -5288,25 +5344,15 @@ class Repository_Oaipmh_SPASE_Array{
 
         //source
         if($this->source != null){
-            //$xmlStr .= '<'.RepositoryConst::LOM_TAG_SOURCE.'>';
             $xmlStr .= $this->source->output();
-            //$xmlStr .= '</'.RepositoryConst::LOM_TAG_SOURCE.'>';
         }
         //ar
-        //print_r($ar);
         for($ii=0;$ii<count($this->ar);$ii++){
-            $xmlStr .= $this->ar[$ii]->output();
+        	$xml = $this->ar[$ii]->output();
+        	if(strlen($xml)>0){
+        		$xmlStr.=$xml;
+        	}
         }
-
-        /*
-        if(strlen($xmlStr)>0){
-            //$xmlStr = '<'.RepositoryConst::LOM_TAG_TAXON_PATH.'>'.$xmlStr.'</'.RepositoryConst::LOM_TAG_TAXON_PATH.'>'."\n";
-        }
-        */
-
-        $xmlStr .= $this->source . "\n";
-
-
         return $xmlStr;
     }
 }

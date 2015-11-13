@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: QueryGenerator.class.php 42605 2014-10-03 01:02:01Z keiya_sugimoto $
+// $Id: QueryGenerator.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -189,6 +189,7 @@ class Repository_Components_Querygenerator implements Repository_Components_Quer
     const REQUEST_PAGE_ID = "page_id";
     const REQUEST_BLOCK_ID = "block_id";
     const REQUEST_WEKO_ID = "weko_id";
+    const REQUEST_ITEM_IDS = "item_ids";
     const REQUEST_DISPLAY_LANG = "lang";
     const REQUEST_SEARCH_TYPE = "st";
     const REQUEST_MODULE_ID = "module_id";
@@ -557,12 +558,39 @@ class Repository_Components_Querygenerator implements Repository_Components_Quer
                     }
                     
                     break;
-                    
+
+                // Add suppleContentsEntry Y.Yamazawa --start-- 2015/03/20 --start--
+                case self::REQUEST_ITEM_IDS:
+                        // string length of weko_id is 1-8
+                    $result = $this->createINSearchColumnQuery(self::SORT_TABLE_SHORT_NAME, self::ITEM_TABLE, self::ITEM_TABLE_SHORT_NAME, $value, "item_id",
+                                                "AND", $connectQuery, $connectTermQuery, $connectQueryParam, $connectFlag, $connectType);
+
+                    if($result){
+                        $searchFlag = true;
+                    }
+
+                        break;
+               // Add suppleContentsEntry Y.Yamazawa --end-- 2015/03/20 --end--
+
                 case self::REQUEST_PUBDATE_FROM:
                 case self::REQUEST_PUBDATE_UNTIL:
                     if(!$addPubDate){
-                        $result = $this->createDateQuery(self::SORT_TABLE_SHORT_NAME, self::DATEOFISSUED_YMD_TABLE, self::DATEOFISSUED_YMD_TABLE_SHORT_NAME, 
-                                               $searchInfo->search_term[self::REQUEST_PUBDATE_FROM], $searchInfo->search_term[self::REQUEST_PUBDATE_UNTIL], false, 
+                        if (array_key_exists(self::REQUEST_PUBDATE_FROM, $searchInfo->search_term)) {
+                            $pubDateFrom = $searchInfo->search_term[self::REQUEST_PUBDATE_FROM];
+                        }
+                        else {
+                            $pubDateFrom = "";
+                        }
+                        
+                        if (array_key_exists(self::REQUEST_PUBDATE_UNTIL, $searchInfo->search_term)) {
+                            $pubDateUntil = $searchInfo->search_term[self::REQUEST_PUBDATE_UNTIL];
+                        }
+                        else {
+                            $pubDateUntil = "";
+                        }
+                        
+                        $result = $this->createDateQuery(self::SORT_TABLE_SHORT_NAME, self::DATEOFISSUED_YMD_TABLE, self::DATEOFISSUED_YMD_TABLE_SHORT_NAME,
+                                               $pubDateFrom, $pubDateUntil, false,
                                                "AND", $connectQuery, $connectTermQuery, $connectQueryParam, $connectFlag, $connectType);
                         if($result){
                             $searchFlag = true;
@@ -869,13 +897,23 @@ class Repository_Components_Querygenerator implements Repository_Components_Quer
             if($count > 0){
                 $tmpTermQuery .= $innerAndor." ";
             }
-            if($isFulltext){
+            // Add Senna judge T.Ichikawa 2014/12/01 --start--
+            if($this->searchEngine == "mroonga") {
                 $tmpTermQuery .= "MATCH(".$shortName.".metadata) AGAINST(mroonga_escape(?, '()~><-*`\"\\\') IN BOOLEAN MODE) ";
                 $connectQueryParam[] = "+".$searchStringList[$ii];
+            } else if($this->searchEngine == "senna") {
+                $tmpTermQuery .= "MATCH(".$shortName.".metadata) AGAINST(? IN BOOLEAN MODE) ";
+                $connectQueryParam[] = "+".$searchStringList[$ii];
             } else {
+                // \は4重にする必要あり
+                $searchStringList[$ii] = mb_ereg_replace('\\\\','\\\\',$searchStringList[$ii]);
+                // %, _はエスケープする必要あり
+                $searchStringList[$ii] = mb_ereg_replace('%','\%',$searchStringList[$ii]);
+                $searchStringList[$ii] = mb_ereg_replace('_','\_',$searchStringList[$ii]);
                 $tmpTermQuery .= $shortName.".metadata LIKE ? ";
                 $connectQueryParam[] = "%".$searchStringList[$ii]."%";
             }
+            // Add Senna judge T.Ichikawa 2014/12/01 --end--
             $count++;
         }
         $tmpTermQuery .= ") ";
@@ -1012,7 +1050,7 @@ class Repository_Components_Querygenerator implements Repository_Components_Quer
                     $date .=  sprintf('%02d', $dateArray[1]);
                 }
                 if(count($dateArray) >= 3){
-                    if(strlen($fromDateList[2]) >= 2){
+                    if(strlen($dateArray[2]) >= 2){
                         $date .= substr($dateArray[2], 0, 2);
                     } else {
                         $date .=  sprintf('%02d', $dateArray[2]);

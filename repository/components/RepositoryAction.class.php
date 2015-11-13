@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: RepositoryAction.class.php 43771 2014-11-08 02:13:01Z yuko_nakao $
+// $Id: RepositoryAction.class.php 56715 2015-08-19 13:48:23Z tomohiro_ichikawa $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics,
 // Research and Development Center for Scientific Information Resources
@@ -11,6 +11,8 @@
 //
 // --------------------------------------------------------------------
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+require_once WEBAPP_DIR.'/modules/repository/components/FW/ActionBase.class.php';
+require_once WEBAPP_DIR.'/modules/repository/components/FW/AppException.class.php';
 include_once MAPLE_DIR.'/includes/pear/File/Archive.php';
 require_once WEBAPP_DIR. '/modules/repository/components/JSON.php';
 ini_set('include_path', WEBAPP_DIR.'/modules/repository/files/pear'. PATH_SEPARATOR . ini_get('include_path'));
@@ -19,12 +21,11 @@ require_once WEBAPP_DIR. '/modules/repository/components/RepositoryConst.class.p
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAddinCaller.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryDbAccess.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryUserAuthorityManager.class.php';
-require_once WEBAPP_DIR. '/modules/repository/components/RepositoryHandleManager.class.php';
-require_once WEBAPP_DIR. '/modules/repository/components/RepositorySearchTableProcessing.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryOutputFilter.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryExternalSearchWordManager.class.php';
+require_once WEBAPP_DIR. '/modules/repository/components/RepositoryIndexManager.class.php';
 
-class RepositoryException extends Exception
+class RepositoryException extends AppException
 {
     protected   $_DetailMsg = NULL;     //詳細メッセージ
 
@@ -55,7 +56,7 @@ class RepositoryException extends Exception
  * @package  [[リポジトリ]]
  * @access    public
  */
-class RepositoryAction extends Action
+class RepositoryAction extends ActionBase
 {
     var $Db;
     var $Session;
@@ -87,15 +88,22 @@ class RepositoryAction extends Action
      *
      * @access  public
      */
-    function initAction()
+    function initAction($isStartTrans = true)
     {
         try {
+            // 基底クラス初期化処理
+            $this->initialize();
+            
             //トランザクション開始日時の取得
-            //$this->TransStartDate = date('Y-m-d H:i:s') . substr(microtime(), 1, 4);
-            $DATE = new Date();
-            $this->TransStartDate = $DATE->getDate().".000";
-            //トランザクション開始処理
-            $this->Db->StartTrans();
+            $this->TransStartDate = $this->accessDate;
+            
+            // Mod for start trans twice T.Koyasu 2015/03/06 --start--
+            if($isStartTrans){
+                //トランザクション開始処理
+                $this->Db->StartTrans();
+            }
+            // Mod for start trans twice T.Koyasu 2015/03/06 --end--
+            
             // Add fix login data 2009/07/31 A.Suzuki --start--
             // ログイン情報復元処理
             $this->fixSessionData();
@@ -150,8 +158,10 @@ class RepositoryAction extends Action
             // Add database access class R.Matsuura 2013/11/12 --end--
             
             // Add private tree K.Matsuo 2013/04/08
-            $this->createPrivateTree();
-
+            
+            $repositoryIndexManager = new RepositoryIndexManager($this->Session, $this->Db, $this->TransStartDate);
+            $repositoryIndexManager->createPrivateTree();
+            
             return "success";
         }
         catch ( RepositoryException $exception ) {
@@ -171,7 +181,7 @@ class RepositoryAction extends Action
         $getdata =& $container->getComponent("GetData");
         $blocks =& $getdata->getParameter("blocks");
         // when weko module uninstall, $blocks==false.
-        if(!isset($blocks) || !is_array($blocks))
+        if(!isset($blocks) || !is_array($blocks) || !isset($blocks[$blockIds['block_id']]) )
         {
             $this->wekoThemeName = 'default';
             return;
@@ -249,6 +259,9 @@ class RepositoryAction extends Action
     function exitAction()
     {
         try {
+            // 基底クラス終了処理
+            $this->finalize();
+            
             //トランザクション終了処理
             $this->Db->CompleteTrans();
 
@@ -466,9 +479,18 @@ class RepositoryAction extends Action
                     return false;
                 }
             // Add input type "supple" 2009/08/24 A.Suzuki --end--
+            // Add input type "heading" 2015/04/28 S.Suzuki --start--
+            } else if($Result_List['item_attr_type'][$nCnt]['input_type'] == "heading"){
+                // 入力形式が見出し
+                // アイテム属性テーブルの属性値を取得
+                $search_result = $this->getItemAttrTableData($Item_ID,$Item_No,$attr_id,$nCnt,$Result_List,$Error_Msg);
+                if($search_result === false){
+                    return false;
+                }
+            // Add input type "heading" 2015/04/28 S.Suzuki --end--
             } else {
                 // 入力形式がその他
-                // アイテム属性テーブルの属性地を取得
+                // アイテム属性テーブルの属性値を取得
                 $search_result = $this->getItemAttrTableData($Item_ID,$Item_No,$attr_id,$nCnt,$Result_List,$Error_Msg, $empty_del_flag);
                 if($search_result === false){
                     return false;
@@ -771,6 +793,10 @@ class RepositoryAction extends Action
         }
         // Add scrape thumbnail data if "plural_enable" state is "disabled" T.Ichikawa 2013/9/17 --end--
         if(!$blob_flag){
+            if (!isset($this->attr_list)){
+                $this->attr_list = "";
+            }
+            
             for($nCnt=0;$nCnt<count($result_Thumbnail_Table);$nCnt++){
                 $this->attr_list .= $result_Thumbnail_Table[$nCnt]['file_name'];
                 $result_Thumbnail_Table[$nCnt]['file'] = "";
@@ -1305,10 +1331,12 @@ class RepositoryAction extends Action
         }
         
         // 検索テーブルデータ削除
+        require_once WEBAPP_DIR. '/modules/repository/components/RepositorySearchTableProcessing.class.php';
         $searchTableProcessing = new RepositorySearchTableProcessing($this->Session, $this->Db);
         $searchTableProcessing->deleteDataFromSearchTableByItemId($Item_ID, $Item_No);
         
         // DOI付与状態削除
+        require_once WEBAPP_DIR. '/modules/repository/components/RepositoryHandleManager.class.php';
         $repositoryHandleManager = new RepositoryHandleManager($this->Session, $this->Db, $this->TransStartDate);
         $repositoryHandleManager->deleteDoiStatus($Item_ID, $Item_No);
     }
@@ -2325,7 +2353,7 @@ class RepositoryAction extends Action
                   " file_prev_name=VALUES(`file_prev_name`), ".
                   " license_id=VALUES(`license_id`), license_notation=VALUES(`license_notation`), ".
                   " pub_date=VALUES(`pub_date`), item_type_id=VALUES(`item_type_id`), ".
-                  " browsing_flag=VALUES(`browsing_flag`), mod_user_id=VALUES(`mod_user_id`), ".
+                  " browsing_flag=VALUES(`browsing_flag`), cover_created_flag=0, mod_user_id=VALUES(`mod_user_id`), ".
                   " del_user_id=VALUES(`del_user_id`), mod_date=VALUES(`mod_date`), ".
                   " del_date=VALUES(`del_date`), is_delete=VALUES(`is_delete`); ";
         //INSERT実行
@@ -2891,7 +2919,7 @@ class RepositoryAction extends Action
         $xml_parser = xml_parser_create();
         $rtn = xml_parse_into_struct( $xml_parser, $content, $vals );
         if($rtn == 0){
-            $this->Session->setParameter("error_msg", "not right XML");
+            $this->Session->setParameter("error_msg", "Invalid XML Format");
             return false;
         }
         xml_parser_free($xml_parser);
@@ -2946,7 +2974,7 @@ class RepositoryAction extends Action
         $xml_parser = xml_parser_create();
         $rtn = xml_parse_into_struct( $xml_parser, $content, $vals );
         if($rtn == 0){
-            $this->Session->setParameter("error_msg", "not right XML");
+            $this->Session->setParameter("error_msg", "Invalid XML Format");
             return false;
         }
         xml_parser_free($xml_parser);
@@ -3715,8 +3743,8 @@ class RepositoryAction extends Action
         $detail_uri = "";
         // get DB data
         $query = "SELECT uri FROM ". DATABASE_PREFIX ."repository_item ".
-                 "WHERE item_id = '".$item_id."' ".
-                 "AND item_no = '".$item_no."'; ";
+                 "WHERE item_id = ".$item_id." ".
+                 "AND item_no = ".$item_no." ; ";
         $return = $this->Db->execute( $query );
         if($return === false || count($detail_uri)!=1){
             return $detail_uri;
@@ -4347,7 +4375,7 @@ class RepositoryAction extends Action
             return "";
         }
         $tmp = explode(" ",$datetime);
-        if($tmp[1]!=""){
+        if(isset($tmp[1]) && $tmp[1]!=""){
             $tmp_time = explode(".", $tmp[1]);
             $time = $tmp_time[0];
         }
@@ -4532,152 +4560,6 @@ class RepositoryAction extends Action
     }
     // Add input type "supple" 2009/08/24 A.Suzuki --end--
 
-    // Get supple data from opensearch 2009/09/01 A.Suzuki --start--
-    /**
-     * WEKOIDをキーに、サプリWEKOからサプリアイテム情報を取得する
-     *
-     * @param $mode "weko_id" or "item_ids"
-     * @param $id
-     * @return array $supple_data
-     */
-    function getSuppleDataFromOpenSearch($mode, $id){
-        // request URL send for supple weko
-        // パラメタテーブルからサプリWEKOのアドレスを取得する
-        $query = "SELECT param_value FROM ".DATABASE_PREFIX."repository_parameter ".
-                 "WHERE param_name = 'supple_weko_url';";
-        $result = $this->Db->execute($query);
-        if($result === false){
-            return false;
-        }
-        if($result[0]['param_value'] == ""){
-            // no address error
-            $this->Session->setParameter("supple_error", 1);
-            return false;
-        } else {
-            $send_param = $result[0]['param_value'];
-        }
-
-        if($mode == "weko_id"){
-            $send_param .= "/?action=repository_opensearch&weko_id=".$id."&format=rss";
-        } else {
-            $send_param .= "/?action=repository_opensearch&item_ids=".$id."&format=rss";
-        }
-
-
-        /////////////////////////////
-        // HTTP_Request init
-        /////////////////////////////
-        // send http request
-        $option = array(
-            "timeout" => "10",
-            "allowRedirects" => true,
-            "maxRedirects" => 3,
-        );
-        // Modfy proxy 2011/12/06 Y.Nakao --start--
-        $proxy = $this->getProxySetting();
-        if($proxy['proxy_mode'] == 1)
-        {
-            $option = array(
-                    "timeout" => "10",
-                    "allowRedirects" => true,
-                    "maxRedirects" => 3,
-                    "proxy_host"=>$proxy['proxy_host'],
-                    "proxy_port"=>$proxy['proxy_port'],
-                    "proxy_user"=>$proxy['proxy_user'],
-                    "proxy_pass"=>$proxy['proxy_pass']
-                );
-        }
-        // Modfy proxy 2011/12/06 Y.Nakao --end--
-        $http = new HTTP_Request($send_param, $option);
-        // setting HTTP header
-        $http->addHeader("User-Agent", $_SERVER['HTTP_USER_AGENT']);
-        $http->addHeader("Referer", $_SERVER['HTTP_REFERER']);
-
-        /////////////////////////////
-        // run HTTP request
-        /////////////////////////////
-        $response = $http->sendRequest();
-        if (!PEAR::isError($response)) {
-            $charge_code = $http->getResponseCode();// ResponseCode(200等)を取得
-            $charge_header = $http->getResponseHeader();// ResponseHeader(レスポンスヘッダ)を取得
-            $charge_body = $http->getResponseBody();// ResponseBody(レスポンステキスト)を取得
-            $charge_Cookies = $http->getResponseCookies();// クッキーを取得
-        }
-        // get response
-        $response_xml = $charge_body;
-
-        /////////////////////////////
-        // parse response XML
-        /////////////////////////////
-        try{
-            $xml_parser = xml_parser_create();
-            $rtn = xml_parse_into_struct( $xml_parser, $response_xml, $vals );
-            if($rtn == 0){
-                // get false error
-                $this->Session->setParameter("supple_error", 2);
-                return false;
-            }
-            xml_parser_free($xml_parser);
-        } catch(Exception $ex){
-            // get false error
-            $this->Session->setParameter("supple_error", 2);
-            return false;
-        }
-
-        /////////////////////////////
-        // get XML data
-        /////////////////////////////
-        $item_flag = false;
-        $supple_data = array();
-        foreach($vals as $val){
-            if($val['tag'] == "ITEM"){
-                    if($val['type'] == "open"){
-                        $item_flag = true;
-                    }
-                    if($item_flag == true && $val['type'] == "close"){
-                        $item_flag = false;
-                        if($supple_data["supple_weko_item_id"] != "" && $supple_data["supple_weko_item_id"] != null){
-                            break;
-                        }
-                    }
-            }
-            if($item_flag){
-                switch($val['tag']){
-                    case "TITLE":   // サプリアイテム:タイトル
-                        $supple_data["supple_title"] = $val['value'];
-                        break;
-                    case "DCTERMS:ALTERNATIVE": // サプリアイテム:タイトル(英)
-                        $supple_data["supple_title_en"] = $val['value'];
-                        break;
-                    case "LINK":    // サプリアイテム:詳細画面URL
-                        $supple_data["uri"] = $val['value'];
-                        break;
-                    case "DC:IDENTIFIER":
-                        // サプリアイテム:ファイルID(attribute_id)
-                        if(ereg("^file_id:", $val['value']) > 0){
-                            $supple_data["file_id"] = ereg_replace("file_id:", "", $val['value']);
-                        }
-                        // サプリアイテム:アイテムID
-                        else {
-                            $supple_data["supple_weko_item_id"] = $val['value'];
-                        }
-                        break;
-                    case "DC:TYPE": // サプリアイテム:アイテムタイプ名
-                        $supple_data["supple_item_type_name"] = $val['value'];
-                        break;
-                    case "DC:FORMAT":   // サプリアイテム:マイムタイプ
-                        $supple_data["mime_type"] = $val['value'];
-                        break;
-                    default :
-                        break;
-                }
-            }
-        }
-
-        return $supple_data;
-    }
-    // Get supple data from opensearch 2009/09/01 A.Suzuki --end--
-
     // Add get edit item data for supple 2009/09/28 A.Suzuki --start--
     /**
      * 編集するアイテム情報をセッションに保存する
@@ -4813,7 +4695,6 @@ class RepositoryAction extends Action
                             'dublin_core_mapping' => $item_attr_type[$ii2]['dublin_core_mapping'],
                             'junii2_mapping' => $item_attr_type[$ii2]['junii2_mapping'],
                             'lom_mapping' => $item_attr_type[$ii2]['lom_mapping'],
-                    			'spase_mapping' => $item_attr_type[$ii2]['spase_mapping'],
                             'display_lang_type' => $item_attr_type[$ii2]['display_lang_type']
                     );
                     // check, radioは選択肢とその数を取得
@@ -5208,7 +5089,7 @@ class RepositoryAction extends Action
         $indice = $Result_List['position_index'];
         for($ii=0; $ii<count($indice); $ii++){
             $query = "SELECT index_name, index_name_english FROM ".DATABASE_PREFIX."repository_index ".
-                     "WHERE index_id = '".$indice[$ii]["index_id"]."';";
+                     "WHERE index_id = ".$indice[$ii]["index_id"]." ;";
             $ret = $this->Db->execute($query);
             if($ret === false || count($ret)!=1){
                 return false;
@@ -5320,110 +5201,6 @@ class RepositoryAction extends Action
     }
     // Add review mail setting 2009/09/24 Y.Nakao --end--
 
-    // Get supple WEKO prefixID from opensearch 2009/10/13 A.Suzuki --start--
-    /**
-     * サプリWEKOからprefixIDを取得する
-     *
-     * @return string $supple_prefix_id
-     */
-    function getSupplePrefixIDFromOpenSearch(){
-        // request URL send for supple weko
-        // パラメタテーブルからサプリWEKOのアドレスを取得する
-        $query = "SELECT param_value FROM ".DATABASE_PREFIX."repository_parameter ".
-                 "WHERE param_name = 'supple_weko_url';";
-        $result = $this->Db->execute($query);
-        if($result === false){
-            $this->Session->setParameter("supple_error", 1);
-            return false;
-        }
-        if($result[0]['param_value'] == ""){
-            // no address error
-            $this->Session->setParameter("supple_error", 1);
-            return false;
-        } else {
-            $send_param = $result[0]['param_value'];
-        }
-
-        $send_param .= "/?action=repository_opensearch&prefix=true&format=rss";
-
-        /////////////////////////////
-        // HTTP_Request init
-        /////////////////////////////
-        // send http request
-        $option = array(
-            "timeout" => "10",
-            "allowRedirects" => true,
-            "maxRedirects" => 3,
-        );
-        // Modfy proxy 2011/12/06 Y.Nakao --start--
-        $proxy = $this->getProxySetting();
-        if($proxy['proxy_mode'] == 1)
-        {
-            $option = array(
-                    "timeout" => "10",
-                    "allowRedirects" => true,
-                    "maxRedirects" => 3,
-                    "proxy_host"=>$proxy['proxy_host'],
-                    "proxy_port"=>$proxy['proxy_port'],
-                    "proxy_user"=>$proxy['proxy_user'],
-                    "proxy_pass"=>$proxy['proxy_pass']
-                );
-        }
-        // Modfy proxy 2011/12/06 Y.Nakao --end--
-        $http = new HTTP_Request($send_param, $option);
-        // setting HTTP header
-        $http->addHeader("User-Agent", $_SERVER['HTTP_USER_AGENT']);
-        $http->addHeader("Referer", $_SERVER['HTTP_REFERER']);
-
-        /////////////////////////////
-        // run HTTP request
-        /////////////////////////////
-        $response = $http->sendRequest();
-        if (!PEAR::isError($response)) {
-            $charge_code = $http->getResponseCode();// ResponseCode(200等)を取得
-            $charge_header = $http->getResponseHeader();// ResponseHeader(レスポンスヘッダ)を取得
-            $charge_body = $http->getResponseBody();// ResponseBody(レスポンステキスト)を取得
-            $charge_Cookies = $http->getResponseCookies();// クッキーを取得
-        }
-        // get response
-        $response_xml = $charge_body;
-
-        /////////////////////////////
-        // parse response XML
-        /////////////////////////////
-        try{
-            $xml_parser = xml_parser_create();
-            $rtn = xml_parse_into_struct( $xml_parser, $response_xml, $vals );
-            if($rtn == 0){
-                // get false error
-                $this->Session->setParameter("supple_error", 2);
-                return false;
-            }
-            xml_parser_free($xml_parser);
-        } catch(Exception $ex){
-            // get false error
-            $this->Session->setParameter("supple_error", 2);
-            return false;
-        }
-
-        /////////////////////////////
-        // get XML data
-        /////////////////////////////
-        $supple_prefix_id = "";
-        foreach($vals as $val){
-            switch($val['tag']){
-                case "DC:IDENTIFIER":
-                    // prefixID
-                    $supple_prefix_id = $val['value'];
-                    break;
-                default :
-                    break;
-            }
-        }
-
-        return $supple_prefix_id;
-    }
-    // Get supple WEKO prefixID from opensearch 2009/10/13 A.Suzuki --end--
     /**
      * check any file can export status
      *
@@ -5508,140 +5285,6 @@ class RepositoryAction extends Action
         return true;
     }
 
-
-    // Add log common action Y.Nakao 2010/03/05 --start--
-    /**
-     * insert log
-     *
-     * @param int $operation_id 1:insert item
-     *                          2:download item
-     *                          3:view item
-     *                          4:search item
-     *                          5:top page access
-     *                          6:Flash view(ebook)
-     * @param int $item_id
-     * @param int $item_no
-     * @param int $attr_id
-     * @param int $file_no
-     * @param string $search_keyword
-     */
-    function entryLog($operation_id, $item_id = "", $item_no = "", $attr_id= "", $file_no = "", $search_keyword = ""){
-        // get log id
-        $log_no = $this->Db->nextSeq("repository_log");
-        // user_id
-        $user_id = $this->Session->getParameter("_user_id");
-        // ip address
-        if(isset($_SERVER['HTTP_X_FORWARDED_FOR']) && strlen($_SERVER['HTTP_X_FORWARDED_FOR']) > 0) {
-            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        } else {
-            $ip = getenv("REMOTE_ADDR");
-        }
-        // convert ip address to numeric
-        
-        // host
-        // when host is null, host eq ip address
-        if(isset($_SERVER['HTTP_X_FORWARDED_FOR']) && strlen($_SERVER['HTTP_X_FORWARDED_FOR']) > 0) {
-            $host = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        } else {
-            $host = getenv("REMOTE_HOST");
-        }
-        if ($host == null || $host == $ip){
-            $host = gethostbyaddr($ip);
-        }
-        // file_status
-        $fileStatus = RepositoryConst::LOG_FILE_STATUS_UNKNOWN;
-        // site_license
-        $siteLicense = RepositoryConst::LOG_SITE_LICENSE_OFF;
-        // input_type
-        $inputType = null;
-        // login_status
-        $loginStatus = null;
-        // group_id
-        $groupId = null;
-        
-        // numeric ip address
-        $ip_elements = explode(".", $ip);
-        $numeric_ip = sprintf("%d", $ip_elements[0]).
-                      sprintf("%03d", $ip_elements[1]).
-                      sprintf("%03d", $ip_elements[2]).
-                      sprintf("%03d", $ip_elements[3]);
-        // referer
-        $referer = "";
-        if(isset($_SERVER["HTTP_REFERER"]))
-        {
-            $referer = $_SERVER["HTTP_REFERER"];
-        }
-        else 
-        {
-            $referer = getenv("HTTP_REFERER");
-        }
-        
-        // If file download, set download status
-        if($operation_id == RepositoryConst::LOG_OPERATION_DOWNLOAD_FILE
-            && intval($item_id)>0 && intval($item_no)>0 && intval($attr_id)>0 && intval($file_no)>0)
-        {
-            // Get file download status
-            $this->getFileDownloadStatusForEntryLog(
-                $item_id, $item_no, $attr_id, $file_no,
-                $fileStatus, $inputType, $loginStatus, $groupId);
-        }
-        // Add site license info to log 2013/07/02 A.Suzuki --start--
-        // Set Validator
-        require_once WEBAPP_DIR. '/modules/repository/validator/Validator_DownloadCheck.class.php';
-        $validator = new Repository_Validator_DownloadCheck();
-        $initResult = $validator->setComponents($this->Session, $this->Db);
-
-        // Check Site License
-        $result = $validator->checkSiteLicense($item_id, $item_no);
-        if($result == "true")
-        {
-            $siteLicense = RepositoryConst::LOG_SITE_LICENSE_ON;
-        }
-        // Add site license info to log 2013/07/02 A.Suzuki --end--
-
-        // entry log
-        $query_log = "INSERT INTO ". DATABASE_PREFIX ."repository_log ".
-                    " ( log_no, record_date, user_id, operation_id, ".
-                    " item_id, item_no, attribute_id, file_no, search_keyword, ".
-                    " ip_address, numeric_ip_address, host, user_agent, referer, file_status, site_license, input_type, login_status, group_id) ".
-                    " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
-        $params = array();
-        $params[] = intval($log_no);
-        $params[] = $this->TransStartDate;
-        $params[] = $user_id;
-        $params[] = $operation_id;
-        $params[] = $item_id;
-        $params[] = $item_no;
-        $params[] = $attr_id;
-        $params[] = $file_no;
-        $params[] = $search_keyword;
-        $params[] = $ip;
-        $params[] = $numeric_ip;
-        $params[] = $host;
-        $params[] = $_SERVER['HTTP_USER_AGENT'];
-        $params[] = $referer;
-        $params[] = $fileStatus; // file_status
-        $params[] = $siteLicense; // site_license
-        $params[] = $inputType; // input_type
-        $params[] = $loginStatus; // login_status
-        $params[] = $groupId; // group_id
-        $result = $this->Db->execute($query_log, $params);
-        if ($result === false) {
-            $errMsg = $this->Db->ErrorMsg();
-            $tmpstr = sprintf("log : %s", $errMsg );
-            $this->Session->setParameter("error_msg", $tmpstr);
-            $this->failTrans();                //トランザクション失敗を設定(ROLLBACK)
-            return false;
-        }
-        // Add referer display 2014/05/20 T.Ichikawa --start--
-        if($operation_id == 3 && $item_id != 0 && $item_no != 0 && $file_no == 0) {
-            $searchWordManager = new Repository_Components_RepositoryExternalSearchWordManager($this->Session, $this->Db, $this->TransStartDate);
-            $searchWordManager->insertExternalSearchWordFromURL($item_id, $item_no, $referer);
-        }
-        // Add referer display 2014/05/20 T.Ichikawa --end--
-    }
-    // Add log common action Y.Nakao 2010/03/05 --end--
-
     // check supple link 2010/03/16 Y.Nakao --start--
     function checkSuppleWEKOlink($supple_table = false){
         // there has supple WEKO url and got prefix ID
@@ -5655,7 +5298,8 @@ class RepositoryAction extends Action
         } else if(strlen($result[0]['param_value']) == 0){
             return false;
         }
-        
+
+        require_once WEBAPP_DIR. '/modules/repository/components/RepositoryHandleManager.class.php';
         $repositoryHandleManager = new RepositoryHandleManager($this->Session, $this->dbAccess, $this->TransStartDate);
         
         $prefixID = $repositoryHandleManager->getPrefix(RepositoryHandleManager::ID_Y_HANDLE);
@@ -7011,7 +6655,7 @@ class RepositoryAction extends Action
      * @param int $loginStatus
      * @param int $groupId
      */
-    private function getFileDownloadStatusForEntryLog(
+    public function getFileDownloadStatusForEntryLog(
         $itemId, $itemNo, $attrId, $fileNo, &$fileStatus,
         &$inputType, &$loginStatus, &$groupId)
     {
@@ -7023,7 +6667,7 @@ class RepositoryAction extends Action
         $loginStatus = null;
         // group_id
         $groupId = null;
-
+        
         // Get file info
         $query = "SELECT ATTRTYPE.".RepositoryConst::DBCOL_REPOSITORY_ITEM_ATTR_TYPE_IMPUT_TYPE.", FILE.* ".
                  "FROM ".DATABASE_PREFIX.RepositoryConst::DBTABLE_REPOSITORY_ITEM_ATTR_TYPE." AS ATTRTYPE, ".
@@ -7056,11 +6700,12 @@ class RepositoryAction extends Action
             {
                 $inputType = RepositoryConst::LOG_INPUT_TYPE_FILE;
             }
-
+            
             // login status
             $userId = $this->Session->getParameter("_user_id");
             $userAuthId = $this->Session->getParameter("_user_auth_id");
             $authId = $this->getRoomAuthorityID();
+            
             if(strlen($userId)==0 || $userId == "0")
             {
                 // No login user
@@ -7104,7 +6749,7 @@ class RepositoryAction extends Action
                     }
                 }
             }
-
+            
             // download status
             $fileStatus = RepositoryConst::LOG_FILE_STATUS_CLOSE;
             $this->Session->setParameter("_user_id", 0);
@@ -7112,6 +6757,7 @@ class RepositoryAction extends Action
             if($validator->checkCanItemAccess($itemId, $itemNo))
             {
                 $downloadFlag = $validator->checkFileDownloadViewFlag($fileInfo[0][RepositoryConst::DBCOL_REPOSITORY_FILE_PUB_DATE], $this->TransStartDate);
+                
                 if($downloadFlag === Repository_Validator_DownloadCheck::ACCESS_OPEN)
                 {
                     $fileStatus = RepositoryConst::LOG_FILE_STATUS_OPEN;
@@ -7122,168 +6768,6 @@ class RepositoryAction extends Action
         }
     }
 
-    /**
-     * Get user_authority_id by user ID
-     *
-     * @param string $userId
-     * @return string
-     */
-    public function getUserAuthIdByUserId($userId)
-    {
-        $userAuthId = "";
-        if(strlen($userId) != 0 && $userId != "0")
-        {
-            $query = "SELECT AUTH.user_authority_id ".
-                     "FROM ".DATABASE_PREFIX."users AS USERS, ".
-                             DATABASE_PREFIX."authorities AS AUTH ".
-                     "WHERE USERS.role_authority_id = AUTH.role_authority_id ".
-                     "AND USERS.user_id = ? ;";
-            $params = array();
-            $params[] = $userId;
-            $result = $this->Db->execute($query, $params);
-            if($result !== false && count($result) > 0)
-            {
-                $userAuthId = $result[0]["user_authority_id"];
-            }
-        }
-
-        return $userAuthId;
-    }
-    // Add auto create private_tree K.matsuo 2013/4/5 --start--
-    /**
-     * Create PrivateTree automatically
-     *
-     */
-    public function createPrivateTree(){
-        // 親インデックスIDの取得
-        $parentIndexId = null;
-        $error_msg = null;
-        $return = $this->getAdminParam('privatetree_parent_indexid', $parentIndexId, $error_msg);
-        if($return == false){
-            return false;
-        }
-        if(!$this->isCreatePrivatetree($parentIndexId)){
-            return;
-        }
-        $user_id = $this->Session->getParameter("_user_id");
-        // Modify Private Tree name K.Matsuo 2013/10/01 --start--
-        $return = $this->getAdminParam('private_tree_composition', $privateTreeCompositionXML, $error_msg);
-        
-        // Mod private index name is handle name 2014/03/25 T.Koyasu --start--
-        $index_name = $this->Session->getParameter("_handle");
-        if(strlen($index_name) === 0){
-            // for handle name is empty on shibboleth login
-            $index_name = $this->Session->getParameter("_login_id");
-        }
-        // Mod private index name is handle name 2014/03/25 T.Koyasu --end--
-        
-        // Modify Private Tree name K.Matsuo 2013/10/01 --end--
-        // Move require_once for avoid infinity loop K.Matsuo 2013/09/30
-        require_once WEBAPP_DIR. '/modules/repository/action/edit/tree/Tree.class.php';
-
-        $this->editTree = new Repository_Action_Edit_Tree();
-        $this->editTree->Session = $this->Session;
-        $this->editTree->Db = $this->Db;
-        $this->editTree->setPrivateTreeDefaultAccessControlList();
-        $this->editTree->TransStartDate = $this->TransStartDate;
-        // 新インデックスID取得
-        $index_num = $this->editTree->getNewIndexId();
-        $showOrder = $this->editTree->getShowOrder($parentIndexId) + 1;
-        $this->setLangResource();
-        $groupData = array();
-        $this->editTree->getAccessGroupData($this->editTree->getDefaultAccessRoleRoom(), $this->editTree->getDefaultExclusiveAclGroups(), $groupData);
-        $authData = array();
-        $this->editTree->getAccessAuthData($this->editTree->getDefaultAccessRoleIds(), $this->editTree->getDefaultExclusiveRoleIds(), $authData);
-
-        $newIndexData = array();
-        $newIndexData['index_id'] = $index_num;
-        $newIndexData["index_name"] = $index_name;
-        $newIndexData["index_name_english"] = $index_name;
-        $newIndexData["parent_index_id"] = $parentIndexId;
-        $newIndexData["show_order"] = $showOrder;
-        // Add specialized support for open.repo "private tree public" Y.Nakao 2013/06/21 --start--
-        // 通常は非公開
-        // Fix harvest_public_state 2014/03/15 Y.Nakao --start--
-        $newIndexData["public_state"] = "false";
-        $newIndexData["harvest_public_state"] = 0;
-        if(_REPOSITORY_PRIVATETREE_PUBLIC)
-        {
-            // プライベートツリーを公開するフラグがONの場合のみ公開する
-            $newIndexData["public_state"] = "true";
-            $newIndexData["harvest_public_state"] = 1;
-        }
-        // Fix harvest_public_state 2014/03/15 Y.Nakao --end--
-        // Add specialized support for open.repo "private tree public" Y.Nakao 2013/06/21 --end--
-        $newIndexData["pub_year"] = substr($this->TransStartDate, 0, 4);
-        $newIndexData["pub_month"] = substr($this->TransStartDate, 5, 2);
-        $newIndexData["pub_day"] = substr($this->TransStartDate, 7, 2);
-        $newIndexData["pub_date"] = substr($this->TransStartDate, 0, 10). ' 00:00:00.000';
-        $newIndexData["access_group_id"] = $groupData["access_group_id"];
-        $newIndexData["access_role_id"] = $authData["access_role_id"];
-        $newIndexData["comment"] = "";
-        $newIndexData["display_more"] = "";
-        $newIndexData["rss_display"] = "";
-        $newIndexData["access_role_room"] = $this->editTree->getDefaultAccessRoleRoom();
-        // Mod Bug fix No.55 2014/03/24 T.Koyasu --start--
-        $newIndexData["access_role"] = $newIndexData["access_role_id"]. "|". $newIndexData["access_role_room"];
-        // Mod Bug fix No.55 2014/03/24 T.Koyasu --end--
-        $newIndexData["display_type"] = "";
-        $newIndexData["select_index_list_display"] = "";
-        $newIndexData["select_index_list_name"] = "";
-        $newIndexData["select_index_list_name_english"] = "";
-        $newIndexData["exclusive_acl_role_id"] = $this->editTree->getDefaultExclusiveRoleIds();
-        $newIndexData["exclusive_acl_room_auth"] = $this->editTree->getDefaultExclusiveAclRoleRoom();
-        $newIndexData["exclusive_acl_group_id"] = $this->editTree->getDefaultExclusiveAclGroups();
-        $newIndexData["repository_id"] = 0;
-        $newIndexData["set_spec"] = "";
-        $newIndexData["owner_user_id"] = $user_id;
-        $result = $this->editTree->insertIndex($newIndexData);
-        if($result === false){
-            print_r($this->Db->ErrorMsg());
-            $errMsg = $this->Db->ErrorMsg();
-            $this->failTrans(); // ROLLBACK
-            return false;
-        }
-        if($privateTreeCompositionXML != ""){
-            $this->createPrivateTreeChildIndex($privateTreeCompositionXML, $index_num, $user_id);
-        }
-    }
-    /**
-     * Get user_authority_id by user ID
-     *
-     */
-    public function isCreatePrivatetree($parentIndexId)
-    {
-        $login_id = $this->Session->getParameter("_login_id");
-        $user_id = $this->Session->getParameter("_user_id");
-        // ログインしていないとき
-        if($user_id == '0' || strlen($login_id) == 0){
-            return false;
-        }
-        // ログインしているとき
-        $return = $this->getAdminParam('is_make_privatetree', $makePrivatetree, $error_msg);
-        if($makePrivatetree != 1){
-            // プライベートツリーを作成しないとき
-            return false;
-        }
-        $auth_id = $this->getRoomAuthorityID();
-        // アイテム登録権限チェック(一般ユーザ以上)
-        if($auth_id >= REPOSITORY_ITEM_REGIST_AUTH){
-            $query = "SELECT count(*) FROM ". DATABASE_PREFIX. "repository_index ".
-                     "WHERE owner_user_id = ? AND parent_index_id = ? AND is_delete = 0;";
-            $params = array();
-            $params[] = $user_id;
-            $params[] = $parentIndexId;
-            $ret = $this->Db->execute($query, $params);
-            if(count($ret) == 0 || $ret[0]['count(*)'] == 0) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
     // Add auto create private_tree K.matsuo 2013/4/5 --end--
 
     // Fix check index_id Y.Nakao 2013/06/07 --start--
@@ -7454,7 +6938,7 @@ class RepositoryAction extends Action
                     // add private tree index_id
                     $idx = array("index_id"=>$privateIndexTreeId);
                     $query = "SELECT index_name, index_name_english FROM ".DATABASE_PREFIX."repository_index ".
-                             "WHERE index_id = '".$privateIndexTreeId."';";
+                             "WHERE index_id = ".$privateIndexTreeId." ;";
                     $ret = $this->Db->execute($query);
                     if($ret === false || count($ret)!=1){
                         return $indice;
@@ -7547,148 +7031,6 @@ class RepositoryAction extends Action
     }
     //Add scrape attrTableData if "plural_enable" state change "enabled" to "disabled" 2013/09/09 T.Ichikawa --end--
 
-    // Add OpenDepo Private Tree Composition K.Matsuo 2013/10/01 --start--
-
-    private function createPrivateTreeChildIndex($privateTreeCompositionXML, $parentIndexId, $insUserId)
-    {
-        /////////////// XML perser ///////////////
-        try{
-            $xml_parser = xml_parser_create();
-            $rtn = xml_parse_into_struct( $xml_parser, $privateTreeCompositionXML, $vals );
-            if($rtn == 0){
-                return false;
-                xml_parser_free($xml_parser);
-            }
-        } catch(Exception $ex){
-            print_r("Failed: Exception occurrd in XML parse.");
-            return false;
-        }
-
-        require_once WEBAPP_DIR. '/modules/repository/action/edit/tree/Tree.class.php';
-        // インデックス登録用クラスの初期化
-        // Initialization of the class for index registration
-        /////////////// XML analysis ///////////////
-        $index_info = array();
-        $groupData = array();
-        $this->editTree->getAccessGroupData($this->editTree->getDefaultAccessRoleRoom(), $this->editTree->getDefaultExclusiveAclGroups(), $groupData);
-        $authData = array();
-        $this->editTree->getAccessAuthData($this->editTree->getDefaultAccessRoleIds(), $this->editTree->getDefaultExclusiveRoleIds(), $authData);
-        $index_id = -1;
-        foreach($vals as $val){
-            switch($val['tag']){
-                case "RDF:RDF":
-                    break;
-                case "RDF:DESCRIPTION":
-                    if($val['type'] == "open"){
-                        $index_id = 0;
-                    }else if($val['type'] == "close"){
-                        $index_id = -1;
-                    }
-                    break;
-                case "DC:IDENTIFIER":
-                    if($index_id >= 0){
-                        if(!isset($index_info[$val['value'] + $parentIndexId])){
-                            $index_id = $val['value'] + $parentIndexId;
-                            $index_info[$index_id] = array();
-                            $index_info[$index_id]['index_id'] = $val['value'] + $parentIndexId;
-                            $index_info[$index_id]['parent_index_id'] = $parentIndexId;
-                            $index_info[$index_id]['index_name'] = "";
-                            $index_info[$index_id]['index_name_english'] = "";
-                            $index_info[$index_id]['comment'] = "";
-                            $index_info[$index_id]['pub_date'] = "";
-                            $index_info[$index_id]['more'] = "";
-                            $index_info[$index_id]['rss'] = "";
-                            $index_info[$index_id]['pid_chk'] = false;
-                            $index_info[$index_id]["pub_year"] = substr($this->TransStartDate, 0, 4);
-                            $index_info[$index_id]["pub_month"] = substr($this->TransStartDate, 5, 2);
-                            $index_info[$index_id]["pub_day"] = substr($this->TransStartDate, 7, 2);
-                            $index_info[$index_id]["pub_date"] = substr($this->TransStartDate, 0, 10). ' 00:00:00.000';
-                            $index_info[$index_id]["access_group_id"] = $groupData["access_group_id"];
-                            $index_info[$index_id]["access_role_id"] = $authData["access_role_id"];
-                            $index_info[$index_id]["comment"] = "";
-                            $index_info[$index_id]["display_more"] = "";
-                            $index_info[$index_id]["rss_display"] = "";
-                            $index_info[$index_id]["access_role_room"] = $this->editTree->getDefaultAccessRoleRoom();
-                            // Mod Bug fix No.55 2014/03/24 T.Koyasu --start--
-                            $index_info[$index_id]["access_role"] = $index_info[$index_id]["access_role_id"]. "|". $index_info[$index_id]["access_role_room"];
-                            // Mod Bug fix No.55 2014/03/24 T.Koyasu --end--
-                            $index_info[$index_id]["display_type"] = "";
-                            $index_info[$index_id]["select_index_list_display"] = "";
-                            $index_info[$index_id]["select_index_list_name"] = "";
-                            $index_info[$index_id]["select_index_list_name_english"] = "";
-                            $index_info[$index_id]["exclusive_acl_role_id"] = $this->editTree->getDefaultExclusiveRoleIds();
-                            $index_info[$index_id]["exclusive_acl_room_auth"] = $this->editTree->getDefaultExclusiveAclRoleRoom();
-                            $index_info[$index_id]["exclusive_acl_group_id"] = $this->editTree->getDefaultExclusiveAclGroups();
-                            $index_info[$index_id]["repository_id"] = 0;
-                            $index_info[$index_id]["set_spec"] = "";
-                            $index_info[$index_id]["owner_user_id"] = $insUserId;
-                            $index_info[$index_id]["public_state"] = "false";
-                            $index_info[$index_id]["harvest_public_state"] = 0;
-                            if(_REPOSITORY_PRIVATETREE_PUBLIC)
-                            {
-                                // プライベートツリーを公開するフラグがONの場合のみ公開する
-                                $index_info[$index_id]["public_state"] = "true";
-                                $index_info[$index_id]["harvest_public_state"] = 1;
-                            }
-                        } else {
-                            $this->outputError("ErrorXML", "XML description is NG");
-                            exit();
-                        }
-                    }
-                    break;
-                case "DC:TITLE":
-                    if($index_id >= 0){
-                        if($val['attributes']['XML:LANG'] == "ja"){
-                            $index_info[$index_id]['index_name'] = $val['value'];
-                        } else if($val['attributes']['XML:LANG'] == "en"){
-                            $index_info[$index_id]['index_name_english'] = $val['value'];
-                        } else {
-                            $index_info[$index_id]['index_name'] = $val['value'];
-                            $index_info[$index_id]['index_name_english'] = $val['value'];
-                        }
-                    }
-                    break;
-                case "DC:COMMENT":
-                    $index_info[$index_id]['comment'] = $val['value'];
-                    break;
-                case "DC:PUBDATE":
-                    $index_info[$index_id]['pub_date'] = $val['value'];
-                    break;
-                case "DC:MORE":
-                    if(is_numeric($val['value'])){
-                        $index_info[$index_id]['more'] = intval($val['value']);
-                    }
-                    break;
-                case "DC:RSS":
-                    $index_info[$index_id]['rss'] = $val['value'];
-                    break;
-                case "DC:RELATION":
-                    if($index_id >= 0){
-                        $index_info[$index_id]['parent_index_id'] = $val['value'] + $parentIndexId;
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-        /////////////// insert index ///////////////
-        $show_order_list = array();
-        foreach ($index_info as $key => $val){
-            if(isset($show_order_list[$val['parent_index_id']])){
-                $show_order_list[$val['parent_index_id']] = $this->editTree->getShowOrder($val['parent_index_id']) + 1;
-            }
-            $val["show_order"] = $show_order_list[$val['parent_index_id']];
-            $show_order_list[$val['parent_index_id']] += 1;
-        }
-        $result = $this->editTree->insertMultiIndex($index_info);
-        if($result === false){
-            $errMsg = $this->Db->ErrorMsg();
-            $this->failTrans(); // ROLLBACK
-            return false;
-        }
-    }
-    // Add OpenDepo Private Tree Composition K.Matsuo 2013/10/01 --end--
-
     // Add DSpace data move T.Koyasu 2013/10/23 --start--
     /**
      * base process of Action and View
@@ -7702,6 +7044,9 @@ class RepositoryAction extends Action
             // create flg of exec init
             $nIsInit = false;
             
+            // トランザクション外前処理
+            $this->beforeTrans();
+            
             // init proc
             $nInitResult = $this->initAction();
             
@@ -7712,14 +7057,31 @@ class RepositoryAction extends Action
             }
             $nIsInit = true;
             
-            // call the method(executeForWeko) of each inheritance class
-            $strProcResult = $this->executeForWeko();
+            // トランザクション内前処理呼び出し
+            $this->preExecute();
+            
+            // call the method(executeApp) of each inheritance class
+            $strProcResult = $this->executeApp();
+            
+            // トランザクション内後処理呼び出し
+            $this->postExecute();
             
             // finish proc
             $this->exitAction();
             
+            // トランザクション外後処理
+            $this->afterTrans();
+            
             // return result string
-            return $strProcResult;
+            if($this->exitFlag) {
+                if(is_array($this->errMsg) && count($this->errMsg) > 0){
+                    echo json_encode($this->errMsg);
+                }
+                exit();
+            }
+            else {
+                return $strProcResult;
+            }
         }
         catch(RepositoryException $Exception)
         {
@@ -7742,6 +7104,61 @@ class RepositoryAction extends Action
 
             return "error";
         }
+        catch (AppException $e)
+        {
+            if($nIsInit)
+            {
+                if($this->failTrans() === false)
+                {
+                    $this->errorLog("Failed rollback trance.", __FILE__, __CLASS__, __LINE__);
+                }
+            }
+            
+            // エラーログをダンプ
+            $this->exeptionLog($e, __FILE__, __CLASS__, __LINE__);
+            
+            // エラーメッセージを設定
+            $errors = $e->getErrors();
+            for($ii=0; $ii<count($errors); $ii++)
+            {
+                foreach ($errors[$ii] as $key => $val)
+                {
+                    $this->addErrMsg($key, $val);
+                }
+            }
+            
+            // ビジネスロジック生成クラス終了処理
+            BusinessFactory::uninitialize();
+            
+            if($this->exitFlag) {
+                if(is_array($this->errMsg)){
+                    echo json_encode($this->errMsg);
+                }
+                exit();
+            }
+            else {
+                return "error";
+            }
+        }
+        catch (Exception $e)
+        {
+            if($isInit)
+            {
+                if($this->failTrans() === false)
+                {
+                    $this->errorLog("Failed rollback trance.", __FILE__, __CLASS__, __LINE__);
+                }
+            }
+            // エラーログをダンプ
+            $this->exeptionLog($e, __FILE__, __CLASS__, __LINE__);
+            
+            $this->addErrMsg("予期せぬエラーが発生しました");
+            
+            // ビジネスロジック生成クラス終了処理
+            BusinessFactory::uninitialize();
+            
+            return "error";
+        }
     }
 
     /**
@@ -7749,11 +7166,15 @@ class RepositoryAction extends Action
      *
      * @return strResult
      */
-    protected function executeForWeko()
+    protected function executeApp()
     {
         $exception = new RepositoryException( "ERR_MSG_UnpopulatedCode", 00002 ); //主メッセージとログIDを指定して例外を作成
         throw $exception;
     }
+    protected function beforeTrans(){}
+    protected function afterTrans(){}
+    protected function preExecute(){}
+    protected function postExecute(){}
 
     // Add DSpace data move T.Koyasu 2013/10/23 --end--
     

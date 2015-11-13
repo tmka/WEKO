@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Filecleanup.class.php 38124 2014-07-01 06:56:02Z rei_matsuura $
+// $Id: Filecleanup.class.php 56959 2015-08-24 04:53:10Z tomohiro_ichikawa $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -24,6 +24,9 @@ require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.
  */
 class Repository_Action_Common_Filecleanup extends RepositoryAction
 {
+    // 削除実行を許可する更新時間(TimeStanp)
+    const TIME_LAG = 86400;
+    
     // リクエストパラメータを受け取るため
     var $login_id = null;
     var $password = null;
@@ -65,9 +68,13 @@ class Repository_Action_Common_Filecleanup extends RepositoryAction
 
             // Delete it anything other than directory 『flash』 and 『files』
             $dirPath = BASE_DIR.'/webapp/uploads/repository';
+            // 1時間以内に更新されたファイルは削除しない
+            $nowTimeStanp = strtotime($this->TransStartDate);
             if ($handle = opendir("$dirPath")) {
                 while (false !== ($item = readdir($handle))) {
-                    if ($item != "flash" && $item != "files" && $item != "." && $item != "..") {
+                    // "files" "flash" "カレント" "親ディレクトリ" 以外かつ ファイル更新日が1時間以上前だったら削除を実行する
+                    if (($item != "flash" && $item != "files" && $item != "." && $item != "..") &&
+                        ($nowTimeStanp - filemtime($dirPath."/".$item)) > self::TIME_LAG) {
                           if (is_dir("$dirPath/$item")) {
                             $this->removeDirectory("$dirPath/$item");
                         } else {

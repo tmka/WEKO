@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: utils.php 43165 2014-10-22 10:48:15Z tomohiro_ichikawa $
+// $Id: utils.php 56714 2015-08-19 13:30:20Z tomohiro_ichikawa $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics,
 // Research and Development Center for Scientific Information Resources
@@ -367,6 +367,10 @@ function process_headers($request)
                 $filename = preg_replace("/^\"|^\'/", "", $filename);
                 $filename = preg_replace("/\"$|\'$/", "", $filename);
                 // BugFix single cotation Y.Nakao 2013/06/07 --end--
+                
+                // Bugfix support multi-byte string T.Koyasu 2015/08/12 --start--
+                $filename = rawurldecode($filename);
+                // Bugfix support multi-byte string T.Koyasu 2015/08/12 --end--
                 break;
             }
         }

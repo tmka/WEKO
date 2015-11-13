@@ -452,7 +452,7 @@
 <{* display tab number *}>
 <input type="hidden" id="workflow_active_tab_id" name="workflow_active_tab" value="0" />
 
-<{include file="repository_script.html"}>
+<{include file=$smarty.const.WEBAPP_DIR|cat:'/modules/repository/templates/default/repository_script.html'}>
 
 <script class="nc_script" type="text/javascript">
 	changeActiveTab1 = function(){

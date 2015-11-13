@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Dellmetadata.class.php 24559 2013-08-02 00:47:17Z koji_matsuo $
+// $Id: Dellmetadata.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -12,6 +12,7 @@
 // --------------------------------------------------------------------
 
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.php';
 
 /**
  * repositoryモジュール アイテムタイプ作成 編集画面でメタデータ削除時に呼ばれるアクション
@@ -23,10 +24,9 @@
  * @project     NetCommons Project, supported by National Institute of Informatics
  * @access      public
  */
-class Repository_Action_Edit_Itemtype_Dellmetadata
+class Repository_Action_Edit_Itemtype_Dellmetadata extends RepositoryAction
 {
 	// 使用コンポーネントを受け取るため
-	var $session = null;
 	var $request = null;
     // Mod metadata name edit 2009/12/10 K.Ando --start--
 	//var $itemtype_name = null;		//前画面で入力したアイテムタイプ名(新規作成時)
@@ -54,7 +54,7 @@ class Repository_Action_Edit_Itemtype_Dellmetadata
      *
      * @access  public
      */
-    function execute()
+    function executeApp()
     {
     	// 送信されたFormデータから削除対称を削除する
 		if($this->metadata_title != null && $this->metadata_type != null)
@@ -185,17 +185,17 @@ class Repository_Action_Edit_Itemtype_Dellmetadata
 			// 削除対称に非表示チェックがついていたか判定 2009/01/28 A.Suzuki --end--
 		}
 		// メタデータ数を減らす.
-		if($this->session->getParameter("metadata_num") > 0)
+		if($this->Session->getParameter("metadata_num") > 0)
 		{
-			$this->session->setParameter("metadata_num", $this->session->getParameter("metadata_num") - 1);
+			$this->Session->setParameter("metadata_num", $this->Session->getParameter("metadata_num") - 1);
 		}
 		// 既存編集時 2008/03/03
-		if($this->session->getParameter("item_type_edit_flag") == 1) {
+		if($this->Session->getParameter("item_type_edit_flag") == 1) {
 			// 削除前の属性IDのリスト
-			$array_attr_id = $this->session->getParameter("attribute_id");
+			$array_attr_id = $this->Session->getParameter("attribute_id");
 			
 			// 削除対象配列を更新
- 			$del_attr_id = $this->session->getParameter("del_attribute_id");
+ 			$del_attr_id = $this->Session->getParameter("del_attribute_id");
  			if($del_attr_id == null){
  				$del_attr_id = array($array_attr_id[$this->dell_metadata_number]);
  			}
@@ -204,10 +204,10 @@ class Repository_Action_Edit_Itemtype_Dellmetadata
 		 			array_push($del_attr_id, $array_attr_id[$this->dell_metadata_number]);
  				}
  			}
- 			$this->session->setParameter("del_attribute_id",$del_attr_id);
+ 			$this->Session->setParameter("del_attribute_id",$del_attr_id);
 			// 一行減った場合、、その行の属性IDを削除し、sessionに反映
 			array_splice($array_attr_id, $this->dell_metadata_number,1);
- 			$this->session->setParameter("attribute_id", $array_attr_id); 			
+ 			$this->Session->setParameter("attribute_id", $array_attr_id); 			
  		}
  		//2008/03/03
         
@@ -239,20 +239,15 @@ class Repository_Action_Edit_Itemtype_Dellmetadata
  		
 		// sessionの保存
 		// metadata_titleをまとめて配列でセッションに保存
-        $this->session->setParameter("metadata_title", $array_title);
+        $this->Session->setParameter("metadata_title", $array_title);
 	   	// metadata_typeをまとめて配列でセッションに保存
-	   	$this->session->setParameter("metadata_type", $this->metadata_type);
+	   	$this->Session->setParameter("metadata_type", $this->metadata_type);
 	   	
-    	// Add metadata name edit 2008/09/04 Y.Nakao --start--
     	// Save item type name
-    	// Mod metadata name edit 2009/12/10 K.Ando --start--
-    	//$this->session->setParameter("itemtype_name", $this->item_type_name);
-    	$this->session->setParameter("item_type_name", $this->item_type_name);
-    	// Mod metadata name edit 2009/12/10 K.Ando --end--
-	   	// Add metadata name edit 2008/09/04 Y.Nakao --end--
+    	$this->Session->setParameter("item_type_name", $this->item_type_name);
 	   	
 	   	// 2008/02/28 選択肢をまとめて配列でセッションに保存 nakao
-	   	$this->session->setParameter("metadata_candidate", $array_candidate);
+	   	$this->Session->setParameter("metadata_candidate", $array_candidate);
 	   	
     	//チェックボックスはチェックの入ったnameのvalueのみが送信されるため、データを調整
 	   	// フラグもまとめてセッションに保存
@@ -299,16 +294,16 @@ class Repository_Action_Edit_Itemtype_Dellmetadata
         		}
         	}
 	   	}
-		$this->session->setParameter("metadata_required", $array_req);
-	   	$this->session->setParameter("metadata_disp", $array_dis);
-	   	$this->session->setParameter("metadata_plural", $array_plu);
-	   	$this->session->setParameter("metadata_newline", $array_newline);
-	   	$this->session->setParameter("metadata_hidden", $array_hidden);
+		$this->Session->setParameter("metadata_required", $array_req);
+	   	$this->Session->setParameter("metadata_disp", $array_dis);
+	   	$this->Session->setParameter("metadata_plural", $array_plu);
+	   	$this->Session->setParameter("metadata_newline", $array_newline);
+	   	$this->Session->setParameter("metadata_hidden", $array_hidden);
 	   	
         // Add multi language K.Matsuo 2013/07/24 --start--
-        $array_metadata_multi_title = $this->session->getParameter("metadata_multi_title");
+        $array_metadata_multi_title = $this->Session->getParameter("metadata_multi_title");
         array_splice($array_metadata_multi_title, $this->dell_metadata_number,1);
-        $this->session->setParameter("metadata_multi_title", $array_metadata_multi_title);
+        $this->Session->setParameter("metadata_multi_title", $array_metadata_multi_title);
         // Add multi language K.Matsuo 2013/07/24 --end--
 	   	
 	   	return 'success';

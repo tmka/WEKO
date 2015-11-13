@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Confirm.class.php 36217 2014-05-26 04:22:11Z satoshi_arata $
+// $Id: Confirm.class.php 48455 2015-02-16 10:53:40Z atsushi_suzuki $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -31,7 +31,7 @@ class Repository_Action_Edit_Importauthority_Confirm extends RepositoryAction
      * 
      * @access  public
      */
-    function executeForWeko()
+    function executeApp()
     {
         // error msg remove
         $this->Session->removeParameter("error_msg");

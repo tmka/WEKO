@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Help.class.php 39149 2014-07-28 08:37:06Z rei_matsuura $
+// $Id: Help.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -34,7 +34,7 @@ class Repository_View_Common_Help extends RepositoryAction
      *
      * @access  public
      */
-    function execute()
+    function executeApp()
     {
     //Path作成
     //helpファイルの判別

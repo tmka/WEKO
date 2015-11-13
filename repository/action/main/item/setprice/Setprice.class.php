@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Setprice.class.php 41054 2014-09-05 08:34:02Z tomohiro_ichikawa $
+// $Id: Setprice.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -39,6 +39,10 @@ class Repository_Action_Main_Item_Setprice extends RepositoryAction
 	var $target_row = null;				// 削除対象
 	// Add file price Y.Nakao 2008/08/28 --end--
 	
+    // Add file authority T.Ichikawa 2015/03/20 --start--
+    var $auth_room_ids = null;
+    // Add file authority T.Ichikawa 2015/03/20 --end--
+	
 	// Extend file type A.Suzuki 2010/02/04 --start--
 	var $display_type = null;
 	var $display_name = null;
@@ -47,7 +51,7 @@ class Repository_Action_Main_Item_Setprice extends RepositoryAction
 	var $flash_embargo_day = null;			// フラッシュファイルエンバーゴ日
 	var $flash_embargo_flag = null;			// フラッシュファイルエンバーゴフラグ(0:公開日をアイテム公開日に合わせる, 1:公開日を独自に設定する)
 	// Extend file type A.Suzuki 2010/02/04 --end--
-
+    
     /**
      * action/main/item/edittextから流用
      *
@@ -81,10 +85,11 @@ class Repository_Action_Main_Item_Setprice extends RepositoryAction
 	    	$cntUpd = 0;			// アップロード済みアイテムカウンタ
 	    	// 価格用リクエストパラメタのカウンタ
 	   		$price_Cnt = 0;
+            // ファイル権限リクエストパラメタ用のカウンタ
+            $auth_Cnt = 0;
 	   		
 	   		// エラーメッセージ配列
 	   		$err_msg = array();
-	   		
 		   	// ii-thメタデータのリクエストを保存
 		   	for($ii=0; $ii<count($item_attr_type); $ii++) {
 		   		// ii-thメタデータのjj-th属性値のリクエストを保存
@@ -135,6 +140,87 @@ class Repository_Action_Main_Item_Setprice extends RepositoryAction
 		   					$item_attr[$ii][$jj]['display_type'] = 0;
 		   				}
 		   				// Extend file type A.Suzuki 2009/12/15 --end--
+                        // Add file authority 2015/03/20 T.Ichikawa --start--
+                        if($item_attr_type[$ii]['input_type']=='file'){
+                            // 初期化
+                            $auth_array = array();
+                            $auth_room_id_array = array();
+                            // 個数保持
+                            $loop_num = $item_attr[$ii][$jj]['auth_num'];
+                            // 削除対象の位置を取得する
+                            if($this->setting_flg == "2"){
+                            	$del_row = split("_", $this->target_row);
+                            }
+                            // 設定されている権限情報を格納する
+                            for($auth_num = 0; $auth_num < $loop_num; $auth_num++){
+                                if($this->setting_flg == "2"){
+                                    // 削除対象かどうか判定
+                                    if($ii==$del_row[0] && $jj==$del_row[1] && $auth_num==$del_row[2]){
+                                        // 削除対象のため設定されている権限の数を-1し、ルームIDなどは保持しない
+                                        if($item_attr[$ii][$jj]['auth_num'] > 0){
+                                            $item_attr[$ii][$jj]['auth_num'] = $item_attr[$ii][$jj]['auth_num'] - 1;
+                                        }
+                                        // カウンタを次へ
+                                        $auth_Cnt++;
+                                        continue;
+                                    }
+                                }
+                                // 権限情報を保持する
+                                array_push($auth_room_id_array, $this->auth_room_ids[$auth_Cnt]);
+                                // カウンタを次へ
+                                $auth_Cnt++;
+                            }
+                            
+                            // 権限情報が追加された時
+                            if($this->setting_flg == "1"){
+                                $add_row = split("_", $this->target_row);
+                                if($ii==$add_row[0] && $jj==$add_row[1]){
+                                    // 全グループ取得
+                                    $all_group = $this->Session->getParameter("all_group");
+                                    // 非会員の情報を先頭に追加
+                                    array_unshift($all_group,array("room_id" => 0));
+                                    // 権限が設定されていないグループを検索し、あれば権限設定用の行を追加する
+                                    for($group_cnt=0;$group_cnt<count($all_group);$group_cnt++){
+                                        // 価格が設定済みのグループかどうかを判定する
+                                        $set_flg = false;
+                                        for($auth_num = 0; $auth_num < count($auth_room_id_array); $auth_num++){
+                                            if($all_group[$group_cnt]["room_id"] == $auth_room_id_array[$auth_num]){
+                                                // 全てのグループのうち、現在権限が設定されているグループである
+                                                $set_flg = true;
+                                            }
+                                        }
+                                        if( !$set_flg ){
+                                            array_push($auth_room_id_array, $all_group[$group_cnt]["room_id"]);
+                                            // 個数+1
+                                            $item_attr[$ii][$jj]['auth_num'] = $item_attr[$ii][$jj]['auth_num'] + 1;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            $item_attr[$ii][$jj]['auth_room_id'] = $auth_room_id_array;
+                            // 権限情報が削除された時
+                            if($this->setting_flg == "2"){
+                                // 一度権限情報を削除する
+                                $params = array();
+                                $params[] = $item_attr[$ii][$jj]["file_no"];          // ファイルNo
+                                $params[] = "0,0";                                    // 価格
+                                $params[] = $this->Session->getParameter("_user_id"); // 更新者
+                                $params[] = $this->TransStartDate;                    // 更新日
+                                $params[] = 1;                                        // 削除フラグ
+                                $params[] = $item_attr[$ii][$jj]["item_id"];          // アイテムID
+                                $params[] = $item_attr[$ii][$jj]["item_no"];          // アイテムNo
+                                $params[] = $item_attr[$ii][$jj]["attribute_id"];     // アイテム属性ID
+                                $params[] = $item_attr[$ii][$jj]["file_no"];          // ファイルNo
+                                $result = $this->updateFilePrice($params, $error);
+                                if($result === false) {
+                                    array_push($err_msg, $error);
+                                    $this->Session->setParameter("error_msg", $err_msg);
+                                    return 'error';
+                                }
+                            }
+                        }
+                        // Add file authority 2015/03/20 T.Ichikawa --end--
 		   				// Add file price Y.Nakao 2008/08/28 --start--
 		   				if($item_attr_type[$ii]['input_type']=='file_price'){
 		   					// 初期化

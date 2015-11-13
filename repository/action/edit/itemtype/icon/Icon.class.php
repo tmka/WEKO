@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Icon.class.php 15605 2012-02-20 09:30:55Z tatsuya_koyasu $
+// $Id: Icon.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -30,7 +30,7 @@ class Repository_Action_Edit_Itemtype_Icon extends RepositoryAction
      *
      * @access  public
      */
-    function execute()
+    function executeApp()
     {
     	
     	// アイテムタイプの種類を示すアイコン追加 2008/07/18 Y.Nakao --start--

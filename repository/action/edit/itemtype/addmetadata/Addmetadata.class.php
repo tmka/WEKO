@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Addmetadata.class.php 41322 2014-09-10 11:56:44Z tomohiro_ichikawa $
+// $Id: Addmetadata.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -12,6 +12,7 @@
 // --------------------------------------------------------------------
 
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.php';
 
 /**
  * repositoryモジュール アイテムタイプ作成 編集画面でメタデータ追加時に呼ばれるアクション
@@ -23,12 +24,10 @@
  * @project     NetCommons Project, supported by National Institute of Informatics
  * @access      public
  */
-class Repository_Action_Edit_Itemtype_Addmetadata
+class Repository_Action_Edit_Itemtype_Addmetadata extends RepositoryAction
 {
 	// 使用コンポーネントを受け取るため
-	var $session = null;
 	var $request = null;
-	//var $itemtype_name = null;		//前画面で入力したアイテムタイプ名(新規作成時)
 	
 	// リクエストパラメタ
 	var $metadata_title = null;		// メタデータ項目名配列
@@ -48,24 +47,8 @@ class Repository_Action_Edit_Itemtype_Addmetadata
      *
      * @access  public
      */
-    function execute()
+    function executeApp()
     {
-    	// 現在のメタデータ設定値をセッションに保存
-//    	for($ii=0; $ii<1; $ii++) {
-//    		// ピクリとも反応せず。nullでなくて0文字が戻る？紛らわしい。
-//    		$tmpstr = sprintf("metadeta_title[%d]", $ii);
-//    		$tmptitle = null;
-//    		$tmptitle = $this->request->getParameter($tmpstr);
-//    		if( $tmptitle != null ) {
-//				$this->session->setParameter($tmpstr, $tmptitle);
-//    		}
-//    	}
-    
-    	// 1個ずつだがうまくいった例
-//	    for($ii=0; $ii<count($this->metadata_title); $ii++) {
-//	    	$this->session->setParameter(sprintf("metadata_title%d",$ii), $this->metadata_title[$ii]);
-//	   	}
-	   	
 	    ////////////////////////// " "をnull文字列に ///////////////////////////
     	$array_title = array();	// 項目名一時保管用 
     	$array_candidate = array();	// 選択肢一時保管用		
@@ -92,21 +75,16 @@ class Repository_Action_Edit_Itemtype_Addmetadata
     		}
     	}
     	
-    	// Add metadata name edit 2008/09/04 Y.Nakao --start--
     	// Save item type name
-    	// Mod metadata name edit 2009/12/10 K.Ando --start--
-    	//$this->session->setParameter("itemtype_name", $this->item_type_name);
-    	$this->session->setParameter("item_type_name", $this->item_type_name);
-    	// Mod metadata name edit 2009/12/10 K.Ando --end--
-    	// Add metadata name edit 2008/09/04 Y.Nakao --end--
+    	$this->Session->setParameter("item_type_name", $this->item_type_name);
     	
         // metadata_titleをまとめて配列でセッションに保存
-        $this->session->setParameter("metadata_title", $array_title);
+        $this->Session->setParameter("metadata_title", $array_title);
 	   	// metadata_typeをまとめて配列でセッションに保存
-	   	$this->session->setParameter("metadata_type", $this->metadata_type);
+	   	$this->Session->setParameter("metadata_type", $this->metadata_type);
 
 	   	// 2008/02/28 選択肢をまとめて配列でセッションに保存
-	   	$this->session->setParameter("metadata_candidate", $array_candidate);
+	   	$this->Session->setParameter("metadata_candidate", $array_candidate);
 
 	   	//チェックボックスはチェックの入ったnameのvalueのみが送信されるため、データを調整
 	   	// フラグもまとめてセッションに保存
@@ -153,38 +131,38 @@ class Repository_Action_Edit_Itemtype_Addmetadata
         		}
         	}
 	   	}
-	   	$this->session->setParameter("metadata_required", $array_req);
-	   	$this->session->setParameter("metadata_disp", $array_dis);
-	   	$this->session->setParameter("metadata_plural", $array_plu);
-	   	$this->session->setParameter("metadata_newline", $array_newline);
-	   	$this->session->setParameter("metadata_hidden", $array_hidden);
+	   	$this->Session->setParameter("metadata_required", $array_req);
+	   	$this->Session->setParameter("metadata_disp", $array_dis);
+	   	$this->Session->setParameter("metadata_plural", $array_plu);
+	   	$this->Session->setParameter("metadata_newline", $array_newline);
+	   	$this->Session->setParameter("metadata_hidden", $array_hidden);
 
 	   	// 既存編集時 2008/03/03
- 		if($this->session->getParameter("item_type_edit_flag") == 1) {
- 			$array_attri_id = $this->session->getParameter("attribute_id");
+ 		if($this->Session->getParameter("item_type_edit_flag") == 1) {
+ 			$array_attri_id = $this->Session->getParameter("attribute_id");
             if(!isset($array_attri_id)) {
                 $array_attri_id = array();
             }
  			array_push($array_attri_id,-1);
  			// 一行増えた場合、その分sessionにも反映
- 			$this->session->setParameter("attribute_id", $array_attri_id);
+ 			$this->Session->setParameter("attribute_id", $array_attri_id);
  		}
  		//2008/03/03
  		
     	// メタデータ数を増やす
-    	$this->session->setParameter("metadata_num", $this->session->getParameter("metadata_num") + 1);
+    	$this->Session->setParameter("metadata_num", $this->Session->getParameter("metadata_num") + 1);
     	
     	// エラーなし 2008/02/28
-    	$this->session->setParameter("error_code", 0);
+    	$this->Session->setParameter("error_code", 0);
         // Add multi language K.Matsuo 2013/07/24 --start--
-        $lang_list = $this->session->getParameter("lang_list");
-        $array_metadata_multi_title = $this->session->getParameter("metadata_multi_title");
+        $lang_list = $this->Session->getParameter("lang_list");
+        $array_metadata_multi_title = $this->Session->getParameter("metadata_multi_title");
         $multiLang = array();
         foreach($lang_list as $key => $lang){
             $multiLang[$key] = "";
         }
         array_push($array_metadata_multi_title,$multiLang);
-        $this->session->setParameter("metadata_multi_title", $array_metadata_multi_title);
+        $this->Session->setParameter("metadata_multi_title", $array_metadata_multi_title);
         // Add multi language K.Matsuo 2013/07/24 --end--
         return 'success';
 

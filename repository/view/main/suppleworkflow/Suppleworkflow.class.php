@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Suppleworkflow.class.php 9306 2011-06-03 11:48:07Z atsushi_suzuki $
+// $Id: Suppleworkflow.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -299,12 +299,12 @@ class Repository_View_Main_Suppleworkflow extends RepositoryAction
 				 "FROM ". DATABASE_PREFIX ."repository_supple AS SUPPLE, ".	// サプリテーブル
 				 		  DATABASE_PREFIX ."repository_item AS ITEM ".			// アイテムテーブル
 				 "WHERE SUPPLE.ins_user_id = '". $user_id ."' ".	// 作成者が自分
-				 " AND SUPPLE.is_delete = '0' ";			// 削除されていない
+				 " AND SUPPLE.is_delete = 0 ";			// 削除されていない
 		if($review_status!=null && $review_status!=""){
-			$query .= " AND SUPPLE.supple_review_status = '".$review_status."' ";	// 査読状況
+			$query .= " AND SUPPLE.supple_review_status = ".$review_status." ";	// 査読状況
 		}
 		if($reject_status!=null && $reject_status!=""){
-		 	$query .= " AND SUPPLE.supple_reject_status = '".$reject_status."' ";	// 却下状況
+		 	$query .= " AND SUPPLE.supple_reject_status = ".$reject_status." ";	// 却下状況
 		}
 		$query .= " AND SUPPLE.item_id = ITEM.item_id ".
 				  " AND SUPPLE.item_no = ITEM.item_no ".

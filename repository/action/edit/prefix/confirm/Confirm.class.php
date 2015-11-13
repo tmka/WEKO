@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Confirm.class.php 36217 2014-05-26 04:22:11Z satoshi_arata $
+// $Id: Confirm.class.php 57169 2015-08-26 12:01:09Z tatsuya_koyasu $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -74,7 +74,9 @@ class Repository_Action_Edit_Prefix_Confirm extends RepositoryAction
 					$this->Session->setParameter("error_flg", "end");
 					// ワークディレクトリ削除
 					$this->removeDirectory($this->Session->getParameter("tmp_dir"));
-					unlink("./.rnd");
+                    if(file_exists("./.rnd")){
+                        unlink("./.rnd");
+                    }
 					
 					// セッション情報削除
 					$this->Session->removeParameter("auth_session_id");
@@ -87,7 +89,9 @@ class Repository_Action_Edit_Prefix_Confirm extends RepositoryAction
 			
 			// ワークディレクトリ削除
 			$this->removeDirectory($this->Session->getParameter("tmp_dir"));
-			unlink("./.rnd");
+            if(file_exists("./.rnd")){
+                unlink("./.rnd");
+            }
 			
 			// セッション情報削除
 			$this->Session->removeParameter("auth_session_id");

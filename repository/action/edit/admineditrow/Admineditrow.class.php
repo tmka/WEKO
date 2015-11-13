@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Admineditrow.class.php 42605 2014-10-03 01:02:01Z keiya_sugimoto $
+// $Id: Admineditrow.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -14,7 +14,6 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryHarvesting.class.php';
-require_once WEBAPP_DIR. '/modules/repository/components/RepositoryUsagestatisticsSendMail.class.php';
 
 /**
  * repository module admin action
@@ -91,6 +90,10 @@ class Repository_Action_Edit_Admineditrow extends RepositoryAction
 	// Add mail address for feedback mail 2014/04/11 T.Ichikawa --start--
 	var $sitelicense_mail = null; // mail address for site license
 	// Add mail address for feedback mail 2014/04/11 T.Ichikawa --end--
+	// Add multi ip address 2015/01/20 T.Ichikawa --start--
+	var $sitelicense_id = null;
+	var $sitelicense_group = null;
+	// Add multi ip address 2015/01/20 T.Ichikawa --end--
 	var $edit_type = null;			// edit type (addrow, shufflerow, deleterow, addHarvestRow, delHarvestRow, killHarvestingProcess, addExcludeAddress, killSendFeedbackMailProcess)
 	var $edit_idx = null;			// edit row number
 	
@@ -294,16 +297,44 @@ class Repository_Action_Edit_Admineditrow extends RepositoryAction
     // Bug Fix WEKO-2014-039 no inherit prefix from html 2014/07/11 --start--
     public $prefixJalcDoi = null;
     public $prefixCrossRef = null;
+    // Add DataCite 2015/02/09 K.Sugimoto --start--
+    public $prefixDataCite = null;
+    // Add DataCite 2015/02/09 K.Sugimoto --end--
     public $prefixCnri = null;
     // Bug Fix WEKO-2014-039 no inherit prefix from html 2014/07/11 --end--
     
-    //OAI-PMH Output Flag
+    // OAI-PMH Output Flag
     public $oaipmh_output_flag = null;
+    
+    // Institution Name
+    public $institutionName = null;
+    
+    // Add Default Search Type 2014/12/03 K.Sugimoto --start--
+    // Default Search Type
+    public $default_search_type = null;
+    // Add Default Search Type 2014/12/03 K.Sugimoto --end--
+
+    // Add Usage Statistics link display setting 2014/12/16 K.Matsushita --start--
+    public $usagestatistics_link_display = null;
+    // Add Usage Statistics link display setting 2014/12/16 K.Matsushita --end--
+
+    // Add ranking tab display setting 2014/12/19 K.Matsushita --start--
+    public $ranking_tab_display = null;
+    // Add ranking tab display setting 2014/12/19 K.Matsushita --end--
+    
+    // Add DataCite 2015/02/09 K.Sugimoto --start--
+    // PrefixID Add Flag
+    public $prefix_flag = null;
+    // Add DataCite 2015/02/09 K.Sugimoto --end--
+
+    // Auto Input Metadata by CrossRef DOI 2015/03/02 K.Sugimoto --start--
+    public $CrossRefQueryServicesAccount = null;
+    // Auto Input Metadata by CrossRef DOI 2015/03/02 K.Sugimoto --end--
     
 	/**
 	 * @access  public
 	 */
-	function execute()
+	function executeApp()
 	{
 		$istest = true;	// test flag
 		try {
@@ -560,195 +591,119 @@ class Repository_Action_Edit_Admineditrow extends RepositoryAction
 			}
 			// Add privatetree setting 2013/04/05 K.Matsuo -end-
 			
-			if($this->edit_type == "addrow"){
-				// more input row
-				$cnt_ipaddress = 0;
-				$ipaddress_from = array();
-				$ipaddress_to = array();
-				for($ii=0; $ii<count($this->sitelicense_org); $ii++){
-					$this->sitelicense_org[$ii] = str_replace(" ", "", $this->sitelicense_org[$ii]);
-					$this->sitelicense_mail[$ii] = str_replace(" ", "", $this->sitelicense_mail[$ii]);
-					array_push($ipaddress_from, array(	str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 0]),
-														str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 1]),
-														str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 2]),
-														str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 3])
-												)
-					);
-					array_push($ipaddress_to, array(	str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 0]),
-														str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 1]),
-														str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 2]),
-														str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 3])
-												)
-					);
-					$cnt_ipaddress += 3;
-				}
-				if($this->sitelicense_org == null){
-					$this->sitelicense_org = array();
-					array_push($this->sitelicense_org, "");
-				} else {
-					array_push($this->sitelicense_org, "");
-				}
-				array_push($ipaddress_from, array("", "", ""));
-				array_push($ipaddress_to, array("", "", ""));
-				// Add mail address for feedback mail 2014/04/11 T.Ichikawa --start--
-				if($this->sitelicense_mail == null){
-					$this->sitelicense_mail = array();
-					array_push($this->sitelicense_mail, "");
-				} else {
-					array_push($this->sitelicense_mail, "");
-				}
-				// Add mail address for feedback mail 2014/04/11 T.Ichikawa --end--
-			} else if($this->edit_type == "shfrow_up"){
-				// shuffle row up
-				$cnt_ipaddress = 0;
-				$ipaddress_from = array();
-				$ipaddress_to = array();
-				for($ii=0; $ii<count($this->sitelicense_org); $ii++){
-					$this->sitelicense_org[$ii] = str_replace(" ", "", $this->sitelicense_org[$ii]);
-					$this->sitelicense_mail[$ii] = str_replace(" ", "", $this->sitelicense_mail[$ii]);
-					array_push($ipaddress_from, array(	str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 0]),
-														str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 1]),
-														str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 2]),
-														str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 3])
-												)
-					);
-					array_push($ipaddress_to, array(	str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 0]),
-														str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 1]),
-														str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 2]),
-														str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 3])
-												)
-					);
-					$cnt_ipaddress += 3;
-				}
-				// shuffle
-				for($ii=1; $ii<count($this->sitelicense_org); $ii++){
-					if($ii == $this->edit_idx){
-						$tmp = $this->sitelicense_org[$this->edit_idx];
-    					$this->sitelicense_org[$this->edit_idx] = $this->sitelicense_org[$this->edit_idx-1];
-    					$this->sitelicense_org[$this->edit_idx-1] = $tmp;
-    					
-    					$tmp = $ipaddress_from[$this->edit_idx];
-    					$ipaddress_from[$this->edit_idx] = $ipaddress_from[$this->edit_idx-1];
-    					$ipaddress_from[$this->edit_idx-1] = $tmp;
-    					
-    					$tmp = $ipaddress_to[$this->edit_idx];
-    					$ipaddress_to[$this->edit_idx] = $ipaddress_to[$this->edit_idx-1];
-    					$ipaddress_to[$this->edit_idx-1] = $tmp;
-    					
-						// Add mail address for feedback mail 2014/04/11 T.Ichikawa --start--
-						$tmp = $this->sitelicense_mail[$this->edit_idx];
-    					$this->sitelicense_mail[$this->edit_idx] = $this->sitelicense_mail[$this->edit_idx-1];
-    					$this->sitelicense_mail[$this->edit_idx-1] = $tmp;
-						// Add mail address for feedback mail 2014/04/11 T.Ichikawa --end--
-					}
-				}
-			} else if($this->edit_type == "shfrow_dw"){
-				// shuffle row down
-				$cnt_ipaddress = 0;
-				$ipaddress_from = array();
-				$ipaddress_to = array();
-				for($ii=0; $ii<count($this->sitelicense_org); $ii++){
-					$this->sitelicense_org[$ii] = str_replace(" ", "", $this->sitelicense_org[$ii]);
-					$this->sitelicense_mail[$ii] = str_replace(" ", "", $this->sitelicense_mail[$ii]);
-					array_push($ipaddress_from, array(	str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 0]),
-														str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 1]),
-														str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 2]),
-														str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 3])
-												)
-					);
-					array_push($ipaddress_to, array(	str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 0]),
-														str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 1]),
-														str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 2]),
-														str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 3])
-												)
-					);
-					$cnt_ipaddress += 3;
-				}
-				// shuffle
-				for($ii=0; $ii<count($this->sitelicense_org)-1; $ii++){
-					if($ii == $this->edit_idx){
-						$tmp = $this->sitelicense_org[$this->edit_idx];
-    					$this->sitelicense_org[$this->edit_idx] = $this->sitelicense_org[$this->edit_idx+1];
-    					$this->sitelicense_org[$this->edit_idx+1] = $tmp;
-    					
-    					$tmp = $ipaddress_from[$this->edit_idx];
-    					$ipaddress_from[$this->edit_idx] = $ipaddress_from[$this->edit_idx+1];
-    					$ipaddress_from[$this->edit_idx+1] = $tmp;
-    					
-    					$tmp = $ipaddress_to[$this->edit_idx];
-    					$ipaddress_to[$this->edit_idx] = $ipaddress_to[$this->edit_idx+1];
-    					$ipaddress_to[$this->edit_idx+1] = $tmp;
-    					
-    					// Add mail address for feedback mail 2014/04/11 T.Ichikawa --start--
-						$tmp = $this->sitelicense_mail[$this->edit_idx];
-    					$this->sitelicense_mail[$this->edit_idx] = $this->sitelicense_mail[$this->edit_idx+1];
-    					$this->sitelicense_mail[$this->edit_idx+1] = $tmp;
-						// Add mail address for feedback mail 2014/04/11 T.Ichikawa --end--
-					}
-				}
-			} else if($this->edit_type == "delrow"){
-				// delete row
-				$cnt_ipaddress = 0;
-				$sitelicense_org = array();
-				$ipaddress_from = array();
-				$ipaddress_to = array();
-    			// Add mail address for feedback mail 2014/04/11 T.Ichikawa --start--
-    			$sitelicense_mail = array();
-				// Add mail address for feedback mail 2014/04/11 T.Ichikawa --end--
-				for($ii=0; $ii<count($this->sitelicense_org); $ii++){
-					if($this->edit_idx != $ii){
-						array_push($sitelicense_org, str_replace(" ", "", $this->sitelicense_org[$ii]));
-						array_push($ipaddress_from, array(	str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 0]),
-															str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 1]),
-															str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 2]),
-															str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 3])
-														 )
-						);
-						array_push($ipaddress_to, array(	str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 0]),
-															str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 1]),
-															str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 2]),
-															str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 3])
-													   )
-						);
-		    			// Add mail address for feedback mail 2014/04/11 T.Ichikawa --start--
-		    			array_push($sitelicense_mail, str_replace(" ", "", $this->sitelicense_mail[$ii]));
-						// Add mail address for feedback mail 2014/04/11 T.Ichikawa --end--
-					}
-					$cnt_ipaddress += 3;
-				}
-				$this->sitelicense_org = array();
-				$this->sitelicense_org = $sitelicense_org;
-				// Add mail address for feedback mail 2014/04/11 T.Ichikawa --start--
-				$this->sitelicense_mail = array();
-				$this->sitelicense_mail = $sitelicense_mail;
-				// Add mail address for feedback mail 2014/04/11 T.Ichikawa --end--
-            } else {
-                $cnt_ipaddress = 0;
+            // Set SiteLicense
+            for($ii=0; $ii<count($this->sitelicense_id); $ii++){
+                $this->sitelicense_org[$ii] = str_replace(" ", "", $this->sitelicense_org[$ii]);
+                $this->sitelicense_group[$ii] = str_replace(" ", "", $this->sitelicense_group[$ii]);
+                $this->sitelicense_mail[$ii] = str_replace(" ", "", $this->sitelicense_mail[$ii]);
+                // IPは$ip[$ii][$jj][$kk]の形式で渡される
+                // $ii : 機関の数を表す, $jj : 機関に設定されたIPの数を表す, $kk : IPアドレスを表す。セグメントで分割されており0～3になる
                 $ipaddress_from = array();
-                $ipaddress_to = array();
-                for($ii=0; $ii<count($this->sitelicense_org); $ii++){
-                    $this->sitelicense_org[$ii] = str_replace(" ", "", $this->sitelicense_org[$ii]);
-                    $this->sitelicense_mail[$ii] = str_replace(" ", "", $this->sitelicense_mail[$ii]);
-                    array_push($ipaddress_from, array(  str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 0]),
-                                                        str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 1]),
-                                                        str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 2]),
-                                                        str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 3])
-                                                )
-                    );
-                    array_push($ipaddress_to, array(    str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 0]),
-                                                        str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 1]),
-                                                        str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 2]),
-                                                        str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 3])
-                                                )
-                    );
-                    $cnt_ipaddress += 3;
+                for($jj = 0; $jj < count($this->ip_sitelicense_from[$ii]); $jj++) {
+                    array_push($ipaddress_from, array(
+                                                       str_replace(" ", "", $this->ip_sitelicense_from[$ii][$jj][0]), 
+                                                       str_replace(" ", "", $this->ip_sitelicense_from[$ii][$jj][1]), 
+                                                       str_replace(" ", "", $this->ip_sitelicense_from[$ii][$jj][2]), 
+                                                       str_replace(" ", "", $this->ip_sitelicense_from[$ii][$jj][3])
+                                                     )
+                              );
                 }
+                $this->ip_sitelicense_from[$ii] = $ipaddress_from;
+                
+                $ipaddress_to = array();
+                for($jj = 0; $jj < count($this->ip_sitelicense_to[$ii]); $jj++) {
+                    array_push($ipaddress_to, array(
+                                                         str_replace(" ", "", $this->ip_sitelicense_to[$ii][$jj][0]), 
+                                                         str_replace(" ", "", $this->ip_sitelicense_to[$ii][$jj][1]), 
+                                                         str_replace(" ", "", $this->ip_sitelicense_to[$ii][$jj][2]), 
+                                                         str_replace(" ", "", $this->ip_sitelicense_to[$ii][$jj][3])
+                                                        )
+                              );
+                }
+                $this->ip_sitelicense_to[$ii] = $ipaddress_to;
             }
-			$admin_params["sitelicense_org"]["param_value"] = $this->sitelicense_org;
-			$admin_params["ip_sitelicense_from"]["param_value"] = $ipaddress_from;
-			$admin_params["ip_sitelicense_to"]["param_value"] = $ipaddress_to;
-			// Add mail address for feedback mail 2014/04/11 T.Ichikawa --start--
-			$admin_params["sitelicense_mail"]["param_value"] = $this->sitelicense_mail;
+            if($this->edit_type == "addrow"){
+                // 各配列の末尾に空の値の要素を挿入する
+                $this->sitelicense_id[] = 0;
+                $this->sitelicense_org[] = "";
+                $this->sitelicense_group[] = "";
+                $this->ip_sitelicense_from[] = array(array("", "", "", ""));
+                $this->ip_sitelicense_to[] = array(array("", "", "", ""));
+                $this->sitelicense_mail[] = "";
+            } else if($this->edit_type == "shfrow_up"){
+                // 一つ前の要素と入れ替える
+                if($this->edit_idx > 0) {
+                    $tmp_id = $this->sitelicense_id[$this->edit_idx];
+                    $this->sitelicense_id[$this->edit_idx] = $this->sitelicense_id[$this->edit_idx-1];
+                    $this->sitelicense_id[$this->edit_idx-1] = $tmp_id;
+                    
+                    $tmp_org = $this->sitelicense_org[$this->edit_idx];
+                    $this->sitelicense_org[$this->edit_idx] = $this->sitelicense_org[$this->edit_idx-1];
+                    $this->sitelicense_org[$this->edit_idx-1] = $tmp_org;
+                    
+                    $tmp_group = $this->sitelicense_group[$this->edit_idx];
+                    $this->sitelicense_group[$this->edit_idx] = $this->sitelicense_group[$this->edit_idx-1];
+                    $this->sitelicense_group[$this->edit_idx-1] = $tmp_group;
+                    
+                    $tmp_start_ip = $this->ip_sitelicense_from[$this->edit_idx];
+                    $this->ip_sitelicense_from[$this->edit_idx] = $this->ip_sitelicense_from[$this->edit_idx-1];
+                    $this->ip_sitelicense_from[$this->edit_idx-1] = $tmp_start_ip;
+                    
+                    $tmp_finish_ip = $this->ip_sitelicense_to[$this->edit_idx];
+                    $this->ip_sitelicense_to[$this->edit_idx] = $this->ip_sitelicense_to[$this->edit_idx-1];
+                    $this->ip_sitelicense_to[$this->edit_idx-1] = $tmp_finish_ip;
+                    
+                    $tmp_mail = $this->sitelicense_mail[$this->edit_idx];
+                    $this->sitelicense_mail[$this->edit_idx] = $this->sitelicense_mail[$this->edit_idx-1];
+                    $this->sitelicense_mail[$this->edit_idx-1] = $tmp_mail;
+                }
+            } else if($this->edit_type == "shfrow_dw"){
+                // 一つ後の要素と入れ替える
+                if($this->edit_idx < count($this->sitelicense_id)-1) {
+                    $tmp_id = $this->sitelicense_id[$this->edit_idx];
+                    $this->sitelicense_id[$this->edit_idx] = $this->sitelicense_id[$this->edit_idx+1];
+                    $this->sitelicense_id[$this->edit_idx+1] = $tmp_id;
+                    
+                    $tmp_org = $this->sitelicense_org[$this->edit_idx];
+                    $this->sitelicense_org[$this->edit_idx] = $this->sitelicense_org[$this->edit_idx+1];
+                    $this->sitelicense_org[$this->edit_idx+1] = $tmp_org;
+                    
+                    $tmp_group = $this->sitelicense_group[$this->edit_idx];
+                    $this->sitelicense_group[$this->edit_idx] = $this->sitelicense_group[$this->edit_idx+1];
+                    $this->sitelicense_group[$this->edit_idx+1] = $tmp_group;
+                    
+                    $tmp_start_ip = $this->ip_sitelicense_from[$this->edit_idx];
+                    $this->ip_sitelicense_from[$this->edit_idx] = $this->ip_sitelicense_from[$this->edit_idx+1];
+                    $this->ip_sitelicense_from[$this->edit_idx+1] = $tmp_start_ip;
+                    
+                    $tmp_finish_ip = $this->ip_sitelicense_to[$this->edit_idx];
+                    $this->ip_sitelicense_to[$this->edit_idx] = $this->ip_sitelicense_to[$this->edit_idx+1];
+                    $this->ip_sitelicense_to[$this->edit_idx+1] = $tmp_finish_ip;
+                    
+                    $tmp_mail = $this->sitelicense_mail[$this->edit_idx];
+                    $this->sitelicense_mail[$this->edit_idx] = $this->sitelicense_mail[$this->edit_idx+1];
+                    $this->sitelicense_mail[$this->edit_idx+1] = $tmp_mail;
+                }
+            } else if($this->edit_type == "delrow"){
+                // 指定された要素を削除する
+                array_splice($this->sitelicense_id, $this->edit_idx, 1);
+                array_splice($this->sitelicense_org, $this->edit_idx, 1);
+                array_splice($this->sitelicense_group, $this->edit_idx, 1);
+                array_splice($this->ip_sitelicense_from, $this->edit_idx, 1);
+                array_splice($this->ip_sitelicense_to, $this->edit_idx, 1);
+                array_splice($this->sitelicense_mail, $this->edit_idx, 1);
+            } else if($this->edit_type == "addiprow") {
+                // IP配列の末尾に空の要素を追加する
+                $this->ip_sitelicense_from[$this->edit_idx][] = array("", "", "", "");
+                $this->ip_sitelicense_to[$this->edit_idx][] = array("", "", "", "");
+            }
+            $admin_params["sitelicense_id"]["param_value"] = $this->sitelicense_id;
+            $admin_params["sitelicense_org"]["param_value"] = $this->sitelicense_org;
+            $admin_params["sitelicense_group"]["param_value"] = $this->sitelicense_group;
+            $admin_params["ip_sitelicense_from"]["param_value"] = $this->ip_sitelicense_from;
+            $admin_params["ip_sitelicense_to"]["param_value"] = $this->ip_sitelicense_to;
+            $admin_params["sitelicense_mail"]["param_value"] = $this->sitelicense_mail;
+            
 			if(!isset($this->sitelicenseSendMailActivateFlag))
             {
                 $admin_params["send_sitelicense_mail_activate_flg"]["param_value"] = "0";
@@ -1218,15 +1173,16 @@ class Repository_Action_Edit_Admineditrow extends RepositoryAction
             }
             else if($this->edit_type == "killSendFeedbackMailProcess")
             {
-                $repositoryUsagestatisticsmail = new RepositoryUsagestatisticsSendMail($this->Session, $this->Db, $this->TransStartDate);
+                $this->infoLog("businessSendusagestatisticsmail", __FILE__, __CLASS__, __LINE__);
+                $repositoryUsagestatisticsmail = BusinessFactory::getFactory()->getBusiness("businessSendusagestatisticsmail");
                 $repositoryUsagestatisticsmail->killProcess();
-                $repositoryUsagestatisticsmail->openProgressFile(false);
-                $this->Session->setParameter("sendFeedbackStatus", $repositoryUsagestatisticsmail->getStatus());
+                // 引数は一番最後以外ダミー（リファレンス渡しになっているので一応変数を書いている）
+                $status = $repositoryUsagestatisticsmail->openProgressFile($mailAddress, $orderNum, $isAuhtor, $authorId, false);
+                $this->Session->setParameter("sendFeedbackStatus", $status);
             }
             $this->Session->setParameter("excludeUserDataList", $excludeUserDataList);
             $this->Session->setParameter("excludeUserDataText", $excludeUserDataText);
             // Add send feedback mail 2012/08/24 A.Suzuki --end--
-            
             
             // Add ichuushi fill 2012/11/21 A.jin --start--
             if($this->ichushiIsConnect == null){
@@ -1245,16 +1201,41 @@ class Repository_Action_Edit_Admineditrow extends RepositoryAction
             //再描画時に入力値がクリアされる問題対応 A.Jin 2012/11/30 --end--
             // Add ichuushi fill 2012/11/21 A.jin --end--
             
-            //OAI-PMH Output Flag
+            // OAI-PMH Output Flag
             $admin_params["oaipmh_output_flag"]["param_value"] = $this->oaipmh_output_flag;
             
-            $this->Session->setParameter("admin_params", $admin_params);
+            // Institution Name
+            $admin_params["institution_name"]["param_value"] = $this->institutionName;
             
-            // Bug Fix WEKO-2014-039 no inherit prefix from html 2014/07/11 --start--
-            $this->Session->setParameter("prefixCnri", $this->prefixCnri);
-            $this->Session->setParameter("prefixJalcDoi", $this->prefixJalcDoi);
-            $this->Session->setParameter("prefixCrossRef", $this->prefixCrossRef);
-            // Bug Fix WEKO-2014-039 no inherit prefix from html 2014/07/11 --end--
+            // Add Default Search Type 2014/12/03 K.Sugimoto --start--
+            // Default Search Type
+            $admin_params["default_search_type"]["param_value"] = $this->default_search_type;
+            // Add Default Search Type 2014/12/03 K.Sugimoto --end--
+
+            // Add Usage Statistics link display setting 2014/12/16 K.Matsushita --start--
+            $admin_params["usagestatistics_link_display"]["param_value"] = $this->usagestatistics_link_display;
+            // Add Usage Statistics link display setting 2014/12/16 K.Matsushita --end--
+
+            // Add ranking tab display setting 2014/12/19 K.Matsushita --start--
+            $admin_params["ranking_tab_display"]["param_value"] = $this->ranking_tab_display;
+            // Add ranking tab display setting 2014/12/19 K.Matsushita --end--
+            
+            // Add DataCite 2015/02/09 K.Sugimoto --start--
+            // PrefixID Add Flag
+            $admin_params["prefix_flag"]["param_value"] = $this->prefix_flag;
+            
+            // Prefix
+            $admin_params["prefixCnri"]["param_value"] = $this->prefixCnri;
+            $admin_params["prefixJalcDoi"]["param_value"] = $this->prefixJalcDoi;
+            $admin_params["prefixCrossRef"]["param_value"] = $this->prefixCrossRef;
+            $admin_params["prefixDataCite"]["param_value"] = $this->prefixDataCite;
+            // Add DataCite 2015/02/09 K.Sugimoto --end--
+
+		    // Auto Input Metadata by CrossRef DOI 2015/03/02 K.Sugimoto --start--
+            $admin_params["CrossRefQueryServicesAccount"]["param_value"] = $this->CrossRefQueryServicesAccount;
+		    // Auto Input Metadata by CrossRef DOI 2015/03/02 K.Sugimoto --end--
+            
+            $this->Session->setParameter("admin_params", $admin_params);
             
 			// アクション終了処理
 			$result = $this->exitAction();	// トランザクションが成功していればCOMMITされる

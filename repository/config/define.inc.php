@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: define.inc.php 41399 2014-09-11 08:24:43Z yuma_kouyama $
+// $Id: define.inc.php 57337 2015-08-29 06:00:09Z yuko_nakao $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics,
 // Research and Development Center for Scientific Information Resources
@@ -84,5 +84,12 @@ define("_REPOSITORY_HIGH_SPEED", false);
 // TOP画面が表示されなくなる
 // default value: false
 define("_REPOSITORY_NOT_SHOW_TOP_PAGE", false);
+
+//---------------DOI表示設定---------------------
+// 使用するDOIの設定
+// default value: false
+define("_REPOSITORY_JALC_DOI", false);
+define("_REPOSITORY_JALC_CROSSREF_DOI", false);
+define("_REPOSITORY_JALC_DATACITE_DOI", false);
 
 ?>

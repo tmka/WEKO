@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: BackgroundProcess.class.php 36217 2014-05-26 04:22:11Z satoshi_arata $
+// $Id: BackgroundProcess.class.php 55181 2015-07-02 09:25:01Z keiya_sugimoto $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -24,6 +24,13 @@ class BackgroundProcess extends RepositoryAction
     private $process_name = null;
     
     /**
+     * background process finish flag
+     *
+     * @var string
+     */
+    private $isFinish = false;
+    
+    /**
      * constructer
      *
      * @param paramter 
@@ -36,14 +43,17 @@ class BackgroundProcess extends RepositoryAction
     /**
      * execute
      */
-    protected function executeForWeko()
+    protected function executeApp()
     {
+        $this->exitFlag = true;
+        
         // check process
         $status = $this->lockProcess();
         
         // init background process
         if($status != 0){
-            exit();
+            $this->isFinish = true;
+            return;
         }
         
         // get target 
@@ -51,7 +61,8 @@ class BackgroundProcess extends RepositoryAction
         
         if($executeFlag == false){
             $this->unlockProcess();
-            exit();
+            $this->isFinish = true;
+            return;
         }
         
         // execute Background Process
@@ -59,9 +70,19 @@ class BackgroundProcess extends RepositoryAction
         
         // execute next process
         $this->unlockProcess();
-        $this->callAsyncProcess();
-        
-        exit();
+    }
+    
+    /**
+     * トランザクション外後処理
+     * 
+     * 次の処理を呼び出す
+     */
+    final protected function afterTrans()
+    {
+        if(!$this->isFinish)
+        {
+            $this->callAsyncProcess();
+        }
     }
     
     /**

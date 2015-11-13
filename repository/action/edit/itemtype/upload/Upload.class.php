@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Upload.class.php 3 2010-02-02 05:07:44Z atsushi_suzuki $
+// $Id: Upload.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -32,7 +32,7 @@ class Repository_Action_Edit_Itemtype_Upload
 	 *
 	 * @access  public
 	 */
-	function execute()
+	function executeApp()
 	{
 		// ガーベージフラグが"1"の場合、いつかファイル・DB共にクリアしてくれる。
 		// ただし、詳細なタイミングは不明。

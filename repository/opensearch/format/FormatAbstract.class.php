@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: FormatAbstract.class.php 43084 2014-10-20 06:53:41Z yuko_nakao $
+// $Id: FormatAbstract.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -12,8 +12,8 @@
 // --------------------------------------------------------------------
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryOutputFilter.class.php';
-require_once WEBAPP_DIR. '/modules/repository/components/RepositoryUsagestatistics.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryHandleManager.class.php';
+require_once WEBAPP_DIR.'/modules/repository/components/FW/BusinessFactory.class.php';
 
 class Repository_Opensearch_FormatAbstract
 {
@@ -40,6 +40,7 @@ class Repository_Opensearch_FormatAbstract
     const DATA_ISSUE = "issue";
     const DATA_SPAGE = "spage";
     const DATA_EPAGE = "epage";
+    const DATA_URL = "url";
     const DATA_DATE_OF_ISSUED = "date_of_issued";
     const DATA_DESCRIPTION = "description";
     const DATA_PUB_DATE = "pub_date";
@@ -241,6 +242,7 @@ class Repository_Opensearch_FormatAbstract
                         self::DATA_ITEM_TYPE_NAME => "",
                         self::DATA_MIME_TYPE => array(),
                         self::DATA_FILE_URI => array(),
+                        self::DATA_URL => array(),
                         self::DATA_CREATOR => array(),
                         self::DATA_CREATOR_LANG => array(),
                         self::DATA_PUBLISHER => array(),
@@ -335,7 +337,8 @@ class Repository_Opensearch_FormatAbstract
         $suffix = $this->repositoryHandleManager->getSuffix($itemId, $itemNo, RepositoryHandleManager::ID_Y_HANDLE);
         
         $wekoId = $suffix;
-        
+        $itemData[self::DATA_WEKO_ID] = $wekoId;
+
         ///// setting item type id /////
         $itemData[self::DATA_ITEM_TYPE_NAME] = $itemType[RepositoryConst::DBCOL_REPOSITORY_ITEM_TYPE_NAME];
         
@@ -364,11 +367,28 @@ class Repository_Opensearch_FormatAbstract
             
             for($jj=0; $jj<count($itemAttr[$ii]); $jj++)
             {
-                /// set file information
-                if($inputType == RepositoryConst::ITEM_ATTR_TYPE_FILE)
+                // set file information
+                if ($inputType == RepositoryConst::ITEM_ATTR_TYPE_FILE) 
                 {
+                    // set file preview info
+                    $extension = $itemAttr[$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_FILE_EXTENSION];
+                    $mimeType = $itemAttr[$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_FILE_MIME_TYPE];
+                    $filePrevName = $itemAttr[$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_FILE_FILE_PREV_NAME];
+                    $isImage = preg_match("/^image/", $mimeType);
+                    
+                    if (($extension == "pdf" || $mimeType == "application/pdf" || $isImage == 1) && $filePrevName != "") {
+                        $file = Array(
+                            RepositoryConst::DBCOL_REPOSITORY_FILE_ITEM_ID => $itemAttr[$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_FILE_ITEM_ID],
+                            RepositoryConst::DBCOL_REPOSITORY_FILE_ITEM_NO => $itemAttr[$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_FILE_ITEM_NO],
+                            RepositoryConst::DBCOL_REPOSITORY_FILE_ATTRIBUTE_ID => $itemAttr[$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_FILE_ATTRIBUTE_ID],
+                            RepositoryConst::DBCOL_REPOSITORY_FILE_FILE_NO => $itemAttr[$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_FILE_FILE_NO]
+                        ); 
+                        
+                        $itemData[self::DATA_URL][] = $file;
+                    }
+                    
                     // set file info
-                    if(strlen($itemData[self::DATA_MIME_TYPE]) > 0)
+                    if(strlen($itemAttr[$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_FILE_MIME_TYPE]) > 0)
                     {
                         array_push($itemData[self::DATA_MIME_TYPE], $itemAttr[$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_FILE_MIME_TYPE]);
                         $fileUri = BASE_URL."/?action=repository_uri".
@@ -484,26 +504,12 @@ class Repository_Opensearch_FormatAbstract
         if(count($terms) == 2 && (int)$terms[0] != 0 && (int)$terms[1] != 0){
             $year = $terms[0];
             $month = $terms[1];
-            // ログ解析除外IPアドレス(log exception)
-            $query = "SELECT param_value FROM ". DATABASE_PREFIX ."repository_parameter ".
-                     "WHERE param_name = 'log_exclusion'; ";
-            $ip_list = $this->Db->execute($query);
-            if(ip_list === false){
-                return false;
-            }
-            $log_exception = "";
-            $ip_list = str_replace("\r\n", "\n", $ip_list[0]["param_value"]);
-            $ip_list = str_replace("\r", "\n", $ip_list);
-            if($ip_list != ""){
-                $ip_list = explode("\n", $ip_list);
-                for($ii=0; $ii<count($ip_list); $ii++){
-                    $log_exception .= " AND ". DATABASE_PREFIX ."repository_log.ip_address <> '$ip_list[$ii]' ";
-                }
-            }
             
+            // ビジネスクラスを呼ぶ
             $transStartDate = $this->getNowDate();
+            BusinessFactory::initialize($this->Session, $this->Db, $transStartDate);
+            $usagestatistics = BusinessFactory::getFactory()->getBusiness("businessUsagestatistics");
             
-            $usagestatistics = new RepositoryUsagestatistics($this->Session, $this->Db, $transStartDate);
             for($ii=0; $ii<count($item_data); $ii++){
                 if($item_data[$ii]['item_id'] != "" && $item_data[$ii]['item_no'] != ""){
                     $item_data[$ii][self::DATA_WEKO_LOG_TERM] = $request[self::REQUEST_LOG_TERM];

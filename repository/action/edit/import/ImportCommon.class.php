@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: ImportCommon.class.php 42605 2014-10-03 01:02:01Z keiya_sugimoto $
+// $Id: ImportCommon.class.php 58688 2015-10-11 08:21:12Z tatsuya_koyasu $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics,
 // Research and Development Center for Scientific Information Resources
@@ -17,7 +17,6 @@ include_once MAPLE_DIR.'/includes/pear/File/Archive.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/IDServer.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/NameAuthority.class.php';
-require_once WEBAPP_DIR. '/modules/repository/components/RepositoryPdfCover.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/ItemRegister.class.php';
 require_once WEBAPP_DIR. '/modules/repository/action/main/sword/SwordUpdate.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryOutputFilter.class.php';
@@ -26,6 +25,7 @@ require_once WEBAPP_DIR. '/modules/repository/components/RepositoryCheckFileType
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryHandleManager.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryImportXmlValidator.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/Checkdoi.class.php';
+require_once WEBAPP_DIR. '/modules/repository/components/ItemtypeManager.class.php';
 
 /**
  * Import common action
@@ -48,6 +48,7 @@ class ImportCommon extends RepositoryAction
     const DAY = "day";
 
     private $repositoryHandleManager = null;
+    private $itemtypeManager = null;
 
     /**
      * Set log file handle
@@ -148,8 +149,8 @@ class ImportCommon extends RepositoryAction
             $rtn = xml_parse_into_struct( $xml_parser, $content, $vals );
             
             if($rtn == 0){
-                $this->Session->setParameter("error_msg", "Not right XML.");
-                $this->writeLog("error_msg: Not right XML.");
+                $this->Session->setParameter("error_msg", "Invalid XML Format.");
+                $this->writeLog("error_msg: Invalid XML Format.");
                 $this->writeLog("-- End XMLAnalysis in ImportCommon class --\n");
                 return false;
             }
@@ -186,6 +187,9 @@ class ImportCommon extends RepositoryAction
         $suffix_column = array('ITEM_ID', 'ITEM_NO', 'CNRI');
         // Add cnri handle T.Ichikawa --start-- 2014/09/17 --end--
         $selfdoi_column = array('ITEM_ID', 'ITEM_NO', 'RA', 'SELFDOI');
+        // Add suppleContentsEntry Y.Yamazawa --start-- 2015/03/17 --start--
+        $supple_column = array('ITEM_ID','ITEM_NO','VALUE','SUPPLE_NO','ITEM_TYPE_ID','SUPPLE_WEKO_ITEM_ID','SUPPLE_TITLE','SUPPLE_TITLE_EN','URI','SUPPLE_ITEM_TYPE_NAME','MIME_TYPE','FILE_ID','SUPPLE_REVIEW_STATUS','SUPPLE_REVIEW_DATE','SUPPLE_REJECT_STATUS','SUPPLE_REJECT_DATE','SUPPLE_REJECT__REASON');
+        // Add suppleContentsEntry Y.Yamazawa --end-- 2015/03/17 --end--
 
         // Object array(Key: The one that main key tied by '_' and value: Array of item (Key = column name: Value = value))
         $item_key_array = array();                  // item
@@ -204,7 +208,8 @@ class ImportCommon extends RepositoryAction
         $feedback_mailaddress_key_array = array();      // Add  e-person R.Matsuura 2013/10/21 --Add--
         $cnri_key_array = array();                  // Add cnri handle T.Ichikawa 2014/09/17 --Add--
         $selfdoi_key_array = array();
-        
+        $supple_info_key_array = array();           // Add suppleContentsEntry Y.Yamazawa 2015/03/17 --Add--
+
         // KeyMap（Key=existing ID、Value=new ID）
         $item_type_key_map = array();
         $item_key_map = array();
@@ -227,6 +232,7 @@ class ImportCommon extends RepositoryAction
         $feedback_mailaddress_array = array();      // Add  e-person R.Matsuura 2013/10/21 --Add--
         $cnri_array = array();                  // Add cnri handle T.Ichikawa 2014/09/17 --Add--
         $selfdoi_array = array();
+        $supple_info_array = array();           // Add suppleContentsEntry Y.Yamazawa 2015/03/17 --Add--
 
         $array_item_type_data = array(); // XML data of each item type
         $array_item_data = array(); // XML data of each item
@@ -288,7 +294,8 @@ class ImportCommon extends RepositoryAction
                                                 'edit_array' => $edit_array,
                                                 'feedback_mailaddress_array' => $feedback_mailaddress_array,
                                                 'cnri_array' => $cnri_array,
-                                                'selfdoi_array' => $selfdoi_array
+                                                'selfdoi_array' => $selfdoi_array,
+                                                'supple_info_array' => $supple_info_array
                                         )
                         );
                         $item_array = array();
@@ -307,6 +314,7 @@ class ImportCommon extends RepositoryAction
                         $feedback_mailaddress_array = array();      // Add  e-person R.Matsuura 2013/10/24 --Add--
                         $cnri_array = array();                  // Add cnri handle T.Ichikawa 2014/09/17 --Add--
                         $selfdoi_array = array();
+                        $supple_info_array = array();
                     }
 
                     $insert_data = $this->pickupData($vals[$row_cnt]['attributes'], $item_column );
@@ -484,6 +492,28 @@ class ImportCommon extends RepositoryAction
                     $selfdoi_key_array[] = $key;
                     $selfdoi_array = array_merge($selfdoi_array, array($insert_data));
                     break;
+                // Add suppleContentsEntry 2015/03/17 Y.Yamazawa --start--
+                case 'REPOSITORY_SUPPLE':
+                    $insert_data = $this->pickupData($vals[$row_cnt]['attributes'], $supple_column);
+                    $key = $insert_data['ITEM_ID'] . '_' . $insert_data['ITEM_NO']. '_'. $insert_data['SUPPLE_NO'];
+                    // 既に配列内に同様のKey値がある場合はコンテニュー
+                    if (in_array($key, $supple_info_key_array)) {
+                        $this->traceLog("conflict data", __FILE__, __CLASS__, __LINE__);
+                        continue;   // skip conflict data
+                    }
+
+                    $supple_info_key_array[] = $key;
+
+                    // サプリコンテンツURLが複数ある場合"|"で分割する
+                    $suppleContensURL = explode("|", $vals[$row_cnt]['value']);
+
+                    // サプリコンテンツURL分配列に詰める
+                    foreach ($suppleContensURL as $url) {
+                        $supple_info_array = array_merge($supple_info_array, array($url));
+                    }
+
+                    break;
+                // Add suppleContentsEntry 2015/03/17 Y.Yamazawa --end--
                 default:
                     $this->Session->setParameter("error_msg", "Not Found this parameter. Param : ".$this->forXmlChangeDecode($vals[$row_cnt]['tag']));
                     $this->writeLog("Not Found this parameter. Param : ".$this->forXmlChangeDecode($vals[$row_cnt]['tag'])."\n");
@@ -518,7 +548,8 @@ class ImportCommon extends RepositoryAction
                                                 'edit_array' => $edit_array,
                                                 'feedback_mailaddress_array' => $feedback_mailaddress_array,
                                                 'cnri_array' => $cnri_array,
-                                                'selfdoi_array' => $selfdoi_array
+                                                'selfdoi_array' => $selfdoi_array,
+                                                'supple_info_array' => $supple_info_array // Add suppleContentsEntry Y.Yamazawa 2015/03/17 --Add--
                                         )
                         );
 
@@ -874,6 +905,12 @@ class ImportCommon extends RepositoryAction
                     return false;
                 }
             }
+            
+            // checkbox plural flag on
+            if($item_attr_type[$ii]['INPUT_TYPE'] == "checkbox"){
+                $item_attr_type[$ii]['PLURAL_ENABLE'] = 1;
+            }
+            
             $query = "INSERT INTO ". DATABASE_PREFIX ."repository_item_attr_type(" .
                     "item_type_id, " .
                     "attribute_id, " .
@@ -889,13 +926,15 @@ class ImportCommon extends RepositoryAction
                     "junii2_mapping, " .
                     "dublin_core_mapping, " .
                     "lom_mapping, " .// add "lom_mapping" 2013/01/29 A.Jin
+                    "lido_mapping, ".
+					"spase_mapping, ".
                     "display_lang_type, " . // add "display_lang_type" 2009/07/23 A.Suzuki
                     "ins_user_id, " .
                     "mod_user_id, " .
                     "ins_date, " .
                     "mod_date, " .
                     "is_delete ) " .
-                    "VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? );";
+                    "VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? );";
             // バインド変数設定
             $param_item_attr_type = array();
             $param_item_attr_type[] = intval( $newID );
@@ -912,8 +951,15 @@ class ImportCommon extends RepositoryAction
             $param_item_attr_type[] = $item_attr_type[$ii]['JUNII2_MAPPING'];
             $param_item_attr_type[] = $item_attr_type[$ii]['DUBLIN_CORE_MAPPING'];
             $param_item_attr_type[] = $item_attr_type[$ii]['LOM_MAPPING'];
+            $param_item_attr_type[] = "";
             // add "display_lang_type" 2009/07/23 A.Suzuki --start--
             if($item_attr_type[$ii]['DISPLAY_LANG_TYPE']==null){
+                $item_attr_type[$ii]['DISPLAY_LANG_TYPE'] = "";
+            }
+            else if ( strcasecmp($item_attr_type[$ii]['DISPLAY_LANG_TYPE'], "japanese") == 0 || strcasecmp($item_attr_type[$ii]['DISPLAY_LANG_TYPE'], "english") == 0  ) {
+                $item_attr_type[$ii]['DISPLAY_LANG_TYPE'] = mb_strtolower($item_attr_type[$ii]['DISPLAY_LANG_TYPE']);
+            }
+            else {
                 $item_attr_type[$ii]['DISPLAY_LANG_TYPE'] = "";
             }
             $param_item_attr_type[] = $item_attr_type[$ii]['DISPLAY_LANG_TYPE'];
@@ -991,7 +1037,7 @@ class ImportCommon extends RepositoryAction
     /**
      * Insert or Update an item
      */
-    function itemEntry($array_item_data, $tmp_dir, &$array_item, $index_id, $item_type_info, $array_item_type_data, &$error_msg, &$item_id, &$detail_uri){
+    function itemEntry($array_item_data, $tmp_dir, &$array_item, $index_id, $item_type_info, $array_item_type_data, &$error_msg, &$item_id, &$detail_uri, &$warningMsg){
         $this->writeLog("-- Start itemEntry in ImportCommon class --\n");
 
         // get user_id
@@ -1025,7 +1071,7 @@ class ImportCommon extends RepositoryAction
             // Update 2013/09/09 R.Matsuura (Add argument "item_type_info")
             $result = $updateAction->executeUpdate(
                             $array_item_data, $array_item_type_data, $tmp_dir, $user_id,
-                            $item_id, $item_no, $array_item, $index_id, $item_type_info, $detail_uri, $error_msg);
+                            $item_id, $item_no, $array_item, $index_id, $item_type_info, $detail_uri, $error_msg, $warningMsg);
 
             return $result;
         }
@@ -1040,7 +1086,7 @@ class ImportCommon extends RepositoryAction
         
         // Bug Fix WEKO-2014-046 T.Koyasu 2014/08/07 --start--
         // validate each metadata attribute id of item type
-        //$this->validateItemTypeXmlData($item_type_info['item_type_id'], $array_item_type_data);
+        $this->validateItemTypeXmlData($item_type_info['item_type_id'], $array_item_type_data);
         // Bug Fix WEKO-2014-046 T.Koyasu 2014/08/07 --end--
         
         //////////////////////////////////
@@ -1062,6 +1108,7 @@ class ImportCommon extends RepositoryAction
         $feedback_mailaddress_array = $array_item_data['feedback_mailaddress_array'];
         $cnri_array = $array_item_data['cnri_array'];
         $selfdoi_array = $array_item_data['selfdoi_array'];
+        $supple_info_array = $array_item_data['supple_info_array']; // Add supple info Y.Yamazawa 2015/03/17 --Add--
         $item_type_key_map = array();
         $item_key_map = array();
 
@@ -1182,7 +1229,15 @@ class ImportCommon extends RepositoryAction
 
         $this->writeLog("    Set Y-handle suffix.\n");
         $this->getRepositoryHandleManager();
-        if(!$this->repositoryHandleManager->setSuffix($item_array[0]["TITLE"], $item_id, $item_no))
+        
+        try {
+            $result = $this->repositoryHandleManager->setSuffix($item_array[0]["TITLE"], $item_id, $item_no);
+        } catch(AppException $ex){
+            $this->debugLog($ex->getMessage(). "::itemId=". $item_id, __FILE__, __CLASS__, __LINE__);
+            $warningMsg = $this->addWarningMsg($ex->getMessage(), $warningMsg);
+        }
+        
+        if(!$result)
         {
             $this->writeLog("    Failed set Y-handle suffix.\n");
         }
@@ -1352,7 +1407,8 @@ class ImportCommon extends RepositoryAction
 
             // input_type
             $inputType = $inputTypeList[$attrId];
-            $attrValue = str_replace("\\n", "\n", $item_attr_array[$cnt]["ATTRIBUTE_VALUE"]);
+            $attrValue = preg_replace("/([^\\\\](\\\\\\\\)*)\\\\n/", "$1\n", $item_attr_array[$cnt]["ATTRIBUTE_VALUE"]);
+            $attrValue = str_replace("\\\\", "\\", $attrValue);
 
             if($inputType == RepositoryConst::ITEM_ATTR_TYPE_CHECKBOX ||
                $inputType == RepositoryConst::ITEM_ATTR_TYPE_SELECT ||
@@ -2050,9 +2106,6 @@ class ImportCommon extends RepositoryAction
                 $path = $tmp_dir. DIRECTORY_SEPARATOR. $file_array[$cnt]['RENAME'];
 
                 $image = ImageCreateFromPNG($path); //read png file
-                $result = $this->createThumbnailImage($image , $new_image);
-
-                $new_image = null;
                 $result = $this->createThumbnailImage($image , $path.".png");
                 imagedestroy ($image);
 
@@ -2075,7 +2128,20 @@ class ImportCommon extends RepositoryAction
             if(file_exists($file_path)){
                 unlink($file_path);
             }
-            copy($path, $file_path);
+            
+	        // file upload check 2015/04/02 K.Sugimoto --start--
+	        $result = copy($path, $file_path);
+	        if(!$result || !(file_exists($file_path))){
+		        $smarty_assign = $this->Session->getParameter("smartyAssign");
+		        if(!isset($smarty_assign))
+		        {
+			        $this->setLangResource();
+			        $smarty_assign = $this->Session->getParameter("smartyAssign");
+		        }
+		        $error_msg = sprintf($smarty_assign->getLang("repository_file_upload_failed"), $file_array[$cnt]['FILE_NAME']);
+		        return false;
+	        }
+	        // file upload check 2015/04/02 K.Sugimoto --end--
             // Add separate file from DB 2009/04/21 Y.Nakao --end--
 
             // display_type
@@ -2139,7 +2205,7 @@ class ImportCommon extends RepositoryAction
             $param_file[] = $filePubDate;
             $param_file[] = $flashPubDate;
             $param_file[] = $item_type_id;
-            $param_file[] = ""; // prev_id
+            $param_file[] = 0; // prev_id
             $param_file[] = ""; // file_prev(BLOB)
             if($prev_flg == "true"){
                 // PDFの場合、プレビュー用の名前を事前登録する。
@@ -2570,17 +2636,16 @@ class ImportCommon extends RepositoryAction
         // Add cnri handle 2014/09/17 T.Ichikawa --start--
         //////////////////////////////////// Insert CNRI handle //////////////////////////////////
         // CNRIの値は"http://hdl.handle.net/[PrefixID]/[Suffix]/の形式で送られてくる"
-        // CNRIプレフィックス値の設定のチェック
-        $cnri_prefix = $this->repositoryHandleManager->getCnriPrefix();
-        if(strlen($cnri_prefix) > 0) {
-            for ($cnt = 0; $cnt < count($cnri_array); $cnt++){
-                // サーバとXMLのプレフィックスIDを照合する
-                $params = str_replace("http://hdl.handle.net/", "", $cnri_array[$cnt]['CNRI']);
-                $handle = explode("/", $params);
-                if($cnri_prefix == $handle[0]) {
-                    // CNRIのプレフィックスIDが一致したら処理を行う
-                    $this->repositoryHandleManager->registCnriSuffix(intval($item_id), intval($cnri_array[$cnt]['ITEM_NO']), $handle[1]);
-                }
+        // CNRIプレフィックス値の設定のチェックも抽出メソッド内で実施する
+        for ($cnt = 0; $cnt < count($cnri_array); $cnt++){
+            // サーバに設定されたprefixからsuffixを抽出する
+            try {
+                $suffix = $this->repositoryHandleManager->extractCnriSuffix($cnri_array[$cnt]['CNRI']);
+                
+                $this->repositoryHandleManager->registCnriSuffix(intval($item_id), intval($cnri_array[$cnt]['ITEM_NO']), $suffix);
+            } catch(AppException $ex){
+                $this->debugLog($ex->getMessage(). "::itemId=". $item_id. "::cnri=". $cnri_array[$cnt]['CNRI'], __FILE__, __CLASS__, __LINE__);
+                $warningMsg = $this->addWarningMsg($ex->getMessage(), $warningMsg);
             }
         }
         // Add cnri handle 2014/09/17 T.Ichikawa --end--
@@ -2588,22 +2653,28 @@ class ImportCommon extends RepositoryAction
         //////////////////////////////////// Insert selfDOI //////////////////////////////////
         if(isset($selfdoi_array[0]['RA']) && strlen($selfdoi_array[0]['RA']) > 0)
         {
+            $selfdoi_array[0]['RA'] = strtoupper($selfdoi_array[0]['RA']);
             $checkdoi = new Repository_Components_Checkdoi($this->Session, $this->Db, $this->TransStartDate);
             $handleManager = new RepositoryHandleManager($this->Session, $this->Db, $this->TransStartDate);
-            if($selfdoi_array[0]['RA'] === RepositoryConst::JUNII2_SELFDOI_RA_JALC)
+            if($selfdoi_array[0]['RA'] === strtoupper(RepositoryConst::JUNII2_SELFDOI_RA_JALC))
             {
                 $selfdoiPrefixSuffix = explode("/", $selfdoi_array[0]['SELFDOI']);
                 $libraryJalcdoiPrefix = $handleManager->getLibraryJalcDoiPrefix();
                 if($selfdoiPrefixSuffix[0] === $libraryJalcdoiPrefix)
                 {
-                    $checkRegist = $checkdoi->checkDoiGrant($item_id, $item_no, 2, 0);
+                    $checkRegist = $checkdoi->checkDoiGrant($item_id, $item_no, Repository_Components_Checkdoi::TYPE_LIBRARY_JALC_DOI, Repository_Components_Checkdoi::CHECKING_STATUS_ITEM_REGISTRATION);
                     if($checkRegist)
                     {
-                        $handleManager->registLibraryJalcdoiSuffix($item_id, $item_no, $selfdoi_array[0]['SELFDOI']);
+                        try {
+                            $handleManager->registLibraryJalcdoiSuffix($item_id, $item_no, $selfdoi_array[0]['SELFDOI']);
+                        } catch(AppException $ex){
+                            $this->debugLog($ex->getMessage(). "::itemId=". $item_id. "::selfDoi=". $selfdoi_array[0]['SELFDOI'], __FILE__, __CLASS__, __LINE__);
+                            $warningMsg = $this->addWarningMsg($ex->getMessage(), $warningMsg);
+                        }
                     }
                     else
                     {
-                        $checkRegist = $checkdoi->checkDoiGrant($item_id, $item_no, 0, 0);
+                        $checkRegist = $checkdoi->checkDoiGrant($item_id, $item_no, Repository_Components_Checkdoi::TYPE_JALC_DOI, Repository_Components_Checkdoi::CHECKING_STATUS_ITEM_REGISTRATION);
                         if($checkRegist)
                         {
                             $suffix = $handleManager->getYHandleSuffix($item_id, $item_no);
@@ -2613,7 +2684,7 @@ class ImportCommon extends RepositoryAction
                 }
                 else
                 {
-                    $checkRegist = $checkdoi->checkDoiGrant($item_id, $item_no, 0, 0);
+                    $checkRegist = $checkdoi->checkDoiGrant($item_id, $item_no, Repository_Components_Checkdoi::TYPE_JALC_DOI, Repository_Components_Checkdoi::CHECKING_STATUS_ITEM_REGISTRATION);
                     if($checkRegist)
                     {
                         $suffix = $handleManager->getYHandleSuffix($item_id, $item_no);
@@ -2621,17 +2692,34 @@ class ImportCommon extends RepositoryAction
                     }
                 }
             }
-            else if($selfdoi_array[0]['RA'] === RepositoryConst::JUNII2_SELFDOI_RA_CROSSREF)
+            else if($selfdoi_array[0]['RA'] === strtoupper(RepositoryConst::JUNII2_SELFDOI_RA_CROSSREF))
             {
             
-                $checkRegist = $checkdoi->checkDoiGrant($item_id, $item_no, 1, 0);
+                $checkRegist = $checkdoi->checkDoiGrant($item_id, $item_no, Repository_Components_Checkdoi::TYPE_CROSS_REF, Repository_Components_Checkdoi::CHECKING_STATUS_ITEM_REGISTRATION);
                 if($checkRegist)
                 {
                     $suffix = $handleManager->getYHandleSuffix($item_id, $item_no);
                     $handleManager->registCrossrefSuffix($item_id, $item_no, $suffix);
                 }
             }
+        	// Add DataCite 2015/02/09 K.Sugimoto --start--
+            else if($selfdoi_array[0]['RA'] === strtoupper(RepositoryConst::JUNII2_SELFDOI_RA_DATACITE))
+            {
+            
+                $checkRegist = $checkdoi->checkDoiGrant($item_id, $item_no, Repository_Components_Checkdoi::TYPE_DATACITE, Repository_Components_Checkdoi::CHECKING_STATUS_ITEM_REGISTRATION);
+                if($checkRegist)
+                {
+                    $suffix = $handleManager->getYHandleSuffix($item_id, $item_no);
+                    $handleManager->registDataciteSuffix($item_id, $item_no, $suffix);
+                }
+            }
+    	// Add DataCite 2015/02/09 K.Sugimoto --end--
         }
+
+        // Add suppleContentsEntry Y.Yamazawa --start-- 2015/03/17 --start--
+        //////////////////////////////////// Insert suppleContents //////////////////////////////////
+        $this->entrySupple($item_id,$item_no,$supple_info_array,$error_msg);
+        // Add suppleContentsEntry Y.Yamazawa --end-- 2015/03/17 --end--
 
         // Reissue attribute_no
         if(!$this->reissueAttrNo(intval($item_id), intval($item_array[0]['ITEM_NO']), $error_msg))
@@ -2650,11 +2738,7 @@ class ImportCommon extends RepositoryAction
         if($result)
         {
             $this->writeLog("  requiredCheck OK.\n");
-
-            // Add PDF cover page 2012/06/18 A.Suzuki --start--
-            $this->executeCreatePdfCover($index_id, intval($item_id), intval($item_array[0]['ITEM_NO']), $user_id, $error_msg);
-            // Add PDF cover page 2012/06/18 A.Suzuki --end--
-
+            
             // Convert to flash
             if(!$this->convertToFlash(intval($item_id), intval($item_array[0]['ITEM_NO']), $error_msg))
             {
@@ -2696,9 +2780,11 @@ class ImportCommon extends RepositoryAction
         // ------------------------------------------------------------------
         // add item insert log
         // ------------------------------------------------------------------
-        // Add log common action Y.Nakao 2010/03/05 --start--
-        $this->entryLog(1, intval($item_id), intval($item_array[0]['ITEM_NO']), "", "", "");
-        // Add log common action Y.Nakao 2010/03/05 --end--
+        // Mod entryLog T.Koyasu 2015/03/06 --start--
+        $this->infoLog("businessLogmanager", __FILE__, __CLASS__, __LINE__);
+        $logManager = BusinessFactory::getFactory()->getBusiness("businessLogmanager");
+        $logManager->entryLogForRegistItem($item_id, intval($item_array[0]['ITEM_NO']));
+        // Mod entryLog T.Koyasu 2015/03/06 --end--
 
         // Update review status
         $array_item[count($array_item)-1]["status"] = "success";
@@ -3046,73 +3132,7 @@ class ImportCommon extends RepositoryAction
         return $lang;
     }
     // Fix null language 2012/02/21 Y.Nakao --end--
-
-    /**
-     * Create PDF cover
-     *
-     * @param int $itemId
-     * @param int $itemNo
-     * @param string $userId
-     * @param bool $coverErrorFlag
-     * @return bool
-     */
-    private function createPdfCover($itemId, $itemNo, $userId="", &$coverErrorFlag)
-    {
-        $coverErrorFlag = false;
-
-        // Set user_id
-        if(strlen($userId) > 0)
-        {
-            $userId = $this->Session->getParameter("_user_id");
-        }
-
-        // Get registered files
-        $result = $this->getRegistertedFileData($itemId, $itemNo);
-        if($result === false)
-        {
-            $coverErrorFlag = true;
-            return false;
-        }
-        // Loop for files
-        for($ii=0; $ii<count($result); $ii++)
-        {
-            // Check file type
-            if(strtolower($result[$ii][RepositoryConst::DBCOL_REPOSITORY_FILE_EXTENSION])!="pdf")
-            {
-                continue;
-            }
-
-            $pdfCover = new RepositoryPdfCover(
-                                $this->Session,
-                                $this->Db,
-                                $this->TransStartDate,
-                                $userId,
-                                $result[$ii][RepositoryConst::DBCOL_REPOSITORY_FILE_ITEM_ID],
-                                $result[$ii][RepositoryConst::DBCOL_REPOSITORY_FILE_ITEM_NO],
-                                $result[$ii][RepositoryConst::DBCOL_REPOSITORY_FILE_ATTRIBUTE_ID],
-                                $result[$ii][RepositoryConst::DBCOL_REPOSITORY_FILE_FILE_NO]
-                            );
-            if($pdfCover->execute())
-            {
-                // Success
-                // Delete this file's old flash
-                $this->removeDirectory(
-                    $this->getFlashFolder(
-                            $result[$ii][RepositoryConst::DBCOL_REPOSITORY_FILE_ITEM_ID],
-                            $result[$ii][RepositoryConst::DBCOL_REPOSITORY_FILE_ATTRIBUTE_ID],
-                            $result[$ii][RepositoryConst::DBCOL_REPOSITORY_FILE_FILE_NO]
-                        )
-                    );
-            }
-            else
-            {
-                $coverErrorFlag = true;
-            }
-        }
-
-        return true;
-    }
-
+    
     /**
      * Get registered files data
      *
@@ -3241,29 +3261,7 @@ class ImportCommon extends RepositoryAction
 
         return $replaceAttrIdArray;
     }
-
-    /**
-     * Execute create pdf cover
-     *
-     * @param array $indexIds
-     * @param int $itemId
-     * @param string $itemNo
-     * @param string $user_id
-     * @param string $errorMsg
-     */
-    public function executeCreatePdfCover($indexIds, $itemId, $itemNo, $user_id, &$errorMsg)
-    {
-        $pdfCoverCreateFlag = $this->checkIndexCreateCover($indexIds);
-        if($pdfCoverCreateFlag)
-        {
-            $this->createPdfCover($itemId, $itemNo, $user_id, $coverErrorFlag);
-            if($coverErrorFlag)
-            {
-                $errorMsg .= "warning: There are same files that failed to create PDF cover.";
-            }
-        }
-    }
-
+    
     /**
      * Convert to flash
      *
@@ -4268,6 +4266,23 @@ class ImportCommon extends RepositoryAction
         }
     }
     
+    /**
+     * create ItemtypeManager instance
+     *
+     */
+    private function getItemtypeManager()
+    {
+        if(!isset($this->itemtypeManager))
+        {
+            if(!isset($this->TransStartDate) || strlen($this->TransStartDate) == 0)
+            {
+                $DATE = new Date();
+                $this->TransStartDate = $DATE->getDate(). ".000";
+            }
+            $this->itemtypeManager = new Repository_Components_Itemtypemanager($this->Session, $this->Db, $this->TransStartDate);
+        }
+    }
+    
     // Bug Fix WEKO-2014-046 T.Koyasu 2014/08/07 --start--
     /**
      * correct attribute_id of item_type data array
@@ -4277,6 +4292,17 @@ class ImportCommon extends RepositoryAction
      */
     public function validateItemTypeXmlData($itemTypeId, &$xmlItemTypeData)
     {
+        // 表示順データの整合チェック（データ変更を走らせないために最初に行う）
+        foreach($xmlItemTypeData['item_attr_type_array'] as $elm => $valArray) {
+            if(!isset($valArray['SHOW_ORDER'])) {
+                // 表示順が設定されていない場合
+                return;
+            } else if($this->getAttrIdByShowOrderAndItemTypeId($valArray['SHOW_ORDER'], $itemTypeId) == 0) {
+                // アイテムタイプIDと表示順で照合して一致するものが無い場合
+                return;
+            }
+        }
+        
         // 修正用のデータ配列(逐次処理で修正していくと修正済みと修正前の見分けがつかないため)
         $candidateArray = array();
         
@@ -4324,19 +4350,122 @@ class ImportCommon extends RepositoryAction
      */
     private function getAttrIdByShowOrderAndItemTypeId($showOrder, $itemTypeId)
     {
+        $attrId = 0;
+        
         $query = "SELECT attribute_id ". 
                  " FROM ". DATABASE_PREFIX. "repository_item_attr_type ". 
                  " WHERE item_type_id = ? ". 
-                 " AND show_order = ?;";
+                 " AND show_order = ? ".
+                 " AND is_delete = ? ;";
         
         $params = array();
         $params[] = $itemTypeId;
         $params[] = $showOrder;
+        $params[] = 0;
         
         $result = $this->dbAccess->executeQuery($query, $params);
+        if(count($result) > 0) {
+            $attrId = $result[0]["attribute_id"];
+        }
         
-        return $result[0]["attribute_id"];
+        return $attrId;
     }
     // Bug Fix WEKO-2014-046 T.Koyasu 2014/08/07 --end--
+    
+    /**
+     * check usage itemtype
+     *
+     * @param int $item_type_id_list
+     * @param int $user_role_id
+     * @param int $user_room_auth_id
+     * @return bool
+     */
+    function canUseItemtype($item_type_id_list, $user_role_id, $user_room_auth_id)
+    {
+        if(!isset($this->itemtypeManager)) {
+            $this->getItemtypeManager();
+        }
+        
+        // 現在のユーザーの権限で使用可能なアイテムタイプの一覧を取得する
+        $result = $this->itemtypeManager->getItemtypeDataByUserAuth($user_role_id, $user_room_auth_id, true);
+        // 引数のアイテムタイプが使用できるアイテムタイプに含まれているかチェックする
+        $check_result = array();
+        for($ii = 0; $ii < count($item_type_id_list); $ii++) {
+            $use_flag = false;
+            for($jj = 0; $jj < count($result); $jj++) {
+                if($item_type_id_list[$ii] == $result[$jj]["item_type_id"]) {
+                    $use_flag = true;
+                    break;
+                }
+            }
+            $check_result[] = $use_flag;
+        }
+        
+        return $check_result;
+    }
+
+    // Add suppleContentsEntry Y.Yamazawa --start-- 2015/03/17 --start--
+    /**
+     * サプリコンテンツ登録
+     * 1.サプリコンテンツURLが空か確認
+     * 2.ビジネスクラスの呼び出し
+     * 3.サプリコンテンツの登録
+     *
+     * @param string $item_id アイテムID
+     * @param string $item_no アイテムNo
+     * @param array $supple_info_array サプリコンテンツURL
+     * @param string $error_msg エラーメッセージ
+     * @return boolean 登録結果
+     */
+    private function entrySupple($item_id,$item_no,$supple_info_array,&$error_msg)
+    {
+        $this->traceLog(__FUNCTION__, __FILE__, __CLASS__, __LINE__);
+        $this->traceLog(print_r($supple_info_array, true), __FILE__, __CLASS__, __LINE__);
+        // サプリコンテンツURLが空か確認
+        if(!isset($supple_info_array[0]) || !(strlen($supple_info_array[0]) > 0))
+        {
+            return false;
+        }
+
+        $smartyAssign = $this->Session->getParameter("smartyAssign");
+
+        // サプリコンテンツの登録
+        try{
+            $this->infoLog("businessSupple", __FILE__, __CLASS__, __LINE__);
+            $businessSupple = BusinessFactory::getFactory()->getBusiness("businessSupple");
+            $businessSupple->entrySuppleContentsForImport($item_id,$item_no,$supple_info_array);
+        }
+        catch (AppException $e){
+            $code = $e->getMessage();
+            $msg = $smartyAssign->getLang($code);
+            $this->errorLog($msg, __FILE__, __CLASS__, __LINE__);
+            // 複数のサプリでエラーが発生する場合があるため一つの警告メッセージとしてまとめる
+            $error_msg = $msg;
+            return false;
+        }
+        $this->infoLog("businessSupple", __FILE__, __CLASS__, __LINE__);
+        return true;
+    }
+    // Add suppleContentsEntry Y.Yamazawa --end-- 2015/03/17 --end--
+    
+    /**
+     * add warning message
+     * 警告メッセージを追記する
+     *
+     * @param string $msgKey: 追加する警告文の言語リソースキー
+     * @param string $warningMsg: 追加元の警告メッセージ
+     * @return string: 警告メッセージ(スラッシュ区切り)
+     */
+    private function addWarningMsg($msgKey, $warningMsg){
+        $this->setLangResource();
+        $smarty_assign = $this->Session->getParameter('smartyAssign');
+        
+        if(strlen($warningMsg) > 0){
+            $warningMsg .= "/";
+        }
+        $warningMsg .= $smarty_assign->getLang($msgKey);
+        
+        return $warningMsg;
+    }
 }
 ?>

@@ -133,15 +133,15 @@ class Repository_OpenSearch_Rss extends Repository_Opensearch_FormatAbstract
         
         ///// feed title /////
         $feed_title = $repositoryName." OpenSearch";
-        if(strlen($request[self::REQUEST_WEKO_ID]) > 0)
+        if(isset($request[self::REQUEST_WEKO_ID]) && strlen($request[self::REQUEST_WEKO_ID]) > 0)
         {
             $feed_title .= " - "."WEKOID : ".$request[self::REQUEST_WEKO_ID];
         }
-        if(strlen($request[self::REQUEST_KEYWORD]) > 0)
+        if(isset($request[self::REQUEST_KEYWORD]) && strlen($request[self::REQUEST_KEYWORD]) > 0)
         {
             $feed_title .= " : ".$request[self::REQUEST_KEYWORD];
         }
-        if(strlen($request[self::REQUEST_INDEX_ID]) > 0)
+        if(isset($request[self::REQUEST_INDEX_ID]) && strlen($request[self::REQUEST_INDEX_ID]) > 0)
         {
             $feed_title .= " : ".$this->getIndexPath($request[self::REQUEST_INDEX_ID], "＞");
         }
@@ -386,7 +386,21 @@ class Repository_OpenSearch_Rss extends Repository_Opensearch_FormatAbstract
             $xml .= '       <prism:creationDate>'.$this->RepositoryAction->forXmlChange($insDate).'</prism:creationDate>'.self::LF; // 作成日
             
             // mod_date
+            $modDate = $this->RepositoryAction->changeDatetimeToW3C($itemData[self::DATA_MOD_DATE]);
             $xml .= '       <prism:modificationDate>'.$this->RepositoryAction->forXmlChange($modDate).'</prism:modificationDate>'.self::LF; // 更新日
+            
+            // file pewview link
+            for ($jj = 0; $jj < count($itemData[self::DATA_URL]); $jj++)
+            {
+                $link = BASE_URL . "/index.php?action=repository_action_common_download&" . 
+                        RepositoryConst::DBCOL_REPOSITORY_FILE_ITEM_ID . "=" . $itemData[self::DATA_URL][$jj][RepositoryConst::DBCOL_REPOSITORY_FILE_ITEM_ID] . "&" .
+                        RepositoryConst::DBCOL_REPOSITORY_FILE_ITEM_NO . "=" . $itemData[self::DATA_URL][$jj][RepositoryConst::DBCOL_REPOSITORY_FILE_ITEM_NO] . "&" .
+                        RepositoryConst::DBCOL_REPOSITORY_FILE_ATTRIBUTE_ID . "=" . $itemData[self::DATA_URL][$jj][RepositoryConst::DBCOL_REPOSITORY_FILE_ATTRIBUTE_ID] . "&" .
+                        RepositoryConst::DBCOL_REPOSITORY_FILE_FILE_NO . "=" . $itemData[self::DATA_URL][$jj][RepositoryConst::DBCOL_REPOSITORY_FILE_FILE_NO] . "&" .
+                        RepositoryConst::DBCOL_REPOSITORY_FILE_FILE_PREV . "=true";
+                
+                $xml .= '       <prism:url>'.$this->RepositoryAction->forXmlChange($link).'</prism:url>'.self::LF;
+            }
             
             $xml .= '   </item>'.self::LF.self::LF;
         }

@@ -3,7 +3,7 @@
 //
 // $Id: Mappingadddb.class.php 38124 2014-07-01 06:56:02Z rei_matsuura $
 //
-// Copyright (c) 2007 - 2008, National Institute of Informatics, 
+// Copyright (c) 2007 - 2008, National Institute of Informatics,
 // Research and Development Center for Scientific Information Resources
 //
 // This program is licensed under a Creative Commons BSD Licence
@@ -28,7 +28,7 @@ require_once WEBAPP_DIR. '/modules/repository/components/RepositorySearchTablePr
 class Repository_Action_Edit_Itemtype_Mappingadddb extends RepositoryAction
 {
 	// リクエストパラメタ
-		
+
     /**
      * [[機能説明]]
      *
@@ -38,7 +38,7 @@ class Repository_Action_Edit_Itemtype_Mappingadddb extends RepositoryAction
     {
         try {
 	        //アクション初期化処理
-	        $result = $this->initAction();	        
+	        $result = $this->initAction();
 	        if ( $result === false ) {
 	            $exception = new RepositoryException( "ERR_MSG_xxx-xxx1", 001 );	//主メッセージとログIDを指定して例外を作成
 	            $this->failTrans();                                        //トランザクション失敗を設定(ROLLBACK)
@@ -50,7 +50,7 @@ class Repository_Action_Edit_Itemtype_Mappingadddb extends RepositoryAction
 	    	$tr_start_date = $this->TransStartDate;					// トランザクション開始日時 = 更新日時
 	    	$bef_mod_date = $this->Session->getParameter("item_type_update");		// 既存アイテムタイプレコードの更新日
 	    	$user_id = $this->Session->getParameter("_user_id");	// ユーザID
- 
+
 	    	//*******************************************************
 	    	// アイテムタイプのマッピング設定を更新
 	    	// ※ただし、変化がない場合はレコードを更新しない
@@ -93,8 +93,8 @@ class Repository_Action_Edit_Itemtype_Mappingadddb extends RepositoryAction
 	      		$this->exitAction();                   //トランザクションが失敗していればROLLBACKされる
 			    //異常終了 この場合アイテムタイプ選択に戻る
 	        	return "error";
-	        }	    	
-	    	
+	        }
+
 	    	// 検査用リファレンスレコードを取得
 	 		$itemtypeRef = $this->Db->selectExecute(
 	 					"repository_item_type",
@@ -125,15 +125,15 @@ class Repository_Action_Edit_Itemtype_Mappingadddb extends RepositoryAction
 				    		array("item_type_id" => $itemtype['item_type_id'])
 		    			);
 	    	if ($result === false) {
-	    		$this->failTrans(); 
+	    		$this->failTrans();
 		   		return 'error';		// 登録失敗。errorページをmaple.iniに書いておくこと。
 	    	}
-	    	
+
 	    	//*******************************************************
 	    	// 全てのメタデータのマッピング設定を更新
 	    	// ※ただし、DublinCore/JuNii2/DisplayLanguageTypeに変化がない場合はレコードを更新しない
 	    	//*******************************************************
-	
+
 	    	// 検査用リファレンスレコードを取得
 	    	$params = array( "item_type_id" => $this->Session->getParameter("itemtype_id"),
 		    					 "is_delete" => 0 );
@@ -146,7 +146,7 @@ class Repository_Action_Edit_Itemtype_Mappingadddb extends RepositoryAction
 	    	// 書誌情報追加 2008/08/22 Y.Nakao --start--
 
 	    	$update_count = 0; // Add update OK message 2009/01/23 A.Suzuki
-	    	
+
 	    	// メタデータループ
 	     	for ($ii=0; $ii<count($metadata_table); $ii++ ) {
 	     		// 更新精査用
@@ -174,28 +174,29 @@ class Repository_Action_Edit_Itemtype_Mappingadddb extends RepositoryAction
 				        $bib_jn2 .= sprintf($metadata_table[$ii]['junii2_mapping'][$jj]);
 		    		}
 		    		// fix biblio mapping 2010/01/28 A.Suzuki --end--
-		    		
+
                     //Add LOM Column 2013/01/28 A.Jin --start--
                     $bib_lom = sprintf($metadata_table[$ii]['lom_mapping']);
                     //Add LOM Column 2013/01/28 A.Jin --end--
-                    
+
                     // add LIDO 2014/04/15 R.Matsuura --start--
                     $lido_mapping_info = sprintf($metadata_table[$ii]['lido_mapping']);
                     // add LIDO 2014/04/15 R.Matsuura --end--
-                    	//add SPASE Takahiro.M
+
+                    //add SPASE Takahiro.M
                     $spase_mapping_info = sprintf($metadata_table[$ii]['spase_mapping']);
-                    
+
 		    		// 選択言語は指定なしで固定
 		    		$bib_lang .= "";
 	    			// 更新の有無を検査
 			        if(($metadata_table[$ii]['dublin_core_mapping'] != $itemtypeAttrRef[$ii]['dublin_core_mapping'] ||
 			            $metadata_table[$ii]['lom_mapping'] != $itemtypeAttrRef[$ii]['lom_mapping'] ||
 		    	    	$bib_jn2 != $itemtypeAttrRef[$ii]['junii2_mapping'] ||
-	    	            $lido_mapping_info != $itemtypeAttrRef[$ii]['lido_mapping'] || 
+	    	            $lido_mapping_info != $itemtypeAttrRef[$ii]['lido_mapping'] ||
 			        	$spase_mapping_info != $itemtypeAttrRef[$ii]['spase_mapping'] ||
 		    	    	$bib_lang != $itemtypeAttrRef[$ii]['display_lang_type'])&&
 	    				($tr_start_date > $itemtypeAttrRef[$ii]['mod_date']))
-	    			{   
+	    			{
 	    				$update_flg = true;
 	    			}
 
@@ -210,13 +211,13 @@ class Repository_Action_Edit_Itemtype_Mappingadddb extends RepositoryAction
 			        $bib_lang = $metadata_table[$ii]['display_lang_type'];
 			        // 更新の有無を検査
 			        if(($bib_dcm != $itemtypeAttrRef[$ii]['dublin_core_mapping'] ||
-		    	    	$bib_jn2 != $itemtypeAttrRef[$ii]['junii2_mapping'] || 
-		    	    	$bib_lom != $itemtypeAttrRef[$ii]['lom_mapping'] || 
-			            $lido_mapping_info != $itemtypeAttrRef[$ii]['lido_mapping'] || 
+		    	    	$bib_jn2 != $itemtypeAttrRef[$ii]['junii2_mapping'] ||
+		    	    	$bib_lom != $itemtypeAttrRef[$ii]['lom_mapping'] ||
+			            $lido_mapping_info != $itemtypeAttrRef[$ii]['lido_mapping'] ||
 			        	$spase_mapping_info != $itemtypeAttrRef[$ii]['spase_mapping'] ||
 		    	    	$bib_lang != $itemtypeAttrRef[$ii]['display_lang_type'])&&
 	    				($tr_start_date > $itemtypeAttrRef[$ii]['mod_date']))
-	    			{   
+	    			{
 	    				$update_flg = true;
 	    			}
 		    	}
@@ -255,7 +256,7 @@ class Repository_Action_Edit_Itemtype_Mappingadddb extends RepositoryAction
 			        	//必要であればSQLエラー番号・メッセージ取得
 			            $errNo = $this->Db->ErrorNo();
 			            $Error_Msg = $this->Db->ErrorMsg();
-			            $this->failTrans(); 
+			            $this->failTrans();
 						echo $Error_Msg;
 			            //トランザクション失敗を設定(ROLLBACK)
 			            return 'error';
@@ -281,20 +282,20 @@ class Repository_Action_Edit_Itemtype_Mappingadddb extends RepositoryAction
 			if ( $result == false ){
 				//print "終了処理失敗";
 			}
-			
+
 			// Add update OK message 2009/01/23 A.Suzuki --start--
 	        if($update_count>0){
 	        	$this->Session->setParameter("redirect_flg", "itemtype");
 	        	return 'redirect';
 	        }
 	        // Add update OK message 2009/01/23 A.Suzuki --end--
-			
+
 	        return 'success';
 	    }
 	    catch ( RepositoryException $Exception) {
 	        //アクション終了処理
 	      	$this->exitAction();                   //トランザクションが失敗していればROLLBACKされる
-	        
+
 	        //異常終了
 	        return "error";
 	    }

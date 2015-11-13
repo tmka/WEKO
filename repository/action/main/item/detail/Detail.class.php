@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Detail.class.php 36217 2014-05-26 04:22:11Z satoshi_arata $
+// $Id: Detail.class.php 58676 2015-10-10 12:33:17Z tatsuya_koyasu $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -15,6 +15,7 @@
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/IDServer.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositorySearchTableProcessing.class.php';
+require_once WEBAPP_DIR. '/modules/repository/components/RepositoryHandleManager.class.php';
 
 /**
  * [[機能説明]]
@@ -194,7 +195,13 @@ class Repository_Action_Main_Item_Detail extends RepositoryAction
                     $repositoryHandleManager = new RepositoryHandleManager($this->Session, $this->Db, $this->TransStartDate);
                     
                     // register y handle suffix and insert to database
-                    $repositoryHandleManager->registerYhandleSuffix("", $item_id, $item_no);
+                    try{
+                        $repositoryHandleManager->registerYhandleSuffix("", $item_id, $item_no);
+                    } catch(AppException $ex){
+                        // ID取得ボタン押下時にIDサーバーのsuffixが取得できなかった場合、
+                        // エラーとして扱わず、処理を続行する
+                        $this->debugLog($ex->getMessage(), __FILE__, __CLASS__, __LINE__);
+                    }
                     // insert new selfdoi metadata to selfdoi index table
                     $searchTableProcessing->updateSelfDoiSearchTable($item_id, $item_no);
                     // get suffix from database
@@ -214,76 +221,18 @@ class Repository_Action_Main_Item_Detail extends RepositoryAction
                 // Add get suffixID button for detail page 2009/09/03 A.Suzuki --end--
                 
                 // Add count contents 2008/12/22 A.Suzuki --start--
-                // check shown_status
-                $query = "SELECT shown_status ".
-                         "FROM ". DATABASE_PREFIX ."repository_item ".
-                         "WHERE item_id = ? AND ".
-                         "item_no = ? AND ".
-                         "is_delete = 0; ";
-                $params = null;
-                $params[] = $item_id;   // item_id
-                $params[] = $item_no;   // item_no
-                $result = $this->Db->execute($query,$params);
-                if($result === false){
-                    $errNo = $this->Db->ErrorNo();
-                    $errMsg = $this->Db->ErrorMsg();
-                    $this->Session->setParameter("error_code", $errMsg);
-                    return false;
-                }
-                $shown_status = $result[0]['shown_status'];
-                // 公開中である場合コンテンツ数を減らす
-                $query = "SELECT pos.index_id, idx.public_state ".
-                         "FROM ". DATABASE_PREFIX ."repository_position_index AS pos, ".
-                         DATABASE_PREFIX."repository_index AS idx ".
-                         "WHERE pos.item_id = ? ".
-                         "AND pos.item_no = ? ".
-                         "AND pos.is_delete = ? ".
-                         "AND pos.index_id = idx.index_id ".
-                         "AND idx.is_delete = ? ";
-                $params = null;
-                $params[] = $item_id;   // item_id
-                $params[] = $item_no;   // item_no
-                $params[] = 0;
-                $params[] = 0;
-                $result = $this->Db->execute($query,$params);
-                if($result === false){
-                    $errNo = $this->Db->ErrorNo();
-                    $errMsg = $this->Db->ErrorMsg();
-                    $this->Session->setParameter("error_code", $errMsg);
-                    return false;
-                }
-                if($shown_status == 1){
-                    // Fix contents update action 2010/07/02 Y.Nakao --start--
-                    for($ii=0; $ii<count($result); $ii++){
-                        // check public status
-                        if($result[$ii]['public_state'] == "1" && $this->checkParentPublicState($result[$ii]['index_id'])){
-                            $this->deleteContents($result[$ii]['index_id']);
-                        } else {
-                            $this->deletePrivateContents($result[$ii]['index_id']);
-                        }
-                    }
-                    // Fix contents update action 2010/07/02 Y.Nakao --end--
-                    
-                    // Add send item infomation to whatsnew module 2009/01/27 A.Suzuki --start--
-                    // 新着情報から削除する
-                    $result = $this->deleteWhatsnew($this->item_id);
-                    // Add send item infomation to whatsnew module 2009/01/27 A.Suzuki --end--
-                    
-                    if($result === false){
-                        $this->Session->setParameter("error_msg",$error_msg);
-                        //エラー処理を行う
-                        $exception = new RepositoryException( "ERR_MSG_xxx-xxx1", 001 );    //主メッセージとログIDを指定して例外を作成
-                        //$DetailMsg = null;                              //詳細メッセージ文字列作成
-                        //sprintf( $DetailMsg, ERR_DETAIL_xxx-xxx1, $埋込み文字1, $埋込み文字2 );
-                        //$exception->setDetailMsg( $DetailMsg );             //詳細メッセージ設定
-                        $this->failTrans();                                 //トランザクション失敗を設定(ROLLBACK)
-                        throw $exception;
-                    }
-                } else {
-                    for($ii=0; $ii<count($result); $ii++){
-                    	$this->deletePrivateContents($result[$ii]['index_id']);
-                    }
-                }
+                
+                // Fix contents num of index 2015/05/15 K.Matsushita --start --
+                $this->infoLog("businessItemdelete", __FILE__, __CLASS__, __LINE__);
+                BusinessFactory::initialize($this->Session, $this->Db, $this->TransStartDate);
+                $itemDelete = BusinessFactory::getFactory()->getBusiness("businessItemdelete");
+                
+                // 公開インデックス取得クエリ
+                $itemDelete->repository_admin_base = $this->repository_admin_base;
+                $itemDelete->repository_admin_room = $this->repository_admin_room;
+                $itemDelete->updateContentsOfIndex($this->item_id, $this->item_no, $this->Session);
+                // Fix contents num of index 2015/05/15 K.Matsushita --end --
+                
                 // Add count contents 2008/12/22 A.Suzuki --end--
                 
                 // 削除実行
@@ -395,12 +344,30 @@ class Repository_Action_Main_Item_Detail extends RepositoryAction
             return false;
         }
         
+        // Add check browsing rights of index K.Matsushita 2015/05/15 --start--
+        // ビジネスクラスのアイテム削除処理のインスタンス生成
+        $this->infoLog("businessItemdelete", __FILE__, __CLASS__, __LINE__);
+        BusinessFactory::initialize($this->Session, $this->Db, $this->TransStartDate);
+        $itemDelete = BusinessFactory::getFactory()->getBusiness("businessItemdelete");
+        
+        $itemDelete->repository_admin_base = $this->repository_admin_base;
+        $itemDelete->repository_admin_room = $this->repository_admin_room;
+        
+        // 公開インデックスを探すクエリを作成する
+        $publicIndexQuery = $itemDelete->getPublicIndexQuery($this->Session);
+        
         if($this->shown_status == 1){
             // Add check unpublic index 2009/02/05 A.Suzuki --start--
+            
+            // アイテムの公開状況が公開に変更された
             $pub_index_flag = false;
             for($ii=0; $ii<count($result); $ii++){
+                
+                $index_status = $this->checkIndexStatus( $result[$ii]['index_id'], $publicIndexQuery );
+                
                 // 公開中のインデックスがあるか
-                if($result[$ii]['public_state'] == "1"){
+                if( $result[$ii]['public_state'] == "1" && count($index_status) > 0 ){
+                    
                     // 親インデックスが公開されているか
                     if($this->checkParentPublicState($result[$ii]['index_id'])){
                         $pub_index_flag = true;
@@ -417,10 +384,15 @@ class Repository_Action_Main_Item_Detail extends RepositoryAction
                 $this->deleteWhatsnew($this->item_id);
             }
             // Add check unpublic index 2009/02/05 A.Suzuki --end--
-        }else{
+        }
+        else
+        {
             for($ii=0; $ii<count($result); $ii++){
+                
+                $index_status = $this->checkIndexStatus( $result[$ii]['index_id'], $publicIndexQuery );
+                
                 // 公開中のインデックスがあるか
-                if($result[$ii]['public_state'] == "1"){
+                if($result[$ii]['public_state'] == "1" && count($index_status) > 0 ){
                     // 親インデックスが公開されているか
                     if($this->checkParentPublicState($result[$ii]['index_id'])){
                         $this->deleteContents($result[$ii]['index_id']);
@@ -431,9 +403,37 @@ class Repository_Action_Main_Item_Detail extends RepositoryAction
             // Add send item infomation to whatsnew module 2009/01/27 A.Suzuki
             $this->deleteWhatsnew($this->item_id);
         }
+        
+        // Add check browsing rights of index K.Matsushita 2015/05/15 --end--
+        
         // Add count contents 2008/12/22 A.Suzuki --end--
         
         return true;
     }
+    
+    /**
+     * ベース権限、ルーム権限、グループ権限なども含めてインデックスの公開状況を確認する
+     * @param $index_id インデックスID
+     * @return $result クエリ実行結果
+     */
+    private function checkIndexStatus( $index_id, $publicIndexQuery ){
+        
+        $query = " SELECT index_id ".
+                " FROM ". DATABASE_PREFIX ."repository_index ".
+                " WHERE index_id = ".$index_id.
+                " AND index_id IN(".$publicIndexQuery.") ; ";
+        
+        $result = $this->Db->execute($query);
+        if( $result === false )
+        {
+            $errNo = $this->Db->ErrorNo();
+            $errMsg = $this->Db->ErrorMsg();
+            $this->Session->setParameter("error_code", $errMsg);
+            return false;
+        }
+        
+        return $result;
+    }
+    
 }
 ?>

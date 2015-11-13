@@ -1,9 +1,9 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Detail.class.php 42605 2014-10-03 01:02:01Z keiya_sugimoto $
+// $Id: Detail.class.php 58616 2015-10-09 11:16:04Z tatsuya_koyasu $
 //
-// Copyright (c) 2007 - 2008, National Institute of Informatics, 
+// Copyright (c) 2007 - 2008, National Institute of Informatics,
 // Research and Development Center for Scientific Information Resources
 //
 // This program is licensed under a Creative Commons BSD Licence
@@ -15,7 +15,6 @@
 
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/NameAuthority.class.php';
-require_once WEBAPP_DIR. '/modules/repository/components/RepositoryUsagestatistics.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryIndexManager.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryItemAuthorityManager.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryIndexAuthorityManager.class.php';
@@ -35,7 +34,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
 {
     // リクエストパラメタ
     //var $item_id = null;          // アイテムID
-    
+
     var $Session = null;
 //  var $Db = null;
     var $languagesView = null;
@@ -50,39 +49,39 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
     var $IsSelectEdit = "false";        // 編集の選択可否
     var $IsSelectShow = "false";        // 公開変更可否
     var $shown_status = "";     // 公開状況
-    
+
     var $IsFile = "false";              // ファイルを保持しているか否か(2008/07/29 Y.Nakao)
     var $IsFileView = "false";          // 詳細表示で表示するファイルがあるか否か(2009/11/24 A.Suzuki)
     var $IsFileSimpleView = array();    // 簡易表示で表示するファイルがあるか否か(2009/12/14 A.Suzuki)
     var $IsFlashView = "false";     // FLASH表示で表示するファイルがあるか否か(2010/01/19 A.Suzuki)
-    
-    // Add check pub detail view 2008/10/21 Y.Nakao --start--       
+
+    // Add check pub detail view 2008/10/21 Y.Nakao --start--
     var $detail_info = "";      // detail view from url
     // Add check pub detail view 2008/10/21 Y.Nakao --end--
-    
+
     // Add output ID in detail page 2009/01/15 A.Suzuki --start--
     var $uri = "";
     // Add output ID in detail page 2009/01/15 A.Suzuki --end--
-    
+
     // Add shiboleth login 2009/03/17 Y.Nakao --start--
     var $shib_login_flg = "";
     // Add shiboleth login 2009/03/17 Y.Nakao --end--
-    
+
     // Add matadata select language 2009/07/31 A.Suzuki --start--
     var $alter_flg = "0";       // 他言語表示フラグ
     // Add matadata select language 2009/07/31 A.Suzuki --start--
-    
+
     // Fix direct link from ID server 2009/08/17 A.Suzuki --start--
     var $getData = null;
     var $block_id = null;
     // Fix direct link from ID server 2009/08/17 A.Suzuki --end--
-    
+
     // Add supple item 2009/08/24 A.Suzuki --start--
     var $IsSupple = "";         // サプリアイテムタイプを保持しているか否か
     var $supple_error = "";     // サプリアイテム登録時のエラーメッセージ
     var $IsSuppleAdd = "false";     // サプリアイテムの登録可否
     // Add supple item 2009/08/24 A.Suzuki --end--
-    
+
     // Add get suffixID button for detail page 2009/09/03 A.Suzuki --start--
     var $IsPrefix = "false";            // IDサーバと連携しているか否か
     // Add get suffixID button for detail page 2009/09/03 A.Suzuki --end--
@@ -91,18 +90,22 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
     var $help_icon_display =  "";
     var $oaiore_icon_display = "";
     // Set help icon setting 2010/02/10 K.Ando --end--
-    
+
+    // Set Usage statistics setting 2014/12/15 K.Matsushita --start--
+    var $usagestatistics_link_display = "";
+    // Set Usage statistics setting 2014/12/15 K.Matsushita --end--
+
     // For flash annotation
     var $encode_baseurl = "";
     var $annoteaUser = "";
-    
+
     var $fileIdx = "";                  // ログイン後のファイルダウンロード情報
-    
+
     // Fix contents update action 2010/07/02 Y.Nakao --start--
     var $review_status = "";
     var $reject_status = "";
     // Fix contents update action 2010/07/02 Y.Nakao --end--
-    
+
     // Add came from flash 2011/01/04 H.Goto --start--
     var $version_flg = "";
     // Add came from flash 2011/01/04 H.Goto --end--
@@ -112,38 +115,38 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
     // index list which show index
     var $select_index_list = array();
     // Add index list 2010/04/13 S.Abe --end--
-    
+
     // For support to output meta tag 2011/12/06 A.Suzuki --start--
     var $commonMain = null;
     // For support to output meta tag 2011/12/06 A.Suzuki --end--
-    
+
     // Add smartPhone support T.Koyasu 2012/04/09 -start-
     public $iPhoneFlg = false;
     // add for show detail(workflow) of unregistered item
     private $fromWorkflowFlg_ = false;
     // Add smartPhone support T.Koyasu 2012/04/09 -end-
-    
+
     // Add usgastatistics 2012/08/07 A.Suzuki --start--
     public $isDispUsageLink = false;
     // Add usgastatistics 2012/08/07 A.Suzuki --end--
-    
+
     // Add multimedia support 2012/08/27 T.Koyasu -start-
     public $IsMultimediaView = false;          // FLVプレーヤー表示で表示するファイルがあるか否か(2012/08/30 T.Koyasu)
     public $contentsTypeList = array();
     // Add multimedia support 2012/08/27 T.Koyasu -end-
-    
+
     public $errMsg = array();
-    
+
     // Fix file download action 2013/03/12 Y.Nakao --strat--
     private $RepositoryValidator = null;
     private $RepositoryUsagestatistics = null;
     private $addHeaderFlag = false;
     // Fix file download action 2013/03/12 Y.Nakao --end--
-    
+
     // Get reference data 2013/10/11 S.Suzuki --start--
     public $fileName = array();
     public $fileURL = array();
-    // Get reference data 2013/10/11 S.Suzuki --end--    
+    // Get reference data 2013/10/11 S.Suzuki --end--
     // Add session -> action K.Matsuo 2013/12/09 --start--
     // detail search tab
     public $active_search_flag = null;
@@ -160,11 +163,11 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
     // default detail search items
     public $default_detail_search = null;
     // Add session -> action K.Matsuo 2013/12/09 --end--
-    
+
     // Add for extended thumbnail 2014/01/08 --start--
     public $isShowThumbnail = array();
     // Add for extended thumbnail 2014/01/08 --end--
-    
+
     // Add for extended thumbnail 2014/02/13 --start--
     public $thumbnail_transition_speed = null;
     public $thumbnail_transition_interval = null;
@@ -174,17 +177,24 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
     public $externalSearchWord = array();
     public $searchWordDisplayFlg = null;
     // Add referer display 2014/05/22 T.Ichikawa --end--
-    
+
     // Add for JaLC DOI R.Matsuura 2014/06/13 --start--
     public $self_doi_uri = null;
     // Add for JaLC DOI R.Matsuura 2014/06/13 --end--
-    
+    // Add DataCite K.Sugimoto 2015/02/16 --start--
+    public $doi_type = null;
+    // Add DataCite K.Sugimoto 2015/02/16 --end--
+
+    // Add for display shown_status only login user K.Matsushita 2014/12/12 --start--
+    public $user_id = null;
+    // Add for display shown_status only login user K.Matsushita 2014/12/12 --end--
+
     /**
      * [[機能説明]]
      *
      * @access  public
      */
-    function execute()
+    function executeApp()
     {
         try {
             //アクション初期化処理
@@ -198,11 +208,17 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 $user_error_msg = 'initで既に・・・';
                 throw $exception;
             }
-            
+
+            $this->item_no = $this->modificateInvalidItemNo($this->item_no);
+
+            // Add for display shown_status only login user K.Matsushita 2014/12/12 --start--
+            $this->user_id = $this->Session->getParameter("_user_id");
+            // Add for display shown_status only login user K.Matsushita 2014/12/12 --end--
+
             $searchParam = new RepositorySearchRequestParameter();
             $searchParam->setRequestParameterFromReferrer();
             $searchParam->setActionParameter();
-            
+
             // Fix advanced search for ranking view at top page. Y.Nakao 2014/01/14 --start--
             $this->search_type = $searchParam->all_search_type;
             // Fix advanced search for ranking view at top page. Y.Nakao 2014/01/14 --end--
@@ -216,7 +232,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 }
             }
             $this->default_detail_search = $searchParam->default_detail_search;
-        
+
             // Set error message
             $this->errMsg = array();
             if($this->Session->getParameter("error_msg")!=null && strlen($this->Session->getParameter("error_msg"))>0)
@@ -224,7 +240,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 array_push($this->errMsg, $this->Session->getParameter("error_msg"));
             }
             $this->Session->removeParameter("error_msg");
-            
+
             // Add smartPhone support T.Koyasu 2012/04/09 -start-
             if(is_numeric(strpos($_SERVER['HTTP_USER_AGENT'], 'iPhone')) || is_numeric(strpos($_SERVER['HTTP_USER_AGENT'], 'iPad'))) {
                 $this->iPhoneFlg = true;
@@ -233,8 +249,9 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
 
             // Create instance
             $NameAuthority = new NameAuthority($this->Session, $this->Db);
-            $this->RepositoryUsagestatistics = new RepositoryUsagestatistics($this->Session, $this->Db, $this->TransStartDate);
-            
+            $this->infoLog("businessUsagestatistics", __FILE__, __CLASS__, __LINE__);
+            $this->RepositoryUsagestatistics = BusinessFactory::getFactory()->getBusiness("businessUsagestatistics");
+
             // For flash annotation
             $this->encode_baseurl = urlencode(BASE_URL);
             if($this->Session->getParameter("_handle") != null){
@@ -245,20 +262,25 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
             $lang_list = $this->languagesView->getLanguagesList();
             $this->Session->setParameter("lang_list", $lang_list);
             // Add select language 2009/07/03 A.Suzuki --end--
-            
+
             // Add Advanced Search 2013/11/26 R.Matsuura --start--
             $itemAuthorityManager = new RepositoryItemAuthorityManager($this->Session, $this->dbAccess, $this->TransStartDate);
             // Add Advanced Search 2013/11/26 R.Matsuura --end--
-            
+
             // Add for extended thumbnail 2014/02/13 --start--
             $this->thumbnail_transition_speed = _REPOSITORY_THUMBNAIL_TRANSITION_SPEED;
             $this->thumbnail_transition_interval = _REPOSITORY_THUMBNAIL_TRANSITION_INTERVAL;
             // Add for extended thumbnail 2014/02/13 --end--
-            
+
             // Fix redirct prev page 2009/07/17 A.Suzuki --start--
             if($this->Session->getParameter("supple_flag") != "true"){
                 $tmp_uri = urldecode($this->Session->getParameter("prev_page_uri"));
-                $prev_page_uri = $_SERVER["HTTP_REFERER"];
+                if(isset($_SERVER["HTTP_REFERER"])){
+                	$prev_page_uri = $_SERVER["HTTP_REFERER"];
+                }
+                else{
+                	$prev_page_uri = "";
+                }
                 if($tmp_uri != "" && $tmp_uri != null && BASE_URL."/?".$_SERVER["QUERY_STRING"] == $prev_page_uri){
                     $this->Session->setParameter("prev_page_uri", urlencode($tmp_uri));
                 } else if(strpos($prev_page_uri, BASE_URL) == 0){
@@ -270,7 +292,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 $this->Session->removeParameter("supple_flag");
             }
             // Fix redirct prev page 2009/07/17 A.Suzuki --start--
-            
+
             // Fix direct link from ID server 2009/08/17 A.Suzuki --start--
             if($this->Session->getParameter("select_language") == null){
                 $query = "SELECT param_value FROM ".DATABASE_PREFIX."repository_parameter ".
@@ -292,47 +314,40 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 // 言語選択の表示設定をセッションに保存
                 $this->Session->setParameter("select_language", $result[0]["param_value"]);
             }
-            
+
             $blocks =& $this->getData->getParameter("blocks");
             $block_obj = $blocks[$this->block_id];
             //$this->Session->setParameter("repository_theme", $block_obj['theme_name']);
             if($block_obj['theme_name'] == null || $block_obj['theme_name'] == "") {
-                //Auto select from Page theme 
+                //Auto select from Page theme
                 $themeList = $this->Session->getParameter("_theme_list");
                 $pages =& $this->getData->getParameter("pages");
                 $this->Session->setParameter("repository_theme",$themeList[$pages[$block_obj['page_id']]['display_position']]);
             } else {
-                $this->Session->setParameter("repository_theme", $block_obj['theme_name']); 
+                $this->Session->setParameter("repository_theme", $block_obj['theme_name']);
             }
             // Fix direct link from ID server 2009/08/17 A.Suzuki --end--
-            
+
             // Add supple error message 2009/08/27 A.Suzuki --start--
             // 言語リソースを設定
             $this->setLangResource();
-            if($this->Session->getParameter("supple_error") === 1){
-                // no set address error
-                $this->supple_error = $this->Session->getParameter("smartyAssign")->getLang("repository_supple_no_address");
-            } else if($this->Session->getParameter("supple_error") === 2){
-                // get false error
-                $this->supple_error = $this->Session->getParameter("smartyAssign")->getLang("repository_supple_get_false");
-            } else if($this->Session->getParameter("supple_error") === 3){
-                // no item error
-                $this->supple_error = $this->Session->getParameter("smartyAssign")->getLang("repository_supple_no_item");
-            }
+            // Update for entry SuppleContents Y.Yamazawa 2015/03/30 --start--
+            $this->setSuppleErrorFromSessionParameter();
+            // Update for entry SuppleContents Y.Yamazawa 2015/03/30 --end--
 
             $this->Session->removeParameter("supple_error");
             // Add supple error message 2009/08/27 A.Suzuki --end--
-            
+
             // Add index list 2010/04/13 S.Abe --start--
             $this->select_index_list_display = $this->getSelectIndexListDisplay();
             if($this->select_index_list_display == 1) {
                 // Add Advanced Search 2013/11/26 R.Matsuura --start--
                 $indexManager= new RepositoryIndexManager($this->Session, $this->dbAccess, $this->TransStartDate);
-                $this->select_index_list = $indexManager->getDisplayIndexList($this->repository_admin_base, $this->repository_admin_room);   
-                // Add Advanced Search 2013/11/26 R.Matsuura --end-- 
+                $this->select_index_list = $indexManager->getDisplayIndexList($this->repository_admin_base, $this->repository_admin_room);
+                // Add Advanced Search 2013/11/26 R.Matsuura --end--
             }
             // Add index list 2010/04/13 S.Abe --end--
-            
+
             // Modify Price method move validator K.Matsuo 2011/10/18 --start--
             require_once WEBAPP_DIR. '/modules/repository/validator/Validator_DownloadCheck.class.php';
             $this->RepositoryValidator = new Repository_Validator_DownloadCheck();
@@ -348,10 +363,10 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 // Add smartPhone support T.Koyasu 2012/04/09 -end-
             }
             // Modify Price method move validator K.Matsuo 2011/10/18 --end--
-            
+
             // Add check version H.Goto 2010/12/22 --start--
             $version = $this->getNCVersion();
-            
+
             if(str_replace(".", "", $version) < 2301){
               // under ver.2.3.0.1
               $this->version_flg = "0";
@@ -368,30 +383,30 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
             $this->_session =& $this->_container->getComponent("Session");
             // fix detail view 2008/09/19 Y.Nakao --end--
             */
-            
+
             // Add CiNii connection 2008/08/25 Y.Nakao
             $user_auth_id = $this->Session->getParameter("_user_auth_id"); // 会員の会員権限ID
             $auth_id = $this->Session->getParameter("_auth_id");
-            
-            
+
+
             // Add make tree info 2008/10/20 Y.Nakao --start--
             // change index tree view action 2008/12/04 Y.Nakao --start--
             //$this->setIndexTreeData2Session();
             // change index tree view action 2008/12/04 Y.Nakao --end--
             // Add make treeinfo 2008/10/20 Y.Nakao --end--
-            
+
             // Add Output "OAI-PMH getrecord" on detail page J.Ito --start--
             $this->Session->setParameter("oaipmh_uri", BASE_URL."/?action=repository_oaipmh&verb=GetRecord&metadataPrefix=spase&identifier=oai:".$_SERVER['HTTP_HOST'].":".sprintf("%08d", $this->item_id));
             // Add Output "OAI-PMH getrecord" on detail page J.Ito --end--
-            
+
             // Add Output bibTeX feed on detail page 2008/10/30 A.Suzuki --start--
             $this->Session->setParameter("bibtex_uri", BASE_URL."/?action=repository_bibtex&itemId=".$this->item_id."&itemNo=".$this->item_no);
             // Add Output bibTeX feed on detail page 2008/10/30 A.Suzuki --end--
-            
+
             // Add Output SWRC feed on detail page 2008/11/12 A.Suzuki --start--
             $this->Session->setParameter("swrc_uri", BASE_URL."/?action=repository_swrc&itemId=".$this->item_id."&itemNo=".$this->item_no);
             // Add Output SWRC feed on detail page 2008/11/12 A.Suzuki --end--
-             
+
             // 通貨単位設定
             $money_units = null;
             $money_units = $this->getMoneyUnit();
@@ -400,7 +415,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 if(strpos($money_units['money_unit'], "\\") === 0){
                     $money_units['money_unit'] = "&yen;";
                 }
-                
+
                 $this->Session->setParameter('money_unit', $money_units['money_unit']);
                 $this->Session->setParameter('money_unit_conf', $money_units['money_unit_conf']);
             } else {
@@ -408,9 +423,9 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 $this->Session->removeParameter('money_unit_conf');
             }
             // Mod change yen mark to html special char T.Koyasu 2014/07/31 --end--
-            
+
             // Add fix detail view not view tree 2008/10/21 Y.Nakao --start--
-            
+
             // Add check pub detail view 2008/10/21 Y.Nakao --start--
             $container = null;
             if($this->Session == null){
@@ -430,8 +445,8 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 $this->Db =& $container->getComponent("DbObject");
             }
             // Add check pub detail view 2008/10/21 Y.Nakao --end--
-            
-            // add file download after login K.Matsuo 2011/10/12 --start-- 
+
+            // add file download after login K.Matsuo 2011/10/12 --start--
             if(strlen($this->fileIdx) == 0 && $user_id != "0" && strlen($login_id) != 0)
             {
                 // file download login.
@@ -444,7 +459,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
             }
             $this->Session->removeParameter('repository'.$this->block_id.'FileDownloadKey');
             // add file download after login K.Matsuo 2011/10/12 --end--
-            
+
             // For support to output meta tag 2011/12/06 A.Suzuki --start--
             // Check exist method:"addHeader" in CommonMain class
             $this->addHeaderFlag = false;
@@ -460,7 +475,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
             $this->IsSelectEdit = "false";
             $this->IsSelectShow = "false";
             $this->IsSuppleAdd = "false";
-            
+
             if($this->item_id != null && $this->item_no != null){
                 $this->Session->setParameter("search_flg","true");
                 // リクエストパラメタ格納
@@ -469,17 +484,17 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 // 画面右に詳細表示を表示させるフラグ
                 $this->Session->setParameter("serach_screen", "1");
             }
-            
+
             // エラー開放
             $this->Session->removeParameter("error_code");
             //$item = $this->Session->getParameter("item");
             //$item_user = $item['user_id'];
-            
+
             // user_id指定方法変更 2008/03/15 nakao
             $query = "SELECT * ".
                      "FROM ". DATABASE_PREFIX ."repository_item ".  // アイテムテーブル
                      "WHERE item_id = ? AND ".  // Item_ID
-                     "item_no = ? AND ".        // Item_No 
+                     "item_no = ? AND ".        // Item_No
                      "is_delete = ?; ";     // かつ、削除されていない
             $params = null;
             // $queryの?を置き換える配列
@@ -519,7 +534,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 }
                 // Add show info 2008/10/22 Y.Nakao --start--
                 // fix when push top tab, show "item is del" alert bug 2008/12/03 Y.Nakao --start--
-                if( ($this->item_id==null || $this->item_id=="") && 
+                if( ($this->item_id==null || $this->item_id=="") &&
                     ($this->item_no==null || $this->item_no=="") ){
                     $this->Session->setParameter("serach_screen", "0");
                     // Add smartPhone support T.Koyasu 2012/04/09 -start-
@@ -566,7 +581,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
             $item_id = $this->Session->getParameter("item_id_for_detail");
             $item_no = $this->Session->getParameter("item_no_for_detail");
             // ここまで 2008/03/15
-            
+
             //
             // ユーザ権限を参照し、"編集","削除","公開／非公開"のフラグを立てる
             $user_id = $this->Session->getParameter("_user_id");                    // ユーザID
@@ -576,7 +591,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
             $system_user_flag = $this->Session->getParameter("_system_user_flag");  // システム管理者ならば1
             $timezone_offset = $this->Session->getParameter("_timezone_offset");    // ???
             $auth_id = $this->Session->getParameter("_auth_id");
-        
+
             // Add check pub detail view 2008/10/21 Y.Nakao --start--
             // Add tree access control list 2012/03/23 T.Koyasu -start-
             if($this->Session->getParameter("_mobile_flag") == _ON)
@@ -613,10 +628,10 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
             }
             // Add tree access control list 2012/03/23 T.Koyasu -end-
             $this->Session->setParameter("search_flg", "false");
-            
+
             // Update check pub index 2009/12/17 Y.Nakao --start--
             // get position index list
-            $pos_index_id = array(); 
+            $pos_index_id = array();
             // Fix exclude position root index item Y.Nakao 2013/06/20 --start--
             $query = "SELECT `index_id` ".
                      "FROM ". DATABASE_PREFIX ."repository_position_index ".
@@ -648,12 +663,12 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
             for($ii=0; $ii<count($result); $ii++){
                 array_push($pos_index_id, $result[$ii]["index_id"]);
             }
-            
+
             // Add smartPhone support T.Koyasu 2012/04/12 -start-
             // from common detail, index is not checked public or not
             // for unregistered item
             if(!$this->fromWorkflowFlg_){
-                
+
                 // Fix exclude position root index item Y.Nakao 2013/06/20 --start--
                 if($user_auth_id < $this->repository_admin_base || $auth_id < $this->repository_admin_room)
                 {
@@ -662,13 +677,13 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 {
                     // 登録者は条件なしで閲覧可能
                 }
-                else 
+                else
                 {
                     // Add check user_auth_id for unpublic index 2009/02/04 A.Suzuki --start--
                     $query = "SELECT `index_name` ".
                              "FROM ". DATABASE_PREFIX ."repository_index ".
                              "WHERE `index_id` IN (".implode(",", $pos_index_id).") ".
-                             "AND `is_delete` = '0' ";
+                             "AND `is_delete` = 0 ";
                     // Add config management authority 2010/02/23 Y.Nakao --start--
                     // if($user_auth_id < _AUTH_MODERATE){
                     if($user_auth_id < $this->repository_admin_base || $auth_id < $this->repository_admin_room){
@@ -692,13 +707,13 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                         // Add smartPhone support T.Koyasu 2012/04/09 -end-
                     }
                     if(count($ret) == 0){
-                        // no item with pub index 
+                        // no item with pub index
                         if($user_id == "0"){
                             // not login
                             $this->detail_info = "login";
                             $this->Session->setParameter("detail_screen", "login");
                             // go list view with execute login
-                            $result = $this->exitAction(); 
+                            $result = $this->exitAction();
                             // Add smartPhone support T.Koyasu 2012/04/09 -start-
                             if($this->smartphoneFlg){
                                 return 'golistview_sp';
@@ -710,7 +725,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                             // this user dosen't view this item
                             $this->detail_info = "not_access";
                             // go list view with alert don't view
-                            $result = $this->exitAction(); 
+                            $result = $this->exitAction();
                             // Add smartPhone support T.Koyasu 2012/04/09 -start-
                             if($this->smartphoneFlg){
                                 return 'golistview_sp';
@@ -738,8 +753,8 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                         $this->Session->removeParameter("oaipmh_uri");
                         $this->Session->removeParameter("bibtex_uri");
                         $this->Session->removeParameter("swrc_uri");
-                        // go list view with execute login 
-                        $result = $this->exitAction(); 
+                        // go list view with execute login
+                        $result = $this->exitAction();
                         // Add smartPhone support T.Koyasu 2012/04/09 -start-
                         if($this->smartphoneFlg){
                             return 'golistview_sp';
@@ -756,8 +771,8 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                         $this->Session->removeParameter("oaipmh_uri");
                         $this->Session->removeParameter("bibtex_uri");
                         $this->Session->removeParameter("swrc_uri");
-                        // go list view with alert don't view 
-                        $result = $this->exitAction(); 
+                        // go list view with alert don't view
+                        $result = $this->exitAction();
                         // Add smartPhone support T.Koyasu 2012/04/09 -start-
                         if($this->smartphoneFlg){
                             return 'golistview_sp';
@@ -781,8 +796,8 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                     $this->detail_info = "not_access";
                     // delete display data
                     $this->Session->removeParameter("item_info");
-                    // go list view with alert don't view 
-                    $result = $this->exitAction(); 
+                    // go list view with alert don't view
+                    $result = $this->exitAction();
                     // Add smartPhone support T.Koyasu 2012/04/09 -start-
                     if($this->smartphoneFlg){
                         return 'golistview_sp';
@@ -803,8 +818,8 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                         $this->Session->removeParameter("oaipmh_uri");
                         $this->Session->removeParameter("bibtex_uri");
                         $this->Session->removeParameter("swrc_uri");
-                        // go list view with execute login 
-                        $result = $this->exitAction(); 
+                        // go list view with execute login
+                        $result = $this->exitAction();
                         // Add smartPhone support T.Koyasu 2012/04/09 -start-
                         if($this->smartphoneFlg){
                             return 'golistview_sp';
@@ -821,8 +836,8 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                         $this->Session->removeParameter("oaipmh_uri");
                         $this->Session->removeParameter("bibtex_uri");
                         $this->Session->removeParameter("swrc_uri");
-                        // go list view with alert don't view 
-                        $result = $this->exitAction(); 
+                        // go list view with alert don't view
+                        $result = $this->exitAction();
                         // Add smartPhone support T.Koyasu 2012/04/09 -start-
                         if($this->smartphoneFlg){
                             return 'golistview_sp';
@@ -834,7 +849,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 }
             }
             // Add check closed index 2010/01/06 Y.Nakao --end--
-            
+
             // Add config management authority 2010/02/23 Y.Nakao --start--
             // if( $user_auth_id >= _AUTH_MODERATE ||($item_user===$user_id) ){
             if( ($user_auth_id >= $this->repository_admin_base && $auth_id >= $this->repository_admin_room) ||($item_user===$user_id) ){
@@ -845,47 +860,32 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 $this->IsSelectDelete = "true";
                 $this->IsSelectEdit = "true";
                 $this->IsSelectShow = "true";
-                $this->IsSuppleAdd = "true";    // Add supple add flag 2009/08/28 A.Suzuki
             } else {
                 // システム管理者、アイテム登録者以外 閲覧のみ
                 $this->IsSelectPublish = "false";
                 $this->IsSelectDelete = "false";
                 $this->IsSelectEdit = "false";
                 $this->IsSelectShow = "false";
-                
-                // Add supple add flag 2009/08/28 A.Suzuki --start--
-                // 所属インデックスに投稿権限があるユーザの場合
-                for($ii=0; $ii<count($result); $ii++){
-                    $query = "SELECT access_role FROM ".DATABASE_PREFIX."repository_index ".
-                             "WHERE index_id = ? ".
-                             "AND is_delete = 0;";
-                    $params = array();
-                    $params[] = $result[$ii]["index_id"];
-                    $ret = $this->Db->execute($query, $params);
-                    if($ret === false ){
-                        $this->failTrans();
-                        // Add smartPhone support T.Koyasu 2012/04/09 -start-
-                        if($this->smartphoneFlg) {
-                            return 'error_sp';
-                        } else {
-                            return "error";
-                        }
-                        // Add smartPhone support T.Koyasu 2012/04/09 -end-
-                    }
-                    $access_role_ids = explode(",", $ret[0]['access_role']);
-                    for($jj=0; $jj<count($access_role_ids); $jj++){
-                        if($access_role_ids[$jj] == $role_auth_id){
-                            $this->IsSuppleAdd = "true";
-                            break;
-                        }
-                    }
-                    if($this->IsSuppleAdd == "true"){
-                        break;
-                    }
-                }
-                // Add supple add flag 2009/08/28 A.Suzuki --end--
             }
-            
+
+            // Update SuppleContentEntry Y.Yamazawa 2015/04/15 --start--
+            // サプリコンテンツ
+            $dispResult = $this->isShowSuppleButton($result,$isError);
+            if($isError === true)
+            {
+                $this->failTrans();
+                if($this->smartphoneFlg) {
+                    return 'error_sp';
+                } else {
+                    return "error";
+                }
+            }
+            if($dispResult === true)
+            {
+                $this->IsSuppleAdd = "true";
+            }
+            // Update SuppleContentEntry Y.Yamazawa 2015/04/15 --end--
+
             // Add supple WEKO URL check 2009/08/31 A.Suzuki --start--
             $supple_weko_url = "";
             // パラメタテーブルからサプリWEKOのアドレスを取得する
@@ -902,7 +902,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 $supple_weko_url = $result[0]['param_value'];
             }
             // Add supple WEKO URL check 2009/08/31 A.Suzuki --end--
-            
+
             $this->Session->setParameter("IsSelectPublish", $this->IsSelectPublish);
             $this->Session->setParameter("IsSelectDelete", $this->IsSelectDelete);
             $this->Session->setParameter("IsSelectEdit", $this->IsSelectEdit);
@@ -915,7 +915,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 $query = "SELECT * ".
                          "FROM ". DATABASE_PREFIX ."repository_item ".  // アイテムテーブル
                          "WHERE item_id = ? AND ".  // Item_ID
-                         "item_no = ? AND ".        // Item_No 
+                         "item_no = ? AND ".        // Item_No
                          "is_delete = ?; ";         // 削除されていない
                 $params = null;
                 // $queryの?を置き換える配列
@@ -927,13 +927,13 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                     $Error_Msg = $this->Db->ErrorMsg();
                     array_push($this->errMsg, $Error_Msg);
                 }
-                
+
                 // 更新日時をSessionに保存
                 $this->Session->setParameter("item_update_date", $result[0]['mod_date']);
 
                 // 公開状況
                 $this->shown_status = $result[0]['shown_status'];
-                
+
                 // Fix contents update action 2010/07/02 Y.Nakao --start--
                 // review status
                 $this->review_status = $result[0]['review_status'];
@@ -947,64 +947,10 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 // For support to output meta tag 2011/12/06 A.Suzuki --start--
                 if($this->addHeaderFlag)
                 {
+                    // Add metadata pdf url 2014/12/24 S.Suzuki --start--
                     $metaTagDataList = null;
-                    $itemPubDate = "";
-                    if($this->convertDataFormatForGoogleScholar(
-                        $result[0][RepositoryConst::DBCOL_REPOSITORY_ITEM_SHOWN_DATE],
-                        $tmpItemPubDate))
-                    {
-                        $itemPubDate = $tmpItemPubDate;
-                    }
-                    $tagContent = "";
-                    if($result[0][RepositoryConst::DBCOL_REPOSITORY_ITEM_LANGUAGE] == RepositoryConst::ITEM_LANG_JA)
-                    {
-                        // Item's language is Japanese
-                        if(strlen($result[0][RepositoryConst::DBCOL_REPOSITORY_ITEM_TITLE]) > 0)
-                        {
-                            // output Japanese title
-                            $tagContent = $result[0][RepositoryConst::DBCOL_REPOSITORY_ITEM_TITLE];
-                        } else {
-                            // output English title
-                            $tagContent = $result[0][RepositoryConst::DBCOL_REPOSITORY_ITEM_TITLE_ENGLISH];
-                        }
-                    } else {
-                        // Item's language is English
-                        if(strlen($result[0][RepositoryConst::DBCOL_REPOSITORY_ITEM_TITLE_ENGLISH]) > 0)
-                        {
-                            // output English title
-                            $tagContent = $result[0][RepositoryConst::DBCOL_REPOSITORY_ITEM_TITLE_ENGLISH];
-                        } else {
-                            // output Japanese title
-                            $tagContent = $result[0][RepositoryConst::DBCOL_REPOSITORY_ITEM_TITLE];
-                        }
-                    }
-                    
-                    // Add title to metatag
-                    $output = $this->createTags(
-                            RepositoryConst::TAG_NAME_META,
-                            array( RepositoryConst::TAG_ATTR_KEY_NAME => RepositoryConst::GOOGLESCHOLAR_TITLE,
-                                   RepositoryConst::TAG_ATTR_KEY_CONTENT => $tagContent ));
-                    $this->commonMain->addHeader($output);
-                    
-                    // Add online date to metatag
-                    $output = $this->createTags(
-                        RepositoryConst::TAG_NAME_META,
-                        array( RepositoryConst::TAG_ATTR_KEY_NAME => RepositoryConst::GOOGLESCHOLAR_ONLINE_DATE,
-                               RepositoryConst::TAG_ATTR_KEY_CONTENT => $itemPubDate ));
-                    $this->commonMain->addHeader($output);
-                    
-                    // Add abstract html url to metatag
-                    $output = $this->createTags(
-                        RepositoryConst::TAG_NAME_META,
-                        array( RepositoryConst::TAG_ATTR_KEY_NAME => RepositoryConst::GOOGLESCHOLAR_ABSTRACT_HTML_URL,
-                               RepositoryConst::TAG_ATTR_KEY_CONTENT => $result[0][RepositoryConst::DBCOL_REPOSITORY_ITEM_URI]));
-                    $this->commonMain->addHeader($output);
-                    
-                    // Add to metatag list
-                    $this->createMetaTagDataList(
-                        $itemPubDate,
-                        RepositoryConst::JUNII2_DATE_OF_ISSUED,
-                        $metaTagDataList);
+                    $this->outputBasicMetaTag($result[0], $block_obj);
+                    // Add metadata pdf url 2014/12/24 S.Suzuki --end--
                 }
                 // For support to output meta tag 2011/12/06 A.Suzuki --end--
                 // Add output ID in detail page 2009/01/15 A.Suzuki --start--
@@ -1012,13 +958,13 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 // Add new prefix 2013/12/25 T.Ichikawa --start--
                 $repositoryHandleManager = new RepositoryHandleManager($this->Session, $this->dbAccess, $this->TransStartDate);
                 $pre = $repositoryHandleManager->getYHandlePrefix();
-                
+
                 if(strlen($pre) != 0){
                     // IDサーバと連携している
                     $this->IsPrefix = "true";
                 }
                 // Add get suffixID button for detail page 2009/09/03 A.Suzuki --end--
-                
+
                 if($this->IsPrefix == "true"){
                     $this->uri = $repositoryHandleManager->createUriForDetail($item_id, $item_no);
                     // Add get suffixID button for detail page 2009/09/03 A.Suzuki --start--
@@ -1042,48 +988,30 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                     // Add flash conver error 2010/02/10 A.Suzuki --end--
                 }
                 // Add output ID in detail page 2009/01/15 A.Suzuki --end--
-                
+
                 // Add PDF cover page 2012/06/15 A.Suzuki --start--
                 if($this->Session->getParameter("cover_error") != "" && $this->Session->getParameter("cover_error") != null){
                     array_push($this->errMsg, $this->Session->getParameter("cover_error"));
                     $this->Session->removeParameter("cover_error");
                 }
                 // Add PDF cover page 2012/06/15 A.Suzuki --end--
-                
+
                 //
                 // 中尾さん共通メソッドでアイテム情報を取得～セッションかメンバに保存
                 $Result_List = array(); // DBから取得したレコードの集合
                 $Error_Msg;         // エラーメッセージ
                 $result = $this->getItemData($item_id, $item_no, $Result_List, $Error_Msg, false, true);
                 if($result == true) {
-                    
                     // キーワードの"|"を","に置換しセッションに保存 2008/10/06 A.Suzuki add Start
                     $keyword = str_replace("|", ", ", $Result_List["item"][0]["serch_key"]);
                     $keyword_english = str_replace("|", ", ", $Result_List["item"][0]["serch_key_english"]);
                     $this->Session->setParameter("keyword", $keyword);
                     $this->Session->setParameter("keyword_english", $keyword_english);
                     // キーワードの"|"を","に置換しセッションに保存 2008/10/06 A.Suzuki add End
-                    
-                    // Add keyword to metatag 2014/06/17 T.Ichikawa --start--
-                    $keyword_meta = explode(", ", $keyword);
-                    for($ii = 0; $ii < count($keyword_meta); $ii++) {
-                        $this->createMetaTagDataList(
-                            $keyword_meta[$ii],
-                            RepositoryConst::JUNII2_SUBJECT,
-                            $metaTagDataList);
-                    }
-                    $keyword_english_meta = explode(", ", $keyword_english);
-                    for($ii = 0; $ii < count($keyword_english_meta); $ii++) {
-                        $this->createMetaTagDataList(
-                            $keyword_english_meta[$ii],
-                            RepositoryConst::JUNII2_SUBJECT,
-                            $metaTagDataList);
-                    }
-                    // Add external search word display 2014/06/17 T.Ichikawa --end--
-                    
+
                     // Add matadata select language 2009/07/31 A.Suzuki --start--
                     $lang = $this->Session->getParameter("_lang");
-                    
+
                     // Add alternative language setting 2009/08/11 A.Suzuki --start--
                     $query = "SELECT param_value FROM ".DATABASE_PREFIX."repository_parameter ".
                              "WHERE param_name = 'alternative_language';";
@@ -1111,7 +1039,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                         }
                     }
                     // Add alternative language setting 2009/08/11 A.Suzuki --end--
-                    
+
                     // Modify invalid javascript of icon onLoad T.Koyasu 2011/12/27 -start-
                     if(strlen($Result_List['item_type'][0]['icon_name']) > 0)
                     {
@@ -1141,7 +1069,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                         }
                     }
                     // Modify invalid javascript of icon onLoad T.Koyasu 2011/12/27 -end-
-                    
+
                     // ファイル属性を検索
                     $this->IsFileView = "false";
                     $this->IsFileSimpleView = array();
@@ -1149,7 +1077,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                     // Add check view flash H.Goto 2011/01/14 --start--
                     $this->IsDownLoadFlash = array();
                     // Add check view flash H.Goto 2011/01/14 --end--
-                    
+
                     // To get pdf reference from servers 2013/10/21 S.Suzuki --start--
                     // ベースURL取得
                     $referenceBaseURL = "";
@@ -1157,9 +1085,9 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                     $file_name = array();
                     $display_name = array();
                     $extension = array();
-                    
+
                     $result_referenceBaseURL = $this->getAdminParam($param_name, $this->referenceBaseURL, $Error_Msg);
-                    
+
                     if($result_referenceBaseURL === false){
                         $exception = new RepositoryException( ERR_MSG_xxx-xxx1, xxx-xxx1 ); //主メッセージとログIDを指定して例外を作成
                         $DetailMsg = null;                              //詳細メッセージ文字列作成
@@ -1167,9 +1095,9 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                         $exception->setDetailMsg( $DetailMsg );         //詳細メッセージ設定
                         $this->failTrans();                             //トランザクション失敗を設定(ROLLBACK)
                         throw $exception;
-                    } 
+                    }
                     // To get pdf reference from servers 2013/10/21 S.Suzuki --end--
-                    
+
                     for($ii=0; $ii<count($Result_List['item_attr_type']); $ii++){
                         // 詳細表示用のフラグを追加 (初期値は"true":表示する)
                         if(!isset($Result_List['item_attr_type'][$ii]['display_flag']) ||
@@ -1177,9 +1105,9 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                         {
                             $Result_List['item_attr_type'][$ii]['display_flag'] = "true";
                         }
-                        
+
                         // ファイル、課金ファイルはスルーする
-                        if($Result_List['item_attr_type'][$ii]['input_type']!="file" 
+                        if($Result_List['item_attr_type'][$ii]['input_type']!="file"
                             && $Result_List['item_attr_type'][$ii]['input_type']!="file_price"
                             && $Result_List['item_attr_type'][$ii]['input_type']!="supple")
                         {
@@ -1194,15 +1122,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                                     }
                                     $str_array = explode("\n", $Result_List['item_attr'][$ii][$jj]['attribute_value']);
                                     $Result_List['item_attr'][$ii][$jj]['attribute_value'] = $str_array;
-                                    
-                                    if($this->addHeaderFlag)
-                                    {
-                                        // Add to metatag list
-                                        $this->createMetaTagDataList(
-                                            $Result_List['item_attr'][$ii][$jj]['attribute_value'][0],
-                                            $Result_List['item_attr_type'][$ii]['junii2_mapping'],
-                                            $metaTagDataList);
-                                    }
+
                                 }
                                 if($value_flg === false){
                                     unset($Result_List['item_attr_type'][$ii]);
@@ -1219,15 +1139,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                                     }
                                     $str_array = explode("|", $Result_List['item_attr'][$ii][$jj]['attribute_value'], 2);
                                     $Result_List['item_attr'][$ii][$jj]['attribute_value'] = $str_array;
-                                    
-                                    if($this->addHeaderFlag)
-                                    {
-                                        // Add to metatag list
-                                        $this->createMetaTagDataList(
-                                            $Result_List['item_attr'][$ii][$jj]['attribute_value'][0],
-                                            $Result_List['item_attr_type'][$ii]['junii2_mapping'],
-                                            $metaTagDataList);
-                                    }
+
                                 }
                                 if($value_flg === false){
                                     unset($Result_List['item_attr_type'][$ii]);
@@ -1235,7 +1147,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                             } else if($Result_List['item_attr_type'][$ii]['input_type']=="biblio_info"){
                                 $value_flg = false;
                                 if(isset($Result_List['item_attr'][$ii][0])){
-                                    if( strlen($Result_List['item_attr'][$ii][0]['biblio_name']) > 0 || 
+                                    if( strlen($Result_List['item_attr'][$ii][0]['biblio_name']) > 0 ||
                                         strlen($Result_List['item_attr'][$ii][0]['biblio_name_english']) > 0 ||
                                         strlen($Result_List['item_attr'][$ii][0]['volume']) > 0 ||
                                         strlen($Result_List['item_attr'][$ii][0]['issue']) > 0 ||
@@ -1244,86 +1156,6 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                                         strlen($Result_List['item_attr'][$ii][0]['date_of_issued']) > 0)
                                     {
                                         $value_flg = true;
-                                        
-                                        // For support to output meta tag 2011/12/06 A.Suzuki --start--
-                                        if($this->addHeaderFlag)
-                                        {
-                                            $tagContent = "";
-                                            
-                                            // Journal title in Japanese
-                                            $tagContent .= $Result_List['item_attr'][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_BIBLIO_NAME];
-                                            
-                                            // Journal title in English
-                                            if(strlen($Result_List['item_attr'][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_BIBLIO_NAME_ENGLISH]) > 0)
-                                            {
-                                                if(strlen($tagContent) > 0)
-                                                {
-                                                    $tagContent .= " = ";
-                                                }
-                                                $tagContent .= $Result_List['item_attr'][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_BIBLIO_NAME_ENGLISH];
-                                            }
-                                            
-                                            // Add journal title to metatag
-                                            if(strlen($tagContent) > 0)
-                                            {
-                                                // Add to metatag list
-                                                $this->createMetaTagDataList(
-                                                    $tagContent,
-                                                    RepositoryConst::JUNII2_JTITLE,
-                                                    $metaTagDataList);
-                                            }
-                                            
-                                            // Add volume to metatag
-                                            if(strlen($Result_List["item_attr"][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_VOLUME]) > 0)
-                                            {
-                                                // Add to metatag list
-                                                $this->createMetaTagDataList(
-                                                    $Result_List["item_attr"][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_VOLUME],
-                                                    RepositoryConst::JUNII2_VOLUME,
-                                                    $metaTagDataList);
-                                            }
-                                            
-                                            // Add issue to metatag
-                                            if(strlen($Result_List["item_attr"][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_ISSUE]) > 0)
-                                            {
-                                                // Add to metatag list
-                                                $this->createMetaTagDataList(
-                                                    $Result_List["item_attr"][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_ISSUE],
-                                                    RepositoryConst::JUNII2_ISSUE,
-                                                    $metaTagDataList);
-                                            }
-                                            
-                                            // Add first page to metatag
-                                            if(strlen($Result_List["item_attr"][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_START_PAGE]) > 0)
-                                            {
-                                                // Add to metatag list
-                                                $this->createMetaTagDataList(
-                                                    $Result_List["item_attr"][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_START_PAGE],
-                                                    RepositoryConst::JUNII2_SPAGE,
-                                                    $metaTagDataList);
-                                            }
-                                            
-                                            // Add last page to metatag
-                                            if(strlen($Result_List["item_attr"][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_END_PAGE]) > 0)
-                                            {
-                                                // Add to metatag list
-                                                $this->createMetaTagDataList(
-                                                    $Result_List["item_attr"][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_END_PAGE],
-                                                    RepositoryConst::JUNII2_EPAGE,
-                                                    $metaTagDataList);
-                                            }
-                                            
-                                            // Add publication date to metatag
-                                            if(strlen($Result_List["item_attr"][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_DATE_OF_ISSUED]) > 0)
-                                            {
-                                                // Add to metatag list
-                                                $this->createMetaTagDataList(
-                                                    $Result_List["item_attr"][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_DATE_OF_ISSUED],
-                                                    RepositoryConst::JUNII2_DATE_OF_ISSUED,
-                                                    $metaTagDataList);
-                                            }
-                                        }
-                                        // For support to output meta tag 2011/12/06 A.Suzuki --end--
                                     }
                                 }
                                 if($value_flg === false){
@@ -1332,13 +1164,27 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                             } else if($Result_List['item_attr_type'][$ii]['input_type']=="name"){
                                 $value_flg = false;
                                 for($jj=0; $jj<count($Result_List['item_attr'][$ii]); $jj++){
-                                    if(strlen($Result_List['item_attr'][$ii][$jj]['family']) > 0 || 
-                                        strlen($Result_List['item_attr'][$ii][$jj]['name']) > 0 || 
+                                    if(strlen($Result_List['item_attr'][$ii][$jj]['family']) > 0 ||
+                                        strlen($Result_List['item_attr'][$ii][$jj]['name']) > 0 ||
                                         strlen($Result_List['item_attr'][$ii][$jj]['e_mail_address']) > 0){
                                         $value_flg = true;
                                     } else {
                                         continue;
                                     }
+                                    // Add author link url 2015/01/28 T.Ichikawa --start--
+                                    $author_url = BASE_URL. "/?action=repository_opensearch&creator=";
+                                    $author_name = "";
+                                    if(strtolower($Result_List['item_attr_type'][$ii]['display_lang_type']) == "english") {
+                                        $author_name .= $Result_List['item_attr'][$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_PERSONAL_NAME_NAME].
+                                                        " ".
+                                                        $Result_List['item_attr'][$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_PERSONAL_NAME_FAMILY];
+                                    } else {
+                                        $author_name .= $Result_List['item_attr'][$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_PERSONAL_NAME_FAMILY].
+                                                        " ".
+                                                        $Result_List['item_attr'][$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_PERSONAL_NAME_NAME];
+                                    }
+                                    $Result_List['item_attr'][$ii][$jj]['url'] = $author_url. urlencode($author_name);
+                                    // Add author link url 2015/01/28 T.Ichikawa --end--
                                     $author_id_text = "";
                                     $author_id_array = $NameAuthority->getExternalAuthorIdData($Result_List['item_attr'][$ii][$jj]['author_id']);
                                     for($kk=0;$kk<count($author_id_array);$kk++){
@@ -1348,46 +1194,6 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                                         $author_id_text .= $author_id_array[$kk]["prefix_name"].":".$author_id_array[$kk]["suffix"];
                                     }
                                     $Result_List['item_attr'][$ii][$jj]['author_id_text'] = $author_id_text;
-                                    
-                                    // For support to output meta tag 2011/12/06 A.Suzuki --start--
-                                    if($this->addHeaderFlag)
-                                    {
-                                        $tagContent = "";
-                                        if(strtolower($Result_List['item_attr_type'][$ii]['display_lang_type']) == "english")
-                                        {
-                                            $tagContent = $Result_List['item_attr'][$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_PERSONAL_NAME_NAME];
-                                            if(strlen($Result_List['item_attr'][$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_PERSONAL_NAME_FAMILY]) > 0)
-                                            {
-                                                if(strlen($tagContent) > 0)
-                                                {
-                                                    $tagContent .= ",";
-                                                }
-                                                $tagContent .= $Result_List['item_attr'][$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_PERSONAL_NAME_FAMILY];
-                                            }
-                                        }
-                                        else
-                                        {
-                                            $tagContent = $Result_List['item_attr'][$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_PERSONAL_NAME_FAMILY];
-                                            if(strlen($Result_List['item_attr'][$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_PERSONAL_NAME_NAME]) > 0)
-                                            {
-                                                if(strlen($tagContent) > 0)
-                                                {
-                                                    $tagContent .= ",";
-                                                }
-                                                $tagContent .= $Result_List['item_attr'][$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_PERSONAL_NAME_NAME];
-                                            }
-                                        }
-                                        
-                                        if(strlen($tagContent) > 0)
-                                        {
-                                            // Add to metatag list
-                                            $this->createMetaTagDataList(
-                                                $tagContent,
-                                                $Result_List['item_attr_type'][$ii]['junii2_mapping'],
-                                                $metaTagDataList);
-                                        }
-                                    }
-                                    // For support to output meta tag 2011/12/06 A.Suzuki --end--
                                 }
                                 if($value_flg === false){
                                     unset($Result_List['item_attr_type'][$ii]);
@@ -1442,20 +1248,8 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                                     } else {
                                         continue;
                                     }
-                                    // Bug fix send array data (originally, send string) 2014/09/05 T.Ichikawa --start--
-                                    $orgValue = $Result_List['item_attr'][$ii][$jj]['attribute_value'];
-                                    // Bug fix send array data (originally, send string) 2014/09/05 T.Ichikawa --end--
                                     $str_array = explode("|", $Result_List['item_attr'][$ii][$jj]['attribute_value'], 4);
                                     $Result_List['item_attr'][$ii][$jj]['attribute_value'] = $str_array;
-                                    
-                                    if($this->addHeaderFlag)
-                                    {
-                                        // Add to metatag list
-                                        $this->createMetaTagDataList(
-                                            $orgValue,
-                                            $Result_List['item_attr_type'][$ii]['junii2_mapping'],
-                                            $metaTagDataList);
-                                    }
                                 }
                                 if($value_flg === false){
                                     unset($Result_List['item_attr_type'][$ii]);
@@ -1469,15 +1263,6 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                                     } else {
                                         continue;
                                     }
-                                    
-                                    if($this->addHeaderFlag)
-                                    {
-                                        // Add to metatag list
-                                        $this->createMetaTagDataList(
-                                            $Result_List['item_attr'][$ii][$jj]['attribute_value'],
-                                            $Result_List['item_attr_type'][$ii]['junii2_mapping'],
-                                            $metaTagDataList);
-                                    }
                                 }
                                 if($value_flg === false){
                                     unset($Result_List['item_attr_type'][$ii]);
@@ -1485,12 +1270,12 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                             }
                             // Add link name 2009/03/19 A.Suzuki --end--
                             // テキストエリア内の改行対応 2009/02/12 A.Suzuki --end--
-                            
+
                             // 他言語表示値チェック
                             if($this->alter_flg == "1"){
                                 $Result_List['item_attr_type'][$ii]['display_flag'] = "true";
                             }
-                            else if(count($Result_List['item_attr'][$ii])>0 
+                            else if(count($Result_List['item_attr'][$ii])>0
                                      && isset($Result_List['item_attr_type'][$ii]['display_flag'])
                                      && $Result_List['item_attr_type'][$ii]['display_flag'] != "false")
                             {
@@ -1510,7 +1295,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                         else if($Result_List['item_attr_type'][$ii]['input_type']=="supple")
                         {
                             $this->IsSupple = true;
-                            
+
                             for($jj=0; $jj<count($Result_List['item_attr'][$ii]); $jj++){
                                 $Result_List['item_attr'][$ii][$jj]['mime_type'] = $this->getFileIconID($Result_List['item_attr'][$ii][$jj]['mime_type']);
                                 if($supple_weko_url != "" && $Result_List['item_attr'][$ii][$jj]['file_id'] != "")
@@ -1525,7 +1310,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                                 }
                             }
                         }
-                        else if( $Result_List['item_attr_type'][$ii]['input_type'] == "file" || 
+                        else if( $Result_List['item_attr_type'][$ii]['input_type'] == "file" ||
                                  $Result_List['item_attr_type'][$ii]['input_type'] == "file_price")
                         {
                             // TODO
@@ -1538,7 +1323,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                             for($jj=0; $jj<count($Result_List['item_attr'][$ii]); $jj++)
                             {
                                 $Result_List['item_attr'][$ii][$jj] = $this->setFileData($Result_List['item_attr_type'][$ii], $Result_List['item_attr'][$ii][$jj], $ii, $jj, $metaTagDataList);
-                                
+
                                 // To get pdf reference from servers 2013/10/21 S.Suzuki --start--
                                 if (strlen($this->referenceBaseURL) > 0 && $this->fromWorkflowFlg_ != "false"){
                                     if ($Result_List['item_attr'][$ii][$jj]['extension'] == "pdf") {
@@ -1554,9 +1339,62 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                                 // To get pdf reference from servers 2013/10/21 S.Suzuki --end--
                             }
                             // Fix change file download action 2013/5/9 Y.Nakao --end--
+
+                            // Add metadata pdf url 2014/12/19 S.Suzuki --start--
+                            $files = $Result_List['item_attr'][$ii];
+
+                            if ($this->addHeaderFlag && count($files) > 0)
+                            {
+                                $this->outputFileMetaTag($files);
+                            }
+                            // Add metadata pdf url 2014/12/19 S.Suzuki --end--
                         }
                     }
                     // Add matadata select language 2009/07/31 A.Suzuki --end--
+
+                    // Add metadata pdf url 2014/12/19 S.Suzuki --start--
+                    $query = "SELECT * ".
+                             "FROM ". DATABASE_PREFIX ."repository_parameter ".
+                             "WHERE param_name = ? AND ".  // param_name
+                             "is_delete = ?; ";         // 削除されていない
+                    $params = null;
+                    // $queryの?を置き換える配列
+                    $params[] = "institution_name";
+                    $params[] = 0;
+                    // SELECT実行
+                    $result = $this->Db->execute($query, $params);
+                    if($result === false) {
+                        $Error_Msg = $this->Db->ErrorMsg();
+                        array_push($this->errMsg, $Error_Msg);
+                        //アクション終了処理
+                        $result = $this->exitAction();     //トランザクションが成功していればCOMMITされる
+                        if ( $result === false ) {
+                            $exception = new RepositoryException( "ERR_MSG_xxx-xxx3", 1 );  //主メッセージとログIDを指定して例外を作成
+                            //$DetailMsg = null;                              //詳細メッセージ文字列作成
+                            //sprintf( $DetailMsg, ERR_DETAIL_xxx-xxx3, $埋込み文字1, $埋込み文字2 );
+                            //$exception->setDetailMsg( $DetailMsg );             //詳細メッセージ設定
+                            throw $exception;
+                        }
+                        // Add smartPhone support T.Koyasu 2012/04/09 -start-
+                        if($this->smartphoneFlg) {
+                            return 'error_sp';
+                        } else {
+                            return "error";
+                        }
+                        // Add smartPhone support T.Koyasu 2012/04/09 -end-
+                    }
+
+                    // 管理画面―サーバ設定の機関名称をメタタグ出力する
+                    // 機関名称が空文字の場合出力しない
+                    if(strlen($result[0][RepositoryConst::DBCOL_REPOSITORY_PARAMETER_PARAM_VALUE]) > 0){
+                        $output = $this->createTags(
+                            RepositoryConst::TAG_NAME_META,
+                            array( RepositoryConst::TAG_ATTR_KEY_NAME => RepositoryConst::GOOGLESCHOLAR_DISSERTATION_INSTITUTION,
+                                   RepositoryConst::TAG_ATTR_KEY_CONTENT => $result[0][RepositoryConst::DBCOL_REPOSITORY_PARAMETER_PARAM_VALUE]));
+                        $this->commonMain->addHeader($output);
+                    }
+                    // Add metadata pdf url 2014/12/19 S.Suzuki --end--
+
                     // Add item type multi-language 2013/07/25 K.Matsuo --start--
                     $this->setItemtypeNameMultiLanguage($Result_List['item'][0]['item_type_id'], $Result_List['item_attr_type']);
                     // Add item type multi-language 2013/07/25 K.Matsuo --end--
@@ -1570,12 +1408,15 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                             $metaTagDataList);
                     }
                     // Add external search word display 2014/05/23 T.Ichikawa --end--
-                                
+
                     // Add for JaLC DOI R.Matsuura 2014/06/13 --start--
                     $this->getSelfDoiUri();
                     // Add for JaLC DOI R.Matsuura 2014/06/13 --end--
-                    
+
                     $this->Session->setParameter("item_info", $Result_List);
+
+                    // メタデータ設定
+                    $this->otherMetadataTag($Result_List, $metaTagDataList);
                 } else {
                     array_push($this->errMsg, $Error_Msg);
                     //アクション終了処理
@@ -1590,16 +1431,38 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 //  return 'error';
                 }
 
-                // Add log common action Y.Nakao 2010/03/05 --start--
-                $this->entryLog(3, $this->item_id, $this->item_no, "", "", "");
-                // Add log common action Y.Nakao 2010/03/05 --end--
-                
+                // Mod entryLog T.Koyasu 2015/03/06 --start--
+                // entry log
+                $this->infoLog("businessLogmanager", __FILE__, __CLASS__, __LINE__);
+                $logManager = BusinessFactory::getFactory()->getBusiness("businessLogmanager");
+                $logManager->entryLogForDetailView($this->item_id, $this->item_no);
+
+                // update external search keyword
+                $referer = "";
+                if(isset($_SERVER["HTTP_REFERER"]))
+                {
+                    $referer = $_SERVER["HTTP_REFERER"];
+                }
+                else
+                {
+                    $referer = getenv("HTTP_REFERER");
+                }
+
+                // is referer empty?
+                // is this weko base_url?
+                if(strlen($referer) > 0 && strpos($referer, BASE_URL) !== 0){
+                    require_once WEBAPP_DIR. '/modules/repository/components/RepositoryExternalSearchWordManager.class.php';
+                    $searchWordManager = new Repository_Components_RepositoryExternalSearchWordManager($this->Session, $this->Db, $this->TransStartDate);
+                    $searchWordManager->insertExternalSearchWordFromURL($this->item_id, $this->item_no, $referer);
+                }
+                // Mod entryLog T.Koyasu 2015/03/06 --end--
+
                 // アイテムの所属インデックスを検索
                 //$result = $this->Db->selectExecute("repository_position_index", array('item_id' => $item_id ));
                 $query = "SELECT * ".
-                     "FROM ". DATABASE_PREFIX ."repository_position_index ".    
+                     "FROM ". DATABASE_PREFIX ."repository_position_index ".
                      "WHERE item_id = ? AND ".  // Item_ID
-                     "item_no = ? AND ".        // Item_No 
+                     "item_no = ? AND ".        // Item_No
                      "is_delete = ?; ";         // 削除されていない
                 $params = null;
                 // $queryの?を置き換える配列
@@ -1632,7 +1495,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 $indice = array();
                 for($ii=0; $ii<count($result); $ii++) {
                     $query = "SELECT * ".
-                         "FROM ". DATABASE_PREFIX ."repository_index ". 
+                         "FROM ". DATABASE_PREFIX ."repository_index ".
                          "WHERE index_id = ? AND ". // Item_ID
                          "is_delete = ?; ";         // 削除されていない
                     $params = null;
@@ -1711,14 +1574,14 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                     // Add show parent index A.Suzuki 2009/04/15 --end--
                 }
                 $this->Session->setParameter("position_index", $indice);
-                
+
                 //
                 // アイテムのリンク情報取得
                 //$result = $this->Db->selectExecute("repository_reference", array('org_reference_item_id' => $item_id ));
                 $query = "SELECT * ".
-                         "FROM ". DATABASE_PREFIX ."repository_reference ". 
+                         "FROM ". DATABASE_PREFIX ."repository_reference ".
                          "WHERE org_reference_item_id = ? AND ".    // Item_ID
-                         "org_reference_item_no = ? AND ".      // Item_No 
+                         "org_reference_item_no = ? AND ".      // Item_No
                          "is_delete = ?; ";         // 削除されていない
                 $params = null;
                 // $queryの?を置き換える配列
@@ -1751,9 +1614,9 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 for($ii=0; $ii<count($result); $ii++) {
                     //$result_link = $this->Db->selectExecute("repository_item", array('item_id' => $result[$ii]['dest_reference_item_id']));
                     $query = "SELECT * ".
-                         "FROM ". DATABASE_PREFIX ."repository_item ".  
+                         "FROM ". DATABASE_PREFIX ."repository_item ".
                          "WHERE item_id = ? AND ".  // Item_ID
-                         "item_no = ? AND ".        // Item_No 
+                         "item_no = ? AND ".        // Item_No
                          "is_delete = ?; ";         // 削除されていない
                     $params = null;
                     // $queryの?を置き換える配列
@@ -1797,16 +1660,16 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                     // Bug fix item link 2010/04/15 A.Suzuki --end--
                 }
                 $this->Session->setParameter("reference", $link_items);
-                
+
                 // Add usagestatistics link 2012/08/07 A.Suzuki --start--
                 // Check this item's record at usagestatistics table
                 $this->isDispUsageLink = $this->RepositoryUsagestatistics->checkUsageStatisticsRecords($item_id, $item_no);
                 // Add usagestatistics link 2012/08/07 A.Suzuki --end--
             }
-            
+
             // 画面右に詳細画面を表示させるフラグ
             $this->Session->setParameter("serach_screen", "1");
-            
+
             // 一覧画面から呼ばれた場合
             if($this->Session->getParameter("search_flg")=="true"){
                 $this->Session->removeParameter("error_msg");
@@ -1819,7 +1682,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                     //$exception->setDetailMsg( $DetailMsg );             //詳細メッセージ設定
                     throw $exception;
                 }
-                
+
                 // Add smartPhone support T.Koyasu 2012/04/09 -start-
                 if($this->smartphoneFlg){
                     return 'golistview_sp';
@@ -1828,11 +1691,11 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 }
                 // Add smartPhone support T.Koyasu 2012/04/09 -end-
             }
-                    
+
             // 後は・・・保留。案外登録者と管理者だけでOK？
 //          elseif() {
 //          }
-            
+
             // Set help icon setting 2010/02/10 K.Ando --start--
             $result = $this->getAdminParam('help_icon_display', $this->help_icon_display, $Error_Msg);
             if ( $result == false ){
@@ -1853,13 +1716,25 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 throw $exception;
             }
             // Set help icon setting 2010/02/10 K.Ando --end--
-            
+
+            // Set Usage statistics setting 2014/12/15 K.Matsushita --start--
+            $result = $this->getAdminParam('usagestatistics_link_display', $this->usagestatistics_link_display, $Error_Msg);
+            if ( $result == false ){
+                $exception = new RepositoryException( ERR_MSG_xxx-xxx1, xxx-xxx1 ); //主メッセージとログIDを指定して例外を作成
+                $DetailMsg = null;                              //詳細メッセージ文字列作成
+                sprintf( $DetailMsg, ERR_DETAIL_xxx-xxx1);
+                $exception->setDetailMsg( $DetailMsg );         //詳細メッセージ設定
+                $this->failTrans();                             //トランザクション失敗を設定(ROLLBACK)
+                throw $exception;
+            }
+            // Set Usage statistics setting 2014/12/15 K.Matsushita --end--
+
             // For support to output meta tag 2011/12/06 A.Suzuki --start--
             if($this->addHeaderFlag)
             {
                 // Create metatag
                 $metatagList = $this->createMetaTagByList($metaTagDataList);
-                
+
                 // Output metatag list
                 foreach($metatagList as $key => $val)
                 {
@@ -1867,11 +1742,11 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 }
             }
             // For support to output meta tag 2011/12/06 A.Suzuki --end--
-            
+
             // 通常の詳細表示を示す
             $this->Session->setParameter("workflow_flg", "false");
-            
-            
+
+
             //アクション終了処理
             $result = $this->exitAction();     //トランザクションが成功していればCOMMITされる
             if ( $result === false ) {
@@ -1881,7 +1756,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 //$exception->setDetailMsg( $DetailMsg );             //詳細メッセージ設定
                 throw $exception;
             }
-            
+
             // Add smartPhone support T.Koyasu 2012/04/09 -start-
             if($this->smartphoneFlg) {
                 return 'success_sp';
@@ -1897,7 +1772,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 "execute",                      //メソッド名
                 $Exception->getCode(),          //ログID
                 $Exception->getMessage(),       //主メッセージ
-                $Exception->getDetailMsg() );   //詳細メッセージ           
+                $Exception->getDetailMsg() );   //詳細メッセージ
             */
             //アクション終了処理
             $this->failTrans();
@@ -1909,9 +1784,438 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
             }
             // Add smartPhone support T.Koyasu 2012/04/09 -end-
         }
-
     }
-    
+
+    /**
+     * output basic metadata for Google Scholar
+     *
+     * @param string $item basic info
+     */
+    private function outputBasicMetaTag($item, $block_obj)
+    {
+        $itemPubDate = "";
+        if($this->convertDataFormatForGoogleScholar(
+            $item[RepositoryConst::DBCOL_REPOSITORY_ITEM_SHOWN_DATE],
+            $tmpItemPubDate) )
+        {
+            $itemPubDate = $tmpItemPubDate;
+        }
+
+        $tagContent = "";
+        if($item[RepositoryConst::DBCOL_REPOSITORY_ITEM_LANGUAGE] == RepositoryConst::ITEM_LANG_JA)
+        {
+            // Item's language is Japanese
+            if(strlen($item[RepositoryConst::DBCOL_REPOSITORY_ITEM_TITLE]) > 0)
+            {
+                // output Japanese title
+                $tagContent = $item[RepositoryConst::DBCOL_REPOSITORY_ITEM_TITLE];
+            } else {
+                // output English title
+                $tagContent = $item[RepositoryConst::DBCOL_REPOSITORY_ITEM_TITLE_ENGLISH];
+            }
+        } else {
+            // Item's language is English
+            if(strlen($item[RepositoryConst::DBCOL_REPOSITORY_ITEM_TITLE_ENGLISH]) > 0)
+            {
+                // output English title
+                $tagContent = $item[RepositoryConst::DBCOL_REPOSITORY_ITEM_TITLE_ENGLISH];
+            } else {
+                // output Japanese title
+                $tagContent = $item[RepositoryConst::DBCOL_REPOSITORY_ITEM_TITLE];
+            }
+        }
+
+        // Add title to metatag
+        $output = $this->createTags(
+                RepositoryConst::TAG_NAME_META,
+                array( RepositoryConst::TAG_ATTR_KEY_NAME => RepositoryConst::GOOGLESCHOLAR_TITLE,
+                       RepositoryConst::TAG_ATTR_KEY_CONTENT => $tagContent ));
+        $this->commonMain->addHeader($output);
+
+        // Add online date to metatag
+        $output = $this->createTags(
+            RepositoryConst::TAG_NAME_META,
+            array( RepositoryConst::TAG_ATTR_KEY_NAME => RepositoryConst::GOOGLESCHOLAR_ONLINE_DATE,
+                   RepositoryConst::TAG_ATTR_KEY_CONTENT => $itemPubDate ));
+        $this->commonMain->addHeader($output);
+
+        // direct link to item detail page
+        $directLink = BASE_URL . "/?" .
+                     "action=pages_view_main&" .
+                     "active_action=repository_view_main_item_detail&" .
+                     "item_id=" . $item[RepositoryConst::DBCOL_REPOSITORY_ITEM_ITEM_ID] . "&" .
+                     "item_no=" . $item[RepositoryConst::DBCOL_REPOSITORY_ITEM_ITEM_NO] . "&" .
+                     "page_id=" . $block_obj["page_id"] . "&" . "block_id=" . $block_obj["block_id"];
+
+        // Add abstract html url to metatag
+        $output = $this->createTags(
+            RepositoryConst::TAG_NAME_META,
+            array( RepositoryConst::TAG_ATTR_KEY_NAME => RepositoryConst::GOOGLESCHOLAR_ABSTRACT_HTML_URL,
+                   RepositoryConst::TAG_ATTR_KEY_CONTENT => $directLink) );
+        $this->commonMain->addHeader($output);
+
+        // Add to metatag list
+        $this->createMetaTagDataList(
+            $itemPubDate,
+            RepositoryConst::JUNII2_DATE_OF_ISSUED,
+            $metaTagDataList);
+    }
+
+    /**
+     * set other metadata for Google Scholar
+     *
+     * @param array $Result_List matadata array
+     * @param array $metaTagDataList metadata list
+     */
+    private function otherMetadataTag(&$Result_List, &$metaTagDataList)
+    {
+        // Add keyword to metatag 2014/06/17 T.Ichikawa --start--
+        $keyword_meta = explode(", ", $this->Session->getParameter("keyword"));
+        for($ii = 0; $ii < count($keyword_meta); $ii++) {
+            $this->createMetaTagDataList(
+                $keyword_meta[$ii],
+                RepositoryConst::JUNII2_SUBJECT,
+                $metaTagDataList);
+        }
+        $keyword_english_meta = explode(", ", $this->Session->getParameter("keyword_english"));
+        for($ii = 0; $ii < count($keyword_english_meta); $ii++) {
+            $this->createMetaTagDataList(
+                $keyword_english_meta[$ii],
+                RepositoryConst::JUNII2_SUBJECT,
+                $metaTagDataList);
+        }
+        // Add external search word display 2014/06/17 T.Ichikawa --end--
+
+        $lang = $this->Session->getParameter("_lang");
+
+        for($ii=0; $ii<count($Result_List['item_attr_type']); $ii++){
+
+            if ($Result_List['item_attr_type'][$ii]['display_flag'] != "false") {
+                // ファイル、課金ファイルはスルーする
+                if(isset($Result_List['item_attr_type'][$ii]['input_type'])
+                    && $Result_List['item_attr_type'][$ii]['input_type']!="file"
+                    && $Result_List['item_attr_type'][$ii]['input_type']!="file_price"
+                    && $Result_List['item_attr_type'][$ii]['input_type']!="thumbnail"
+                    && $Result_List['item_attr_type'][$ii]['input_type']!="supple")
+                {
+                    // テキストエリア内の改行対応2009/02/12 A.Suzuki --start--
+                    if($Result_List['item_attr_type'][$ii]['input_type']=="textarea"){
+                        for($jj=0; $jj<count($Result_List['item_attr'][$ii]); $jj++){
+                            if($this->addHeaderFlag)
+                            {
+                                // Add to metatag list
+                                $this->createMetaTagDataList(
+                                    $Result_List['item_attr'][$ii][$jj]['attribute_value'][0],
+                                    $Result_List['item_attr_type'][$ii]['junii2_mapping'],
+                                    $metaTagDataList);
+                            }
+                        }
+                    }
+                    else if($Result_List['item_attr_type'][$ii]['input_type']=="link"){
+                        for($jj=0; $jj<count($Result_List['item_attr'][$ii]); $jj++){
+                            if($this->addHeaderFlag)
+                            {
+                                // Add to metatag list
+                                $this->createMetaTagDataList(
+                                    $Result_List['item_attr'][$ii][$jj]['attribute_value'][0],
+                                    $Result_List['item_attr_type'][$ii]['junii2_mapping'],
+                                    $metaTagDataList);
+                            }
+                        }
+                    }
+                    else if($Result_List['item_attr_type'][$ii]['input_type']=="biblio_info")
+                    {
+                        // For support to output meta tag 2011/12/06 A.Suzuki --start--
+                        if($this->addHeaderFlag)
+                        {
+                            $tagContent = "";
+
+                            // Journal title in Japanese
+                            $tagContent .= $Result_List['item_attr'][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_BIBLIO_NAME];
+
+                            // Journal title in English
+                            if(strlen($Result_List['item_attr'][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_BIBLIO_NAME_ENGLISH]) > 0)
+                            {
+                                if(strlen($tagContent) > 0)
+                                {
+                                    $tagContent .= " = ";
+                                }
+                                $tagContent .= $Result_List['item_attr'][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_BIBLIO_NAME_ENGLISH];
+                            }
+
+                            // Add journal title to metatag
+                            if(strlen($tagContent) > 0)
+                            {
+                                // Add to metatag list
+                                $this->createMetaTagDataList(
+                                    $tagContent,
+                                    RepositoryConst::JUNII2_JTITLE,
+                                    $metaTagDataList);
+                            }
+
+                            // Add volume to metatag
+                            if(strlen($Result_List["item_attr"][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_VOLUME]) > 0)
+                            {
+                                // Add to metatag list
+                                $this->createMetaTagDataList(
+                                    $Result_List["item_attr"][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_VOLUME],
+                                    RepositoryConst::JUNII2_VOLUME,
+                                    $metaTagDataList);
+                            }
+
+                            // Add issue to metatag
+                            if(strlen($Result_List["item_attr"][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_ISSUE]) > 0)
+                            {
+                                // Add to metatag list
+                                $this->createMetaTagDataList(
+                                    $Result_List["item_attr"][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_ISSUE],
+                                    RepositoryConst::JUNII2_ISSUE,
+                                    $metaTagDataList);
+                            }
+
+                            // Add first page to metatag
+                            if(strlen($Result_List["item_attr"][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_START_PAGE]) > 0)
+                            {
+                                // Add to metatag list
+                                $this->createMetaTagDataList(
+                                    $Result_List["item_attr"][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_START_PAGE],
+                                    RepositoryConst::JUNII2_SPAGE,
+                                    $metaTagDataList);
+                            }
+
+                            // Add last page to metatag
+                            if(strlen($Result_List["item_attr"][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_END_PAGE]) > 0)
+                            {
+                                // Add to metatag list
+                                $this->createMetaTagDataList(
+                                    $Result_List["item_attr"][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_END_PAGE],
+                                    RepositoryConst::JUNII2_EPAGE,
+                                    $metaTagDataList);
+                            }
+
+                            // Add publication date to metatag
+                            if(strlen($Result_List["item_attr"][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_DATE_OF_ISSUED]) > 0)
+                            {
+                                // Add to metatag list
+                                $this->createMetaTagDataList(
+                                    $Result_List["item_attr"][$ii][0][RepositoryConst::DBCOL_REPOSITORY_BIBLIO_INFO_DATE_OF_ISSUED],
+                                    RepositoryConst::JUNII2_DATE_OF_ISSUED,
+                                    $metaTagDataList);
+                            }
+                        }
+                        // For support to output meta tag 2011/12/06 A.Suzuki --end--
+                    }
+                    else if($Result_List['item_attr_type'][$ii]['input_type']=="name")
+                    {
+                        for($jj=0; $jj<count($Result_List['item_attr'][$ii]); $jj++){
+                            // For support to output meta tag 2011/12/06 A.Suzuki --start--
+                            if($this->addHeaderFlag)
+                            {
+                                $tagContent = "";
+                                if(strtolower($Result_List['item_attr_type'][$ii]['display_lang_type']) == "english")
+                                {
+                                    $tagContent = $Result_List['item_attr'][$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_PERSONAL_NAME_NAME];
+                                    if(strlen($Result_List['item_attr'][$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_PERSONAL_NAME_FAMILY]) > 0)
+                                    {
+                                        if(strlen($tagContent) > 0)
+                                        {
+                                            $tagContent .= ",";
+                                        }
+                                        $tagContent .= $Result_List['item_attr'][$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_PERSONAL_NAME_FAMILY];
+                                    }
+                                }
+                                else
+                                {
+                                    $tagContent = $Result_List['item_attr'][$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_PERSONAL_NAME_FAMILY];
+                                    if(strlen($Result_List['item_attr'][$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_PERSONAL_NAME_NAME]) > 0)
+                                    {
+                                        if(strlen($tagContent) > 0)
+                                        {
+                                            $tagContent .= ",";
+                                        }
+                                        $tagContent .= $Result_List['item_attr'][$ii][$jj][RepositoryConst::DBCOL_REPOSITORY_PERSONAL_NAME_NAME];
+                                    }
+                                }
+
+                                if(strlen($tagContent) > 0)
+                                {
+                                    // Add to metatag list
+                                    $this->createMetaTagDataList(
+                                        $tagContent,
+                                        $Result_List['item_attr_type'][$ii]['junii2_mapping'],
+                                        $metaTagDataList);
+                                }
+                            }
+                            // For support to output meta tag 2011/12/06 A.Suzuki --end--
+                        }
+                    }
+                    else if($Result_List['item_attr_type'][$ii]['input_type']=="heading")
+                    {
+                        for($jj=0; $jj<count($Result_List['item_attr'][$ii]); $jj++){
+                            if($this->addHeaderFlag)
+                            {
+                                for($jj=0; $jj<count($Result_List['item_attr'][$ii]); $jj++)
+                                {
+                                    $orgValue = implode("|", $Result_List['item_attr'][$ii][$jj]['attribute_value']);
+
+                                    // Add to metatag list
+                                    $this->createMetaTagDataList(
+                                        $orgValue,
+                                        $Result_List['item_attr_type'][$ii]['junii2_mapping'],
+                                        $metaTagDataList);
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        for($jj=0; $jj<count($Result_List['item_attr'][$ii]); $jj++){
+                            if($this->addHeaderFlag)
+                            {
+                                // Add to metatag list
+                                $this->createMetaTagDataList(
+                                    $Result_List['item_attr'][$ii][$jj]['attribute_value'],
+                                    $Result_List['item_attr_type'][$ii]['junii2_mapping'],
+                                    $metaTagDataList);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * output file metadata for Google Scholar
+     *
+     * @param string $files pdf files and other files
+     */
+    private function outputFileMetaTag($files)
+    {
+        // popplerのパスを取得
+        $query = "SELECT `param_value` ".
+                 "FROM `". DATABASE_PREFIX ."repository_parameter` ".
+                 "WHERE `param_name` = 'path_poppler';";
+
+        $poppler_path = $this->Db->execute($query);
+
+        if ($poppler_path === false) {
+            $errMsg = $this->Db->ErrorMsg();
+            $this->failTrans();             //トランザクション失敗を設定(ROLLBACK)
+            return false;
+        }
+
+        // popplerパス
+        $poppler = $poppler_path[0]['param_value'];
+
+        $pdfinfoExists = false;
+        if( strlen($poppler) >= 1 && (file_exists($poppler."pdfinfo.exe") || file_exists($poppler."pdfinfo")))
+        {
+            $pdfinfoExists = true;
+        }
+
+        $pdfData   = array("url" => "", "file_no" => 0, "size" => 0);
+        $otherData = array("url" => "", "file_no" => 0);
+
+        // ファイルの中身をpdfとその他に分けてデータを集める
+        for($ii = 0; $ii < count($files); $ii++)
+        {
+            $item = $files[$ii];
+
+            // ファイルurl
+            $url = BASE_URL . "/?action=repository_uri" .
+                  "&item_id=" . $item["item_id"] .
+                  "&file_id=" . $item["attribute_id"].
+                  "&file_no=" . $item["file_no"];
+
+            // pdfファイル
+            if ($item["extension"] == "pdf")
+            {
+                $size = 0;
+                $pdfPath = BASE_DIR . "/webapp/uploads/repository/files/" .
+                           $item["item_id"] . "_" .
+                           $item["attribute_id"] . "_" .
+                           $item["file_no"] . ".pdf";
+
+                // pdfinfoが存在しているなら、pdfのページ数で比較
+                if ($pdfinfoExists)
+                {
+                    $output = null;
+                    exec($poppler . "pdfinfo " . $pdfPath , $output);
+
+                    // ページ数取得
+                    for ($jj = 0; $jj < count($output); $jj++)
+                    {
+                        if (preg_match("/^Pages:/", $output[$jj]) == 1)
+                        {
+                            $params = explode(":", $output[$jj]);
+                            $size = trim($params[1]);
+                        }
+                    }
+                }
+                // pdfinfoが存在しないならfilesizeで比較
+                else
+                {
+                    $size = filesize($pdfPath);
+                }
+
+                if ($size > $pdfData["size"] && $size > 0)
+                {
+                    $pdfData["file_no"] = $item["file_no"];
+                    $pdfData["url"] = $url;
+                    $pdfData["size"] = $size;
+                }
+
+                // 初回
+                if ($pdfData["url"] == "")
+                {
+                    $pdfData["file_no"] = $item["file_no"];
+                    $pdfData["url"] = $url;
+                    $pdfData["size"] = $size;
+                }
+            }
+            // pdfファイル以外
+            else
+            {
+                if ($item["file_no"] < $otherData["file_no"])
+                {
+                    $otherData["file_no"] = $item["file_no"];
+                    $otherData["url"] = $url;
+                }
+
+                // 初回
+                if ($otherData["url"] == "")
+                {
+                    $otherData["file_no"] = $item["file_no"];
+                    $otherData["url"] = $url;
+                }
+            }
+        }
+
+        // タグを発行
+
+        // pdfファイル
+        // Add pdf url to metatag
+        // pdfファイルのURLが空文字ならば出力しない
+        if(strlen($pdfData["url"])> 0){
+            $output = $this->createTags(
+                            RepositoryConst::TAG_NAME_META,
+                            array( RepositoryConst::TAG_ATTR_KEY_NAME => RepositoryConst::GOOGLESCHOLAR_PDF_URL,
+                            RepositoryConst::TAG_ATTR_KEY_CONTENT => $pdfData["url"]) );
+            $this->commonMain->addHeader($output);
+        }
+
+        // pdfファイル以外
+        // Add fulltext url to metatag
+        // pdfファイル以外のURLが空文字ならば出力しない
+        if(strlen($otherData["url"]) > 0){
+            $output = $this->createTags(
+                            RepositoryConst::TAG_NAME_META,
+                            array( RepositoryConst::TAG_ATTR_KEY_NAME => RepositoryConst::GOOGLESCHOLAR_FULLTEXT_HTML_URL,
+                            RepositoryConst::TAG_ATTR_KEY_CONTENT => $otherData["url"]) );
+            $this->commonMain->addHeader($output);
+        }
+    }
+
     // Add Convert Date Format for Google Scholar 2011/12/06 A.Suzuki --start--
     /**
      * Convert Date Format for Google Scholar
@@ -1926,7 +2230,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
         // Init ref argument
         // ----------------------
         $retDate = "";
-        
+
         // ----------------------
         // Check argument
         // ----------------------
@@ -1934,35 +2238,25 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
         {
             return false;
         }
-        
+
         // ----------------------
         // Convert date format
         // ----------------------
-        $exDateTime = explode(" ", $dateTime);
-        $exDate = explode("-", $exDateTime[0], 3);
-        
-        // Month
-        if(isset($exDate[1]) && strlen($exDate[1]) > 0)
+
+        // Add metadata pdf url 2014/12/24 S.Suzuki --start--
+        $date = explode(" ", $dateTime);
+
+        $ymd = explode("-", $date[0]);
+
+        if (isset($ymd[0]) && isset($ymd[1]) && isset($ymd[2]) && count($ymd) == 3)
         {
-            $retDate .= $exDate[1];
-            
-            // Day
-            if(isset($exDate[2]) && strlen($exDate[2]) > 0)
-            {
-                $retDate .= "/".$exDate[2];
-            }
+            $retDate = $ymd[0] . "/" . $ymd[1] . "/" . $ymd[2];
         }
-        
-        // Year
-        if(strlen($exDate[0]) > 0)
-        {
-            if(strlen($retDate) > 0)
-            {
-                $retDate .= "/";
-            }
-            $retDate .= $exDate[0];
+        else {
+            return false;
         }
-        
+        // Add metadata pdf url 2014/12/24 S.Suzuki --end--
+
         // Check return value
         if(strlen($retDate) > 0)
         {
@@ -1974,7 +2268,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
         }
     }
     // Add Convert Date Format for Google Scholar 2011/12/06 A.Suzuki --end--
-    
+
     // Add Create meta tag data list 2011/12/06 A.Suzuki --start--
     /**
      * Create meta tag data list
@@ -1987,7 +2281,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
      */
     function createMetaTagDataList($value, $mapping, &$retDataList){
         $retStatus = false;
-        
+
         // ----------------------
         // Init ref argument
         // ----------------------
@@ -1997,7 +2291,6 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
             $retDataList[RepositoryConst::JUNII2_CREATOR] = array();
             $retDataList[RepositoryConst::JUNII2_PUBLISHER] = array();
             $retDataList[RepositoryConst::JUNII2_CONTRIBUTOR] = array();
-            $retDataList[RepositoryConst::JUNII2_FULL_TEXT_URL] = array();
             $retDataList[RepositoryConst::JUNII2_SUBJECT] = array();
             $retDataList[RepositoryConst::JUNII2_DATE_OF_ISSUED] = "";
             $retDataList[RepositoryConst::JUNII2_JTITLE] = "";
@@ -2008,7 +2301,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
             $retDataList[RepositoryConst::JUNII2_DOI] = "";
             $retDataList[RepositoryConst::JUNII2_ISSN] = "";
         }
-        
+
         // ----------------------
         // Check argument
         // ----------------------
@@ -2016,7 +2309,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
         {
             return $retStatus;
         }
-        
+
         // ----------------------
         // Add value to list
         // ----------------------
@@ -2046,10 +2339,10 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 }
             }
         }
-        
+
         return $retStatus;
     }
-    
+
     /**
      * Create meta tag by list
      *
@@ -2058,12 +2351,12 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
      */
     function createMetaTagByList($metaTagDataList){
         $retMetaTagTextList = array();
-        
+
         // Add metatag for Mendeley 2012/10/10 T.Koyasu -start-
         // for create authors
         $authorsList = array();
         // Add metatag for Mendeley 2012/10/10 T.Koyasu -end-
-        
+
         // Check argument
         if(is_array($metaTagDataList))
         {
@@ -2125,7 +2418,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                         $attribute = null;
                         break;
                 }
-                
+
                 if(strlen($attrName) > 0)
                 {
                     if(is_array($val))
@@ -2156,51 +2449,17 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                                     array( RepositoryConst::TAG_ATTR_KEY_NAME => $attrName,
                                            RepositoryConst::TAG_ATTR_KEY_CONTENT => $val )));
                             // Add metatag for Mendeley 2012/10/10 T.Koyasu -start-
-                            // Add citation_date meta tag for Mendeley
-                            if($attrName == RepositoryConst::GOOGLESCHOLAR_PUB_DATE){
-                                // $val is month/day/year , month/year or year
-                                $exDate = explode("/", $val);
-                                if(isset($exDate) && count($exDate) > 0){
-                                    // last val of $exDate -> $year
-                                    $year = $exDate[count($exDate) - 1];
-                                    array_push(
-                                        $retMetaTagTextList, 
-                                        $this->createTags(
-                                            RepositoryConst::TAG_NAME_META, 
-                                            array(RepositoryConst::TAG_ATTR_KEY_NAME => RepositoryConst::GOOGLESCHOLAR_DATE, 
-                                                  RepositoryConst::TAG_ATTR_KEY_CONTENT => $year)));
-                                }
-                            }
-                            // Add metatag for Mendeley 2012/10/10 T.Koyasu -end-
                         }
                     }
                 }
             }
             // Add metatag for Mendeley 2012/10/10 T.Koyasu -start-
-            // Add citation_authors meta tag for Mendeley
-            $authorsStr = "";
-            for($ii=0; $ii<count($authorsList); $ii++){
-                if(strlen($authorsStr) != 0){
-                    $authorsStr .= "; ";
-                }
-                $authorsStr .= $authorsList[$ii];
-            }
-            if(strlen($authorsStr) > 0){
-                // Create metatag
-                array_push(
-                    $retMetaTagTextList, 
-                    $this->createTags(
-                        RepositoryConst::TAG_NAME_META, 
-                        array(RepositoryConst::TAG_ATTR_KEY_NAME => RepositoryConst::GOOGLESCHOLAR_AUTHORS, 
-                              RepositoryConst::TAG_ATTR_KEY_CONTENT => $authorsStr)));
-            }
-            // Add metatag for Mendeley 2012/10/10 T.Koyasu -end-
         }
-        
+
         return $retMetaTagTextList;
     }
     // Add Create meta tag data list 2011/12/06 A.Suzuki --end--
-    
+
     /**
      * constructor
      * create for call of repository_common_item_detail
@@ -2246,7 +2505,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
             $this->fromWorkflowFlg_ = true;
         }
     }
-    
+
     /**
      * get contents type
      *
@@ -2264,7 +2523,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
             return "movie";
         }
     }
-    
+
     // Fix change file download action 2013/5/9 Y.Nakao --start--
     /**
      * get file data
@@ -2288,7 +2547,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
         // Add multiple FLASH files download 2011/02/04 Y.Nakao --start--
         $fileData['flash_name'] = '';
         $fileData['cnt'] = 0;
-        
+
         if($this->fromWorkflowFlg_ || $attrType[RepositoryConst::DBCOL_REPOSITORY_ITEM_ATTR_TYPE_HIDDEN] == 0)
         {
             // this metadata is not hidden
@@ -2306,7 +2565,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 {
                     if(strlen($flash_dir_path) > 0)
                     {
-                        // add flv name to Session 
+                        // add flv name to Session
                         // Fix SWF File PDF Viewer not run. Y.Nakao 2014/09/12 --start--
                         if( file_exists($flash_dir_path.'/weko1.swf') || file_exists($flash_dir_path.'/weko.swf') )
                         {
@@ -2367,7 +2626,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 $this->IsFileView = "true";
             }
         }
-        
+
         // check file download status
         $fileData['access_flag'] = $this->RepositoryValidator->checkFileDownloadViewFlag($fileData['pub_date'], $this->TransStartDate);
         $fileData['openaccess_flag'] = "false";
@@ -2402,7 +2661,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
         {
             // display all price
             $fileData['price_accent'] = "";
-            
+
             // link ON
             if($fileData['access_flag'] == Repository_Validator_DownloadCheck::ACCESS_CLOSE)
             {
@@ -2419,27 +2678,15 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
             // highlight
             $fileData['price_accent'] = $this->RepositoryValidator->checkPriceAccent($fileData);
         }
-        
+
         // set file icon.
         $fileData['mime_type'] = $this->getFileIconID($fileData['mime_type'], $fileData['extension']);
-        
-        if($this->addHeaderFlag)
-        {
-            // Add to metatag list
-            $fileURL = BASE_URL."/?action=repository_uri&item_id=".$this->item_id.
-                       "&file_id=".$fileData["attribute_id"].
-                       "&file_no=".$fileData['file_no'];
-            $this->createMetaTagDataList(
-                $fileURL,
-                RepositoryConst::JUNII2_FULL_TEXT_URL,
-                $metaTagDataList);
-        }
-        
+
         // Add free license input line break 2012/02/02 T.Koyasu -start-
         $license_notation_array = explode("\n", $fileData['license_notation']);
         $fileData['license_notation_array'] = $license_notation_array;
         // Add free license input line break 2012/02/02 T.Koyasu -end-
-        
+
         // Add download count 2012/08/07 A.Suzuki --start--
         // Get download count
         $fileData['cnt'] =
@@ -2450,11 +2697,11 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
                 $fileData['file_no']
             );
         // Add download count 2012/08/07 A.Suzuki --end--
-        
+
         return $fileData;
     }
     // Fix change file download action 2013/5/9 Y.Nakao --end--
-    
+
     // Add external search word display 2014/05/23 T.Ichikawa --start--
     function setRefererWordDisplay() {
         $query = "SELECT param_value FROM ". DATABASE_PREFIX. "repository_parameter ".
@@ -2463,14 +2710,14 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
         $params[] = "show_detail_tagcloudflag";
         $result = $this->dbAccess->executeQuery($query, $params);
         $this->searchWordDisplayFlg = $result[0]["param_value"];
-        
+
         $query = "SELECT param_value FROM ". DATABASE_PREFIX. "repository_parameter ".
                  "WHERE param_name = ? ;";
         $params = array();
         $params[] = "tagcloud_max_value";
         $result = $this->dbAccess->executeQuery($query, $params);
         $max_record = intval($result[0]["param_value"]);
-        
+
         $query = "SELECT word, count FROM ". DATABASE_PREFIX. "repository_item_external_searchword ".
                  "WHERE is_delete = ? ".
                  "AND item_id = ? ".
@@ -2507,6 +2754,12 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
             $word_id = 0;
             for($ii = 0; $ii < count($word_sort); $ii++) {
                 $word_id = $word_sort[$ii];
+                // bug fix external searchword empty 2015/04/10 K.Sugimoto --start--
+                if(strlen($result[$word_id]["word"]) == 0)
+                {
+                    continue;
+                }
+                // bug fix external searchword empty 2015/04/10 K.Sugimoto --end--
                 $this->externalSearchWord[$ii]["searchValue"] = urldecode($result[$word_id]["word"]);
                 $this->externalSearchWord[$ii]["url"] = urlencode($result[$word_id]["word"]);
                 //フラグがtrueだったらフォントサイズは一定とする
@@ -2519,7 +2772,7 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
         }
     }
     // Add external search word display 2014/05/23 T.Ichikawa --end--
-    
+
     // Add for JaLC DOI R.Matsuura 2014/06/13 --start--
     private function getSelfDoiUri()
     {
@@ -2530,21 +2783,116 @@ class Repository_View_Main_Item_Detail extends RepositoryAction
             $repositoryHandleManager = new RepositoryHandleManager($this->Session, $this->Db, $this->TransStartDate);
             $uri_jalcdoi = $repositoryHandleManager->createSelfDoiUri($this->item_id, $this->item_no, RepositoryHandleManager::ID_JALC_DOI);
             $uri_crossref = $repositoryHandleManager->createSelfDoiUri($this->item_id, $this->item_no, RepositoryHandleManager::ID_CROSS_REF_DOI);
+            // Add DataCite 2015/02/10 K.Sugimoto --start--
+            $uri_datacite = $repositoryHandleManager->createSelfDoiUri($this->item_id, $this->item_no, RepositoryHandleManager::ID_DATACITE_DOI);
             $uri_library_jalcdoi = $repositoryHandleManager->createSelfDoiUri($this->item_id, $this->item_no, RepositoryHandleManager::ID_LIBRARY_JALC_DOI);
-            if(strlen($uri_jalcdoi) > 0 && strlen($uri_crossref) < 1 && strlen($uri_library_jalcdoi) < 1)
+            if(strlen($uri_jalcdoi) > 0 && strlen($uri_crossref) < 1 && strlen($uri_datacite) < 1 && strlen($uri_library_jalcdoi) < 1)
             {
                 $this->self_doi_uri = $uri_jalcdoi;
+                $this->doi_type = "JaLC DOI";
             }
-            else if(strlen($uri_crossref) > 0 && strlen($uri_jalcdoi) < 1 && strlen($uri_library_jalcdoi) < 1)
+            else if(strlen($uri_crossref) > 0 && strlen($uri_jalcdoi) < 1 && strlen($uri_datacite) < 1 && strlen($uri_library_jalcdoi) < 1)
             {
                 $this->self_doi_uri = $uri_crossref;
+                $this->doi_type = "JaLC CrossRef DOI";
             }
-            else if(strlen($uri_library_jalcdoi) > 0 && strlen($uri_jalcdoi) < 1 && strlen($uri_crossref) < 1)
+            else if(strlen($uri_datacite) > 0 && strlen($uri_jalcdoi) < 1 && strlen($uri_crossref) < 1 && strlen($uri_library_jalcdoi) < 1)
+            {
+                $this->self_doi_uri = $uri_datacite;
+                $this->doi_type = "JaLC DataCite DOI";
+            }
+            // Add DataCite 2015/02/10 K.Sugimoto --end--
+            else if(strlen($uri_library_jalcdoi) > 0 && strlen($uri_jalcdoi) < 1 && strlen($uri_crossref) < 1 && strlen($uri_datacite) < 1)
             {
                 $this->self_doi_uri = $uri_library_jalcdoi;
+                $this->doi_type = "JaLC DOI";
             }
         }
     }
     // Add for JaLC DOI R.Matsuura 2014/06/13 --end--
+
+    // Add for entry SuppleContents Y.Yamazawa 2015/03/30 --start--
+    /**
+     * セッションからサプリエラーメッセージを引き出しメンバーにセット
+     */
+    private function setSuppleErrorFromSessionParameter()
+    {
+        if($this->Session->getParameter("supple_error") === 1){
+            // no set address error
+            $this->supple_error = $this->Session->getParameter("smartyAssign")->getLang("repository_supple_no_address");
+        } else if($this->Session->getParameter("supple_error") === 2){
+            // get false error
+            $this->supple_error = $this->Session->getParameter("smartyAssign")->getLang("repository_supple_get_false");
+        } else if($this->Session->getParameter("supple_error") === 3){
+            // no item error
+            $this->supple_error = $this->Session->getParameter("smartyAssign")->getLang("repository_supple_no_item");
+        }else{
+            $key = $this->Session->getParameter("supple_error");
+            if(!is_null($this->Session->getParameter("supple_error")) && !is_array($key)){
+                $this->supple_error = $this->Session->getParameter("smartyAssign")->getLang($key);
+                $this->Session->removeParameter($key);
+            }
+        }
+    }
+
+    /**
+     * サプリメンタルコンテンツ追加ボタンを表示
+     *
+     * 表示非表示条件
+     * 【ツリーの投稿権限】
+     * ベース権限+ルーム権限両方に権限がある：表示
+     * ベース権限+ルーム権限片方しか権限がない：非表示
+     * ルーム権限がある：表示
+     *
+     * @param array $indexID インデックスID
+     * @param unknown $isError エラー発生
+     * @return boolean true:表示する false:表示しない
+     */
+    private function isShowSuppleButton($indexID,&$isError)
+    {
+        $isShow = false;
+        $indexAuthorityManager = new RepositoryIndexAuthorityManager($this->Session, $this->dbAccess, $this->TransStartDate);
+        $auth_id = $this->getRoomAuthorityID();
+        $user_id = $this->Session->getParameter("_user_id");
+
+        $isError = false;
+        // 所属インデックスに投稿権限があるユーザの場合
+        for($ii=0; $ii<count($indexID); $ii++){
+
+            $result = $indexAuthorityManager->isRegistItemToIndex($auth_id, $user_id, $indexID[$ii]["index_id"], $isError);
+            if($isError === true)
+            {
+                return false;
+            }
+
+            if($result === true)
+            {
+                $isShow = true;
+                break;
+            }
+        }
+
+        if($auth_id < REPOSITORY_ITEM_REGIST_AUTH)
+        {
+            $isShow = false;
+        }
+
+        return $isShow;
+    }
+    // Add for entry SuppleContents Y.Yamazawa 2015/03/30 --end--
+
+    /**
+     * アイテムNOがNULLかゼロのとき、1に修正する
+     * if item_no is null or zero, modificate item_no to one
+     *
+     */
+    private function modificateInvalidItemNo($itemNo)
+    {
+        // アイテムNOがNULLまたは空だった場合、1に修正する
+        if(!isset($itemNo) || strlen($itemNo) === 0){
+            return 1;
+        }
+        return $itemNo;
+    }
 }
 ?>

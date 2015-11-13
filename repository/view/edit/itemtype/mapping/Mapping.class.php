@@ -1,9 +1,9 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Mapping.class.php 36229 2014-05-26 05:49:55Z satoshi_arata $
+// $Id: Mapping.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
-// Copyright (c) 2007 - 2008, National Institute of Informatics, 
+// Copyright (c) 2007 - 2008, National Institute of Informatics,
 // Research and Development Center for Scientific Information Resources
 //
 // This program is licensed under a Creative Commons BSD Licence
@@ -22,66 +22,68 @@ require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.
  * @package     [[package名]]
  * @access      public
  */
-class Repository_View_Edit_Itemtype_Mapping extends RepositoryAction 
+class Repository_View_Edit_Itemtype_Mapping extends RepositoryAction
 {
     // 使用コンポーネントを受け取るため
     var $Session = null;
     var $Db = null;
-    
+
     // メンバ変数
     var $typeArray = null;				// type選択肢
     var $dublinCoreArray = null;		// 1.Dublin Core
     var $junii2Array = null;			// 2.JuNii2
 //  var $junii2ChildArray = null;		// 3.JuNii2(子)=>廃止
     var $lomArray = null;				// 3.LOM
-    var $spaseArray = null;			//SPASE
+
     public $lidoArray = null;   // 4.LIDO
-    
+    public $spaseArray = null;   // 5.SPASE
+
     // Set help icon setting 2010/02/10 K.Ando --start--
     var $help_icon_display =  null;
     // Set help icon setting 2010/02/10 K.Ando --end--
-    
+
     /**
      * [[機能説明]]
      *
      * @access  public
      */
-    function execute()
+    function executeApp()
     {
-        
+
         // Add theme_name for image file Y.Nakao 2011/08/03 --start--
         $this->setThemeName();
         // Add theme_name for image file Y.Nakao 2011/08/03 --end--
-        
+
         //$this->setLangResource();
         $container =& DIContainerFactory::getContainer();
         $filterChain =& $container->getComponent("FilterChain");
         $smartyAssign =& $filterChain->getFilterByName("SmartyAssign");
-        
+
         // マッピング選択肢を設定メンバに保存
         // ※項目一覧をDBから参照することもあるかもしれないのでDOMではやらない(・・・としておく。)	。
-        
+
         // 0.アイテムタイプ名(type, NIItype)
         $this->setNiitype($this->typeArray);
-        
+
         // 1.Dublin Core
         $this->setDublinCore($this->dublinCoreArray);
-        
+
         // 2.JuNii2
         $this->setJunii2($this->junii2Array);
-        
+
         // Add learning Object Material A.Jin -- start --
         // 3.LOM
         $this->setLom($this->lomArray);
         // Add learning Object Material A.Jin -- end --
-        
+
         // Add LIDO R.Matsuura -- start --
         $this->setLido($this->lidoArray);
         // Add LIDO R.Matsuura -- end --
-         
-         //SPASE
+
+        // Add SPASE -- start --
         $this->setSpase($this->spaseArray);
-        
+        // Add SPASE -- end --
+
         // 4.表示言語
         $this->disp_lang_array = array(
             // '未設定', 'japanese', 'english'
@@ -101,10 +103,10 @@ class Repository_View_Edit_Itemtype_Mapping extends RepositoryAction
             throw $exception;
         }
         // Set help icon setting 2010/02/10 K.Ando --end--
-        
+
         return 'success';
     }
-    
+
     /**
      * set Nii type
      *
@@ -115,14 +117,14 @@ class Repository_View_Edit_Itemtype_Mapping extends RepositoryAction
         $container =& DIContainerFactory::getContainer();
         $filterChain =& $container->getComponent("FilterChain");
         $smartyAssign =& $filterChain->getFilterByName("SmartyAssign");
-        
+
         $niiTypeCandidateArray = array(
         //  '未設定',
         //  'Journal Article','Thesis or Dissertation','Departmental',
         //  'Bulletin Paper','Conference Paper','Presentation','Book',
         //  'Technical Report','Research Paper','Article','Preprint',
         //  'Learning Material','Data or Dataset','Software','Others',
-        
+
             //languageリソースから項目を取得する
             // Mod insert 'undefine' to database in English 2012/02/14 T.Koyasu -start-
             "0",
@@ -144,7 +146,7 @@ class Repository_View_Edit_Itemtype_Mapping extends RepositoryAction
         );
         return "success";
     }
-    
+
     /**
      * set Dublin Core type
      *
@@ -155,14 +157,14 @@ class Repository_View_Edit_Itemtype_Mapping extends RepositoryAction
         $container =& DIContainerFactory::getContainer();
         $filterChain =& $container->getComponent("FilterChain");
         $smartyAssign =& $filterChain->getFilterByName("SmartyAssign");
-        
+
         $dublinCoreCandidateArray = array(
         //  '未設定',
         //  'title', 'creator', 'subject', 'description', 'publisher', 'contributor',
         //  'date', 'format', 'identifier', 'source', 'language',
         //  'Date', 'Type', 'Format', 'Identifier', 'Source', 'Language',   // 2008.02.22 typeはアイテムタイプ名にマッピングされるため、選択肢から削除
         //  'relation', 'coverage', 'rights'
-            
+
             //languageリソースから項目を取得する
             // Mod insert 'undefine' to database in English 2012/02/14 T.Koyasu -start-
             "0",
@@ -185,7 +187,7 @@ class Repository_View_Edit_Itemtype_Mapping extends RepositoryAction
         );
         return "success";
     }
-    
+
     /**
      * set JuNii2 type
      *
@@ -196,23 +198,23 @@ class Repository_View_Edit_Itemtype_Mapping extends RepositoryAction
         $container =& DIContainerFactory::getContainer();
         $filterChain =& $container->getComponent("FilterChain");
         $smartyAssign =& $filterChain->getFilterByName("SmartyAssign");
-        
+
         $junii2CandidateArray = array(
         //  '未設定',
-        //  'title', 'alternative', 'creator', 'subject', 'NIIsubject', 
-        //  'NDC', 'NDLC', 'BSH', 'NDLSH', 'MeSH', 'DDC', 'LCC', 
-        //  'UDC', 'LCSH', 'description', 'publisher', 'contributor', 
+        //  'title', 'alternative', 'creator', 'subject', 'NIIsubject',
+        //  'NDC', 'NDLC', 'BSH', 'NDLSH', 'MeSH', 'DDC', 'LCC',
+        //  'UDC', 'LCSH', 'description', 'publisher', 'contributor',
         //'date', 'type', 'NIItype', 'format', 'identifier',            // 2008.02.22 NIItypeはアイテムタイプ名にマッピングされるため、選択肢から削除
-        //  'date', 'type', 'format', 'identifier', 
-        //  'URI', 'fullTextURL', 'issn', 'NCID', 'jtitle', 
-        //  'volume', 'issue', 'spage', 'epage', 'dateofissued', 
-        //  'source', 'language', 'relation', 'pmid', 'doi', 'isVersionOf', 
-        //  'hasVersion', 'isReplacedBy', 'replaces', 'isRequiredBy', 
-        //  'requires', 'isPartOf', 'hasPart', 'isReferencedBy', 
-        //  'references', 'isFormatOf', 'hasFormat', 'coverage', 
-        //  'spatial', 'NIIspatial', 'temporal', 'NIItemporal', 
+        //  'date', 'type', 'format', 'identifier',
+        //  'URI', 'fullTextURL', 'issn', 'NCID', 'jtitle',
+        //  'volume', 'issue', 'spage', 'epage', 'dateofissued',
+        //  'source', 'language', 'relation', 'pmid', 'doi', 'isVersionOf',
+        //  'hasVersion', 'isReplacedBy', 'replaces', 'isRequiredBy',
+        //  'requires', 'isPartOf', 'hasPart', 'isReferencedBy',
+        //  'references', 'isFormatOf', 'hasFormat', 'coverage',
+        //  'spatial', 'NIIspatial', 'temporal', 'NIItemporal',
         //  'rights', 'textversion'
-            
+
             //languageリソースから項目を取得する
             // Mod insert 'undefine' to database in English 2012/02/14 T.Koyasu -start-
             "0",
@@ -282,7 +284,7 @@ class Repository_View_Edit_Itemtype_Mapping extends RepositoryAction
         );
         return "success";
     }
-    
+
     /**
      * set Learning Object Material
      *
@@ -375,7 +377,7 @@ class Repository_View_Edit_Itemtype_Mapping extends RepositoryAction
         );
         return "success";
     }
-    
+
     /**
      * set LIDO
      *
@@ -426,115 +428,102 @@ class Repository_View_Edit_Itemtype_Mapping extends RepositoryAction
                 array('displayName' => RepositoryConst::LIDO_TAG_RESOURCE_SET.".".RepositoryConst::LIDO_TAG_RESOURCE_SOURCE.".".RepositoryConst::LIDO_TAG_LEGAL_BODY_NAME.".".RepositoryConst::LIDO_TAG_APPELLATION_VALUE, 'selectFlag' => 'true'),
                 array('displayName' => RepositoryConst::LIDO_TAG_RESOURCE_SET.".".RepositoryConst::LIDO_TAG_RIGHT_RESOURCE.".".RepositoryConst::LIDO_TAG_CREDIT_LINE, 'selectFlag' => 'true')
         );
-        
+
     }
+
     private function setSpase(&$spaseCandidateArray)
     {
     	$spaseCandidateArray = array(
-    			//  '未設定',
-    			//languageリソースから項目を取得する
-    			"0",
-    			RepositoryConst::SPASE_LANGUAGE,
-                RepositoryConst::SPASE_LANG_JAPANESE,
-                RepositoryConst::SPASE_LANG_ENGLISH,
-                RepositoryConst::SPASE_URI ,
-                RepositoryConst::SPASE_VERSION,
-                
-                RepositoryConst::SPASE_CATALOG_RESOURCEID,
-                RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_RESOURCENAME,
-                RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_RELEASEDATE ,
-                RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_DESCRIPTION ,
-                RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_ACKNOWLEDGEMENT,
-                RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_CONTACT_PERSONID,
-                RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_CONTACT_ROLE,
-                RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_REPOSITORYID,
-                RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_AVAILABILITY,
-                RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_ACCESSRIGHTS,
-                RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_ACCESSURL_NAME,
-                RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_ACCESSURL_URL,
-                RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_ACCESSURL_DESCRIPTION,
-                RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_FORMAT,
-                RepositoryConst::SPASE_CATALOG_PHENOMENONTYPE,
-                RepositoryConst::SPASE_CATALOG_MEASUREMENTTYPE,
-                RepositoryConst::SPASE_CATALOG_TEMPORALDESCRIPTION_STARTDATE,
-                RepositoryConst::SPASE_CATALOG_TEMPORALDESCRIPTION_STOPDATE,
-                RepositoryConst::SPASE_CATALOG_TEMPORALDESCRIPTION_RELATIVESTOPDATE,
-                RepositoryConst::SPASE_CATALOG_OBSERVEDREGION,
-                RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATESYSTEMNAME,
-                RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATEREPRESENTATION,
-                RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_NORTHERNMOSTLATITUDE,
-                RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_SOUTHERNMOSTLATITUDE,
-                RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_EASTERNMOSTLONGITUDE,
-                RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_WESTERNMOSTLONGITUDE,
-                RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_UNIT,
-                RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_MINIMUMALTITUDE,
-                RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_MAXIMUMALTITUDE,
-                RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_REFERENCE,
-                RepositoryConst::SPASE_CATALOG_PARAMETER_NAME,
-                RepositoryConst::SPASE_CATALOG_PARAMETER_DESCRIPTION,
-                RepositoryConst::SPASE_CATALOG_PARAMETER_FIELD_FIELDQUANTITY,
-                RepositoryConst::SPASE_CATALOG_PARAMETER_PARTICLE_PARTICLETYPE,
-                RepositoryConst::SPASE_CATALOG_PARAMETER_PARTICLE_PARTICLEQUANTITY,
-                RepositoryConst::SPASE_CATALOG_PARAMETER_WAVE_WAVETYPE,
-                RepositoryConst::SPASE_CATALOG_PARAMETER_WAVE_WAVEQUANTITY,
-                RepositoryConst::SPASE_CATALOG_PARAMETER_MIXED_MIXEDQUANTITY,
-                RepositoryConst::SPASE_CATALOG_PARAMETER_SUPPORT_SUPPORTQUANTITY,
-                
-                RepositoryConst::SPASE_INSTRUMENT_RESOURCEID,
-                RepositoryConst::SPASE_INSTRUMENT_RESOURCEHEADER_RESOURCENAME,
-                RepositoryConst::SPASE_INSTRUMENT_RESOURCEHEADER_RELEASEDATE,
-                RepositoryConst::SPASE_INSTRUMENT_RESOURCEHEADER_DESCRIPTION,
-                RepositoryConst::SPASE_INSTRUMENT_RESOURCEHEADER_CONTACT_PERSONID,
-                RepositoryConst::SPASE_INSTRUMENT_RESOURCEHEADER_CONTACT_ROLE,
-                RepositoryConst::SPASE_INSTRUMENT_TYPE,
-                RepositoryConst::SPASE_INSTRUMENT_INSTRUMENTTYPE,
-                RepositoryConst::SPASE_INSTRUMENT_INVESTIGATIONNAME,
-                RepositoryConst::SPASE_INSTRUMENT_OBSEVATORYID,
-                
-                RepositoryConst::SPASE_OBSERVATORY_RESOURCEID,
-                RepositoryConst::SPASE_OBSERVATORY_RESOURCEHEADER_RESOURCENAME,
-                RepositoryConst::SPASE_OBSERVATORY_RESOURCEHEADER_RELEASEDATE,
-                RepositoryConst::SPASE_OBSERVATORY_RESOURCEHEADER_DESCRIPTION,
-                RepositoryConst::SPASE_OBSERVATORY_RESOURCEHEADER_CONTACT_PERSONID,
-                RepositoryConst::SPASE_OBSERVATORY_RESOURCEHEADER_CONTACT_ROLE,
-                RepositoryConst::SPASE_OBSERVATORY_LOCATION_OBSERVATORYREGION,
-                RepositoryConst::SPASE_OBSERVATORY_LOCATION_COORDINATESYSTEMNAME_LATITUDE,
-                RepositoryConst::SPASE_OBSERVATORY_LOCATION_COORDINATESYSTEMNAME_LONGITUDE,
-                RepositoryConst::SPASE_OBSERVATORY_OPERATINGSPAN_STARTDATE,
-                
-                RepositoryConst::SPASE_PERSON_RESOURCEID,
-                RepositoryConst::SPASE_PERSON_RELEASEDATE,
-                RepositoryConst::SPASE_PERSON_PERSONNAME,
-                RepositoryConst::SPASE_PERSON_ORGANIZATIONNAME,
-                RepositoryConst::SPASE_PERSON_EMAIL,
-                
-                RepositoryConst::SPASE_REPOSITORY_RESOURCEID,
-                RepositoryConst::SPASE_REPOSITORY_RESOURCEHEADER_RESOURCENAME,
-                RepositoryConst::SPASE_REPOSITORY_RESOURCEHEADER_RELEASEDATE,
-                RepositoryConst::SPASE_REPOSITORY_RESOURCEHEADER_DESCRIPTION,
-                RepositoryConst::SPASE_REPOSITORY_RESOURCEHEADER_CONTACT_PERSONID,
-                RepositoryConst::SPASE_REPOSITORY_RESOURCEHEADER_CONTACT_ROLE,
-                RepositoryConst::SPASE_REPOSITORY_ACCESSURL_URL,
-                
-                RepositoryConst::SPASE_GRANULE_RESOURCEID,
-                RepositoryConst::SPASE_GRANULE_RELEASEDATE,
-                RepositoryConst::SPASE_GRANULE_PARENTID,
-                RepositoryConst::SPASE_GRANULE_STARTDATE,
-                RepositoryConst::SPASE_GRANULE_STOPDATE,
-                RepositoryConst::SPASE_GRANULE_SOURCE_SOURCETYPE,
-                RepositoryConst::SPASE_GRANULE_SOURCE_URL,
-                RepositoryConst::SPASE_GRANULE_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATESYSTEMNAME,
-                RepositoryConst::SPASE_GRANULE_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATEREPRESENTATION,
-                RepositoryConst::SPASE_GRANULE_SPATIALCOVERAGE_NORTHERNMOSTLATITUDE,
-                RepositoryConst::SPASE_GRANULE_SPATIALCOVERAGE_SOUTHERNMOSTLATITUDE,
-                RepositoryConst::SPASE_GRANULE_SPATIALCOVERAGE_EASTERNMOSTLONGITUDE,
-                RepositoryConst::SPASE_GRANULE_SPATIALCOVERAGE_WESTERNMOSTLONGITUDE,
-                RepositoryConst::SPASE_GRANULE_SPATIALCOVERAGE_UNIT,
-                RepositoryConst::SPASE_GRANULE_SPATIALCOVERAGE_MINIMUMALTITUDE,
-                RepositoryConst::SPASE_GRANULE_SPATIALCOVERAGE_MAXIMUMALTITUDE,
-                RepositoryConst::SPASE_GRANULE_SPATIALCOVERAGE_REFERENCE
+    			"0", // 未設定
+    			array('displayName' => SPASE_CATALOG_RESOURCEID, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_RESOURCEHEADER_RESOURCENAME, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_RESOURCEHEADER_RELEASEDATE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_RESOURCEHEADER_DESCRIPTION, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_RESOURCEHEADER_ACKNOWLEDGEMENT, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_CONTACT_PERSONID, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_CONTACT_ROLE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_ACCESSINFORMATION_REPOSITORYID, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_ACCESSINFORMATION_AVAILABILITY, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_ACCESSINFORMATION_ACCESSRIGHTS, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_ACCESSINFORMATION_ACCESSURL_NAME, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_ACCESSINFORMATION_ACCESSURL_URL, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_ACCESSINFORMATION_ACCESSURL_DESCRIPTION, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_ACCESSINFORMATION_FORMAT, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_PHENOMENONTYPE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_MEASUREMENTTYPE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_TEMPORALDESCRIPTION_STARTDATE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_TEMPORALDESCRIPTION_STOPDATE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_TEMPORALDESCRIPTION_RELATIVESTOPDATE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_OBSERVEDREGION, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATESYSTEMNAME, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATEREPRESENTATION, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_SPATIALCOVERAGE_SOUTHERNMOSTLATITUDE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_SPATIALCOVERAGE_EASTERNMOSTLONGITUDE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_SPATIALCOVERAGE_WESTERNMOSTLONGITUDE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_SPATIALCOVERAGE_NORTHERNMOSTLATITUDE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_SPATIALCOVERAGE_UNIT, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_SPATIALCOVERAGE_MINIMUMALTITUDE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_SPATIALCOVERAGE_MAXIMUMALTITUDE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_SPATIALCOVERAGE_REFERENCE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_PARAMETER_NAME, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_PARAMETER_DESCRIPTION, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_PARAMETER_FIELD_FIELDQUANTITY, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_PARAMETER_PARTICLE_PARTICLETYPE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_PARAMETER_PARTICLE_PARTICLEQUANTITY, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_PARAMETER_WAVE_WAVETYPE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_PARAMETER_WAVE_WAVEQUANTITY, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_PARAMETER_MIXED_MIXEDQUANTITY, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_CATALOG_PARAMETER_SUPPORT_SUPPORTQUANTITY, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_INSTRUMENT_RESOURCEID, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_INSTRUMENT_RESOURCEHEADER_RESOURCENAME, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_INSTRUMENT_RESOURCEHEADER_RELEASEDATA, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_INSTRUMENT_RESOURCEHEADER_DESCRIPTION, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_INSTRUMENT_RESOURCEHEADER_CONTACT_PERSONID, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_INSTRUMENT_RESOURCEHEADER_CONTACT_ROLE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_INSTRUMENT_INSTRUMENTTYPE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_INSTRUMENT_INVESTIGATIONNAME, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_INSTRUMENT_OBSEVATORYID, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_OBSERVATORY_RESOURCEID, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_OBSERVATORY_RESOURCEHEADER_RESOURCENAME, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_OBSERVATORY_RESOURCEHEADER_RELEASEDATA, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_OBSERVATORY_RESOURCEHEADER_DESCRIPTION, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_OBSERVATORY_RESOURCEHEADER_CONTACT_PERSONID, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_OBSERVATORY_RESOURCEHEADER_CONTACT_ROLE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_OBSERVATORY_LOCATION_OBSERVATORYREGION, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_OBSERVATORY_LOCATION_COORDINATESYSTEMNAME_LATITUDE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_OBSERVATORY_LOCATION_COORDINATESYSTEMNAME_LONGITUDE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_OBSERVATORY_OPERATINGSPAN_STARTDATE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_PERSON_RESOURCEID, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_PERSON_RELEASEDATE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_PERSON_PERSONNAME, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_PERSON_ORGANIZATIONNAME, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_PERSON_EMAIL, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_REPOSITORY_RESOURCEID, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_REPOSITORY_RESOURCEHEADER_RESOURCENAME, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_REPOSITORY_RESOURCEHEADER_RELEASEDATA, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_REPOSITORY_RESOURCEHEADER_DESCRIPTION, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_REPOSITORY_RESOURCEHEADER_CONTACT_PERSONID, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_REPOSITORY_RESOURCEHEADER_CONTACT_ROLE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_REPOSITORY_ACCESSURL_URL, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_GRANULE_RESOURCEID, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_GRANULE_RELEASEDATA, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_GRANULE_PARENTID, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_GRANULE_STARTDATE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_GRANULE_STOPDATE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_GRANULE_SOURCE_SOURCETYPE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_GRANULE_SOURCE_URL, 'selectFlag' => 'true'),
+    			array('displayName' => SPSAE_GRANULE_SOURCE_DATAEXTENT_QUANTITY, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_GRANULE_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATESYSTEMNAME, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_GRANULE_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATEREPRESENTATION, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_GRANULE_SPATIALCOVERAGE_NORTHERNMOSTLATITUDE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_GRANULE_SPATIALCOVERAGE_SOUTHERNMOSTLATITUTE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_GRANULE_SPATIALCOVERAGE_EASTERNMOSTLONGITUDE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_GRANULE_SPATIALCOVERAGE_WESTERNMOSTLONGITUDE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_GRANULE_SPATIALCOVERAGE_UNIT, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_GRANULE_SPATIALCOVERAGE_MINIMUMALTITUDE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_GRANULE_SPATIALCOVERAGE_MAXIMUMALTITUDE, 'selectFlag' => 'true'),
+    			array('displayName' => SPASE_GRANULE_SPATIALCOVERAGE_REFERENCE, 'selectFlag' => 'true')
     	);
-    	return "success";
     }
 }
 ?>

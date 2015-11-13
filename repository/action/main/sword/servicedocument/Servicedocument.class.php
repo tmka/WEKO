@@ -207,7 +207,7 @@ class Repository_Action_Main_Sword_Servicedocument extends RepositoryAction
                 " FROM ".DATABASE_PREFIX."repository_index AS idx ";
         //検索特化対応
         if(_REPOSITORY_HIGH_SPEED){
-            $query .= " WHERE owner_user_id = '".$user_id."' AND idx.is_delete = '0' ";
+            $query .= " WHERE owner_user_id = '".$user_id."' AND idx.is_delete = 0 ";
         }else{
             // Mod OpenDepo 2014/01/31 S.Arata --start--
             if($user_auth_id >= $this->repository_admin_base && $auth_id >= $this->repository_admin_room)
@@ -224,7 +224,7 @@ class Repository_Action_Main_Sword_Servicedocument extends RepositoryAction
                 // Add OpenDepo 2013/12/02 R.Matsuura --end--
                 $query .= " INNER JOIN (".$publicIndexQuery.") pub ON idx.index_id = pub.index_id ";
             }
-            $query .= " WHERE idx.is_delete = '0' ";
+            $query .= " WHERE idx.is_delete = 0 ";
             // Mod OpenDepo 2014/01/31 S.Arata --end--
         }
         $query .= " ORDER BY show_order, index_id ";

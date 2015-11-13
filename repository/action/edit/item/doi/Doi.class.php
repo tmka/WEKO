@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Doi.class.php 42605 2014-10-03 01:02:01Z keiya_sugimoto $
+// $Id: Doi.class.php 49641 2015-03-09 07:02:34Z tomohiro_ichikawa $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -12,6 +12,8 @@
 // --------------------------------------------------------------------
 
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.php';
+require_once WEBAPP_DIR. '/modules/repository/components/RepositoryHandleManager.class.php';
+require_once WEBAPP_DIR. '/modules/repository/components/RepositorySearchTableProcessing.class.php';
 
 /**
  * [[アイテム管理actionアクション]]
@@ -30,6 +32,9 @@ class Repository_Action_Edit_Item_Doi extends RepositoryAction
     // JaLC DOi付与アイテムリスト
     public $registing_jalcdoi_items = null;
     public $registing_crossref_items = null;
+    // Add DataCite 2015/02/09 K.Sugimoto --start--
+    public $registing_datacite_items = null;
+    // Add DataCite 2015/02/09 K.Sugimoto --end--
     
     const JALC_DOI_MANAGEMENT_TAB_NUMBER = 3;
     
@@ -38,7 +43,7 @@ class Repository_Action_Edit_Item_Doi extends RepositoryAction
      *
      * @access  public
      */
-    public function executeForWeko()
+    public function executeApp()
     {
         // 選択タブの保存
         $this->Session->setParameter("item_setting_active_tab", self::JALC_DOI_MANAGEMENT_TAB_NUMBER);
@@ -55,6 +60,8 @@ class Repository_Action_Edit_Item_Doi extends RepositoryAction
         $this->Session->setParameter("targetIndexId", $this->targetIndexId);
         $this->Session->setParameter("searchIndexId", $this->targetIndexId);
         
+        $doi_count = 0;
+        
         if(count($this->registing_jalcdoi_items) > 0)
         {
             $item_no = 1;
@@ -66,6 +73,7 @@ class Repository_Action_Edit_Item_Doi extends RepositoryAction
                 $repositoryHandleManager->registJalcdoiSuffix($item_id, $item_no, $suffix);
                 $repositorySearchTableProcessing->updateSelfDoiSearchTable($item_id, $item_no);
                 $this->updateModDate($item_id, $item_no);
+                $doi_count++;
             }
         }
         if(count($this->registing_crossref_items) > 0)
@@ -79,8 +87,27 @@ class Repository_Action_Edit_Item_Doi extends RepositoryAction
                 $repositoryHandleManager->registCrossrefSuffix($item_id, $item_no, $suffix);
                 $repositorySearchTableProcessing->updateSelfDoiSearchTable($item_id, $item_no);
                 $this->updateModDate($item_id, $item_no);
+                $doi_count++;
             }
         }
+        // Add DataCite 2015/02/09 K.Sugimoto --start--
+        if(count($this->registing_datacite_items) > 0)
+        {
+            $item_no = 1;
+            $repositoryHandleManager = new RepositoryHandleManager($this->Session, $this->dbAccess, $this->TransStartDate);
+            $repositorySearchTableProcessing = new RepositorySearchTableProcessing($this->Session, $this->Db);
+            foreach($this->registing_datacite_items as $item_id)
+            {
+                $suffix = $repositoryHandleManager->getYHandleSuffix($item_id, $item_no);
+                $repositoryHandleManager->registDataciteSuffix($item_id, $item_no, $suffix);
+                $repositorySearchTableProcessing->updateSelfDoiSearchTable($item_id, $item_no);
+                $this->updateModDate($item_id, $item_no);
+                $doi_count++;
+            }
+        }
+        
+        $this->Session->setParameter("doi_count", $doi_count);
+        // Add DataCite 2015/02/09 K.Sugimoto --end--
         
         // エラーメッセージ開放
         $this->Session->removeParameter("error_msg");

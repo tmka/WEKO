@@ -1,0 +1,316 @@
+<{* // -------------------------------------------------------------------- *}>
+<{* //                                                                      *}>
+<{* // $Id: repository_item_doi.html 42605 2014-10-03 01:02:01Z keiya_sugimoto $           *}>
+<{* //                                                                      *}>
+<{* // Copyright (c) 2007 - 2008, National Institute of Informatics,         *}>
+<{* // Research and Development Center for Scientific Information Resources  *}>
+<{* //                                                                      *}>
+<{* // This program is licensed under a Creative Commons BSD Licence        *}>
+<{* // http://creativecommons.org/licenses/BSD/                             *}>
+<{* //                                                                      *}>
+<{* // -------------------------------------------------------------------- *}>
+
+<{strip}>
+<div id="repository<{$id}>_searchDeleteDiv">
+	<table class="full">
+		<tr>
+			<{* HELP *}>
+			<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+				<div class="fr">
+					<a style="cursor: help;" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'item_doibulkgrant'); return false;" href="#">
+						<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" alt="help">
+					</a>
+				</div>
+			<{/if}>
+		</tr>
+		<tr>
+			<td class="pd10">
+				<div id="select_sort_index<{$id}>" class="al">
+					<{if $action.delete_success_num != 0}>
+						<font style="color:#f00;"><{$lang.repository_item_search_delete_num|replace:"%s":$action.delete_success_num}></font>
+						<{* ●件削除しました*}>
+						
+					<{elseif strlen($action.meta) == 0 && strlen($action.all) == 0 }>
+						<font style="color:#f00;"><{$lang.repository_item_search_delete_search}></font>
+						<{* キーワード検索を実行してください*}>
+						
+					<{elseif count($action.titleData) == 0}>
+						<font style="color:#f00;"><{$lang.repository_search_error2}></font>
+						<{* 一致する情報は見つかりませんでした*}>
+					<{/if}>
+				</div>
+			</td>
+		</tr>
+		
+		
+		<{if count($action.titleData) > 0}><{* タイトル一覧があるとき結果を表示 *}>
+			
+			<tr>
+				<td align="center">
+					<input type="button" value="<{$lang.repository_item_search_delete_button_title}>" class="btn_delete" onclick="javascript: deleteSearchedItem<{$id}>(this);"><{* アイテムを削除ボタン *}>
+				</td>
+			</tr>
+			
+			<tr>
+				<td>
+					<div>
+						<form id="enter_search_delete_form<{$id}>">
+							<table id="repository_search_delete_title_list<{$id}>" class="full">
+								<tr>
+									<th style="border: 1px solid #E0E0E0; width : 10%; text-align:center">
+										<{* 全てのチェックボックスにチェックを入れる *}>
+										<input type="checkbox" name="select_all" onchange="javascript: checkAllSearchDelete<{$id}>();" id="search_delete_all_check<{$id}>">
+									</th>
+									<th style="border: 1px solid #E0E0E0;">
+										<{$lang.repository_item_search_delete_title}><{* タイトル *}>
+									</th>
+								</tr>
+								<{foreach from=$action.titleData item=itemData name="itemTitleList"}>
+								
+									<{assign var="cnt" value=$smarty.foreach.itemTitleList.iteration-1}> 
+									<tr id="repository_search_delete_management_<{$id}>" height="30px" style="border: 1px solid #E0E0E0;">
+										
+										<td align="center">
+											<{* 個々のチェックボックス *}>
+											<input type="checkbox"  name="delete_search_items[]"  value="<{$cnt}>" id="delete_search_items<{$id}><{$cnt}>" onClick="changeCheckAllSearchDelete<{$id}>(this.checked)">
+										</td>
+										
+										<td>
+											<{if $itemData.title!="" }><{* タイトル *}>
+												<span title="<{$itemData.title|truncate}>"><{$itemData.title|truncate:60:"..."}></span>
+											<{else}>
+												<span title="<{$itemData.title_english}>"><{$itemData.title_english|truncate:60:"..."}></span>
+											<{/if}>
+										</td>
+									</tr>
+								<{/foreach}>
+							</table>
+						</form>
+					</div>
+				</td>
+			</tr>
+			
+			<tr>
+				<td align="center">
+					<input type="button" value="<{$lang.repository_item_search_delete_button_title}>" class="btn_delete" onclick="javascript: deleteSearchedItem<{$id}>(this);"><{* アイテムを削除ボタン *}>
+				</td>
+			</tr>
+			
+		<{/if}>
+	</table>
+	
+	<{* ページ番号 *}>
+	<{if count($action.titleData) > 0}>
+	<div class="pager">
+		<table style="width: auto;" align="center">
+			<tbody>
+				<tr>
+					
+				<{* 前へボタン *}>
+				<{if ($action.page_no)>1}>
+					<td class="nowrap">
+						<{strip}>
+						<a href="#" onclick="redirctPageChange<{$id}>(<{$action.page_no-1}>); return false;" class="pd00">
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/page_prev.gif" border="0"/>
+							<{$lang.repository_page_prev}>
+						</a>
+						<{/strip}>
+					</td>
+				<{/if}>
+				
+				<{* 各ページのボタン *}>
+				<{if $action.page_no < 6}>
+				 <{assign var="start_page_no" value=1}>
+				<{else}>
+				 <{assign var="start_page_no" value=$action.page_no-5}>
+				<{/if}>
+				
+				<{if $action.page_no+5 > $action.page_num}>
+				 <{assign var="end_page_no" value=$action.page_num}>
+				<{else}>
+				 <{assign var="end_page_no" value=$action.page_no+5}>
+				<{/if}>
+				
+				<{section name=i start=$start_page_no loop=$end_page_no+1}>
+				 <td class="nowrap">
+				  <{assign var="loop_num" value=$smarty.section.i.index}>
+				  <{if $smarty.section.i.first == true}>
+				    <{if $loop_num > 1}>
+				      <a href="#" class="page_move dil" onclick="redirctPageChange<{$id}>(1); return false;">
+				       1
+				      </a>
+				    </td>
+				    <td class="nowrap">
+				     <{if $loop_num > 2}>
+				         ...
+				     <{/if}>
+				    </td>
+				    <td class="nowrap">
+				   <{/if}>
+				  <{/if}>
+				  <{if $loop_num == $action.page_no}>
+				   <a class="page_view">
+				    <{$loop_num}>
+				   </a>
+				  <{else}>
+				   <a href="#" class="page_move" onclick="redirctPageChange<{$id}>(<{$loop_num}>); return false;">
+				    <{$loop_num}>
+				   </a>
+				  <{/if}>
+				  <{if $smarty.section.i.last == true}>
+				      <{if $loop_num < $action.page_num}>
+				          </td>
+				          <td class="nowrap">
+				              <{if $loop_num < $action.page_num-1}> ...  <{/if}>
+				          </td>
+				          <td class="nowrap">
+				              <a href="#" class="page_move" onclick="redirctPageChange<{$id}>(<{$action.page_num}>); return false;">
+				                  <{$action.page_num}>
+				              </a>
+				      <{/if}>
+				  <{/if}>
+				 </td>
+				<{/section}>
+				
+				<{* 次へボタン *}>
+				<{if $action.page_no != $action.page_num}>
+					<td class="nowrap">
+						<{strip}>
+						<a href="#" onclick="redirctPageChange<{$id}>(<{$action.page_no+1}>); return false;" class="pd00">
+							<{$lang.repository_page_next}>
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/page_next.gif" border="0" />
+						</a>
+						<{/strip}>
+					</td>
+				<{/if}>
+				
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<{/if}>
+</div>
+
+<{/strip}>
+
+<script class="nc_script" type="text/javascript">
+	checkAllSearchDelete<{$id}> = function()
+	{
+		var flg = $('search_delete_all_check<{$id}>').checked;
+		
+		var checkedbox = document.getElementsByName("delete_search_items[]");
+		
+		if(checkedbox)
+		{
+			for(var cnt = 0; cnt < checkedbox.length; cnt++)
+			{
+				checkedbox[cnt].checked = flg;
+			}
+		}
+		
+		return false;
+	}
+</script>
+<script class="nc_script" type="text/javascript">
+	changeCheckAllSearchDelete<{$id}> = function(chk_flg)
+	{
+		if( chk_flg == false )
+		{
+			if(document.getElementById('search_delete_all_check<{$id}>') != null){
+				document.getElementById('search_delete_all_check<{$id}>').checked = false;
+			}
+		}
+		else
+		{
+			var checkedbox = document.getElementsByName("delete_search_items[]");
+			if(checkedbox)
+			{
+				var flg_all_check = true;
+				for(var cnt = 0; cnt < checkedbox.length; cnt++)
+				{
+					if( checkedbox[cnt].checked == false )
+					{
+						flg_all_check = false;
+						document.getElementById('search_delete_all_check<{$id}>').checked = false;
+						break;
+					}
+				}
+				
+				if( flg_all_check == true )
+				{
+					document.getElementById('search_delete_all_check<{$id}>').checked = true;
+				}
+			}
+		}
+		return false;
+	}
+</script>
+<script class="nc_script" type="text/javascript">
+	deleteSearchedItem<{$id}> = function(elm)
+	{
+		var exist_check = false;
+		
+		var checkedbox = document.getElementsByName("delete_search_items[]");
+		
+		if(checkedbox)
+		{
+			for(var cnt = 0; cnt < checkedbox.length; cnt++)
+			{
+				if(checkedbox[cnt].checked == true)
+				{
+					exist_check = true;
+					break;
+				}
+			}
+		}
+		
+		if( exist_check == false )
+		{
+			alert('<{$lang.repository_item_search_delete_error_no_check}>');
+			return false;
+		}
+		else
+		{
+			var keyword = "";
+			var searchkeyword = document.getElementById("id_search_delete_keyword<{$id}>");
+			keyword = encodeURIComponent(searchkeyword.value);
+			
+			var search_type = "";
+			var radioList = document.getElementsByName("search_type<{$id}>");
+			for(var i=0; i<radioList.length; i++){
+				if (radioList[i].checked) {
+					search_type = radioList[i].value;
+					break;
+				}
+			}
+			
+			repositoryCls['<{$id}>'].repositoryDeleteSearchedItem(keyword, search_type, elm);
+			return false;
+		}
+	}
+</script>
+<script class="nc_script" type="text/javascript">
+	redirctPageChange<{$id}> = function(page_no) {
+	
+		var keyword = "";
+		var search_keyword = document.getElementById("id_search_delete_keyword<{$id}>");
+		keyword = encodeURIComponent(search_keyword.value);
+		
+		var search_type = "";
+		var radioList = document.getElementsByName("search_type<{$id}>");
+		for(var i=0; i<radioList.length; i++){
+			if (radioList[i].checked) {
+				search_type = radioList[i].value;
+				break;
+			}
+		}
+		
+		if( search_type == "simple" ){
+			commonCls.sendView('<{$id}>', {'action':'repository_view_edit_item_setting',  'item_setting_active_tab':2, 'meta':keyword, 'page_no':page_no });
+		}
+		else{
+			commonCls.sendView('<{$id}>', {'action':'repository_view_edit_item_setting',  'item_setting_active_tab':2, 'all':keyword, 'page_no':page_no });
+		}
+		
+	}
+</script>

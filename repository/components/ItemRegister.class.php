@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: ItemRegister.class.php 43772 2014-11-08 02:23:52Z yuko_nakao $
+// $Id: ItemRegister.class.php 58688 2015-10-11 08:21:12Z tatsuya_koyasu $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -268,8 +268,9 @@ class ItemRegister extends RepositoryAction
      * 
      * @param $item
      * @param $errMsg エラーメッセージ
+     * @param $warningMsg 警告メッセージ
      */
-    function updateItem($item, &$errMsg){
+    function updateItem($item, &$errMsg, &$warningMsg = ""){
         $query = "UPDATE ". DATABASE_PREFIX ."repository_item ".
                  "SET revision_no = ?, ".
                  "prev_revision_no = ?, ".
@@ -346,42 +347,55 @@ class ItemRegister extends RepositoryAction
         if(isset($item['cnri_suffix']) && is_array($item['cnri_suffix']))
         {
             $handleManager = new RepositoryHandleManager($this->Session, $this->Db, $this->TransStartDate);
-            $cnri_prefix = $handleManager->getCnriPrefix();
-            if(strlen($cnri_prefix) > 0) {
-                for ($cnt = 0; $cnt < count($item['cnri_suffix']); $cnt++){
-                    // サーバとXMLのプレフィックスIDを照合する
-                    $params = str_replace("http://hdl.handle.net/", "", $item['cnri_suffix'][$cnt]['CNRI']);
-                    $handle = explode("/", $params);
-                    if($cnri_prefix == $handle[0]) {
-                        // CNRIのプレフィックスIDが一致したら処理を行う
-                        $handleManager->registCnriSuffix($item['item_id'], $item['item_no'], $handle[1]);
-                    }
+            for ($cnt = 0; $cnt < count($item['cnri_suffix']); $cnt++){
+                // サーバに設定されたprefixからsuffixを抽出する
+                try{
+                    $suffix = $handleManager->extractCnriSuffix($item['cnri_suffix'][$cnt]['CNRI']);
+                    
+                    // CNRIの登録を行う
+                    $handleManager->registCnriSuffix($item['item_id'], $item['item_no'], $suffix);
+                } catch(AppException $ex){
+                    $smartyAssign = $this->Session->getParameter('smartyAssign');
+                    $warningMsg .= $smartyAssign->getlang($ex->getMessage());
+                    $this->debugLog($ex->getMessage(). "::itemId=". $item['item_id']. "::cnri=". $item['cnri_suffix'][$cnt]['CNRI'], __FILE__, __CLASS__, __LINE__);
                 }
             }
         }
         // Add cnri handle T.Ichikawa 2014/09/17 --end--
         
+        return true;
+    }
+    
+    // BugFix when before and after update, assignment doi is failed T.Koyasu 2015/03/09 --start--
+    /**
+     * update self doi
+     *
+     * @param unknown_type $item
+     */
+    public function updateSelfDoi($item)
+    {
         // self DOI
         if(isset($item['selfdoi']) && is_array($item['selfdoi']))
         {
             if(isset($item['selfdoi'][0]['RA']) && strlen($item['selfdoi'][0]['RA']) > 0)
             {
+                $item['selfdoi'][0]['RA'] = strtoupper($item['selfdoi'][0]['RA']);
                 $checkdoi = new Repository_Components_Checkdoi($this->Session, $this->Db, $this->TransStartDate);
-                if($item['selfdoi'][0]['RA'] === RepositoryConst::JUNII2_SELFDOI_RA_JALC)
+                if($item['selfdoi'][0]['RA'] === strtoupper(RepositoryConst::JUNII2_SELFDOI_RA_JALC))
                 {
                     $selfdoiPrefixSuffix = explode("/", $item['selfdoi'][0]['SELFDOI']);
                     $handleManager = new RepositoryHandleManager($this->Session, $this->Db, $this->TransStartDate);
                     $libraryJalcdoiPrefix = $handleManager->getLibraryJalcDoiPrefix();
                     if($selfdoiPrefixSuffix[0] === $libraryJalcdoiPrefix)
                     {
-                        $checkRegist = $checkdoi->checkDoiGrant($item['item_id'], $item['item_no'], 2, 0);
+                        $checkRegist = $checkdoi->checkDoiGrant($item['item_id'], $item['item_no'], Repository_Components_Checkdoi::TYPE_LIBRARY_JALC_DOI, Repository_Components_Checkdoi::CHECKING_STATUS_ITEM_REGISTRATION);
                         if($checkRegist)
                         {
                             $handleManager->registLibraryJalcdoiSuffix($item['item_id'], $item['item_no'], $item['selfdoi'][0]['SELFDOI']);
                         }
                         else
                         {
-                            $checkRegist = $checkdoi->checkDoiGrant($item['item_id'], $item['item_no'], 0, 0);
+                            $checkRegist = $checkdoi->checkDoiGrant($item['item_id'], $item['item_no'], Repository_Components_Checkdoi::TYPE_JALC_DOI, Repository_Components_Checkdoi::CHECKING_STATUS_ITEM_REGISTRATION);
                             if($checkRegist)
                             {
                                 $suffix = $handleManager->getYHandleSuffix($item['item_id'], $item['item_no']);
@@ -391,7 +405,7 @@ class ItemRegister extends RepositoryAction
                     }
                     else
                     {
-                        $checkRegist = $checkdoi->checkDoiGrant($item['item_id'], $item['item_no'], 0, 0);
+                        $checkRegist = $checkdoi->checkDoiGrant($item['item_id'], $item['item_no'], Repository_Components_Checkdoi::TYPE_JALC_DOI, Repository_Components_Checkdoi::CHECKING_STATUS_ITEM_REGISTRATION);
                         if($checkRegist)
                         {
                             $suffix = $handleManager->getYHandleSuffix($item['item_id'], $item['item_no']);
@@ -399,9 +413,9 @@ class ItemRegister extends RepositoryAction
                         }
                     }
                 }
-                else if($item['selfdoi'][0]['RA'] === RepositoryConst::JUNII2_SELFDOI_RA_CROSSREF)
+                else if($item['selfdoi'][0]['RA'] === strtoupper(RepositoryConst::JUNII2_SELFDOI_RA_CROSSREF))
                 {
-                    $checkRegist = $checkdoi->checkDoiGrant($item['item_id'], $item['item_no'], 1, 0);
+                    $checkRegist = $checkdoi->checkDoiGrant($item['item_id'], $item['item_no'], Repository_Components_Checkdoi::TYPE_CROSS_REF, Repository_Components_Checkdoi::CHECKING_STATUS_ITEM_REGISTRATION);
                     if($checkRegist)
                     {
                         $handleManager = new RepositoryHandleManager($this->Session, $this->Db, $this->TransStartDate);
@@ -409,10 +423,20 @@ class ItemRegister extends RepositoryAction
                         $handleManager->registCrossrefSuffix($item['item_id'], $item['item_no'], $suffix);
                     }
                 }
+                else if($item['selfdoi'][0]['RA'] === strtoupper(RepositoryConst::JUNII2_SELFDOI_RA_DATACITE))
+                {
+                    $checkRegist = $checkdoi->checkDoiGrant($item['item_id'], $item['item_no'], Repository_Components_Checkdoi::TYPE_DATACITE, Repository_Components_Checkdoi::CHECKING_STATUS_ITEM_REGISTRATION);
+                    if($checkRegist)
+                    {
+                        $handleManager = new RepositoryHandleManager($this->Session, $this->Db, $this->TransStartDate);
+                        $suffix = $handleManager->getYHandleSuffix($item['item_id'], $item['item_no']);
+                        $handleManager->registDataciteSuffix($item['item_id'], $item['item_no'], $suffix);
+                    }
+                }
             }
         }
-        return true;
     }
+    // BugFix when before and after update, assignment doi is failed T.Koyasu 2015/03/09 --end--
 
     /**
      * get file no
@@ -924,65 +948,6 @@ class ItemRegister extends RepositoryAction
         
         // 外部コマンドをDBから取得する 2008/08/07 Y.Nakao --end--
         // PDFのプレビュー化処理を追加 2008/07/22 Y.Nakao --end--
-        // Insert
-        $params = array();
-        $params[] = $file_info['item_id'];  // item_id
-        $params[] = $file_info['item_no'];  // item_no
-        $params[] = $file_info['attribute_id']; // "attribute_id"
-        $params[] = $file_info['file_no'];  // "file_no"
-        $params[] = $file_info['upload']['file_name'];  // "file_name"
-        $params[] = $file_info['display_name']; // "display_name"
-        if($file_info['display_type'] != ""){
-            $params[] = $file_info['display_type']; // "display_type"
-        } else {
-            $params[] = 0;  // "display_type"空
-        }
-        $params[] = $file_info['show_order'];  // "show_order"
-        $params[] = $file_info['upload']['mimetype'];       // "mime_type"
-        $params[] = $file_info['upload']['extension'];  // "extension"
-        $params[] = 0;  // PDF_preview_ID Add separate file from DB 2009/04/20 Y.Nakao 
-        $params[] = ""; // "file_prev", まずは空で登録 2008/07/22 追加
-        if($prev_flg == "true"){
-            // PDFの場合、プレビュー用の名前を事前登録する。
-            // プレビューの画像をアップロードした後でレコードをアップデートできない(insertがコミットされていないのにupdateはできないため)
-            // Mod params (For create image-file thumbnail using gd)  2010/02/16 K.Ando --start--
-            //$params[] = str_replace("pdf","png",$file_info['upload']['file_name']);
-            $params[] = $file_info['upload']['physical_file_name'].".png";
-            // Mod params (For create image-file thumbnail using gd)  2010/02/16 K.Ando --end--
-        } else {
-            $params[] = "";             // "file_prev_name"空
-        }
-        $params[] = $file_info['license_id'];   // "license_id"
-        $params[] = $file_info['license_notation']; // "license_notation"
-        $params[] = ""; // "pub_date"
-        $params[] = ""; // "flash_pub_date"
-        $params[] = $file_info['item_type_id']; // "item_type_id"
-        $params[] = "";  // "browsing_flag"
-        $params[] = 0;  // "create_cover_flag"
-        $params[] = $this->ins_user_id; // "ins_user_id"
-        $params[] = $this->mod_user_id; // "mod_user_id"
-        $params[] = ""; // "del_user_id"
-        $params[] = $this->edit_start_date; // "ins_date"
-        $params[] = $this->edit_start_date; // "mod_date" 
-        $params[] = ""; // "del_date"
-        $params[] = 0;  // "is_delete"
-        //INSERT実行
-        if($duplicateUpdate){
-            $result = $this->insertOrUpdateFile($params, $errMsg);  
-        } else {
-            $result = $this->insertFile($params, $errMsg);  
-        }        
-        if ($result === false) {
-            $this->failTrans(); 
-            // delete upload file and make thumbnail file
-            if(file_exists($filePath.$fileName)){
-                unlink($filePath.$fileName);
-                if(file_exists($filePath.$fileName.".png")){
-                    unlink($filePath.$fileName.".png");
-                }
-            } 
-            return false;
-        }
         // file contents move to save point
         $fileName = $file_info['upload']['physical_file_name'];
         // Add separate file from DB 2009/04/17 Y.Nakao --start--
@@ -1028,8 +993,79 @@ class ItemRegister extends RepositoryAction
         if( file_exists($contents_path) ){
             unlink($contents_path);
         }
-        copy($upload_filepath, $contents_path);
+        // file upload check 2015/04/02 K.Sugimoto --start--
+        $result = copy($upload_filepath, $contents_path);
+        if(!$result || !(file_exists($contents_path))){
+	        $smarty_assign = $this->Session->getParameter("smartyAssign");
+	        if(!isset($smarty_assign))
+	        {
+	            $this->setLangResource();
+	            $smarty_assign = $this->Session->getParameter("smartyAssign");
+	        }
+	        $errMsg = sprintf($smarty_assign->getLang("repository_file_upload_failed"), $file_info['upload']['file_name']);
+	        return false;
+        }
+        // file upload check 2015/04/02 K.Sugimoto --end--
         // Add separate file from DB 2009/04/17 Y.Nakao --end--
+        // Insert
+        $params = array();
+        $params[] = $file_info['item_id'];  // item_id
+        $params[] = $file_info['item_no'];  // item_no
+        $params[] = $file_info['attribute_id']; // "attribute_id"
+        $params[] = $file_info['file_no'];  // "file_no"
+        $params[] = $file_info['upload']['file_name'];  // "file_name"
+        $params[] = $file_info['display_name']; // "display_name"
+        if($file_info['display_type'] != ""){
+            $params[] = $file_info['display_type']; // "display_type"
+        } else {
+            $params[] = 0;  // "display_type"空
+        }
+        $params[] = $file_info['show_order'];  // "show_order"
+        $params[] = $file_info['upload']['mimetype'];       // "mime_type"
+        $params[] = $file_info['upload']['extension'];  // "extension"
+        $params[] = 0;  // PDF_preview_ID Add separate file from DB 2009/04/20 Y.Nakao 
+        $params[] = ""; // "file_prev", まずは空で登録 2008/07/22 追加
+        if($prev_flg == "true"){
+            // PDFの場合、プレビュー用の名前を事前登録する。
+            // プレビューの画像をアップロードした後でレコードをアップデートできない(insertがコミットされていないのにupdateはできないため)
+            // Mod params (For create image-file thumbnail using gd)  2010/02/16 K.Ando --start--
+            //$params[] = str_replace("pdf","png",$file_info['upload']['file_name']);
+            $params[] = $file_info['upload']['physical_file_name'].".png";
+            // Mod params (For create image-file thumbnail using gd)  2010/02/16 K.Ando --end--
+        } else {
+            $params[] = "";             // "file_prev_name"空
+        }
+        $params[] = $file_info['license_id'];   // "license_id"
+        $params[] = $file_info['license_notation']; // "license_notation"
+        $params[] = ""; // "pub_date"
+        $params[] = ""; // "flash_pub_date"
+        $params[] = $file_info['item_type_id']; // "item_type_id"
+        $params[] = 0;  // "browsing_flag"
+        $params[] = 0;  // "create_cover_flag"
+        $params[] = $this->ins_user_id; // "ins_user_id"
+        $params[] = $this->mod_user_id; // "mod_user_id"
+        $params[] = ""; // "del_user_id"
+        $params[] = $this->edit_start_date; // "ins_date"
+        $params[] = $this->edit_start_date; // "mod_date" 
+        $params[] = ""; // "del_date"
+        $params[] = 0;  // "is_delete"
+        //INSERT実行
+        if($duplicateUpdate){
+            $result = $this->insertOrUpdateFile($params, $errMsg);  
+        } else {
+            $result = $this->insertFile($params, $errMsg);  
+        }        
+        if ($result === false) {
+            $this->failTrans(); 
+            // delete upload file and make thumbnail file
+            if(file_exists($filePath.$fileName)){
+                unlink($filePath.$fileName);
+                if(file_exists($filePath.$fileName.".png")){
+                    unlink($filePath.$fileName.".png");
+                }
+            } 
+            return false;
+        }
         
         // PDFのプレビュー化処理を追加 2008/07/22 Y.Nakao --start--
         // 外部コマンドをDBから取得する 2008/08/07 Y.Nakao --start--
@@ -1340,7 +1376,7 @@ class ItemRegister extends RepositoryAction
         $params[] = $price;
         $params[] = $this->mod_user_id; // mod_user_id
         $params[] = $this->edit_start_date; // mod_Date
-        $params[] = '0';    // is_Dalete
+        $params[] = 0;    // is_Dalete
         $params[] = $file['item_id'];
         $params[] = $file['item_no'];
         $params[] = $file['attribute_id'];
@@ -1515,7 +1551,7 @@ class ItemRegister extends RepositoryAction
      * @return true : success
      *         false: error
      */
-    function entryMetadata($metadata, &$errMsg){
+    function entryMetadata(&$metadata, &$errMsg){
         switch($metadata["input_type"]){
             case 'select':
                 // if null, continue;
@@ -1580,10 +1616,8 @@ class ItemRegister extends RepositoryAction
                     $this->failTrans(); //ROLLBACK
                     return false;
                 }
-                if(intval($metadata["author_id"]) == 0)
-                {
-                    $metadata["author_id"] = $result;
-                }
+                
+                $metadata["author_id"] = $result;
                 
                 $params = array();
                 $params[] = $metadata["family"];    // family
@@ -1746,7 +1780,7 @@ class ItemRegister extends RepositoryAction
         $ins_params = array();
         $ins_params[0] = $item["item_id"];  // item_id
         $ins_params[1] = $item["item_no"];  // item_no
-        $ins_params[2] = "";                // index_id
+        $ins_params[2] = 0;                // index_id
         $ins_params[3] = 0;                 // custom_sort_order
         $ins_params[4] = $this->ins_user_id;    // ins_user_id
         $ins_params[5] = $this->mod_user_id;    // mod_user_id
@@ -1883,8 +1917,8 @@ class ItemRegister extends RepositoryAction
         $ins_params = array();
         $ins_params[0] = $item["item_id"];  // org_reference_item_id
         $ins_params[1] = $item["item_no"];  // org_reference_item_no
-        $ins_params[2] = "";    // dest_reference_item_id
-        $ins_params[3] = "";    // dest_reference_item_no
+        $ins_params[2] = 0;    // dest_reference_item_id
+        $ins_params[3] = 0;    // dest_reference_item_no
         $ins_params[4] = "";    // reference
         $ins_params[5] = $this->ins_user_id;    // ins_user_id
         $ins_params[6] = $this->mod_user_id;    // mod_user_id
@@ -1981,25 +2015,25 @@ class ItemRegister extends RepositoryAction
         // 必須入力検査 
         // ------------------------------------------------------------
         for($ii=0; $ii<count($item_attr_type); $ii++) {
-            // 必須指定でないメタデータはスルー
-            if( $item_attr_type[$ii]['is_required']!=1){
-                continue;
-            }
             if( $item_attr_type[$ii]['input_type']=='file' ||
                 $item_attr_type[$ii]['input_type']=='file_price' ||
                 $item_attr_type[$ii]['input_type']=='thumbnail'){
                 if($type == "all" || $type == "file"){
+                    // 必須指定でないメタデータはスルー
+                    if( $item_attr_type[$ii]['is_required']!=1){
+                        continue;
+                    }
                     // 必須ファイル／サムネイルが最低一件入力済みか検査
                     $IsInput = false;
                     for($jj=0; $jj<$item_num_attr[$ii]; $jj++) {
                         if($item_attr[$ii][$jj] != null){
-                            if($item_attr[$ii][$jj]["upload"] != null) {
+                            if(isset($item_attr[$ii][$jj]["upload"])) {
                                 $IsInput = true;
                                 break;
                             }
                         }
                     }
-                    // 未入力の場合はエラメッセージを登録
+                    // 未入力の場合はエラーメッセージを登録
                     if($IsInput == false) {
                         $msg = $smarty_assign->getLang("repository_input_error");
                         array_push($err_msg, sprintf($msg, $item_attr_type[$ii]['attribute_name']));
@@ -2007,8 +2041,12 @@ class ItemRegister extends RepositoryAction
                 }
                 if($type == "all" || $type == "license"){
                     for($jj=0; $jj<$item_num_attr[$ii]; $jj++) {
+                        if(!isset($item_attr[$ii][$jj]['upload'])){
+                            continue;
+                        }
                         // 価格精査
                         if($item_attr_type[$ii]['input_type']=='file_price'){
+                            
                             // 個数保持
                             $loop_num = $item_attr[$ii][$jj]['price_num'];
                             // 価格
@@ -2049,6 +2087,10 @@ class ItemRegister extends RepositoryAction
                     }
                 }
             } else {
+                // 必須指定でないメタデータはスルー
+                if( $item_attr_type[$ii]['is_required']!=1){
+                    continue;
+                }
                 if($type == "all" || $type == "meta"){
                     // テキスト入力項目が入力済みか検査, 必須入力は最低1属性に入っていれば良い
                     // 氏名は名入力時に姓が入っていなければNG
@@ -2168,13 +2210,10 @@ class ItemRegister extends RepositoryAction
             array_push($err_msg, $msg);
         }
         */
-        // タイトルの空、もしくはタイトルなし、no titleも空と判定してチェックク
-        if( ((trim($item['title']) == "") && ((trim($item['title_english'])) == "")) 
-            || ($item['title'] == "タイトル無し" && trim($item['title_english']) == "") 
-            || (trim($item['title'] == "") && $item['title_english'] == "no title")
-            || ($item['title'] == "タイトル無し" && $item['title_english'] == "no title") ) {
+        // タイトルの空チェック
+        if( trim($item['title']) == "" && trim($item['title_english']) == "") {
             $msg = $smarty_assign->getLang("repository_item_error_title");
-            array_push($err_msg, $msg);
+            array_push($warning, $msg);
             //WEKOの言語判定
             if($this->Session->getParameter("_lang") == "japanese"){
                 //論文の言語判定
@@ -2192,7 +2231,7 @@ class ItemRegister extends RepositoryAction
                     $str = "*An English title becomes \"no title\"";
                 }
             }
-            array_push($err_msg, $str);
+            array_push($warning, $str);
         }
         else if ($item['title'] == RepositoryConst::BLANK_WORD || $item['title_english'] == RepositoryConst::BLANK_WORD) {
             $msg = $smarty_assign->getLang("repository_item_error_required_item");
@@ -2221,7 +2260,10 @@ class ItemRegister extends RepositoryAction
             }
             if (count($result) > 0) {
                 $msg = $smarty_assign->getLang("repository_item_error_same_title");
-                $warning = $msg;
+                if(!isset($warning) || !is_array($warning)){
+                    $warning = array();
+                }
+                array_push($warning, $msg);
             }
         }
         //タイトルが空だった場合には重複チェックしない 2009/08/26 K.Ito --end--
@@ -2507,7 +2549,11 @@ class ItemRegister extends RepositoryAction
         $params[] = $item_id;
         $params[] = 1;
         $result = $this->Db->execute($query, $params);
-        $test = $this->Db->ErrorMsg();
+        if($result===false){
+            return false;
+        }
+        
+        return true;
     }
     // Add Contributor(Posted agency) A.Suzuki 2011/12/13 --end--
     
@@ -2642,20 +2688,10 @@ class ItemRegister extends RepositoryAction
                     $flashDirPath = $this->makeFlashFolder($fileInfo['item_id'], $fileInfo['attribute_id'], $fileInfo['file_no']);
                     
                     // create temp directory
-                    $query = "SELECT DATE_FORMAT(NOW(), '%Y%m%d%H%i%s') AS now_date;";
-                    $result = $this->Db->execute($query);
-                    if($result === false || count($result) != 1){
-                        $errMsg = $this->Db->ErrorMsg();
-                        $this->failTrans();
-                        return false;
-                    }
-                    $date = $result[0]['now_date'];
-                    
-                    $tempDirPath = $flashDirPath. "_". $date;
-                    if(!file_exists($tempDirPath)){
-                        mkdir($tempDirPath, 0777);
-                    }
-                    chmod($tempDirPath, 0777);
+                    $this->infoLog("businessWorkdirectory", __FILE__, __CLASS__, __LINE__);
+                    $businessWorkdirectory = BusinessFactory::getFactory()->getBusiness('businessWorkdirectory');
+                    $tempDirPath = $businessWorkdirectory->create();
+                    $tempDirPath = substr($tempDirPath, 0, -1);
                     
                     // コマンドを実行し、FLVファイルを生成
                     // audio/video file -> FLV ffmpegを使用

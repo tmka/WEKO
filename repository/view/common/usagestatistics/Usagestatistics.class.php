@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Usagestatistics.class.php 18959 2012-08-07 05:03:29Z atsushi_suzuki $
+// $Id: Usagestatistics.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -12,7 +12,6 @@
 // --------------------------------------------------------------------
 
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.php';
-require_once WEBAPP_DIR. '/modules/repository/components/RepositoryUsagestatistics.class.php';
 
 /**
  * Usage statistics
@@ -110,7 +109,7 @@ class Repository_View_Common_Usagestatistics extends RepositoryAction
      * 
      * @return string
      */
-    public function execute()
+    public function executeApp()
     {
         try
         {
@@ -123,19 +122,36 @@ class Repository_View_Common_Usagestatistics extends RepositoryAction
                 return "error";
             }
             
+            // Set Usage statistics setting 2015/03/24 K.Sugimoto --start--
+            $result = $this->getAdminParam('usagestatistics_link_display', $usagestatistics_link_display, $Error_Msg);
+            if ( $result == false ){
+                $exception = new RepositoryException( ERR_MSG_xxx-xxx1, xxx-xxx1 ); //主メッセージとログIDを指定して例外を作成
+                $DetailMsg = null;                              //詳細メッセージ文字列作成
+                sprintf( $DetailMsg, ERR_DETAIL_xxx-xxx1);
+                $exception->setDetailMsg( $DetailMsg );         //詳細メッセージ設定
+                $this->failTrans();                             //トランザクション失敗を設定(ROLLBACK)
+                throw $exception;
+            }
+            if ($usagestatistics_link_display == 0)
+            {
+            	return "invalid";
+            }
+            // Set Usage statistics setting 2015/03/24 K.Sugimoto --end--
+            
             // Set item title
             $this->setItemTitle();
             
             // Get date array for pulldown
             $this->dateList = $this->setDateList();
             
-            $RepositoryUsagestatistics = new RepositoryUsagestatistics($this->Session, $this->Db, $this->TransStartDate);
+            $this->infoLog("businessUsagestatistics", __FILE__, __CLASS__, __LINE__);
+            $RepositoryUsagestatistics = BusinessFactory::getFactory()->getBusiness("businessUsagestatistics");
             
             // Get usages views
             $this->usagesViews = $RepositoryUsagestatistics->getUsagesViews($this->itemId, $this->itemNo, $this->year, $this->month);
             
             // Get usages downloads
-            $this->usagesDownloads = $RepositoryUsagestatistics->getUsagesDownloads($this->itemId, $this->itemNo, $this->year, $this->month);
+			$this->usagesDownloads = $RepositoryUsagestatistics->getUsagesDownloads($this->itemId, $this->itemNo, $this->year, $this->month);
             
             $this->exitAction();
             return "success";
@@ -278,8 +294,17 @@ class Repository_View_Common_Usagestatistics extends RepositoryAction
         $result = array();
         $this->getItemTableData($this->itemId, $this->itemNo, $result, $errMsg);
         
-        $title = $result["item"][0][RepositoryConst::DBCOL_REPOSITORY_ITEM_TITLE];
-        $titleEn = $result["item"][0][RepositoryConst::DBCOL_REPOSITORY_ITEM_TITLE_ENGLISH];
+        $title = 0;
+        $titleEn = 0;
+        
+        if( isset($result["item"][0][RepositoryConst::DBCOL_REPOSITORY_ITEM_TITLE]) ){
+            $title = $result["item"][0][RepositoryConst::DBCOL_REPOSITORY_ITEM_TITLE];
+        }
+        
+        if( isset($result["item"][0][RepositoryConst::DBCOL_REPOSITORY_ITEM_TITLE_ENGLISH]) ){
+            $titleEn = $result["item"][0][RepositoryConst::DBCOL_REPOSITORY_ITEM_TITLE_ENGLISH];
+        }
+        
         if($this->Session->getParameter("_lang")=="japanese")
         {
             $this->title = $title;

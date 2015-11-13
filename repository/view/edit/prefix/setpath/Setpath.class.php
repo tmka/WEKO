@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Setpath.class.php 3 2010-02-02 05:07:44Z atsushi_suzuki $
+// $Id: Setpath.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -29,7 +29,7 @@ class Repository_View_Edit_Prefix_Setpath extends RepositoryAction
      *
      * @access  public
      */
-    function execute()
+    function executeApp()
     {
     	return 'success';
     }

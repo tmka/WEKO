@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Import.class.php 42307 2014-09-29 06:18:07Z tomohiro_ichikawa $
+// $Id: Import.class.php 56708 2015-08-19 13:08:03Z tomohiro_ichikawa $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -137,13 +137,11 @@ class Repository_Action_Edit_Itemtype_Import extends RepositoryAction
 		$file_path = $dir_path . $tmp_file[0]['physical_file_name'];
 
 		// mkdir for extrac
-		$dir = $dir_path . $tmp_file[0]['upload_id'];
-		$result = mkdir($dir, 0777);
-		if (!$result){
-			$this->failTrans(); //ROLLBACK
-			throw $exception;
-		}
-
+        $this->infoLog("businessWorkdirectory", __FILE__, __CLASS__, __LINE__);
+        $businessWorkdirectory = BusinessFactory::getFactory()->getBusiness('businessWorkdirectory');
+        $dir = $businessWorkdirectory->create();
+        $dir = substr($dir, 0, -1);
+        
 		// extrac file
 		File_Archive::extract(
 		File_Archive::read($file_path . "/"),

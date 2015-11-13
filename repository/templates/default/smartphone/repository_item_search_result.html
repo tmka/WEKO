@@ -11,7 +11,7 @@
 <!--// ---------------------------------------------------------------------->
 <{* 検索結果表示画面 *}>
 <div class="mt10">
-<{include file="smartphone/repository_item_search_indexlist.html"}>
+<{include file=$smarty.const.WEBAPP_DIR|cat:'/modules/repository/templates/default/smartphone/repository_item_search_indexlist.html'}>
 
 <form id="export_print" method="post" class="min-w685px">
 <{* when child index is any and item is no, item list is not view *}>

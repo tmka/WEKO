@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: deposit.php 42307 2014-09-29 06:18:07Z tomohiro_ichikawa $
+// $Id: deposit.php 56954 2015-08-24 04:17:54Z keiya_sugimoto $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics,
 // Research and Development Center for Scientific Information Resources
@@ -41,6 +41,10 @@ define('INSTALLINC_PATH', dirname(START_INDEX_DIR) . "/webapp/config/install.inc
 require_once INSTALLINC_PATH;
 // include  utility functions for SWORD
 require_once(HTDOCS_DIR . "/weko/sword/utils.php");
+// include create tmp dir
+require_once WEBAPP_DIR. '/modules/repository/components/util/CreateWorkDirectory.class.php';
+require_once WEBAPP_DIR. '/modules/repository/components/util/OperateFileSystem.class.php';
+
 //header("Content-Type: application/atomsvc+xml;charset=\"utf-8\"");
 
 // --------------------------------------------------------------
@@ -272,6 +276,9 @@ $server_file = '';      // Posted item path on server
 if(isset($_FILES['file'])){
 	$file=$_FILES['file'];
 }
+$tmpUploadDir = Repository_Components_Util_CreateWorkDirectory::create(dirname(START_INDEX_DIR)."/webapp/uploads/repository/");
+$tmpDirArray = explode("/", $tmpUploadDir);
+$tmpDirName = $tmpDirArray[count($tmpDirArray)-2];
 if ($requestBody != false && !isset($file)){
 	//fwrite($fh, "check 7-1\n");       // 2008/11/12 kawa check point.
     fwrite($fh, "Check Point 13-A1: Get upload file.\n");
@@ -279,9 +286,9 @@ if ($requestBody != false && !isset($file)){
     $base_name = $header_params['contentDisposition'];  // POST file name
     $server_file = "";
     if($header_params['contentType'] == "text/xml"){
-        $server_file = dirname(START_INDEX_DIR)."/webapp/uploads/repository/". $base_name.".xml";
+        $server_file = $tmpUploadDir. $base_name.".xml";
     } else {
-        $server_file = dirname(START_INDEX_DIR)."/webapp/uploads/repository/". $base_name.".zip";
+        $server_file = $tmpUploadDir. $base_name.".zip";
     }
     // economize memory 2009/01/08 A.Suzuki --start--
     //file_put_contents( $server_file, $requestBody );
@@ -304,6 +311,7 @@ if ($requestBody != false && !isset($file)){
     if(!isset($header_params['insert_index']) && !isset($header_params['new_index'])){
         $newIndex = "-1,import-" . $header_params['update'];        // '-1' means "root/import" index.
     }
+    $base_name = $tmpDirName."/".$base_name;
     $base_name = rawurlencode($base_name);
 } else if(is_array($_FILES) && count($_FILES) > 0){
 	//fwrite($fh, "check 7-2\n");
@@ -322,11 +330,13 @@ if ($requestBody != false && !isset($file)){
         $content_size = $_SERVER["CONTENT_LENGTH"];
     }
     $upload_size = sprintf("%u", $header_params["contentLength"]);
-    fwrite($fh, "\$file['tmp_name']".$tmp_size."\n");
+    fwrite($fh, "\$file['tmp_name']".$file['tmp_name']."\n");
+    fwrite($fh, "\$file['tmp_size']".$tmp_size."\n");
     fwrite($fh, "\$_SERVER['HTTP_CONTENT_LENGTH']".$content_size."\n");
     fwrite($fh, "\$header_params['contentLength']".$upload_size."\n");
 
     if(!file_exists($file['tmp_name'])){
+        Repository_Components_Util_OperateFileSystem::removeDirectory($tmpUploadDir);
         // upload size shortage.
         header("HTTP/1.1 400 Bad Request");
         header("X-Error-Code: Bad Request");
@@ -338,6 +348,7 @@ if ($requestBody != false && !isset($file)){
 
     // HTMLのフォーム、自作SWORDクライアントからPOSTされた場合
     if ( !isset( $file['name'] )) {
+        Repository_Components_Util_OperateFileSystem::removeDirectory($tmpUploadDir);
         // リクエストパラメタが足りない
         header("HTTP/1.1 400 Bad Request");
         header("X-Error-Code: Bad Request");
@@ -368,6 +379,7 @@ if ($requestBody != false && !isset($file)){
         $data = pathinfo( $file['name'] );
         if ( $data['extension'] != 'xml' )
         {
+            Repository_Components_Util_OperateFileSystem::removeDirectory($tmpUploadDir);
             // not XML
             session_destroy();
             header("HTTP/1.1 415 Unsupported Media Type");
@@ -375,8 +387,9 @@ if ($requestBody != false && !isset($file)){
             fclose($fh);
             exit;
         }
-        $uploaddir = dirname(START_INDEX_DIR).'/webapp/uploads/repository/';
+        $uploaddir = $tmpUploadDir;
         $base_name = basename($file['name'], '.xml' );
+        $base_name = $tmpDirName."/".$base_name;
         $base_name = rawurlencode($base_name);
         $uploadfile = $uploaddir . $file['name'];
         fwrite($fh, "base_name : " . $base_name ."\n");     // 2008/11/12 kawa check point.
@@ -388,6 +401,7 @@ if ($requestBody != false && !isset($file)){
         $data = pathinfo( $file['name'] );
         if ( $data['extension'] != 'zip' )
         {
+            Repository_Components_Util_OperateFileSystem::removeDirectory($tmpUploadDir);
             // Not zip
             session_destroy();
             header("HTTP/1.1 415 Unsupported Media Type");
@@ -400,8 +414,9 @@ if ($requestBody != false && !isset($file)){
         $file['name'] = preg_replace("/\"$|\'$/", "", $file['name']);
         // BugFix single cotation Y.Nakao 2013/06/07 --end--
 
-        $uploaddir = dirname(START_INDEX_DIR).'/webapp/uploads/repository/';
+        $uploaddir = $tmpUploadDir;
         $base_name = basename($file['name'], '.zip' );
+        $base_name = $tmpDirName."/".$base_name;
         $base_name = rawurlencode($base_name);
         $uploadfile = $uploaddir . $file['name'];
         fwrite($fh, "base_name : " . $base_name ."\n");     // 2008/11/12 kawa check point.
@@ -410,6 +425,7 @@ if ($requestBody != false && !isset($file)){
         $server_file = $uploadfile;
     }
 } else {
+    Repository_Components_Util_OperateFileSystem::removeDirectory($tmpUploadDir);
     // can't get upload files.
     //fwrite($fh, "check 7-3\n");
     fwrite($fh, "Check Point 13-C: Cannot get upload files. ");
@@ -440,6 +456,7 @@ if(isset($header_params['contentMd5'])){
     fwrite($fh, "Server-Hash : " . $md5_server ."\n");                      // 2008/11/12 TestCode
 //  if($header_params['contentMd5'] != $md5_server) {
     if(strnatcasecmp($header_params['contentMd5'], $md5_server)){
+        Repository_Components_Util_OperateFileSystem::removeDirectory($tmpUploadDir);
         // V1.2 => V1.3, Create Error Document
         $header_params['summary'] = 'Client-MD5:'   . $header_params['contentMd5'] .
                                     ', Server-MD5:' . $md5_server ."\n";
@@ -525,32 +542,18 @@ xml_parse_into_struct($parser, $import_body, $vals, $index);
 xml_parser_free($parser);
 fwrite($fh, "Check Point 18: Parse import response.\n");
 
+// Add SupleContentsEntry Y.Yamazawa 2015/04/01 --start--
 # TestCode : Check and Dump Authorize Rsoponse to Server Text.
-foreach($vals as $key => $resparams) {
-	if( isset($resparams['tag'])&&isset($resparams['value'])){
-    	fwrite($fh, "['" . $key . "'] = " .$resparams['tag']. "/" .$resparams['value']."\n");
-	}
-}
 
 #Check Status of Import Action
 
-$import_status = $vals[$index['STATUS'][0]]['value'];
+$import_status = $vals[$index['TITLE'][0]]['value'];
 //fwrite($fh, $import_status."\n");
 fwrite($fh, "Check Point 19: Check import status. Status: ".$import_status."\n");
-if ( $import_status != "success" ){
-    // V1.2 => V1.3, Create Error Document
-    $header_params['summary'] = $vals[$index['SUMMARY'][0]]['value'];
-    // Add for error check 2014/09/12 T.Ichikawa --start--
-    if(isset($vals[$index['TREATMENT'][0]])) {
-        $header_params['treatment'] = $vals[$index['TREATMENT'][0]]['value'];
-    }
-    if(isset($vals[$index['DESCRIPTION'][0]])) {
-        $header_params['description'] = $vals[$index['DESCRIPTION'][0]]['value'];
-    }
-    // Add for error check 2014/09/12 T.Ichikawa --end--
-    generateErrorDocument($header_params, $error_doc);
-    $xmlsize = strlen($error_doc);
-    fwrite($fh, $error_doc . "\n");     // 2008/11/12 kawa check point.
+if ( $import_status == "ERROR" ){
+    Repository_Components_Util_OperateFileSystem::removeDirectory($tmpUploadDir);
+    $xmlsize = strlen($import_body);
+    fwrite($fh, $import_body . "\n");     // 2008/11/12 kawa check point.
     // header output
     header("Internal Server Error", true, 500);
     header("X-Error-Code: " . $import_status);      // X-Error-Code is generated by WEKO.
@@ -558,33 +561,15 @@ if ( $import_status != "success" ){
     header("Content-Length: ".$xmlsize);
     session_destroy();
     fclose($fh);
-    echo $error_doc;
+    echo $import_body;
     exit;
 }
-$import_code = $import_req->getResponseCode();      // ResponseCode(200等)を取得
-$import_header = $import_req->getResponseHeader();  // ResponseHeader(レスポンスヘッダ)を取得
-$header_params['startid'] = $vals[$index['START_ID'][0]]['value'];  // Get Start ID (or Suffix)
-$header_params['endid'] = $vals[$index['END_ID'][0]]['value'];      // Get End ID (or Suffix)
-$uris = array();
-$cnt_uri = count($index['CONTENTS_URI']);
-for($cnt=0; $cnt<$cnt_uri; $cnt++ ) {
-    array_push($uris, $vals[$index['CONTENTS_URI'][$cnt]]['value']);
-}
-$header_params['contents'] = $uris;                                 // Get Contents URIs
-// 2008/11/11 S.Kawasaki retrieve SWORD options End
-
 
 // generate Atom entry document
-$atom_entry_doc = '';
-if($header_params['contentType'] == "text/xml"){
-     $atom_entry_doc = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" . "\n";
-} else {
-    generateEntryDocument($header_params, $atom_entry_doc);
-}
 //$atom_entry_doc_enc = mb_convert_encoding($atom_entry_doc, "UTF-8", "auto");
-$xmlsize = strlen($atom_entry_doc);
+$xmlsize = strlen($import_body);
 # TestCode : Check and Dump Atom Entry Document to Server Text.
-fwrite($fh, $atom_entry_doc . "\n");        // 2008/11/12 kawa check point.
+fwrite($fh, $import_body . "\n");        // 2008/11/12 kawa check point.
 fwrite($fh, "Check Point 20: Successfully completed SWORD import.\n");
 fclose($fh);
 // header output
@@ -593,6 +578,11 @@ header("Location: ".$header_params['generator']);
 header("Content-Type: application/atom+xml;type=entry;charset=\"utf-8\"");
 header("Content-Length: ".$xmlsize);
 // output　Atom entry document
-echo $atom_entry_doc;
+echo $import_body;
+// Add SupleContentsEntry Y.Yamazawa 2015/04/01 --end--
+if(file_exists($tmpUploadDir)) {
+    Repository_Components_Util_OperateFileSystem::removeDirectory($tmpUploadDir);
+}
+
 exit;
 ?>

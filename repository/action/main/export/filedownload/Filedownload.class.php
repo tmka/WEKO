@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Filedownload.class.php 30197 2013-12-19 09:55:45Z rei_matsuura $
+// $Id: Filedownload.class.php 57127 2015-08-26 05:00:10Z tatsuya_koyasu $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -162,15 +162,10 @@ class Repository_Action_Main_Export_Filedownload extends RepositoryAction
             // Modify Price method move validator K.Matsuo 2011/10/19 --end--
             
             // 作業用ディレクトリ作成
-            //$date = date("YmdHis");
-            $query = "SELECT DATE_FORMAT(NOW(), '%Y%m%d%H%i%s') AS now_date;";
-            $result = $this->Db->execute($query);
-            if($result === false || count($result) != 1){
-                return false;
-            }
-            $date = $result[0]['now_date'];
-            $tmp_dir = WEBAPP_DIR."/uploads/repository/_".$date;
-            mkdir( $tmp_dir, 0777 );
+            $this->infoLog("businessWorkdirectory", __FILE__, __CLASS__, __LINE__);
+            $businessWorkdirectory = BusinessFactory::getFactory()->getBusiness("businessWorkdirectory");
+            
+            $tmp_dir = $businessWorkdirectory->create();
             
             // Exportファイル生成
             $export_common = new ExportCommon($this->Db, $this->Session, $this->TransStartDate);
@@ -200,26 +195,23 @@ class Repository_Action_Main_Export_Filedownload extends RepositoryAction
             
             File_Archive::extract(
                 $output_files,
-                File_Archive::toArchive($zip_file, File_Archive::toFiles( $tmp_dir."/" ))
+                File_Archive::toArchive($zip_file, File_Archive::toFiles( $tmp_dir ))
             );
             
             //ダウンロードアクション処理
             // Add RepositoryDownload action 2010/03/30 A.Suzuki --start--
             $repositoryDownload = new RepositoryDownload();
             if($this->file_only == "true"){
-                $repositoryDownload->downloadFile($tmp_dir."/".$zip_file, "contents.zip");
+                $repositoryDownload->downloadFile($tmp_dir.$zip_file, "contents.zip");
             } else {
-                $repositoryDownload->downloadFile($tmp_dir."/".$zip_file, "export.zip"); 
+                $repositoryDownload->downloadFile($tmp_dir.$zip_file, "export.zip"); 
             }
             // Add RepositoryDownload action 2010/03/30 A.Suzuki --start--
             
-            // ワークディレクトリ削除
-            $this->removeDirectory($tmp_dir);
-            
-            // insert file download log
-            // Add log common action Y.Nakao 2010/03/05 --start--
-            $this->entryLog(2, $ret[$ii]["item_id"], $ret[$ii]["item_no"], $ret[$ii]["attribute_id"], $ret[$ii]["file_no"], "");
-            // Add log common action Y.Nakao 2010/03/05 --end--
+            // 本来であればexitActionをよび、その中で
+            // finalize処理を実施するべきだが、
+            // コミットによる影響があるため、finalize処理のみを実施
+            $this->finalize();
             
             // zipファイル損傷対応 2008/08/25 Y.Nakao --start--
             exit();

@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Swrc.class.php 38124 2014-07-01 06:56:02Z rei_matsuura $
+// $Id: Swrc.class.php 48455 2015-02-16 10:53:40Z atsushi_suzuki $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -28,10 +28,6 @@ require_once WEBAPP_DIR. '/modules/repository/components/RepositoryOutputFilter.
  */
 class Repository_Swrc extends RepositoryAction
 {
-	// 使用コンポーネントを受け取るため
-	//var $session = null;
-	var $db = null;
-	
 	// リクエストパラメータを受け取るため
 	var $itemId = null;
 	var $itemNo = null;

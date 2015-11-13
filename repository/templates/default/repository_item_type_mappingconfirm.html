@@ -84,7 +84,7 @@
     <th class="item_edit_list ac"><{$lang.repository_mapping_lido}></th>
     <th class="item_edit_list ac"><{$lang.repository_mapping_spase}></th>
 	  <th class="item_edit_list ac"><{$lang.repository_mapping_language}></th>
-    
+
    </tr>
    <{*基本データ*}>
    <{*タイトル*}>
@@ -135,7 +135,7 @@
     <td class="item_edit_list al"><{$lang.repository_junii2_subject}></td>
     <td class="item_edit_list al">generalKeyword</td>
     <td class="item_edit_list al"><{$lang.repoistory_lido_keyword_full}></td>
-    <td class="item_edit_list al"><{$lang.repository_spase_no_setting}></td>
+    <td class="item_edit_list al"><{$lang.repoistory_spase_keyword_full}></td>
     <td class="item_edit_list al"><{$lang.repository_language_ja}></td>
    </tr>
    <{*キーワード(英)*}>
@@ -146,12 +146,12 @@
     <td class="item_edit_list al"><{$lang.repository_junii2_subject}></td>
     <td class="item_edit_list al">generalKeyword</td>
     <td class="item_edit_list al"><{$lang.repoistory_lido_keyword_full}></td>
-    <td class="item_edit_list al"><{$lang.repository_spase_no_setting}></td>
+    <td class="item_edit_list al"><{$lang.repoistory_spase_keyword_full}></td>
     <td class="item_edit_list al"><{$lang.repository_language_en}></td>
    </tr>
-   
-   
-   <{* スクリプトでメタデータを回します。*}> 
+
+
+   <{* スクリプトでメタデータを回します。*}>
    <{foreach from=$smarty.session.metadata_table item=metadata name=metad}>
    <{* 書誌情報追加 *}>
     <{* 書誌情報の場合 *}>

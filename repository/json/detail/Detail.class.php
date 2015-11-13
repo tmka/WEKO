@@ -39,7 +39,7 @@ class Repository_Json_Detail extends RepositoryAction
      *
      * @access  public
      */
-    function executeForWEKO()
+    function executeApp()
     {
         $itemAuthorityManager = new RepositoryItemAuthorityManager($this->Session, $this->dbAccess, $this->TransStartDate);
         $pubflg = $itemAuthorityManager->checkItemPublicFlg($this->item_id, 1, $this->repository_admin_base, $this->repository_admin_room);

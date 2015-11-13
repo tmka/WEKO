@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Admineditrow.class.php 42605 2014-10-03 01:02:01Z keiya_sugimoto $
+// $Id: Admineditrow.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -33,19 +33,43 @@ class Repository_View_Edit_Admineditrow extends RepositoryAction
     // bug fix return from this class, no set prefix 2014/07/03 T.Koyasu --start--
     public $prefixJalcDoi = null;
     public $prefixCrossRef = null;
+    // Add DataCite 2015/02/10 K.Sugimoto --start--
+    public $prefixDataCite = null;
+    // Add DataCite 2015/02/10 K.Sugimoto --end--
     public $prefixCnri = null;
     public $prefixYHandle = null;
     // bug fix return from this class, no set prefix 2014/07/03 T.Koyasu --end--
     
     // OAI-PMH Output Flag
     public $oaipmh_output_flag = null;
+    
+    // Institution Name
+    public $institutionName = null;
 	
+	// Add Default Search Type 2014/12/03 K.Sugimoto --start--
+    // Default Search Type
+    public $default_search_type = null;
+	// Add Default Search Type 2014/12/03 K.Sugimoto --end--
+
+    // Add Usage Statistics link display setting 2014/12/16 K.Matsushita --start--
+    public $usagestatistics_link_display = null;
+    // Add Usage Statistics link display setting 2014/12/16 K.Matsushita --end--
+
+    // Add ranking tab display setting 2014/12/19 K.Matsushita --start--
+    public $ranking_tab_display = null;
+    // Add ranking tab display setting 2014/12/19 K.Matsushita --end--
+	
+    // Add DataCite 2015/02/12 K.Sugimoto --start--
+    public $prefix_flag = null;
+    public $exist_doi_item = null;
+    // Add DataCite 2015/02/12 K.Sugimoto --end--
+    
     /**
      * [[機能説明]]
      *
      * @access  public
      */
-    function execute()
+    function executeApp()
     {
     	// 表示タブ情報
     	if($this->admin_active_tab == ""){
@@ -143,6 +167,25 @@ class Repository_View_Edit_Admineditrow extends RepositoryAction
 	    	$admin_params["disp_index_type"]["param_value"] = $result[0]["param_value"];
         }
         
+	    // Auto Input Metadata by CrossRef DOI 2015/03/04 K.Sugimoto --start--
+        if($admin_params["CrossRefQueryServicesAccount"]["param_value"] == null){
+        	//DBから取得
+	       	$query = "SELECT param_value ".
+	       	         "FROM ". DATABASE_PREFIX ."repository_parameter ".
+	       			 "WHERE param_name = 'crossref_query_service_account'; ";
+	    	//　SELECT実行
+	        $result = $this->Db->execute($query);
+	       	if ($result === false) {
+		        $errNo = $this->Db->ErrorNo();
+		        $errMsg = $this->Db->ErrorMsg();
+		        $this->Session->setParameter("error_code",$errMsg);
+	       		if($istest) { echo $errMsg . "<br>"; }
+		        return 'error';
+	    	}
+	    	$admin_params["CrossRefQueryServicesAccount"]["param_value"] = $result[0]["param_value"];
+        }
+	    // Auto Input Metadata by CrossRef DOI 2015/03/04 K.Sugimoto --end--
+        
         $this->Session->setParameter("admin_params", $admin_params);
         
         // Add Default External Word 2014/06/09 T.Ichikawa --start--
@@ -158,12 +201,62 @@ class Repository_View_Edit_Admineditrow extends RepositoryAction
         $this->getSearchSetting();
         
         // bug fix return from this class, no set prefix 2014/07/03 T.Koyasu --start--
-        $this->getEachPrefix();
+        $this->getEachPrefix($admin_params);
         // bug fix return from this class, no set prefix 2014/07/03 T.Koyasu --end--
         
-        //OAI-PMH Output Flag
+        // OAI-PMH Output Flag
         $this->oaipmh_output_flag = $admin_params["oaipmh_output_flag"]["param_value"];
     	
+        // Institution Name
+        $this->institutionName = $admin_params["institution_name"]["param_value"];
+        
+        // Add Default Search Type 2014/12/03 K.Sugimoto --start--
+        // Default Search Type
+        $this->default_search_type = $admin_params["default_search_type"]["param_value"];
+    	// Add Default Search Type 2014/12/03 K.Sugimoto --end--
+
+        // Add Usage Statistics link display setting 2014/12/16 K.Matsushita --start--
+        $this->usagestatistics_link_display = $admin_params["usagestatistics_link_display"]["param_value"];
+        // Add Usage Statistics link display setting 2014/12/16 K.Matsushita --end--
+
+        // Add ranking tab display setting 2014/12/19 K.Matsushita --start--
+        $this->ranking_tab_display = $admin_params["ranking_tab_display"]["param_value"];
+        // Add ranking tab display setting 2014/12/19 K.Matsushita --end--
+    	
+        // Add DataCite 2015/02/10 K.Sugimoto --start--
+        $query = "SELECT COUNT(*) ".
+                 "FROM ".DATABASE_PREFIX."repository_doi_status ;";
+        $params = array();
+        $result = $this->Db->execute($query, $params);
+        
+        if(count($result) > 0 && $result[0]["COUNT(*)"] != 0){
+        	$this->exist_doi_item = 1;
+        }else{
+        	$this->exist_doi_item = 0;
+        }
+
+        if(isset($admin_params["prefix_flag"]["param_value"]) 
+            && strlen($admin_params["prefix_flag"]["param_value"]) > 0)
+        {
+	        $this->prefix_flag = $admin_params["prefix_flag"]["param_value"];
+        }
+        else
+        {
+            $query = "SELECT param_value ".
+                     "FROM ".DATABASE_PREFIX. "repository_parameter ".
+			         "WHERE `param_name` = ? ".
+                     "AND is_delete = ? ;";
+		    $params = array();
+		    $params[] = "prefix_flag";
+		    $params[] = 0;
+            $result = $this->Db->execute($query, $params);
+            if(count($result) > 0)
+            {
+                $this->prefix_flag = $result[0]['param_value'];
+            }
+        }
+        // Add DataCite 2015/02/10 K.Sugimoto --end--
+
     	return 'success';
     }
     
@@ -192,15 +285,14 @@ class Repository_View_Edit_Admineditrow extends RepositoryAction
      * get each prefix
      *
      */
-    private function getEachPrefix()
+    private function getEachPrefix(&$admin_params)
     {
-        $this->prefixCnri = $this->Session->getParameter("prefixCnri");
-        $this->prefixJalcDoi = $this->Session->getParameter("prefixJalcDoi");
-        $this->prefixCrossRef = $this->Session->getParameter("prefixCrossRef");
-        
-        $this->Session->removeParameter("prefixCnri");
-        $this->Session->removeParameter("prefixJalcDoi");
-        $this->Session->removeParameter("prefixCrossRef");
+        // Add DataCite 2015/02/10 K.Sugimoto --start--
+        $this->prefixCnri = $admin_params["prefixCnri"]["param_value"];
+        $this->prefixJalcDoi = $admin_params["prefixJalcDoi"]["param_value"];
+        $this->prefixCrossRef = $admin_params["prefixCrossRef"]["param_value"];
+        $this->prefixDataCite = $admin_params["prefixDataCite"]["param_value"];
+        // Add DataCite 2015/02/10 K.Sugimoto --end--
         
         $DATE = new Date();
         $this->TransStartDate = $DATE->getDate().".000";

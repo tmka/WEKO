@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Fillauthor.class.php 38124 2014-07-01 06:56:02Z rei_matsuura $
+// $Id: Fillauthor.class.php 57213 2015-08-27 07:34:36Z keiya_sugimoto $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -254,8 +254,8 @@ class Repository_Action_Main_Item_Fillauthor extends RepositoryAction
                         $result[$ii]['family'] = $this->escapeJSON($result[$ii]['family']);
                         $result[$ii]['name'] = $this->escapeJSON($result[$ii]['name']);
                         $result[$ii]['family_ruby'] = $this->escapeJSON($result[$ii]['family_ruby']);
+                        $result[$ii]['name_ruby'] = $this->escapeJSON($result[$ii]['name_ruby']);
                         $result[$ii]['e_mail_address'] = $this->escapeJSON($result[$ii]['suffix']);
-                        $resultID = $this->escapeJSON($resultID);
                         $prefixsufix = $this->escapeJSON($prefixsufix);
                         // Fix fill data sanitizing 2011/07/05 Y.Nakao --end--
                         
@@ -363,11 +363,11 @@ class Repository_Action_Main_Item_Fillauthor extends RepositoryAction
         $item_attr = $this->Session->getParameter("item_attr");
         
         // Fill data
-        $item_attr[$decoded->attrId][$decoded->attrNo]["family"] = $decoded->family;
-        $item_attr[$decoded->attrId][$decoded->attrNo]["given"] = $decoded->name;
-        $item_attr[$decoded->attrId][$decoded->attrNo]["family_ruby"] = $decoded->family_ruby;
-        $item_attr[$decoded->attrId][$decoded->attrNo]["given_ruby"] = $decoded->name_ruby;
-        $item_attr[$decoded->attrId][$decoded->attrNo]["email"] = $decoded->e_mail_address;
+        $item_attr[$decoded->attrId][$decoded->attrNo]["family"] = htmlspecialchars_decode($decoded->family, ENT_QUOTES);
+        $item_attr[$decoded->attrId][$decoded->attrNo]["given"] = htmlspecialchars_decode($decoded->name, ENT_QUOTES);
+        $item_attr[$decoded->attrId][$decoded->attrNo]["family_ruby"] = htmlspecialchars_decode($decoded->family_ruby, ENT_QUOTES);
+        $item_attr[$decoded->attrId][$decoded->attrNo]["given_ruby"] = htmlspecialchars_decode($decoded->name_ruby, ENT_QUOTES);
+        $item_attr[$decoded->attrId][$decoded->attrNo]["email"] = htmlspecialchars_decode($decoded->e_mail_address, ENT_QUOTES);
         $item_attr[$decoded->attrId][$decoded->attrNo]["author_id"] = $decoded->author_id;
         $item_attr[$decoded->attrId][$decoded->attrNo]["external_author_id"] = $external_author_id;
         
@@ -938,6 +938,7 @@ class Repository_Action_Main_Item_Fillauthor extends RepositoryAction
         // get item's language type
         $lang_sess = $this->Session->getParameter("base_attr");
         $item_open_flg = "0";
+        $name = array();
         // get name for XML
         foreach($vals as $tmp){
             if($tmp["tag"] == "ITEM" && $tmp["type"] == "open"){
@@ -946,8 +947,6 @@ class Repository_Action_Main_Item_Fillauthor extends RepositoryAction
                 $item_open_flg = "0";
             }
             if($tmp["tag"] == "TITLE" && $item_open_flg == "1"){
-                $name_tmp = explode(" ",$tmp["value"]);
-                $name = array();
                 if (preg_match("/ \| (.*)\([0-9]+\)/", $tmp["value"])){
                     // It doesn't exist japanese
                     preg_match("/ \| (.*)\([0-9]+\)/", $tmp["value"], $name);
@@ -959,7 +958,7 @@ class Repository_Action_Main_Item_Fillauthor extends RepositoryAction
                 }
             }
         }
-        if($name[0] == ""){
+        if(count($name) == 0){
             return false;
         }
         // get name
@@ -1147,7 +1146,7 @@ class Repository_Action_Main_Item_Fillauthor extends RepositoryAction
      *
      * @param array $index_data
      */
-    function escapeJSON($str, $lineFlg=false){
+    private function escapeJSON($str, $lineFlg=false){
         
         $str = str_replace("\\", "\\\\", $str);
         $str = str_replace('[', '\[', $str);
@@ -1157,24 +1156,9 @@ class Repository_Action_Main_Item_Fillauthor extends RepositoryAction
             $str = str_replace("\r\n", "\n", $str);
             $str = str_replace("\n", "\\n", $str);
         }
-        if(is_string($str))
-        {
-            $str = htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
-        }
-        // Fix PHP Warning. is_array => prefix_name, suffix.
-        if(is_array($str))
-        {
-            foreach ($str as $data)
-            {
-                foreach ($data as $key => $value)
-                {
-                    if(is_string($value))
-                    {
-                        $str = htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
-                    }
-                }
-            }
-        }
+        
+        $str = htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+        
         return $str;
     }
     // Fix fill data sanitizing 2011/07/05 Y.Nakao --end--

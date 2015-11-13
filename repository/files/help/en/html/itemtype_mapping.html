@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: itemtype_mapping.html 36654 2014-06-03 04:01:06Z tomohiro_ichikawa $          -->
+<!--// $Id: itemtype_mapping.html 45812 2015-01-05 04:38:51Z kaede_matsushita $          -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -75,7 +75,7 @@
 							<td>&lt;title lang="ja"&gt;</td>
 							<td>generalTitle</td>
 							<td>&lt;generalTitle language="ja"&gt;</td>
-							<td>descriptiveMetadata.objectIdentificationWrap.titleWrap.titleSet.appellationValue</td>
+							<td>titleWrap.titleSet.appellationValue</td>
 							<td>&lt;titleWrap&gt;&lt;titleSet&gt;&lt;appellationValue xml:lang="jp"&gt;</td>
 							<td>日本語</td>
 						</tr>
@@ -87,7 +87,7 @@
 							<td>&lt;alternative&gt;</td>
 							<td>generalTitle</td>
 							<td>&lt;generalTitle language="en"&gt;</td>
-							<td>descriptiveMetadata.objectIdentificationWrap.titleWrap.titleSet.appellationValue</td>
+							<td>titleWrap.titleSet.appellationValue</td>
 							<td>&lt;titleWrap&gt;&lt;titleSet&gt;&lt;appellationValue xml:lang="en"&gt;</td>
 							<td>英語</td>
 						</tr>
@@ -123,7 +123,7 @@
 							<td>&lt;subject&gt;</td>
 							<td>generalKeyword</td>
 							<td>&lt;generalKeyword&gt;</td>
-							<td>descriptiveMetadata.objectRelationWrap.subjectWrap.subjectSet.displaySubject</td>
+							<td>subjectWrap.subjectSet.displaySubject</td>
 							<td>&lt;subjectWrap&gt;&lt;subjectSet&gt;&lt;displaySubject xml:lang="jp"&gt;</td>
 							<td>日本語</td>
 						</tr>
@@ -135,7 +135,7 @@
 							<td>&lt;subject&gt;</td>
 							<td>generalKeyword</td>
 							<td>&lt;generalKeyword&gt;</td>
-							<td>descriptiveMetadata.objectRelationWrap.subjectWrap.subjectSet.displaySubject</td>
+							<td>subjectWrap.subjectSet.displaySubject</td>
 							<td>&lt;subjectWrap&gt;&lt;subjectSet&gt;&lt;displaySubject xml:lang="jp"&gt;</td>
 							<td>英語</td>
 						</tr>
@@ -160,7 +160,7 @@
 							<td>&lt;alternative&gt;</td>
 							<td>generalTitle</td>
 							<td>&lt;generalTitle language="ja"&gt;</td>
-							<td>descriptiveMetadata.objectIdentificationWrap.titleWrap.titleSet.appellationValue</td>
+							<td>titleWrap.titleSet.appellationValue</td>
 							<td>&lt;titleWrap&gt;&lt;titleSet&gt;&lt;appellationValue xml:lang="jp"&gt;</td>
 							<td>日本語</td>
 						</tr>
@@ -172,7 +172,7 @@
 							<td>&lt;title lang="en"&gt;</td>
 							<td>generalTitle</td>
 							<td>&lt;generalTitle language="en"&gt;</td>
-							<td>descriptiveMetadata.objectIdentificationWrap.titleWrap.titleSet.appellationValue</td>
+							<td>titleWrap.titleSet.appellationValue</td>
 							<td>&lt;titleWrap&gt;&lt;titleSet&gt;&lt;appellationValue xml:lang="en"&gt;</td>
 							<td>英語</td>
 						</tr>
@@ -208,7 +208,7 @@
 							<td>&lt;subject&gt;</td>
 							<td>generalKeyword</td>
 							<td>&lt;generalKeyword&gt;</td>
-							<td>descriptiveMetadata.objectRelationWrap.subjectWrap.subjectSet.displaySubject</td>
+							<td>subjectWrap.subjectSet.displaySubject</td>
 							<td>&lt;subjectWrap&gt;&lt;subjectSet&gt;&lt;displaySubject xml:lang="jp"&gt;</td>
 							<td>日本語</td>
 						</tr>
@@ -220,7 +220,7 @@
 							<td>&lt;subject&gt;</td>
 							<td>generalKeyword</td>
 							<td>&lt;generalKeyword&gt;</td>
-							<td>descriptiveMetadata.objectRelationWrap.subjectWrap.subjectSet.displaySubject</td>
+							<td>subjectWrap.subjectSet.displaySubject</td>
 							<td>&lt;subjectWrap&gt;&lt;subjectSet&gt;&lt;displaySubject xml:lang="jp"&gt;</td>
 							<td>英語</td>
 						</tr>
@@ -1346,6 +1346,7 @@
 					<center><img src="./img/itemtype_mapping_04.png" alt="NIIType設定" border="0"/></center>
 					<br/>
 					各メタデータ属性にDublin CoreおよびJuNii2、Learning Object Matadata、LIDOの語彙を関連付けることができます。<br/>
+					Dublin Core以外のマッピング及び表示言語はセレクトボックスで内容を切り替えることができます。<br/>
 					セレクトボックスからDublin CoreまたはJuNii2、Learning Object Matadata、LIDOの語彙を選択すると、選択した語彙と関連付けされます。<br/>
 					ただし、メタデータ属性が書誌情報の場合Dublin CoreおよびJuNii2、Learning Object Matadata、LIDOの語彙が固定されており、変更や削除はできません。<br/>
 					<br/>

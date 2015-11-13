@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: repository_admin.html 42605 2014-10-03 01:02:01Z keiya_sugimoto $        -->
+<!--// $Id: repository_admin.html 54835 2015-06-25 04:10:46Z keiya_sugimoto $        -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -47,10 +47,10 @@
 <div class="mt10">
 	<div class="comp_tabset"></div>
 	<div class="comp_tabset_content">
-	
+
 		<{* タブ1 :表示設定 *}>
 		<div class="th_classic_content content text_color" id="admin_tab_1" align="center">
-			
+
 			<form id="id_form_repository_admin_1">
 			 <div class="box_center mt10">
 			 <{assign var="admin_params" value=$smarty.session.admin_params}>
@@ -76,7 +76,7 @@
 			      <option value="0" <{if $smarty.session.admin_params.disp_index_type.param_value == "0"}>SELECTED<{/if}>>
 			       <{$lang.repository_admin_index_newest_item}>
 			      </option>
-			      <option value="1" <{if $smarty.session.admin_params.disp_index_type.param_value == "1"}>SELECTED<{/if}>> 
+			      <option value="1" <{if $smarty.session.admin_params.disp_index_type.param_value == "1"}>SELECTED<{/if}>>
 			       <{$lang.repository_admin_index_order}>
 			      </option>
 		     </select>
@@ -96,9 +96,9 @@
 					<{* make index tree 2008/01/19 A.Suzuki --end-- *}>
 				</div>
 		    </td>
-		  </tr> 
+		  </tr>
 		  <{* 初期表示インデックス--end-- *}>
-		   
+
 		   <{* 言語表示設定 *}>
 		   <tr>
 			 <th class="al th_col_repos" colspan=2><{$lang.repository_admin_lang_setting}></th>
@@ -122,7 +122,7 @@
 		     <input name="alternative_language_en" id="id_alternative_language_en" type="checkbox" value="english" <{if $smarty.session.admin_params.alternative_language.param_value.english_flag==1}>CHECKED<{/if}>><label for="id_alternative_language_en"><{$lang.repository_language_en}></label><br/>
 		    </td>
 		   </tr>
-		   
+
 		   <tr>
 			 <th class="al th_col_repos" colspan=2><{$lang.repository_admin_currency_setting}></th>
 		   </tr>
@@ -136,7 +136,7 @@
 			  	</select>
 		    </td>
 		   </tr>
-		   
+
 		   <{* Add index list 2011/04/6 S.Abe --start-- *}>
 		   <tr>
              <th style="border: 1px solid #88b; text-align: left;" class="al th_col_repos ranking_paging" colspan=2><{$lang.repository_admin_select_index_list_setting}></th>
@@ -168,6 +168,21 @@
 		     </select>
 		    </td>
 		   </tr>
+
+		   <{* ranking tab display setting 2014/12/19 K.Matsushita --start-- *}>
+		   <tr>
+		    <td class="vt al item_edit_list normal w30"><{$lang.repository_admin_ranking_display_setting}></td>
+		    <td class="w70 al item_edit_list">
+              <label>
+                  <input type="radio" name="ranking_tab_display" value="1" <{if $action.ranking_tab_display == "1"}>CHECKED<{/if}>/><{$lang.repository_admin_sort_disp}>
+              </label>
+              <label>
+                  <input type="radio" name="ranking_tab_display" value="0" <{if $action.ranking_tab_display == "0"}>CHECKED<{/if}> onclick="javascript: changeIndexAuto();"/><{$lang.repository_admin_sort_not_disp}><br>
+              </label>
+		    </td>
+		   </tr>
+		   <{* ranking tab display setting 2014/12/19 K.Matsushita --end-- *}>
+
 		   <tr>
 		    <td class="vt al item_edit_list normal w30"><{$lang.repository_admin_ranking_term_recent_regist}></td>
 		    <td class="w70 al item_edit_list">
@@ -196,7 +211,29 @@
 		     <input id="id_ranking_is_disp_5" name="ranking_is_disp_recent_item" type="checkbox" value="dummy" <{if $smarty.session.admin_params.ranking_is_disp_recent_item.param_value==1}>CHECKED<{/if}>><label for="id_ranking_is_disp_5"><{$lang.repository_rank_newitem}></label>
 		    </td>
 		   </tr>
-		   
+
+		  <{* Default Search Type setting 2014/12/03 K.Sugimoto --start-- *}>
+		   <{* 検索設定 *}>
+		   <tr>
+		    <th class="al th_col_repos" colspan=2><{$lang.repository_admin_search}></th>
+		   </tr>
+           <tr>
+           <{* デフォルト検索設定 *}>
+            <td class="vt al item_edit_list normal w30">
+             <{$lang.repository_admin_default_search_type}>
+            </td>
+            <td class="w70 al item_edit_list">
+             <label style="margin-right:10px">
+              <input type="radio" name="default_search_type" value="0" <{if $action.default_search_type == 0}>checked=""<{/if}>>
+              <{$lang.repository_admin_detail_search_type}>
+             </label>
+             <label>
+              <input type="radio" name="default_search_type" value="1" <{if $action.default_search_type > 0}>checked=""<{/if}>>
+              <{$lang.repository_admin_simple_search_type}>
+             </label>
+            </td>
+           </tr>
+		  <{* Default Search Type setting 2014/12/03 K.Sugimoto --end-- *}>
           <{* Advanced Search condition setting 2013/11/20 R.Matsuura --start-- *}>
             <tr>
              <th class="al th_col_repos" colspan=2><{$lang.repository_detail_search_title}></th>
@@ -230,7 +267,7 @@
              </td>
             </tr>
           <{* Advanced Search condition setting 2013/11/20 R.Matsuura --end-- *}>
-		   
+
 		  <{* Search result setting 2009/03/05 A.Suzuki --start-- *}>
 		   <tr>
 		    <th class="al th_col_repos" colspan=2><{$lang.repository_admin_search_result}></th>
@@ -247,7 +284,7 @@
 				<{$lang.repository_admin_list_view_item}>
 		    </td>
 		   </tr>
-		   
+
 		   <tr>
 		   	<td class="vt al item_edit_list normal w30"><{$lang.repository_admin_index_search}><br/><{$lang.repository_admin_sort_default}></td>
 		    <td class="item_edit_list w70 al">
@@ -282,7 +319,7 @@
 		      	<td class="ptb04 plr08 wide al"><{$lang.repository_admin_sort_setting}></td>
 		    	</tr>
 		    </table>
-		     
+
 			  <table class="tb00 full">
 			  	<tr valign="top">
 				  	<td class="ptb04 plr08 w45 al" valign="top">
@@ -350,15 +387,30 @@
 		   </tr>
 		   <{* Help icon and OAI-ORE icon dipsplay setting 2010/02/10 K.Ando --end-- *}>
 
+		   <{* Usage Statistics link display setting 2014/12/16 K.Matsushita --start-- *}>
+		   <tr>
+		    <th class="al th_col_repos" colspan=2><{$lang.repository_admin_usagestatistics_link_display_setting}></th>
+		   </tr>
+		   <tr>
+		       <td class="vt al item_edit_list normal w30"><{$lang.repository_admin_usagestatistics_link_display}></td>
+		       <td class="item_edit_list w70 al">
+			      <select id="usagestatistics_link_display" name="usagestatistics_link_display">
+				   <option value="0" <{if $action.usagestatistics_link_display == "0"}>SELECTED<{/if}> ><{$lang.repository_admin_sort_not_disp}></option>
+				   <option value="1" <{if $action.usagestatistics_link_display == "1"}>SELECTED<{/if}> ><{$lang.repository_admin_sort_disp}></option>
+				  </select>
+		        </td>
+		   </tr>
+		   <{* Usage Statistics link display setting 2014/12/16 K.Matsushita --end-- *}>
+
 		  </table>
 		  </div>
 		  </form>
-		  
+
 		  <div class="btn-bottom full mt10 mb10">
 		   <input type="button" class="btn_blue" value="<{$lang.repository_commit}>" onclick="javascript: repositoryPdfCoverHeaderImgDelChk(); repositoryCls['<{$id}>'].repositoryAdminFileUpload(); return false;">
 		  </div>
 		</div>
-        
+
 		<{* タブ2:運用設定 *}>
 		<div class="th_classic_content content text_color box_center" id="admin_tab_2" align="center">
 			<form id="attachment_form<{$id}>" target="attachment_form<{$id}>" enctype="multipart/form-data">
@@ -382,7 +434,7 @@
 					<{$lang.repository_admin_guide2}> :<input id="id_file_coef_ci" type="text" name="file_coef_ci" value="<{$smarty.session.admin_params.file_coef_ci.param_value}>">MB<br/>
 					<{$lang.repository_admin_guide3}><input id="id_file_coef_cp" type="text" name="file_coef_cp" value="<{$smarty.session.admin_params.file_coef_cp.param_value}>"><{$lang.repository_admin_guide5}><br/>
 					</td>
-					</tr*}>   
+					</tr*}>
 				<{* Exportファイルの出力 *}>
 				<tr>
 					<td class="vt al item_edit_list normal w30"><{$lang.repository_admin_export_is_include_files}></td>
@@ -533,7 +585,7 @@
 								onclick="javascript: changePrivateTreeCreation<{$id}>();"
 							<{if $smarty.session.admin_params.is_make_privatetree.param_value==1}>
 								checked
-							<{/if}> 
+							<{/if}>
 							<{if $smarty.session.is_writable_define_inc==false}> disabled="disabled" <{/if}> >
 						<{$lang.repository_admin_privatetree_create_text}>
 					</label>
@@ -574,19 +626,82 @@
 				<tr>
 					<th class="th_col_repos al" colspan=2><{$lang.repository_admin_log}></th>
 				</tr>
-				<tr>
-					<td class="vt al item_edit_list normal w30"><{$lang.repository_admin_log_exclusion}></td>
-					<td class="w70 al item_edit_list">
-						<div class="ranking_list_paging">
-							<{$lang.repository_admin_log_address}><br/>
-							<span class="small">
-								<{$lang.repository_admin_log_Robots_Exclusion1}><br/>
-								<{$lang.repository_admin_log_Robots_Exclusion2}><br/>
-							</span>
-						</div>
-						<div><textarea class="full al h10em" id="id_log_exclusion" name="log_exclusion"><{$smarty.session.admin_params.log_exclusion.param_value}></textarea></div>
-					</td>
-				</tr>
+                <tr>
+                    <td class="vt al item_edit_list normal w30"><{$lang.repository_admin_robotlist_delete_execute}></td>
+                    <td class="w70 al item_edit_list">
+                        <{if $action.logTableStatus == 0}>
+                            <input class="btn_white" type="button" id="robotlistUpdate" onclick="repositoryCls['<{$id}>'].repositoryRobotlistRun(); return false;" value="<{$lang.repository_execute}>"><br>
+                        <{else}>
+                            <table class="full">
+                                <tr>
+                                    <td>
+                                        <div class="warning_msg"><{$lang.repository_admin_robotlist_now_executing}></div>
+                                    </td>
+                                    <td class="w10">
+                                        <input class="btn_delete" type="button" value="<{$lang.repository_admin_robotlist_process_kill}>" onclick="repositoryCls['<{$id}>'].repositoryRobotlistCancel(); return false;">
+                                    </td>
+                                </tr>
+                            </table>
+                        <{/if}>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="vt al item_edit_list normal w30"><{$lang.repository_admin_log_exclusion}></td>
+                    <td class="w70 al item_edit_list">
+                        <div class="ranking_list_paging">
+                            <{$lang.repository_admin_log_address}><br/>
+                        </div>
+                        <div>
+                            <textarea class="full al h10em" id="id_log_exclusion" name="log_exclusion" onchange="robotlistCheckbox<{$id}>();">
+                                <{$smarty.session.admin_params.log_exclusion.param_value}>
+                            </textarea>
+                        </div>
+                    </td>
+                </tr>
+                <{if $smarty.session.admin_params.robotlist|@count > 0}>
+                <tr>
+                    <td class="vt al item_edit_list normal w30">
+                        <{$lang.repository_admin_robotlist_common_crawler_list}>
+                    </td>
+                    <td class="al item_edit_list">
+                        <{section name=i loop=$smarty.session.admin_params.robotlist}>
+                           <{assign var="robotlist_value" value=$smarty.session.admin_params.robotlist[i]}>
+                            <table class="w92">
+                                <tr>
+                                    <td colspan="8">
+                                        <input type="checkbox" <{if $robotlist_value.check == "1"}>checked<{/if}> name="robotlistValid[<{$robotlist_value.robotlist_id}>]" onclick="robotlistCheckbox<{$id}>();">
+                                        <input type="text" class="full" name="robotlist_ip_address_value[<{$robotlist_value.robotlist_id}>]" value="<{$robotlist_value.url}>" readonly>
+                                    </td>
+                                </tr>
+                                <{if $robotlist_value.version == "" && $robotlist_value.date == "" && $robotlist_value.revision == "" && $robotlist_value.author == "" }>
+                                    <tr>
+                                        <td class="bright_red"><{$lang.repository_admin_robotlist_no_robotlist}></td>
+                                    </tr>
+                                <{else}>
+                                    <tr>
+                                        <td class="w20px" rowspan="2"></td>
+                                        <td class="w50px">Version</td>
+                                        <td class="w10px">:</td>
+                                        <td class="w50px"><{$robotlist_value.version}></td>
+                                        <td rowspan="2"></td>
+                                        <td class="w50px">Date</td>
+                                        <td class="w10px">:</td>
+                                        <td><{$robotlist_value.date}></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="w50px">Revision</td>
+                                        <td class="w10px">:</td>
+                                        <td class="w50px"><{$robotlist_value.revision}></td>
+                                        <td class="w50px">Author</td>
+                                        <td class="w10px">:</td>
+                                        <td><{$robotlist_value.author}></td>
+                                    </tr>
+                                <{/if}>
+                            </table>
+                        <{/section}>
+                    </td>
+                </tr>
+                <{/if}>
 			</table>
 			</div>
 			</form>
@@ -606,41 +721,62 @@
 				     <!--<div><textarea rows="10" cols="40" id="id_site_license" name="site_license"><{$smarty.session.admin_params.site_license.param_value}></textarea></div>-->
 				     <div class="mb10">
 				      <table class="full tb01 m05">
-				       <{section name=i loop=$smarty.session.admin_params.sitelicense_org.param_value}>
-				       <{assign var="sitelicense_org" value=$smarty.session.admin_params.sitelicense_org.param_value}>
-				       <{assign var="sitelicense_from" value=$smarty.session.admin_params.ip_sitelicense_from.param_value}>
-				       <{assign var="sitelicense_to" value=$smarty.session.admin_params.ip_sitelicense_to.param_value}>
-				       <{assign var="cnt" value=$smarty.section.i.index}>
+                       <{section name=i loop=$smarty.session.admin_params.sitelicense_id.param_value}>
+                       <{assign var="sitelicense_id" value=$smarty.session.admin_params.sitelicense_id.param_value}>
+                       <{assign var="sitelicense_org" value=$smarty.session.admin_params.sitelicense_org.param_value}>
+                       <{assign var="sitelicense_group" value=$smarty.session.admin_params.sitelicense_group.param_value}>
+                       <{assign var="sitelicense_from" value=$smarty.session.admin_params.ip_sitelicense_from.param_value}>
+                       <{assign var="sitelicense_to" value=$smarty.session.admin_params.ip_sitelicense_to.param_value}>
+                       <{assign var="cnt" value=$smarty.section.i.index}>
                        <{assign var="sitelicense_mail" value=$smarty.session.admin_params.sitelicense_mail.param_value}>
-				       <tr class="brd01">
-				        <th class="th_col_repos al" colspan=2><{$lang.repository_admin_site_license_organization}></th>
-				         <td class="brd01 item_edit_list"><input type="text" class="full" name="sitelicense_org[]" id="id_sitelicense_org" value="<{$sitelicense_org[$cnt]|smarty:nodefaults}>"/></td>
-				         <td class="brd01 item_edit_list ac" rowspan="3">
-				           <input type="button" class="btn_white" <{if $cnt==0}>disabled<{/if}> onclick="javascript: repositoryPdfCoverHeaderImgDelChk(); repositoryCls['<{$id}>'].repositoryAdminEditRowFileUpload('shfrow_up', <{$cnt}>); return false;" value="<{$lang.repository_up}>"/><br/>
-				           <input type="button" class="btn_white" <{if $cnt==(count($sitelicense_org)-1)}>disabled<{/if}> onclick="javascript: repositoryPdfCoverHeaderImgDelChk(); repositoryCls['<{$id}>'].repositoryAdminEditRowFileUpload('shfrow_dw', <{$cnt}>); return false;" value="<{$lang.repository_dw}>"/>
-				         </td>
-				         <td class="brd01 item_edit_list ac" rowspan="3"><input type="button" class="btn_delete" onclick="javascript: repositoryPdfCoverHeaderImgDelChk(); repositoryCls['<{$id}>'].repositoryAdminEditRowFileUpload('delrow', <{$cnt}>); return false;" value="<{$lang.repository_delete}>"/></td>
-				       </tr>
-				       <tr class="brd01">
+                       <tr class="brd01">
+                        <th class="th_col_repos al" colspan=2><{$lang.repository_admin_site_license_organization}></th>
+                         <td class="brd01 item_edit_list">
+                          <{* Sitelicense ID *}>
+                          <input type="hidden" name="sitelicense_id[]" id="sitelicense_organization_id<{$id}>" value="<{$sitelicense_id[$cnt]|default:'0'}>"/>
+                          <{* Sitelicense Organization Name *}>
+                          <input type="text" class="full" name="sitelicense_org[]" id="id_sitelicense_org" value="<{$sitelicense_org[$cnt]|smarty:nodefaults}>"/></td>
+                         <td class="brd01 item_edit_list ac" rowspan="4">
+                           <input type="button" class="btn_white" <{if $cnt==0}>disabled<{/if}> onclick="javascript: repositoryPdfCoverHeaderImgDelChk(); repositoryCls['<{$id}>'].repositoryAdminEditRowFileUpload('shfrow_up', <{$cnt}>); return false;" value="<{$lang.repository_up}>"/><br/>
+                           <input type="button" class="btn_white" <{if $cnt==(count($sitelicense_org)-1)}>disabled<{/if}> onclick="javascript: repositoryPdfCoverHeaderImgDelChk(); repositoryCls['<{$id}>'].repositoryAdminEditRowFileUpload('shfrow_dw', <{$cnt}>); return false;" value="<{$lang.repository_dw}>"/>
+                         </td>
+                         <td class="brd01 item_edit_list ac" rowspan="4"><input type="button" class="btn_delete" onclick="javascript: repositoryPdfCoverHeaderImgDelChk(); repositoryCls['<{$id}>'].repositoryAdminEditRowFileUpload('delrow', <{$cnt}>); return false;" value="<{$lang.repository_delete}>"/></td>
+                       </tr>
+                       <tr class="brd01">
                         <th class="th_col_repos al" colspan=2><{$lang.repository_admin_site_license_mail_address}><br/></th>
+                         <{* Sitelicense Mail Address *}>
                          <td class="brd01 item_edit_list"><input type="text" class="full" name="sitelicense_mail[]" id="id_sitelicense_mail" value="<{$sitelicense_mail[$cnt]|smarty:nodefaults}>" /></td>
                        </tr>
                        <tr class="brd01">
-				        <th class="th_col_repos al" colspan=2>
-				         <{$lang.repository_admin_site_license_iprange}><br/>
-				         <{$lang.repository_admin_site_license_from_to}>
-				        </th>
-				         <td class="brd01 item_edit_list">
-				           <input type="text" class="w30px ar" name="ip_sitelicense_from[]" id="input_def_from_<{$cnt}>_1" value="<{$sitelicense_from[$cnt][0]}>" onclick="return checkInput(this.id, event);" onkeypress="return checkInput(this.id, event);" class="w30px" style="ime-mode:disabled;" />&nbsp;.&nbsp;
-				           <input type="text" class="w30px ar" name="ip_sitelicense_from[]" id="input_def_from_<{$cnt}>_2" value="<{$sitelicense_from[$cnt][1]}>" onclick="return checkInput(this.id, event);" onkeypress="return checkInput(this.id, event);" class="w30px" style="ime-mode:disabled;" />&nbsp;.&nbsp;
-				           <input type="text" class="w30px ar" name="ip_sitelicense_from[]" id="input_def_from_<{$cnt}>_3" value="<{$sitelicense_from[$cnt][2]}>" onclick="return checkInput(this.id, event);" onkeypress="return checkInput(this.id, event);" class="w30px" style="ime-mode:disabled;" />&nbsp;.&nbsp;
-				           <input type="text" class="w30px ar" name="ip_sitelicense_from[]" id="input_def_from_<{$cnt}>_4" value="<{$sitelicense_from[$cnt][3]}>" onclick="return checkInput(this.id, event);" onkeypress="return checkInput(this.id, event);" class="w30px" style="ime-mode:disabled;" />
-				           -
-				           <input type="text" class="w30px ar" name="ip_sitelicense_to[]" id="input_def_to_<{$cnt}>_1" value="<{$sitelicense_to[$cnt][0]}>" onclick="return checkInput(this.id, event);" onkeypress="return checkInput(this.id, event);" class="w30px" style="ime-mode:disabled;" />&nbsp;.&nbsp;
-				           <input type="text" class="w30px ar" name="ip_sitelicense_to[]" id="input_def_to_<{$cnt}>_2" value="<{$sitelicense_to[$cnt][1]}>" onclick="return checkInput(this.id, event);" onkeypress="return checkInput(this.id, event);" class="w30px" style="ime-mode:disabled;" />&nbsp;.&nbsp;
-				           <input type="text" class="w30px ar" name="ip_sitelicense_to[]" id="input_def_to_<{$cnt}>_3" value="<{$sitelicense_to[$cnt][2]}>" onclick="return checkInput(this.id, event);" onkeypress="return checkInput(this.id, event);" class="w30px" style="ime-mode:disabled;" />&nbsp;.&nbsp;
-				           <input type="text" class="w30px ar" name="ip_sitelicense_to[]" id="input_def_to_<{$cnt}>_4" value="<{$sitelicense_to[$cnt][3]}>" onclick="return checkInput(this.id, event);" onkeypress="return checkInput(this.id, event);" class="w30px" style="ime-mode:disabled;" />
-				         </td>
+                        <th class="th_col_repos al" colspan=2><{$lang.repository_admin_site_license_group}><br/></th>
+                         <{* Sitelicense group name *}>
+                         <td class="brd01 item_edit_list"><input type="text" class="full" name="sitelicense_group[]" id="id_sitelicense_group" value="<{$sitelicense_group[$cnt]|smarty:nodefaults}>" /></td>
+                       </tr>
+                       <tr class="brd01">
+                        <th class="th_col_repos al" colspan=2>
+                         <{$lang.repository_admin_site_license_iprange}><br/>
+                         <{$lang.repository_admin_site_license_from_to}>
+                        </th>
+                        <td class="brd01 item_edit_list">
+                         <{section name=j loop=$smarty.session.admin_params.ip_sitelicense_from.param_value[$cnt]}>
+                         <{assign var="ip_cnt" value=$smarty.section.j.index}>
+                          <{if $ip_cnt > 0}>
+                          <br><br>
+                          <{/if}>
+                          <{* Sitelicense IP Address (from - to) *}>
+                          <input type="text" class="w30px ar" name="ip_sitelicense_from[<{$cnt}>][<{$ip_cnt}>][]" id="input_def_from_<{$cnt}>_<{$ip_cnt}>_1" value="<{$sitelicense_from[$cnt][$ip_cnt][0]}>" onclick="return checkInput(this.id, event);" onkeypress="return checkInput(this.id, event);" class="w30px" style="ime-mode:disabled;" />&nbsp;.&nbsp;
+                          <input type="text" class="w30px ar" name="ip_sitelicense_from[<{$cnt}>][<{$ip_cnt}>][]" id="input_def_from_<{$cnt}>_<{$ip_cnt}>_2" value="<{$sitelicense_from[$cnt][$ip_cnt][1]}>" onclick="return checkInput(this.id, event);" onkeypress="return checkInput(this.id, event);" class="w30px" style="ime-mode:disabled;" />&nbsp;.&nbsp;
+                          <input type="text" class="w30px ar" name="ip_sitelicense_from[<{$cnt}>][<{$ip_cnt}>][]" id="input_def_from_<{$cnt}>_<{$ip_cnt}>_3" value="<{$sitelicense_from[$cnt][$ip_cnt][2]}>" onclick="return checkInput(this.id, event);" onkeypress="return checkInput(this.id, event);" class="w30px" style="ime-mode:disabled;" />&nbsp;.&nbsp;
+                          <input type="text" class="w30px ar" name="ip_sitelicense_from[<{$cnt}>][<{$ip_cnt}>][]" id="input_def_from_<{$cnt}>_<{$ip_cnt}>_4" value="<{$sitelicense_from[$cnt][$ip_cnt][3]}>" onclick="return checkInput(this.id, event);" onkeypress="return checkInput(this.id, event);" class="w30px" style="ime-mode:disabled;" />
+                          -
+                          <input type="text" class="w30px ar" name="ip_sitelicense_to[<{$cnt}>][<{$ip_cnt}>][]" id="input_def_to_<{$cnt}>_<{$ip_cnt}>_1" value="<{$sitelicense_to[$cnt][$ip_cnt][0]}>" onclick="return checkInput(this.id, event);" onkeypress="return checkInput(this.id, event);" class="w30px" style="ime-mode:disabled;" />&nbsp;.&nbsp;
+                          <input type="text" class="w30px ar" name="ip_sitelicense_to[<{$cnt}>][<{$ip_cnt}>][]" id="input_def_to_<{$cnt}>_<{$ip_cnt}>_2" value="<{$sitelicense_to[$cnt][$ip_cnt][1]}>" onclick="return checkInput(this.id, event);" onkeypress="return checkInput(this.id, event);" class="w30px" style="ime-mode:disabled;" />&nbsp;.&nbsp;
+                          <input type="text" class="w30px ar" name="ip_sitelicense_to[<{$cnt}>][<{$ip_cnt}>][]" id="input_def_to_<{$cnt}>_<{$ip_cnt}>_3" value="<{$sitelicense_to[$cnt][$ip_cnt][2]}>" onclick="return checkInput(this.id, event);" onkeypress="return checkInput(this.id, event);" class="w30px" style="ime-mode:disabled;" />&nbsp;.&nbsp;
+                          <input type="text" class="w30px ar" name="ip_sitelicense_to[<{$cnt}>][<{$ip_cnt}>][]" id="input_def_to_<{$cnt}>_<{$ip_cnt}>_4" value="<{$sitelicense_to[$cnt][$ip_cnt][3]}>" onclick="return checkInput(this.id, event);" onkeypress="return checkInput(this.id, event);" class="w30px" style="ime-mode:disabled;" />
+                          <{/section}>
+                          <br><br>
+                          <input type="button" class="btn_white" onclick="javascript: repositoryPdfCoverHeaderImgDelChk(); repositoryCls['<{$id}>'].repositoryAdminEditRowFileUpload('addiprow', <{$cnt}>); return false;" value="<{$lang.repository_admin_site_license_addrow}>" />
+				        </td>
 				       </tr>
 				       <{/section}>
 				      </table>
@@ -648,7 +784,7 @@
 				     <input type="button" class="btn_white" onclick="javascript: repositoryPdfCoverHeaderImgDelChk(); repositoryCls['<{$id}>'].repositoryAdminEditRowFileUpload('addrow'); return false;" value="<{$lang.repository_admin_site_license_addrow}>" />
 				    </td>
 				   </tr>
-			   
+
 			   <{*Item type select for Site License --start--*}>
 			   <tr>
 			    <td colspan="2" class="al item_edit_list">
@@ -665,7 +801,7 @@
 					<{$lang.repository_admin_site_license_item_type_NG}>
 				  </td>
 			     </tr>
-			     
+
 			     <tr>
                   <td class="ptb04 plr08 w45 pt10">
                     <select multiple name="allow_item_type" id="allow_item_type_name" class="full h10em">
@@ -691,7 +827,7 @@
                     <br/><input type="hidden" name="sitelicense_itemtype" id="not_allow_item_type_id" value="<{$smarty.session.admin_params.site_license_item_type_id.param_value}>"/>
                   </td>
 			     </tr>
-			     
+
 			    </table>
 			    </div>
 			    </td>
@@ -887,7 +1023,7 @@
 			      </table>
 			    </td>
 			   </tr>
-			
+
 			<{* Add Clear Ranking Data  2010/02/04 K.Ando --end-- *}>
 			<{* Add File clean-up  2011/02/23 H.Goto --start-- *}>
                <tr>
@@ -1007,7 +1143,7 @@
                             </td>
                         </tr>
                         </table>
-                        
+
                         <table class="tb00 full">
 	                        <tr>
 	                            <{* td colspan="2" *}>
@@ -1018,7 +1154,7 @@
 	                            </td>
 	                        </tr>
                          </table>
-                    
+
                 </td>
             </tr>
             <tr id="id_feedback_send_mail_setting_tr_2" <{if $smarty.session.admin_params.send_feedback_mail_activate_flg.param_value == "0"}>style="display:none"<{/if}>>
@@ -1066,7 +1202,7 @@
                 </td>
             </tr>
             <{* Add feedback mail 2012/08/21 A.Suzuki --end-- *}>
-            
+
             <{* Add External search wordl 2014/05/22 K.Matuso --start-- *}>
             <tr>
                 <th class="th_col_repos al" colspan=2><{$lang.repository_admin_referer}></th>
@@ -1089,19 +1225,19 @@
                 </td>
                 <td class="w70 al item_edit_list">
                     <label for="id_external_searchword_stopword_rule_2">
-                        <input type="radio" id = "id_external_searchword_stopword_rule_2" name="external_searchword_stopword_rule" value="2" 
+                        <input type="radio" id = "id_external_searchword_stopword_rule_2" name="external_searchword_stopword_rule" value="2"
                         <{if $smarty.session.admin_params.externalsearchword_stopword.param_value =='2'}>checked<{/if}>>
                         <{$lang.repository_admin_referer_stop_word_disable}>
                     </label>
                     <br>
                     <label for="id_external_searchword_stopword_rule_1">
-                    <input type="radio" id = "id_external_searchword_stopword_rule_1"name="external_searchword_stopword_rule" value="1" 
+                    <input type="radio" id = "id_external_searchword_stopword_rule_1"name="external_searchword_stopword_rule" value="1"
                          <{if $smarty.session.admin_params.externalsearchword_stopword.param_value =='1'}>checked<{/if}>>
                         <{$lang.repository_admin_referer_stop_word_morphological_enable}>
                     </label>
                     <br>
                     <label for="id_external_searchword_stopword_rule_0">
-                    <input type="radio" id = "id_external_searchword_stopword_rule_0"name="external_searchword_stopword_rule" value="0" 
+                    <input type="radio" id = "id_external_searchword_stopword_rule_0"name="external_searchword_stopword_rule" value="0"
                         <{if $smarty.session.admin_params.path_mecab.path != 'true'}>disabled="disabled" <{/if}>
                         <{if $smarty.session.admin_params.externalsearchword_stopword.param_value =='0'}>checked<{/if}> >
                         <{$lang.repository_admin_referer_stop_word_enable}>
@@ -1128,10 +1264,10 @@
                 <td class="vt al item_edit_list normal w30">
                     <{$lang.repository_admin_referer_update_stop_word}>
                 </td>
-                
+
                 <td class="w70 al item_edit_list">
                     <{* can execute *}>
-                    
+
                     <input type="button" class="btn_white" value="<{$lang.repository_execute}>"
                     <{if $smarty.session.stopwordUpdateStatus == "processing"}>disabled="disabled"<{/if}>
                       onclick="commonCls.sendView('<{$id}>', {'action':'repository_view_edit_adminconf_confirm', 'adminconfirm_action':'externalsearchstopword'}); return false;">
@@ -1141,12 +1277,12 @@
             <{* Add External search wordl 2014/05/22 K.Matuso --end-- *}>
 			  </table>
 			  </form>
-		
+
 		  <div class="btn-bottom full mt10 mb10">
 		   <input type="button" class="btn_blue" value="<{$lang.repository_commit}>" onclick="javascript: repositoryPdfCoverHeaderImgDelChk(); repositoryCls['<{$id}>'].repositoryAdminFileUpload(); return false;">
 		  </div>
 		</div>
-		
+
 		<{* タブ3:管理者設定 *}>
 		<div class="th_classic_content content text_color box_center" id="admin_tab_3" align="center">
 		   <form id="id_form_repository_admin_3">
@@ -1171,18 +1307,63 @@
 		   </tr>
 		  <{* PrefixID *}>
           <{* Add new prefix 2013/12/25 T.Ichikawa --start-- *}>
+          <{* Add DataCite 2015/02/10 K.Sugimoto --start-- *}>
            <tr>
-    	    <td class="vt al item_edit_list normal w30"><{$lang.repository_admin_get_jalc_doi}></td>
-		    <td class="w70 al item_edit_list">
-		     <input id="jalcdoi_id" type="text" name="prefixJalcDoi" class="full al" value="<{if $action.prefixJalcDoi != null}><{$action.prefixJalcDoi}><{/if}>">
-            </td>
+            <{if $smarty.const._REPOSITORY_JALC_DOI == true || $smarty.const._REPOSITORY_JALC_CROSSREF_DOI == true || $smarty.const._REPOSITORY_JALC_DATACITE_DOI == true}>
+             <td class="vt al item_edit_list normal w30"><{$lang.repository_admin_jalc}></td>
+              <td class="w70 al item_edit_list">
+               <table class="full">
+                 <{if $smarty.const._REPOSITORY_JALC_DOI == true}>
+                  <tr>
+                    <td>
+                      <{$lang.repository_admin_get_jalc_doi}>
+                    </td>
+                    <td class="full">
+                      <input id="jalcdoi_id" type="text" name="prefixJalcDoi" class="full al" value="<{if $action.prefixJalcDoi != null}><{$action.prefixJalcDoi}><{/if}>">
+                    </td>
+                  </tr>
+                 <{/if}>
+                 <{if $smarty.const._REPOSITORY_JALC_CROSSREF_DOI == true}>
+                  <tr>
+                    <td>
+                      <{$lang.repository_admin_get_cross_ref_doi}>
+                    </td>
+                    <td class="full">
+                      <input id="crossref_id" type="text" name="prefixCrossRef" class="full al" value="<{if $action.prefixCrossRef != null}><{$action.prefixCrossRef}><{/if}>">
+                    </td>
+                  </tr>
+                 <{/if}>
+                 <{if $smarty.const._REPOSITORY_JALC_DATACITE_DOI == true}>
+                  <tr>
+                    <td>
+                      <{$lang.repository_admin_get_datacite_doi}>
+                    </td>
+                    <td class="full">
+                      <input id="datacite_id" type="text" name="prefixDataCite" class="full al" value="<{if $action.prefixDataCite != null}><{$action.prefixDataCite}><{/if}>">
+                    </td>
+                  </tr>
+                 <{/if}>
+                 <tr>
+                   <td>
+                     <{$lang.repository_admin_prefix_flag}>
+                   </td>
+                   <td class="full">
+                     <label style="margin-right:10px">
+                      <input type="radio" name="prefix_flag" value="1" <{if $action.prefix_flag > 0}>checked=""<{/if}> <{if $action.exist_doi_item > 0}>disabled=""<{/if}>>
+                      <{$lang.repository_admin_add_prefix}>
+                     </label>
+                     <label>
+                      <input type="radio" name="prefix_flag" value="0" <{if $action.prefix_flag == 0}>checked=""<{/if}> <{if $action.exist_doi_item > 0}>disabled=""<{/if}>>
+                      <{$lang.repository_admin_do_not_add_prefix}>
+                     </label>
+                   </td>
+                 </tr>
+               </table>
+              </td>
+             </td>
+            <{/if}>
            </tr>
-           <tr>
-    	    <td class="vt al item_edit_list normal w30"><{$lang.repository_admin_get_cross_ref_doi}></td>
-		    <td class="w70 al item_edit_list">
-		     <input id="crossref_id" type="text" name="prefixCrossRef" class="full al" value="<{if $action.prefixCrossRef != null}><{$action.prefixCrossRef}><{/if}>">
-            </td>
-           </tr>
+          <{* Add DataCite 2015/02/10 K.Sugimoto --end-- *}>
            <tr>
     	    <td class="vt al item_edit_list normal w30"><{$lang.repository_admin_get_cnri}></td>
 		    <td class="w70 al item_edit_list">
@@ -1219,7 +1400,7 @@
 			     <input id="id_AWSSecretAccessKey" type="text" name="AWSSecretAccessKey" class="full al" value="<{$smarty.session.admin_params.AWSSecretAccessKey.param_value}>">
                 </td>
                </tr>
-               
+
                <{* Add AssociateTag for modify API Y.Nakao 2011/10/19 --start-- *}>
                <tr>
                  <{* AssociateTag *}>
@@ -1229,7 +1410,7 @@
                 </td>
                </tr>
                <{* Add AssociateTag for modify API Y.Nakao 2011/10/19 --end-- *}>
-               
+
                <{* Add ICHUSHI Login A.jin 2012/11/14 --start-- *}>
                <tr>
                 <{* ICHUSHI Connect Status *}>
@@ -1246,7 +1427,7 @@
                  <{* ICHUSHI Login Information *}>
                  <td class="vt al item_edit_list normal w30" nowrap="nowrap" valign="top"><{$lang.repository_admin_IchushiLoginInfomation}></td>
                  <td class="w70 al item_edit_list">
-                    <img class="brd03" style="margin: 10px 4px 0px 4px; background-color: <{if $smarty.session.login_connect=='1'}>#0f0;<{else}>#f00;<{/if}>" 
+                    <img class="brd03" style="margin: 10px 4px 0px 4px; background-color: <{if $smarty.session.login_connect=='1'}>#0f0;<{else}>#f00;<{/if}>"
                     src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/check.png">
                     <{$lang.repository_admin_IchushiLogin_now_connect_stat}>
                     <{if $smarty.session.login_connect=='1'}>
@@ -1262,14 +1443,37 @@
                   <br>
                   <label class="mt05 mb05"><{$lang.repository_admin_adminconf_password}>
                     <br>
-                    <input type="password" id="id_ichushiLoginPasswd" name="ichushiLoginPasswd" class="full al" 
-                    value="<{if $smarty.session.is_display_passwd=='1'}>********<{elseif $smarty.session.ichushi_login_passwd!=''}><{$smarty.session.ichushi_login_passwd}><{else}><{/if}>" 
+                    <input type="password" id="id_ichushiLoginPasswd" name="ichushiLoginPasswd" class="full al"
+                    value="<{if $smarty.session.is_display_passwd=='1'}>********<{elseif $smarty.session.ichushi_login_passwd!=''}><{$smarty.session.ichushi_login_passwd}><{else}><{/if}>"
                     onfocus="this.value=''">
                   </label>
                  </td>
                </tr>
                <{* Add ICHUSHI Login A.jin 2012/11/14 --end-- *}>
-               
+
+               <{* Auto Input Metadata by CrossRef DOI K.Sugimoto 2015/03/02 --start-- *}>
+               <tr>
+                 <{* CrossRef Query Services Account *}>
+                 <td class="vt al item_edit_list normal w30" nowrap="nowrap" valign="top"><{$lang.repository_admin_CrossRefQueryServicesAccount}></td>
+                 <td class="w70 al item_edit_list">
+                   <input type="text" name="CrossRefQueryServicesAccount" class="full al" value="<{$smarty.session.admin_params.CrossRefQueryServicesAccount.param_value}>">
+                </td>
+               </tr>
+               <{* Auto Input Metadata by CrossRef DOI K.Sugimoto 2015/03/02 --end-- *}>
+
+               <{*Institution Name setting*}>
+               <tr>
+                <th class="th_col_repos al" colspan=2><{$lang.repository_admin_institution_name}></th>
+               </tr>
+               <tr>
+                   <td class="vt al item_edit_list normal w30">
+                       <{$lang.repository_admin_institution_name_explanation}>
+                   </td>
+                   <td class="w70 al item_edit_list">
+                    <input type="text" name="institutionName" class="full al" value="<{$smarty.session.admin_params.institution_name.param_value}>">
+                   </td>
+               </tr>
+
 			   <{*OAI-PMH setting*}>
 			   <tr>
 			    <th class="th_col_repos al" colspan=2><{$lang.repository_admin_oaipmh}></th>
@@ -1304,7 +1508,7 @@
 			     <input id="id_prvd_repo_name" type="text" name="prvd_Identify_repositoryName" class="full al" value="<{$smarty.session.admin_params.prvd_Identify_repositoryName.param_value}>"><{$lang.repository_repo_name}>
 			    </td>
 			   </tr>
-			
+
 			   <tr>
 			    <td class="vt al item_edit_list normal w30"><{$lang.repository_admin_prvd_create_prvd_earliest_datestamp}></td>
 			    <td class="w70 al item_edit_list">
@@ -1544,7 +1748,7 @@
                                             ※<{$lang.repository_admin_url_rewrite_caution}>
                  </td>
                </tr>
-               
+
                <{* Add Harvesting 2012/02/23 A.Suzuki --start-- *}>
                <{* Harvesting *}>
                <tr>
@@ -1628,7 +1832,7 @@
                       <{/if}>
                      </td>
                     </tr>
-                    
+
                     <{* baseURL *}>
                     <tr class="brd01">
                      <th class="brd01 w20 item_edit_list"><{$lang.repository_admin_harvesting_baseURL}></td>
@@ -1639,15 +1843,15 @@
                       <{/if}>
                      </td>
                     </tr>
-                    
-                    
+
+
                     <{*Add selective harvesting 2013/09/03 R.Matsuura --start--*}>
                     <{* listRecords *}>
                     <tr class="brd01">
                      <th class="brd01 w20 item_edit_list">from</td>
                      <td class="brd01 item_edit_list">
                      <{$lang.repository_admin_harvesting_selective_harvesting_notes}><br/>
-                     
+
                       <input id="id_harvesting_from_date_year_<{$cnt}>" type="text" class="w04em" name="harvesting_from_date_year[]" value="<{$smarty.session.harvestingRepositories[$cnt].from_date_array.year}>" <{if $smarty.session.harvestingStatus != "start"}>disabled<{/if}>/>
                       &nbsp;-&nbsp;
                       <select id="id_harvesting_from_date_month_<{$cnt}>" name="harvesting_from_date_month[]" class="w035em" <{if $smarty.session.harvestingStatus != "start"}>disabled<{/if}>>
@@ -1853,17 +2057,17 @@
      			      <option value="59" <{if $smarty.session.harvestingRepositories[$cnt].from_date_array.second == "59"}>SELECTED<{/if}> >59</option>
      			     </select>
      			     &nbsp;Z
-                    
+
                      &nbsp;&nbsp;
 			         <input type="button" class="btn_white" name="Reset_from_date" value="<{$lang.repository_admin_harvesting_selective_harvesting_clear_button}>" onclick="resetFromDate(<{$cnt}>)" <{if $smarty.session.harvestingStatus != "start"}>disabled<{/if}>/>
-                    
-                    
+
+
                     <{* listRecords *}>
                     <tr class="brd01">
                      <th class="brd01 w20 item_edit_list">until</td>
                      <td class="brd01 item_edit_list">
                      <{$lang.repository_admin_harvesting_selective_harvesting_notes}><br/>
-                     
+
                      <input id="id_harvesting_until_date_year_<{$cnt}>" type="text" class="w04em" name="harvesting_until_date_year[]" value="<{$smarty.session.harvestingRepositories[$cnt].until_date_array.year}>" <{if $smarty.session.harvestingStatus != "start"}>disabled<{/if}>/>
     			     &nbsp;-&nbsp;
     			     <select id="id_harvesting_until_date_month_<{$cnt}>" name="harvesting_until_date_month[]" class="w035em" <{if $smarty.session.harvestingStatus != "start"}>disabled<{/if}>>
@@ -2069,13 +2273,13 @@
     			      <option value="59" <{if $smarty.session.harvestingRepositories[$cnt].until_date_array.second == "59"}>SELECTED<{/if}> >59</option>
     			     </select>
     			     &nbsp;Z
-    			     
+
     			     &nbsp;&nbsp;
     			     <input type="button" class="btn_white" name="Reset_until_date" value="<{$lang.repository_admin_harvesting_selective_harvesting_clear_button}>" onclick="resetUntilDate(<{$cnt}>)" <{if $smarty.session.harvestingStatus != "start"}>disabled<{/if}>/>
-			     
+
                      </td>
                     </tr>
-                    
+
                     <tr class="brd01">
                      <th class="brd01 w20 item_edit_list">set</td>
                      <td class="brd01 item_edit_list">
@@ -2087,13 +2291,13 @@
                     </tr>
                     <input type="hidden" name="harvesting_execution_date[]" value="<{$smarty.session.harvestingRepositories[$cnt].execution_date}>" />
                     <{*Add selective harvesting 2013/09/03 R.Matsuura --end--*}>
-                    
+
                     <{* metadataPrefix *}>
                     <tr class="brd01">
                      <th class="brd01 w20 item_edit_list"><{$lang.repository_admin_harvesting_metadataPrefix}></td>
                      <td class="brd01 item_edit_list">
                       <label>
-                       <input type="radio" name="harvesting_metadataPrefix_radio_<{$cnt}>" value="oai_dc" <{if $smarty.session.harvestingRepositories[$cnt].metadata_prefix=="oai_dc"}>checked <{/if}> 
+                       <input type="radio" name="harvesting_metadataPrefix_radio_<{$cnt}>" value="oai_dc" <{if $smarty.session.harvestingRepositories[$cnt].metadata_prefix=="oai_dc"}>checked <{/if}>
                               onclick="$('harvesting_metadataPrefix_<{$cnt}>').value='oai_dc';" <{if $smarty.session.harvestingStatus != "start"}>disabled<{/if}>/>
                        <{$lang.repository_admin_harvesting_dublin_core}>
                       </label>
@@ -2121,7 +2325,7 @@
                         value="<{$smarty.session.harvestingRepositories[$cnt].metadata_prefix|default:'-1'}>"/>
                      </td>
                     </tr>
-                    
+
                     <{* post index *}>
                     <tr class="brd01">
                      <th class="brd01 w20 item_edit_list"><{$lang.repository_admin_harvesting_index_to_post}></td>
@@ -2134,7 +2338,7 @@
                       <input type="button" class="btn_white" value="select" onclick="showHarvestingIndexTree(event, '<{$cnt}>');"  <{if $smarty.session.harvestingStatus != "start"}>disabled<{/if}> />
                      </td>
                     </tr>
-                    
+
                     <{* automatic sorting *}>
                     <tr class="brd01">
                      <th class="brd01 w20 item_edit_list"><{$lang.repository_admin_harvesting_automatic_sorting}></td>
@@ -2213,7 +2417,7 @@
 			   </tr>
 			  </table>
 			 </form>
-			   
+
 		  <div class="btn-bottom full mt10 mb10">
 		   <input type="button" class="btn_blue" value="<{$lang.repository_commit}>" onclick="javascript: repositoryPdfCoverHeaderImgDelChk(); repositoryCls['<{$id}>'].repositoryAdminFileUpload(); return false;">
 		  </div>
@@ -2260,7 +2464,7 @@
 		if (32 <= code && code <= 126) {	// ASCII文字の範囲内
 			char =  String.fromCharCode(code);
 		}
-		
+
 		if (char && !char.match(/\d/)) {
 			return false;
 		} else {
@@ -2288,6 +2492,10 @@
 	 	} else{
 	 		$('id_disp_index_type').disabled = true;
 	 		$('id_default_index').style.display = "none";
+	 		<{*Add ranking tab display setting 2015/03/24 K.Sugimoto --start--*}>
+	 		var ranking_tab_display = document.getElementsByName("ranking_tab_display");
+	 		ranking_tab_display[0].checked = true;
+	 		<{*Add ranking tab display setting 2015/03/24 K.Sugimoto --end--*}>
 	 	}
 	 	return;
   	}
@@ -2300,7 +2508,7 @@
 		var not = "not_allow_item_type_name";
 		var allow = "allow_item_type_name";
 		var id = "not_allow_item_type_id";
-	
+
 		if($(allow).selectedIndex != -1){
 			var not_allow_item_type_id_txt = ($(id).value).trim().split(",");
 			var cnt = $(allow).length
@@ -2332,7 +2540,7 @@
 		var not = "not_allow_item_type_name";
 		var allow = "allow_item_type_name";
 		var id = "not_allow_item_type_id";
-	
+
 		if($(not).selectedIndex != -1){
 			var not_allow_item_type_id_txt = ($(id).value).trim().split(",");
 			var cnt = $(not).length
@@ -2387,7 +2595,7 @@
 		tabset.setActiveIndex(valueParseInt(<{$action.admin_active_tab}>));
 		tabset.addTabset("<{$lang.repository_admin_tab_name_display_setting}>", changeActiveTab1);
 		tabset.addTabset("<{$lang.repository_admin_tab_name_operation_setting}>", changeActiveTab2);
-		tabset.addTabset("<{$lang.repository_admin_tab_name_server_setting}>", changeActiveTab3);		
+		tabset.addTabset("<{$lang.repository_admin_tab_name_server_setting}>", changeActiveTab3);
 		tabset.render();
 </script>
 <{* make Tab 2009/01/14 A.Suzuki --end-- *}>
@@ -2396,10 +2604,10 @@
 <script class="nc_script" type="text/javascript">
     repositoryInitTree<{$id}>('repository_admin_tree','<{$id}>', 'rootcheck');
 	$('repository_admin_tree').style.height = "200px";
-	
+
     repositoryInitTree<{$id}>('repository<{$id}>HarvestingIndexTree', '<{$id}>', 'harvestingCheck');
 	$('repository<{$id}>HarvestingIndexTree').style.height = "400px";
-	
+
 	<{* Add K.Matsuo 2013/04/08 --start-- *}>
     repositoryInitTree<{$id}>('repository<{$id}>PrivateTreeTree','<{$id}>', 'privateTreeParentCheck');
 	$('repository<{$id}>PrivateTreeTree').style.height = <{$smarty.const._SNIPPET_HEIGHT}>+"px";
@@ -2441,7 +2649,7 @@
 				$('harvesting_tree_check' + oldIndexId).checked = false;
 			}
 		}
-		
+
 		// setting new check data
 		harvestingRepositoryCnt = cnt;
 		var indexId = $('repository<{$id}>HarvestingIndexId'+harvestingRepositoryCnt).value;
@@ -2450,7 +2658,7 @@
 		{
 			$('harvesting_tree_check'+indexId).checked = true;
 		}
-		
+
 		$('repository<{$id}>HarvestingIndexTreePanel').style.display = 'block';
 		if(event.pageY)
 		{
@@ -2468,7 +2676,7 @@
 		var harvestingIndexId = $('repository<{$id}>HarvestingIndexId'+harvestingRepositoryCnt);
 		var harvestingIndexName = $('repository<{$id}>HarvestingIndexName'+harvestingRepositoryCnt);
 		var harvestingIndexNameHidden = $('repository<{$id}>HarvestingIndexNameHidden'+harvestingRepositoryCnt);
-		
+
 		// clear old check data
 		var oldIndexId = harvestingIndexId.value;
 		if($('harvesting_tree_check' + oldIndexId) != null)
@@ -2508,7 +2716,7 @@
 		{
 			$('privateTree_tree_check'+indexId).checked = true;
 		}
-		// clear old check data		
+		// clear old check data
 		$('repository<{$id}>PrivateTreeTreePanel').style.display = 'block';
 		if(event.pageY)
 		{
@@ -2526,7 +2734,7 @@
 	{
 		var privateTreeParentId = $('repository<{$id}>PrivateTreeParentId');
 		var privateTreeParentName = $('repository<{$id}>PrivateTreeParentName');
-		
+
 		if($('privateTree_tree_check' + id).checked)
 		{
 			// clear old check data
@@ -2559,7 +2767,7 @@
         var disp_hidden = "sort_disp_hidden_id";
         var sort_default_index = "sort_disp_default_index_id";
         var sort_default_keyword = "sort_disp_default_keyword_id";
-    
+
         if($(not_disp).selectedIndex != -1){
             var not_disp_txt = ($(not_disp_hidden).value).trim().split("|");
             var disp_txt = ($(disp_hidden).value).trim().split("|");
@@ -2635,7 +2843,7 @@
                     $(not_disp).options[ jj-1 ].value = elm.value;
                     $(disp).options[ii] = null;
                     $(sort_default_index).options[ii] = null;
-                    
+
                     var keyword_cnt = $(sort_default_keyword).length;
                     for(kk=keyword_cnt-1; kk>=0; kk--)
                     {
@@ -2668,7 +2876,7 @@
                 disp_txt.push(tmp_elm.value);
                 not_disp_txt.splice(tmp_not_disp_num,1);
             }
-            
+
             $(not_disp_hidden).value = "";
             $(disp_hidden).value = "";
             if(not_disp_txt.length != 0){
@@ -2710,10 +2918,10 @@
         var prefix_list = "id_external_author_id_prefix_list";
         var prefix_text = "id_external_author_id_prefix_text";
         var add_prefix = "add_author_id_prefix";
-        
+
         $(add_prefix).value = $(add_prefix).value.replace(/\|/g, "");
         $(add_prefix).value = $(add_prefix).value.replace(/\,/g, "");
-    
+
         if($(add_prefix).value.trim() != ""){
             var cnt = $(prefix_list).length;
             for (ii=0; ii<cnt; ii++) {
@@ -2807,7 +3015,7 @@
     repositoryDelExcludeUser = function(){
         var list = "feedback_exclude_user_list";
         var txt = "feedback_exclude_user_text";
-        
+
         if($(list).selectedIndex != -1){
             var feedback_exclude_user_txt = ($(txt).value).trim().split(",");
             var cnt = $(list).length;
@@ -2988,7 +3196,7 @@
         var mappingNode = $(divId);
         mappingNode.innerHTML=mapping;
     }
-    
+
     <{section name=i loop=$action.search_setup}>
     showMapping<{$id}>("<{$action.search_setup[i].mapping}>", "search_mapping_id<{$id}>_<{$smarty.section.i.index}>");
     <{/section}>
@@ -3011,5 +3219,25 @@
 <script class="nc_script" type="text/javascript">
     setDefaultExternalSearchStopword<{$id}> = function() {
         document.getElementById("id_external_searchword_word").value = document.getElementById("id_default_stopword").value;
+    }
+</script>
+<{*Add ranking tab display setting 2015/03/24 K.Sugimoto --start--*}>
+<script class="nc_script" type="text/javascript">
+    changeIndexAuto = function() {
+        var ranking_tab_display = document.getElementsByName("ranking_tab_display");
+        if(ranking_tab_display[1].checked)
+        {
+            $('id_default_disp_type').value = '0';
+	 		$('id_disp_index_type').disabled = false;
+	 		if($('id_disp_index_type').value == '1'){
+	 			$('id_default_index').style.display = "";
+	 		}
+        }
+    }
+</script>
+<{*Add ranking tab display setting 2015/03/24 K.Sugimoto --end--*}>
+<script class="nc_script" type="text/javascript">
+    robotlistCheckbox<{$id}> = function() {
+        document.getElementById("robotlistUpdate").disabled = "disabled";
     }
 </script>

@@ -194,6 +194,7 @@ function checkPeriod_repos(logErrorMsg){
 	var dtS = new Date(yearS, monthS - 1, dayS);
 	// 開始日判定
 	if(!checkDate_repos(yearS,monthS,dayS)) {
+		loadingIconOff();
 		alert(logErrorMsg[0]);
 		return false;
 	}
@@ -205,12 +206,14 @@ function checkPeriod_repos(logErrorMsg){
 	var dtE = new Date(yearE, monthE - 1, dayE);
 	// 終了日判定
 	if(!checkDate_repos(yearE,monthE,dayE)) {
+		loadingIconOff();
 		alert(logErrorMsg[1]);
 		return false;
 	}
 
 	// 開始日と終了日の関係を判定
 	if(dtS.getTime() > dtE.getTime()){
+		loadingIconOff();
 		alert(logErrorMsg[2]);
 		return false;
 	}
@@ -266,13 +269,17 @@ function downloadCSV_report(mail, error_msg){
 		// IEでのonload代用処理
 		$('log_download').innerHTML = '<iframe boder="0" id="log_frame" src="'+url+'?'+pars+'"></iframe>';
 		$('log_frame').onreadystatechange = function(){
-			if ($('log_frame').readyState == "complete"||($('log_frame').readyState == "interactive")) {
+            // Mod double alert on IE11 T.Koyasu 2015/04/09 --start--
+			if ($('log_frame').readyState == "complete") {
 				loadingIconOff(mail, error_msg);
 			}
+            // Mod double alert on IE11 T.Koyasu 2015/04/09 --end--
 		}
 	} else if(userAgent.indexOf("firefox") > -1){
+        // Mod no alert on FireFox T.Koyasu 2015/04/09 --start--
 		//firefoxの場合
-		$('log_download').innerHTML = '<iframe boder="0" id="log_frame" src="'+url+'?'+pars+'" onload="javascript: loadingIconOff();"></iframe>';
+		$('log_download').innerHTML = '<iframe boder="0" id="log_frame" src="'+url+'?'+pars+'" onload="javascript: loadingIconOff(\'' + mail + '\', \'' + error_msg + '\');"></iframe>';
+        // Mod no alert on FireFox T.Koyasu 2015/04/09 --end--
 	} else{
 		//その他のブラウザは待ち画像を表示しない
 		$('log_download').innerHTML = '<iframe boder="0" id="log_frame" src="'+url+'?'+pars+'"></iframe>';
@@ -362,31 +369,6 @@ function loadingIconOff(mail, error_msg){
 }
 // Add log report 2008/03/09 Y.Nakao --end--
 
-// Add log par host 2010/03/15 K.Ando --start--
-function ChangeHostStatus(ip, status, type, is_csv, logErrorMsg)
-{
-	var pars="action=repository_action_edit_log_exclusion";
-		pars += '&page_id='+$("page_id").value;
-		pars += '&block_id='+$("block_id").value;  
-		pars += '&log_exclusion='+ip;
-  		pars += '&queryParam='+status;
-		var url = _nc_base_url + "/index.php";	// Modify Directory specification BASE_URL K.Matsuo 2011/9/2
-		
-		var myAjax = new Ajax.Request(
-						url,
-						{
-							method: 'get',
-							parameters: pars, 
-							onComplete :function(req) {
-								execLogAjax_repos(type, is_csv, logErrorMsg);
-							}
-						}
-					);
-					
-}
-// Add log par host 2010/03/15 K.Ando --end--
-
-
 // Add log moves 2010/04/26 Y.Nakao --start--
 function logMoves(id){
 	
@@ -431,3 +413,45 @@ function logMoves(id){
 				);
 }
 // Add log moves 2010/04/26 Y.Nakao --end--
+
+// Modify Set Exclude IP Address List by log analyze 2015/04/06 --start--
+function setExcludeIpAddress(countNum)
+{
+    str = "";
+    for(ii = 0; ii < countNum; ii++)
+    {
+        if(str.length > 0)
+        {
+            str = str + ",";
+        }
+        checkId = "check_" + ii;
+        checkboxObj = document.getElementById(checkId);
+        if(checkboxObj.checked == true && checkboxObj.disabled == false)
+        {
+            str = str + checkboxObj.value;
+        }
+    }
+    
+    var pars="action=repository_action_edit_log_exclusion";
+    pars += '&page_id='+$("page_id").value;
+    pars += '&block_id='+$("block_id").value;  
+    pars += '&log_exclusion='+str;
+    var url = _nc_base_url + "/index.php";
+    
+    var myAjax = new Ajax.Request(
+                    url,
+                    {
+                        method: 'post',
+                        parameters: pars, 
+                        onFailure : function(){
+                        },
+                        onSuccess : function(res){
+                            // popup
+                            alert(res.responseText);
+                        },
+                        onComplete: function(res) {
+                        }
+                    }
+                );
+}
+// Modify Set Exclude IP Address List by log analyze 2015/04/06 --end--

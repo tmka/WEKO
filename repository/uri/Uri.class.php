@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Uri.class.php 42307 2014-09-29 06:18:07Z tomohiro_ichikawa $
+// $Id: Uri.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -64,7 +64,11 @@ class Repository_Uri extends RepositoryAction
 		
 		// get block_id and page_id
 		$block_info = $this->getBlockPageId();
-		
+
+		// Add suppleContentsEntry  Y.Yamazawa --start-- 2015/04/01 --start--
+		$this->setLangResource();
+		// Add suppleContentsEntry  Y.Yamazawa --end-- 2015/04/01 --end--
+
 		// make redirect URL
 		$redirect_url = BASE_URL;
         if($_SERVER["REQUEST_METHOD"] == HTTP_REQUEST_METHOD_PUT){
@@ -87,8 +91,8 @@ class Repository_Uri extends RepositoryAction
 		} else if(strlen($this->file_no) == 0){
 			$query = "SELECT file_no ".
 					" FROM ".DATABASE_PREFIX."repository_file ".
-					" WHERE item_id = '".$this->item_id."' ".
-					" AND attribute_id = '".$this->file_id."'; ";
+					" WHERE item_id = ".$this->item_id." ".
+					" AND attribute_id = ".$this->file_id." ; ";
 			$result = $this->Db->execute($query);
 			if($result === false || count($result) == 0) {
 				// go to item detail
@@ -196,10 +200,11 @@ class Repository_Uri extends RepositoryAction
         // Get upload file data
         require_once(WEBAPP_DIR. "/modules/repository/components/RepositoryFileUpload.class.php");
         $fileUpload = new RepositoryFileUpload();
-        $fileData = $fileUpload->getUploadData();
+        $fileData = $fileUpload->getUploadData($statusCodeMsg);
         if(empty($fileData))
         {
-            $swordUpdate->setHeader(400);
+            $swordUpdate->setHeader($statusCodeMsg);
+
             return;
         }
         $this->Session->setParameter("swordFileData", $fileData);

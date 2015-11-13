@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: repository_mobile_item_detail.html 40423 2014-08-26 02:30:50Z tatsuya_koyasu $          -->
+<!--// $Id: repository_mobile_item_detail.html 47574 2015-02-02 07:33:54Z tomohiro_ichikawa $          -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -563,7 +563,7 @@
                      </div>
                      <div style="text-align:left; padding-left:20px;">
                          <{if count($item_attr[i]) == 1}>
-                             <a href="" id="searchAuthorDetail<{$id}>_<{$k}>" onclick="javascript: redirectAuthorSearch<{$id}>( 'searchAuthorDetail<{$id}>_<{$k}>' ); return false;" >
+                             <a href="<{$item_attr[i][0].url}>" >
                                  <{$item_attr[i][0].family}>
                                  <{if $item_attr[i][0].name!=""}>
                                      ,&nbsp;<{$item_attr[i][0].name}>
@@ -591,7 +591,7 @@
                                              <{$smarty.section.j.index_next}>.
                                          </td>
                                          <td style="width:100%; padding-top: 5px;">
-                                             <a href="" id="searchAuthorDetailElse<{$id}>_<{$k}>" onclick="javascript: redirectAuthorSearch<{$id}>( 'searchAuthorDetailElse<{$id}>_<{$k}>' ); return false;" >
+                                             <a href="<{$item_attr[i][j].url}>" >
                                                  <{$item_attr[i][j].family}>
                                                  <{if $item_attr[i][j].name!=""}>
                                                      ,&nbsp;<{$item_attr[i][j].name}>

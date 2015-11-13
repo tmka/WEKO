@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Ranking.class.php 38124 2014-07-01 06:56:02Z rei_matsuura $
+// $Id: Ranking.class.php 57108 2015-08-26 01:03:29Z keiya_sugimoto $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -14,6 +14,7 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.php';
+require_once WEBAPP_DIR. '/modules/repository/components/common/WekoAction.class.php';
 require_once WEBAPP_DIR. '/modules/repository/view/main/ranking/Ranking.class.php';
 
 /**
@@ -22,7 +23,7 @@ require_once WEBAPP_DIR. '/modules/repository/view/main/ranking/Ranking.class.ph
  * @package     [[package名]]
  * @access      public
  */
-class Repository_Action_Common_Ranking extends RepositoryAction
+class Repository_Action_Common_Ranking extends WekoAction
 {
 	// リクエストパラメータを受け取るため
 	var $login_id = null;
@@ -31,17 +32,8 @@ class Repository_Action_Common_Ranking extends RepositoryAction
 	// ユーザの権限レベル
 	var $user_authority_id = "";
 	
-	// ランキング集計期間
-	var $rank_term = 365;
-	// ランキング数（新着アイテム以外）
-	var $rank_num = 5;
-	// 新着アイテム扱いの期間（過去Ｘ日）
-	var $newitem_term = 14;
-	var $log_exception = "";
-
 	// Add log reset ranking refer 2010/02/18 K.Ando --start--
-	var $ranking_reset_last_date = "";
-	var $ranking_term_date = "";
+	private $rank_num = 5;
 	// Add log reset ranking refer 2010/02/18 K.Ando --end--
 	
 	// Add config management authority 2010/02/23 Y.Nakao --start--
@@ -53,138 +45,59 @@ class Repository_Action_Common_Ranking extends RepositoryAction
      *
      * @access  public
      */
-    function execute()
+    protected function executeApp()
     {
-    	try {
-	        //アクション初期化処理
-	        $result = $this->initAction();
-    		if ( $result === false ) {
-	            $exception = new RepositoryException( ERR_MSG_xxx-xxx1, xxx-xxx1 );	//主メッセージとログIDを指定して例外を作成
-	            $DetailMsg = null;                              //詳細メッセージ文字列作成
-	            sprintf( $DetailMsg, ERR_DETAIL_xxx-xxx1);
-	            $exception->setDetailMsg( $DetailMsg );         //詳細メッセージ設定
-	            $this->failTrans();                             //トランザクション失敗を設定(ROLLBACK)
-	            throw $exception;
-	        }
-	        
-	        // check login
-	        $result = null;
-	        $error_msg = null;
-	        $return = $this->checkLogin($this->login_id, $this->password, $result, $error_msg);
-	        if($return == false){
-	        	print("Incorrect Login!\n");
-	        	return false;
-	        }
-	        
-	        // check user authority id
-	        // Add config management authority 2010/02/23 Y.Nakao --start--
-			//if($this->user_authority_id != 5){
-			if($this->user_authority_id < $this->repository_admin_base || $this->authority_id < $this->repository_admin_room){
-			// Add config management authority 2010/02/23 Y.Nakao --end--
-	        	print("You do not have permission to update.\n");
-	        	return false;
-	        }
-	        
-	        // ランキング集計期間
-			$items = $this->Db->execute("SELECT param_value FROM ". DATABASE_PREFIX ."repository_parameter WHERE param_name='ranking_term_stats'");
-			if($items[0]['param_value'] != "" && $items[0]['param_value'] != null){
-				$this->rank_term = $items[0]['param_value'];
-			}
-			// ランキング数（新着アイテム以外）
-			$items = $this->Db->execute("SELECT param_value FROM ". DATABASE_PREFIX ."repository_parameter WHERE param_name='ranking_disp_num';");
-			if($items[0]['param_value'] != "" && $items[0]['param_value'] != null){
-				$this->rank_num = $items[0]['param_value'];
-			}
-			// 新着アイテム扱いの期間（過去Ｘ日）
-			$items = $this->Db->execute("SELECT param_value FROM ". DATABASE_PREFIX ."repository_parameter WHERE param_name='ranking_term_recent_regist';");
-			if($items[0]['param_value'] != "" && $items[0]['param_value'] != null){
-				$this->newitem_term = $items[0]['param_value'];
-			}
-			// Add log reset ranking refer 2010/02/18 K.Ando --start--
-			// last reset-ranking date
-			$items = $this->Db->execute("SELECT param_value FROM ". DATABASE_PREFIX ."repository_parameter WHERE param_name='ranking_last_reset_date';");
-			if($items[0]['param_value'] != "" && $items[0]['param_value'] != null){
-				$this->ranking_reset_last_date = $items[0]['param_value'];
-			}
-			if($this->ranking_reset_last_date != "" )
-			{
-				// Fix date calculate 2010/07/29 A.Suzuki --start--
-				//$logjikan = time()- 60 * 60 * 24 * $this->rank_term;
-				//$jikan = strtotime($this->ranking_reset_last_date);
-				//$this->ranking_term_sec = $jikan <= $logjikan ? $logjikan : $jikan;
-				$this->ranking_reset_last_date = str_replace("/","-",$this->ranking_reset_last_date);
-				$query = "SELECT DATE_SUB(NOW(), INTERVAL ".$this->rank_term." DAY) AS rank_date;";
-				$result = $this->Db->execute($query);
-				$rank_term_date = $result[0]['rank_date'];
-				$query = "SELECT DATEDIFF('".$rank_term_date."', '".$this->ranking_reset_last_date."') AS date_diff;";
-				$result = $this->Db->execute($query);
-				if($result[0]['date_diff'] >= 0){
-					$this->ranking_term_date = $rank_term_date;
-				} else {
-					$this->ranking_term_date = $this->ranking_reset_last_date;
-				}
-				// Fix date calculate 2010/07/29 A.Suzuki --end--
-			}else
-			{
-				// Fix date calculate 2010/07/29 A.Suzuki --start--
-				//$this->ranking_term_sec = time() - 60 * 60 * 24 * $this->rank_term;
-				$query = "SELECT DATE_SUB(NOW(), INTERVAL ".$this->rank_term." DAY) AS rank_date;";
-				$result = $this->Db->execute($query);
-				$this->ranking_term_date = $result[0]['rank_date'];
-				// Fix date calculate 2010/07/29 A.Suzuki --end--
-			}
-			// Add log reset ranking refer 2010/02/18 K.Ando --end--
-	
-			// Add log exclusion from user-agaent 2011/04/28 H.Ito --start--
-			// Call Common function ->logExclusion()
-			$this->log_exception = $this->createLogExclusion(0,false);
-			// Add log exclusion from user-agaent 2011/04/28 H.Ito --end--
-	
-			$viewRanking = new Repository_View_Main_Ranking();
-            // Add tree access control list 2012/03/07 T.Koyasu -start-
-            $viewRanking->setConfigAuthority();
-            // Add tree access control list 2012/03/07 T.Koyasu -end-
-			$viewRanking->SetData($this->Session, $this->Db, $this->log_exception, $this->ranking_term_date, $this->TransStartDate);
-			
-			// update ranking
-			$this->referRanking($viewRanking);
-			$this->downloadRanking($viewRanking);
-			$this->userRanking($viewRanking);
-			$this->keywordRanking($viewRanking);
-			$this->recentRanking($viewRanking);
-			
-	    	// アクション終了処理
-			$result = $this->exitAction();	// トランザクションが成功していればCOMMITされる
-			if ( $result == false ){
-				//print "終了処理失敗";
-			}
-			
-			print("Successfully updated.\n");
-	    	return 'success';
-	    	
-    	} catch ( RepositoryException $Exception) {
-    	    //エラーログ出力
-        	$this->logFile(
-	        	"SampleAction",					//クラス名
-	        	"execute",						//メソッド名
-	        	$Exception->getCode(),			//ログID
-	        	$Exception->getMessage(),		//主メッセージ
-	        	$Exception->getDetailMsg() );	//詳細メッセージ	        
-        	//アクション終了処理
-      		$this->exitAction();                   //トランザクションが失敗していればROLLBACKされる        
-	        //異常終了
-	        $this->Session->setParameter("error_msg", $user_error_msg);
-    	    return "error";
-		}
+        $this->isLoginAdministrator();
+        
+        $this->rank_num = 5;
+        $query = "SELECT param_value ". 
+                 " FROM ". DATABASE_PREFIX. "repository_parameter ". 
+                 " WHERE param_name = ?;";
+        $params = array();
+        $params[] = 'ranking_disp_num';
+        $result = $this->Db->execute($query, $params);
+        if($result === false)
+        {
+            $this->errorLog($this->Db->ErrorMsg(), __FILE__, __CLASS__, __LINE__);
+            throw new AppException($this->Db->ErrorMsg());
+        }
+        if($result[0]['param_value'] != "" && $result[0]['param_value'] != null){
+            $this->rank_num = $result[0]['param_value'];
+        }
+
+        $this->infoLog("businessRanking", __FILE__, __CLASS__, __LINE__);
+        $viewRanking = BusinessFactory::getFactory()->getBusiness("businessRanking");
+        $viewRanking->execute();
+        
+        // update ranking
+        $this->debugLog("start insert refer ranking", __FILE__, __CLASS__, __LINE__);
+        $this->referRanking($viewRanking);
+        
+        $this->debugLog("start insert download ranking", __FILE__, __CLASS__, __LINE__);
+        $this->downloadRanking($viewRanking);
+        
+        $this->debugLog("start insert user ranking", __FILE__, __CLASS__, __LINE__);
+        $this->userRanking($viewRanking);
+        
+        $this->debugLog("start insert keyword ranking", __FILE__, __CLASS__, __LINE__);
+        $this->keywordRanking($viewRanking);
+        
+        $this->debugLog("start insert recent ranking", __FILE__, __CLASS__, __LINE__);
+        $this->recentRanking($viewRanking);
+        
+        $this->debugLog("successfully update", __FILE__, __CLASS__, __LINE__);
+        print("Successfully updated.\n");
+        
+        return 'success';
     }
 
     /**
      * 閲覧回数ランキング計算
      *
      */
-    function referRanking($viewRanking)
+    private function referRanking($viewRanking)
     {
-		$items = $viewRanking->getReferRankingData();   // ranking acquisition portion is made into a function K.Matsuo 2011/11/18
+		$items = $viewRanking->getReferRanking();   // ranking acquisition portion is made into a function K.Matsuo 2011/11/18
 		
   		$len = count($items);
 
@@ -193,7 +106,8 @@ class Repository_Action_Common_Ranking extends RepositoryAction
   				 "WHERE rank_type = 'referRanking';";
   		$result = $this->Db->execute($query);
   		if($result === false){
-  			return 'error';
+            $this->errorLog($this->Db->ErrorMsg(), __FILE__, __CLASS__, __LINE__);
+            throw new AppException($this->Db->ErrorMsg());
   		}
   		$rank_len = count($result);
   		
@@ -203,7 +117,7 @@ class Repository_Action_Common_Ranking extends RepositoryAction
 				 "	  	is_delete = ? ".
 				 "WHERE	rank_type = 'referRanking'; ".
 		$params = null;
-		$params[] = $this->TransStartDate;
+		$params[] = $this->accessDate;
 		$params[] = 1;
 		$this->Db->execute($query, $params);
   		
@@ -216,7 +130,7 @@ class Repository_Action_Common_Ranking extends RepositoryAction
 						 "	  	disp_value = ?, ".
 						 "	  	item_id = ?, ".
 						 "	  	item_no = ?, ".
-						 "	  	file_no = '', ".
+						 "	  	file_no = 0, ".
 						 "	  	mod_date = ?, ".
 						 "	  	del_date = '', ".
 						 "	  	is_delete = 0 ".
@@ -225,10 +139,10 @@ class Repository_Action_Common_Ranking extends RepositoryAction
 				$params = null;
 				$params[] = $items[$ii]['title'];
 				$params[] = $items[$ii]['title_english'];
-				$params[] = $items[$ii]['count(*)'];
+				$params[] = $items[$ii]['CNT'];
 				$params[] = $items[$ii]['item_id'];
 				$params[] = $items[$ii]['item_no'];
-				$params[] = $this->TransStartDate;
+				$params[] = $this->accessDate;
 				$params[] = $ii+1;
 				$this->Db->execute($query, $params);
 			} else {
@@ -242,12 +156,12 @@ class Repository_Action_Common_Ranking extends RepositoryAction
 				$params[] = $ii+1;
 				$params[] = $items[$ii]['title'];
 				$params[] = $items[$ii]['title_english'];
-				$params[] = $items[$ii]['count(*)'];
+				$params[] = $items[$ii]['CNT'];
 				$params[] = $items[$ii]['item_id'];
 				$params[] = $items[$ii]['item_no'];
-				$params[] = "";
-				$params[] = $this->TransStartDate;
-				$params[] = $this->TransStartDate;
+				$params[] = 0;
+				$params[] = $this->accessDate;
+				$params[] = $this->accessDate;
 				$params[] = "";
 				$params[] = 0;
 				$this->Db->execute($query, $params);
@@ -259,9 +173,9 @@ class Repository_Action_Common_Ranking extends RepositoryAction
      * ダウンロードランキング計算
      *
      */
-    function downloadRanking($viewRanking)
+    private function downloadRanking($viewRanking)
     {
-		$items = $viewRanking->getDownloadRankingData(); // Add ranking acquisition portion is made into a function K.Matsuo 2011/11/18
+		$items = $viewRanking->getDownloadRanking(); // Add ranking acquisition portion is made into a function K.Matsuo 2011/11/18
   		$len = count($items);
   		
   		$query = "SELECT * ".
@@ -269,7 +183,8 @@ class Repository_Action_Common_Ranking extends RepositoryAction
   				 "WHERE rank_type = 'downloadRanking';";
   		$result = $this->Db->execute($query);
   		if($result === false){
-  			return 'error';
+            $this->errorLog($this->Db->ErrorMsg(), __FILE__, __CLASS__, __LINE__);
+            throw new AppException($this->Db->ErrorMsg());
   		}
   		$rank_len = count($result);
   		
@@ -279,7 +194,7 @@ class Repository_Action_Common_Ranking extends RepositoryAction
 				 "	  	is_delete = ? ".
 				 "WHERE	rank_type = 'downloadRanking'; ".
 		$params = null;
-		$params[] = $this->TransStartDate;
+		$params[] = $this->accessDate;
 		$params[] = 1;
 		$this->Db->execute($query, $params);
   		
@@ -309,11 +224,11 @@ class Repository_Action_Common_Ranking extends RepositoryAction
 				}
 				$params[] = $disp_name;
 				$params[] = $disp_name_english;
-				$params[] = $items[$ii]['count(*)'];
+				$params[] = $items[$ii]['CNT'];
 				$params[] = $items[$ii]['item_id'];
 				$params[] = $items[$ii]['item_no'];
 				$params[] = $items[$ii]['file_no'];
-				$params[] = $this->TransStartDate;
+				$params[] = $this->accessDate;
 				$params[] = $ii+1;
 				$this->Db->execute($query, $params);
 			} else {
@@ -335,12 +250,12 @@ class Repository_Action_Common_Ranking extends RepositoryAction
 				$params[] = $ii+1;
 				$params[] = $disp_name;
 				$params[] = $disp_name_english;
-				$params[] = $items[$ii]['count(*)'];
+				$params[] = $items[$ii]['CNT'];
 				$params[] = $items[$ii]['item_id'];
 				$params[] = $items[$ii]['item_no'];
 				$params[] = $items[$ii]['file_no'];
-				$params[] = $this->TransStartDate;
-				$params[] = $this->TransStartDate;
+				$params[] = $this->accessDate;
+				$params[] = $this->accessDate;
 				$params[] = "";
 				$params[] = 0;
 				$this->Db->execute($query, $params);
@@ -352,9 +267,9 @@ class Repository_Action_Common_Ranking extends RepositoryAction
      * ユーザランキング計算
      *
      */
-    function userRanking($viewRanking)
+    private function userRanking($viewRanking)
     {
-		$items = $viewRanking->getUserRankingData(); // Add ranking acquisition portion is made into a function K.Matsuo 2011/11/18
+		$items = $viewRanking->getUserRanking(); // Add ranking acquisition portion is made into a function K.Matsuo 2011/11/18
 		
   		$len = count($items);
 
@@ -363,7 +278,8 @@ class Repository_Action_Common_Ranking extends RepositoryAction
   				 "WHERE rank_type = 'userRanking';";
   		$result = $this->Db->execute($query);
   		if($result === false){
-  			return 'error';
+            $this->errorLog($this->Db->ErrorMsg(), __FILE__, __CLASS__, __LINE__);
+            throw new AppException($this->Db->ErrorMsg());
   		}
   		$rank_len = count($result);
   		
@@ -373,7 +289,7 @@ class Repository_Action_Common_Ranking extends RepositoryAction
 				 "	  	is_delete = ? ".
 				 "WHERE	rank_type = 'userRanking'; ".
 		$params = null;
-		$params[] = $this->TransStartDate;
+		$params[] = $this->accessDate;
 		$params[] = 1;
 		$this->Db->execute($query, $params);
   		
@@ -385,7 +301,7 @@ class Repository_Action_Common_Ranking extends RepositoryAction
 						 "	  	disp_value = ?, ".
 						 "	  	item_id = ?, ".
 						 "	  	item_no = ?, ".
-						 "	  	file_no = '', ".
+						 "	  	file_no = 0, ".
 						 "	  	mod_date = ?, ".
 						 "	  	del_date = '', ".
 						 "	  	is_delete = 0 ".
@@ -393,10 +309,10 @@ class Repository_Action_Common_Ranking extends RepositoryAction
 						 "AND	rank = ?;";
 				$params = null;
 				$params[] = $items[$ii]['handle'];
-				$params[] = $items[$ii]['count(*)'];
-				$params[] = "";
-				$params[] = "";
-				$params[] = $this->TransStartDate;
+				$params[] = $items[$ii]['CNT'];
+				$params[] = 0;
+				$params[] = 0;
+				$params[] = $this->accessDate;
 				$params[] = $ii+1;
 				$this->Db->execute($query, $params);
 			} else {
@@ -409,12 +325,12 @@ class Repository_Action_Common_Ranking extends RepositoryAction
 				$params[] = "userRanking";
 				$params[] = $ii+1;
 				$params[] = $items[$ii]['handle'];
-				$params[] = $items[$ii]['count(*)'];
-				$params[] = "";
-				$params[] = "";
-				$params[] = "";
-				$params[] = $this->TransStartDate;
-				$params[] = $this->TransStartDate;
+				$params[] = $items[$ii]['CNT'];
+				$params[] = 0;
+				$params[] = 0;
+				$params[] = 0;
+				$params[] = $this->accessDate;
+				$params[] = $this->accessDate;
 				$params[] = "";
 				$params[] = 0;
 				$this->Db->execute($query, $params);
@@ -428,7 +344,7 @@ class Repository_Action_Common_Ranking extends RepositoryAction
      */
     function keywordRanking($viewRanking)
     {
-		$items = $viewRanking->getKeywordRankingData(); // Add ranking acquisition portion is made into a function K.Matsuo 2011/11/18
+		$items = $viewRanking->getKeywordRanking(); // Add ranking acquisition portion is made into a function K.Matsuo 2011/11/18
 		$len = count($items);
   		
   		$query = "SELECT * ".
@@ -436,7 +352,8 @@ class Repository_Action_Common_Ranking extends RepositoryAction
   				 "WHERE rank_type = 'keywordRanking';";
   		$result = $this->Db->execute($query);
   		if($result === false){
-  			return 'error';
+            $this->errorLog($this->Db->ErrorMsg(), __FILE__, __CLASS__, __LINE__);
+            throw new AppException($this->Db->ErrorMsg());
   		}
   		$rank_len = count($result);
   		
@@ -446,7 +363,7 @@ class Repository_Action_Common_Ranking extends RepositoryAction
 				 "	  	is_delete = ? ".
 				 "WHERE	rank_type = 'keywordRanking'; ".
 		$params = null;
-		$params[] = $this->TransStartDate;
+		$params[] = $this->accessDate;
 		$params[] = 1;
 		$this->Db->execute($query, $params);
   		
@@ -458,7 +375,7 @@ class Repository_Action_Common_Ranking extends RepositoryAction
 						 "	  	disp_value = ?, ".
 						 "	  	item_id = ?, ".
 						 "	  	item_no = ?, ".
-						 "	  	file_no = '', ".
+						 "	  	file_no = 0, ".
 						 "	  	mod_date = ?, ".
 						 "	  	del_date = '', ".
 						 "	  	is_delete = 0 ".
@@ -466,10 +383,10 @@ class Repository_Action_Common_Ranking extends RepositoryAction
 						 "AND	rank = ?;";
 				$params = null;
 				$params[] = $items[$ii]['search_keyword'];
-				$params[] = $items[$ii]['count(*)'];
-				$params[] = "";
-				$params[] = "";
-				$params[] = $this->TransStartDate;
+				$params[] = $items[$ii]['CNT'];
+				$params[] = 0;
+				$params[] = 0;
+				$params[] = $this->accessDate;
 				$params[] = $ii+1;
 				$this->Db->execute($query, $params);
 			} else {
@@ -482,12 +399,12 @@ class Repository_Action_Common_Ranking extends RepositoryAction
 				$params[] = "keywordRanking";
 				$params[] = $ii+1;
 				$params[] = $items[$ii]['search_keyword'];
-				$params[] = $items[$ii]['count(*)'];
-				$params[] = "";
-				$params[] = "";
-				$params[] = "";
-				$params[] = $this->TransStartDate;
-				$params[] = $this->TransStartDate;
+				$params[] = $items[$ii]['CNT'];
+				$params[] = 0;
+				$params[] = 0;
+				$params[] = 0;
+				$params[] = $this->accessDate;
+				$params[] = $this->accessDate;
 				$params[] = "";
 				$params[] = 0;
 				$this->Db->execute($query, $params);
@@ -501,7 +418,10 @@ class Repository_Action_Common_Ranking extends RepositoryAction
      */
     function recentRanking($viewRanking)
     {
-		$items = $viewRanking->getRecentRankingData(); // Add ranking acquisition portion is made into a function K.Matsuo 2011/11/18
+        $this->debugLog("recentRanking:start", __FILE__, __CLASS__, __LINE__);
+		$items = $viewRanking->getNewItemRanking(); // Add ranking acquisition portion is made into a function K.Matsuo 2011/11/18
+        $this->debugLog("recentRanking:got recent ranking data", __FILE__, __CLASS__, __LINE__);
+        
   		$len = count($items);
    		
     	$query = "SELECT * ".
@@ -509,7 +429,8 @@ class Repository_Action_Common_Ranking extends RepositoryAction
   				 "WHERE rank_type = 'recentRanking';";
   		$result = $this->Db->execute($query);
   		if($result === false){
-  			return 'error';
+            $this->errorLog($this->Db->ErrorMsg(), __FILE__, __CLASS__, __LINE__);
+            throw new AppException($this->Db->ErrorMsg());
   		}
   		$rank_len = count($result);
   		
@@ -519,9 +440,10 @@ class Repository_Action_Common_Ranking extends RepositoryAction
 				 "	  	is_delete = ? ".
 				 "WHERE	rank_type = 'recentRanking'; ".
 		$params = null;
-		$params[] = $this->TransStartDate;
+		$params[] = $this->accessDate;
 		$params[] = 1;
 		$this->Db->execute($query, $params);
+        $this->debugLog("recentRanking: updated ranking data deleted", __FILE__, __CLASS__, __LINE__);
   		
   		for ( $ii=0; $ii<$len&&$ii<$this->rank_num; $ii++ ){
 			if($ii < $rank_len){
@@ -532,7 +454,7 @@ class Repository_Action_Common_Ranking extends RepositoryAction
 						 "	  	disp_value = ?, ".
 						 "	  	item_id = ?, ".
 						 "	  	item_no = ?, ".
-						 "	  	file_no = '', ".
+						 "	  	file_no = 0, ".
 						 "	  	mod_date = ?, ".
 						 "	  	del_date = '', ".
 						 "	  	is_delete = 0 ".
@@ -544,9 +466,10 @@ class Repository_Action_Common_Ranking extends RepositoryAction
 				$params[] = substr($items[$ii]['shown_date'],0,10);
 				$params[] = $items[$ii]['item_id'];
 				$params[] = $items[$ii]['item_no'];
-				$params[] = $this->TransStartDate;
+				$params[] = $this->accessDate;
 				$params[] = $ii+1;
 				$this->Db->execute($query, $params);
+                $this->debugLog("recentRanking: update no = ". $ii + 1, __FILE__, __CLASS__, __LINE__);
 			} else {
 				// insert
 				$query = "INSERT INTO ".DATABASE_PREFIX."repository_ranking ".
@@ -561,14 +484,49 @@ class Repository_Action_Common_Ranking extends RepositoryAction
 				$params[] = substr($items[$ii]['shown_date'],0,10);
 				$params[] = $items[$ii]['item_id'];
 				$params[] = $items[$ii]['item_no'];
-				$params[] = "";
-				$params[] = $this->TransStartDate;
-				$params[] = $this->TransStartDate;
+				$params[] = 0;
+				$params[] = $this->accessDate;
+				$params[] = $this->accessDate;
 				$params[] = "";
 				$params[] = 0;
 				$this->Db->execute($query, $params);
+                $this->debugLog("recentRanking: inserted new record no = ". $ii + 1, __FILE__, __CLASS__, __LINE__);
 			}
   		}
+        $this->debugLog("recentRanking: finish", __FILE__, __CLASS__, __LINE__);
+    }
+    
+    /**
+     * check be able to login or not and login user has authority
+     * 
+     */
+    private function isLoginAdministrator()
+    {
+        // check login
+        $result = null;
+        $error_msg = null;
+        
+        $repositoryAction = new RepositoryAction();
+        $repositoryAction->Session = $this->Session;
+        $repositoryAction->Db = $this->Db;
+        $repositoryAction->TransStartDate = $this->accessDate;
+        $repositoryAction->setConfigAuthority();
+        $repositoryAction->dbAccess = $this->Db;
+        
+        $return = $repositoryAction->checkLogin($this->login_id, $this->password, $result, $error_msg);
+        if($return == false){
+            print("Incorrect Login!\n");
+            throw new AppException("Incorrect Login!");
+        }
+        
+        // check user authority id
+        // Add config management authority 2010/02/23 Y.Nakao --start--
+        //if($this->user_authority_id != 5){
+        if($this->user_authority_id < $this->repository_admin_base || $this->authority_id < $this->repository_admin_room){
+        // Add config management authority 2010/02/23 Y.Nakao --end--
+            print("You do not have permission to update.\n");
+            throw new AppException("You do not have permission to update.");
+        }
     }
 }
 ?>

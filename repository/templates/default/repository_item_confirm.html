@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: repository_item_confirm.html 39149 2014-07-28 08:37:06Z rei_matsuura $          -->
+<!--// $Id: repository_item_confirm.html 53594 2015-05-28 05:25:53Z kaede_matsushita $          -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -28,59 +28,97 @@
 			<{* FLOW *}>
 			<tr>
 				<td align="center">
-					<{if $smarty.session._lang == "japanese"}>
-						<{if $smarty.session.attr_file_flg == 1 && $smarty.session.doi_itemtype_flag == true}>
-							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_5.png" alt="" />
-						<{elseif $smarty.session.attr_file_flg == 1}>
-							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_5.png" />
-						<{else}>
-							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_no_file_4.png" />
-						<{/if}>
-					<{else}>
-						<{if $smarty.session.attr_file_flg == 1 && $smarty.session.doi_itemtype_flag == true}>
-							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_5_eng.png" alt="" />
-						<{elseif $smarty.session.attr_file_flg == 1}>
-							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_5_eng.png" />
-						<{else}>
-							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_no_file_4_eng.png" />
-						<{/if}>
-					<{/if}>
+                    <{if $smarty.session._lang == "japanese"}>
+                        <{if $smarty.session.attr_file_flg == 1 && $smarty.session.doi_itemtype_flag == true}>
+                            <img id="fileImg<{$id}>_JPN_DOI" usemap="#flowImgMap<{$id}>_doi" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_6.png" />
+                        <{elseif $smarty.session.doi_itemtype_flag == true}>
+                            <img id="fileImg<{$id}>_JPN_NO_DOI" usemap="#flowImgMap<{$id}>_no_doi" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_no_file_doi_5.png" />
+                        <{elseif $smarty.session.attr_file_flg == 1}>
+                            <img id="fileImg<{$id}>_JPN" usemap="#flowImgMap<{$id}>" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_5.png" />
+                        <{else}>
+                            <img id="fileImg<{$id}>_JPN_NO" usemap="#flowImgMap<{$id}>_no" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_no_file_4.png" />
+                        <{/if}>
+                    <{else}>
+                        <{if $smarty.session.attr_file_flg == 1 && $smarty.session.doi_itemtype_flag == true}>
+                            <img id="fileImg<{$id}>_ENG_DOI" usemap="#flowImgMap<{$id}>_doi" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_6_eng.png" />
+                        <{elseif $smarty.session.doi_itemtype_flag == true}>
+                            <img id="fileImg<{$id}>_ENG_NO_DOI" usemap="#flowImgMap<{$id}>_no_doi" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_no_file_doi_5_eng.png" />
+                        <{elseif $smarty.session.attr_file_flg == 1}>
+                            <img id="fileImg<{$id}>_ENG" usemap="#flowImgMap<{$id}>" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_5_eng.png" />
+                        <{else}>
+                            <img id="fileImg<{$id}>_ENG_NO" usemap="#flowImgMap<{$id}>_no" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_no_file_4_eng.png" />
+                        <{/if}>
+                    <{/if}>
+                    <map name="flowImgMap<{$id}>">
+                        <{if $smarty.session.edit_flag != 1}>
+                            <area onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('selecttype'); return false;" title="<{$lang.repository_item_selecttype}>" style="cursor: pointer;" shape="poly" coords="0,0,0,37,132,37,140,19,140,18,132,0">
+                        <{/if}>
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('files'); return false;" title="<{$lang.repository_item_editfiles}>" style="cursor: pointer;" shape="poly" coords="132,0,140,18,140,19,132,37,272,37,280,19,280,18,272,0">
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('texts'); return false;" title="<{$lang.repository_item_edittexts}>" style="cursor: pointer;" shape="poly" coords="272,0,280,18,280,19,272,37,412,37,420,19,420,18,412,0">
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('links'); return false;" title="<{$lang.repository_item_editlinks}>" style="cursor: pointer;" shape="poly" coords="412,0,420,18,420,19,412,37,552,37,560,19,560,18,552,0">
+                        <{*<area onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('confirm'); return false;" title="<{$lang.repository_item_confirm}>" style="cursor: pointer;" shape="poly" coords="552,0,560,18,560,19,552,37,701,37,701,0">*}>
+                    </map>
+                    <map name="flowImgMap<{$id}>_doi">
+                        <{if $smarty.session.edit_flag != 1}>
+                            <area onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('selecttype'); return false;" title="<{$lang.repository_item_selecttype}>" style="cursor: pointer;" shape="poly" coords="0,0,0,37,132,37,140,19,140,18,132,0">
+                        <{/if}>
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('files'); return false;" title="<{$lang.repository_item_editfiles}>" style="cursor: pointer;" shape="poly" coords="132,0,140,18,140,19,132,37,272,37,280,19,280,18,272,0">
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('texts'); return false;" title="<{$lang.repository_item_edittexts}>" style="cursor: pointer;" shape="poly" coords="272,0,280,18,280,19,272,37,412,37,420,19,420,18,412,0">
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('links'); return false;" title="<{$lang.repository_item_editlinks}>" style="cursor: pointer;" shape="poly" coords="412,0,420,18,420,19,412,37,552,37,560,19,560,18,552,0">
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('doi'); return false;" title="<{$lang.repository_item_add_doi}>" style="cursor: pointer;" shape="poly" coords="552,0,560,18,560,19,552,37,692,37,700,19,700,18,692,0">
+                        <{*<area onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('confirm'); return false;" title="<{$lang.repository_item_confirm}>" style="cursor: pointer;" shape="poly" coords="692,0,700,18,700,19,692,37,841,37,841,0">*}>
+                    </map>
+                    <map name="flowImgMap<{$id}>_no">
+                        <{if $smarty.session.edit_flag != 1}>
+                            <area onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('selecttype'); return false;" title="<{$lang.repository_item_selecttype}>" style="cursor: pointer;" shape="poly" coords="0,0,0,37,132,37,140,19,140,18,132,0">
+                        <{/if}>
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('texts'); return false;" title="<{$lang.repository_item_edittexts}>" style="cursor: pointer;" shape="poly" coords="132,0,140,18,140,19,132,37,272,37,280,19,280,18,272,0">
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('links'); return false;" title="<{$lang.repository_item_editlinks}>" style="cursor: pointer;" shape="poly" coords="272,0,280,18,280,19,272,37,412,37,420,19,420,18,412,0">
+                        <{*<area onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('confirm'); return false;" title="<{$lang.repository_item_confirm}>" style="cursor: pointer;" shape="poly" coords="412,0,420,18,420,19,412,37,561,37,561,0">*}>
+                    </map>
+                    <map name="flowImgMap<{$id}>_no_doi">
+                        <{if $smarty.session.edit_flag != 1}>
+                            <area onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('selecttype'); return false;" title="<{$lang.repository_item_selecttype}>" style="cursor: pointer;" shape="poly" coords="0,0,0,37,132,37,140,19,140,18,132,0">
+                        <{/if}>
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('texts'); return false;" title="<{$lang.repository_item_edittexts}>" style="cursor: pointer;" shape="poly" coords="132,0,140,18,140,19,132,37,272,37,280,19,280,18,272,0">
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('links'); return false;" title="<{$lang.repository_item_editlinks}>" style="cursor: pointer;" shape="poly" coords="272,0,280,18,280,19,272,37,412,37,420,19,420,18,412,0">
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('doi'); return false;" title="<{$lang.repository_item_add_doi}>" style="cursor: pointer;" shape="poly" coords="412,0,420,18,420,19,412,37,552,37,560,19,560,18,552,0">
+                        <{*<area onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('confirm'); return false;" title="<{$lang.repository_item_confirm}>" style="cursor: pointer;" shape="poly" coords="552,0,560,18,560,19,552,37,701,37,701,0">*}>
+                    </map>
 				</td>
 			</tr>
 		</table>
 	</div>
 
 <div align="center" class="text_color">
-<form>
  <div class="paging">
   <div class="mt10 mb05 " align=center>
-   <form onsubmit="return false;">
     <{if $smarty.session.edit_jalc_flag == "true"}>
      <input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_main_item_editdoi'); return false;">
     <{else}>
      <input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_main_item_editlinks'); return false;">
     <{/if}>
-    <input type="button" class="btn_next" value="<{$lang.repository_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemAdddb(); return false;">
-   </form>
+    <input type="button" class="btn_next" value="<{$lang.repository_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('next'); return false;">
   </div>
   <div class="paging">
   <b><{$lang.repository_itemtype}>: <{$smarty.session.item_type_all.item_type_name}></b>
   </div>
-
-	<{if $action.error_msg != null || $action.warning != ""}>
-		<{if count($action.error_msg) > 0}>
-		<div class="error_msg al">
-				<{section name=i loop=$action.error_msg}>
-					<{$action.error_msg[i]}><br />
-				<{/section}>
-			</div>
-		<{/if}>
-		<{if strlen($action.warning) > 0}>
-			<div class="warning_msg al">
-				<{$action.warning}>
-			</div>
-		<{/if}>
-	<{/if}>
+    <center>
+        <{if $action.errMsg != null && count($action.errMsg) > 0}>
+        <div class="error_msg al">
+            <{foreach from=$action.errMsg item=msg}>
+            <{$msg|smarty:nodefaults}><br/>
+            <{/foreach}>
+        </div>
+        <{/if}>
+        <{if $action.warningMsg != null && count($action.warningMsg) > 0}>
+        <div class="warning_msg al">
+            <{foreach from=$action.warningMsg item=msg}>
+            <{$msg|smarty:nodefaults}><br/>
+            <{/foreach}>
+        </div>
+        <{/if}>
+    </center>
 
   
   <div class="w80 item_edit_texts_frame">
@@ -503,18 +541,15 @@
  
  </div>
  
- </form>
 </div>
 
 <div align=center>
- <form onsubmit="return false;">
    <{if $smarty.session.edit_jalc_flag == "true"}>
     <input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_main_item_editdoi'); return false;">
    <{else}>
     <input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_main_item_editlinks'); return false;">
    <{/if}>
-  <input type="button" class="btn_next" value="<{$lang.repository_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemAdddb(); return false;">
- </form>
+  <input type="button" class="btn_next" value="<{$lang.repository_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemConfirm('next'); return false;">
 </div>
 
 </div>

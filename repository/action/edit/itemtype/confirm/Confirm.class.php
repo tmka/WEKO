@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Confirm.class.php 41407 2014-09-11 10:35:24Z tomohiro_ichikawa $
+// $Id: Confirm.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -22,9 +22,6 @@ require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.
  */
 class Repository_Action_Edit_Itemtype_Confirm extends RepositoryAction
 {
-	// 使用コンポーネントを受け取るため
-	var $session = null;
-	var $Db = null;
 	// リクエストパラメタ
 	var $metadata_title = null;		// メタデータ項目名配列
 	var $metadata_type = null;		// メタデータタイプ配列
@@ -43,7 +40,7 @@ class Repository_Action_Edit_Itemtype_Confirm extends RepositoryAction
      *
      * @access  public
      */
-    function execute()
+    function executeApp()
     { 	
     	////////////////////////// データチェック ///////////////////////////
     	$nullError = 0;		// null文字チェック用
@@ -100,7 +97,7 @@ class Repository_Action_Edit_Itemtype_Confirm extends RepositoryAction
     	}
     	// Add metadata name edit 2008/09/04 Y.Nakao --start--
     	if($this->item_type_name!=null && $this->item_type_name!=""){
-    		if($this->session->getParameter("item_type_name") != $this->item_type_name){
+    		if($this->Session->getParameter("item_type_name") != $this->item_type_name){
     			$query = "SELECT * ".
                 	     "FROM ". DATABASE_PREFIX ."repository_item_type ".
                     	 "WHERE item_type_name = ?; ";
@@ -131,27 +128,27 @@ class Repository_Action_Edit_Itemtype_Confirm extends RepositoryAction
 	                //$DetailMsg = null;                              //詳細メッセージ文字列作成
 	                //sprintf( $DetailMsg, ERR_DETAIL_xxx-xxx1);
 	                //$exception->setDetailMsg( $DetailMsg );             //詳細メッセージ設定
-	                $this->session->setParameter("error_code", 1); // 重複エラー 2008/02/28
+	                $this->Session->setParameter("error_code", 1); // 重複エラー 2008/02/28
 	                $this->failTrans();                                        //トランザクション失敗を設定(ROLLBACK)
 	                //throw $exception;
 	                return "error";
 		    	}
-		    	$this->session->setParameter("item_type_name", $this->item_type_name);
+		    	$this->Session->setParameter("item_type_name", $this->item_type_name);
     		}
     	} else {
     		// アイテムタイプ名NULLエラー
-    		$this->session->setParameter("error_code", 6);
+    		$this->Session->setParameter("error_code", 6);
     		return 'error';
     	}
     	// Add metadata name edit 2008/09/04 Y.Nakao --end--
     	
         // metadata_titleをまとめて配列でセッションに保存
-	   	$this->session->setParameter("metadata_title", $array_title);
+	   	$this->Session->setParameter("metadata_title", $array_title);
 	   	// metadata_typeをまとめて配列でセッションに保存
-	   	$this->session->setParameter("metadata_type", $this->metadata_type);
+	   	$this->Session->setParameter("metadata_type", $this->metadata_type);
 	   	
 	   	// 2008/02/28 選択肢をまとめて配列でセッションに保存 nakao
-	   	$this->session->setParameter("metadata_candidate",$array_candidate);
+	   	$this->Session->setParameter("metadata_candidate",$array_candidate);
 	   	
 		// フラグもまとめてセッションに保存
 	   	$array_req = array();
@@ -197,32 +194,32 @@ class Repository_Action_Edit_Itemtype_Confirm extends RepositoryAction
         		}
         	}
 	   	}
-		$this->session->setParameter("metadata_required", $array_req);
-	   	$this->session->setParameter("metadata_disp", $array_dis);
-	   	$this->session->setParameter("metadata_plural", $array_plu);
-	   	$this->session->setParameter("metadata_newline", $array_newline);
-	   	$this->session->setParameter("metadata_hidden", $array_hidden);
+		$this->Session->setParameter("metadata_required", $array_req);
+	   	$this->Session->setParameter("metadata_disp", $array_dis);
+	   	$this->Session->setParameter("metadata_plural", $array_plu);
+	   	$this->Session->setParameter("metadata_newline", $array_newline);
+	   	$this->Session->setParameter("metadata_hidden", $array_hidden);
 	   	
-	   	$this->session->setParameter("error_code", $nullError);
+	   	$this->Session->setParameter("error_code", $nullError);
 	   	
 	   	if($nullError != 0){
 	   		return 'error';
 	   	}
 	   	
 		// 編集時に起こる属性名よ属性IDのずれを修正 2008/06/19 Y.Nakao 上記バグの対処 --start--
-		$metadata_num = $this->session->getParameter("metadata_num");
-		$attribute_id = $this->session->getParameter("attribute_id");
+		$metadata_num = $this->Session->getParameter("metadata_num");
+		$attribute_id = $this->Session->getParameter("attribute_id");
 		if($metadata_num != count($attribute_id)){
 			if($metadata_num === 1 || !is_array($attribute_id)){
 				$attribute_id = array();
 			}
  			array_push($attribute_id,-1);
  			// sessionにも反映
- 			$this->session->setParameter("attribute_id", $attribute_id);
+ 			$this->Session->setParameter("attribute_id", $attribute_id);
 		}
 	   	// 2008/06/19 Y.Nakao --end--
 	   	
-		$this->session->removeParameter("error_code");
+		$this->Session->removeParameter("error_code");
 		
 	   	return 'success';
 	   	

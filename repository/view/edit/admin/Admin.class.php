@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Admin.class.php 42605 2014-10-03 01:02:01Z keiya_sugimoto $
+// $Id: Admin.class.php 57169 2015-08-26 12:01:09Z tatsuya_koyasu $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -16,8 +16,8 @@
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/NameAuthority.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryHarvesting.class.php';
-require_once WEBAPP_DIR. '/modules/repository/components/RepositoryUsagestatisticsSendMail.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryHandleManager.class.php';
+require_once WEBAPP_DIR. '/modules/repository/components/RepositorySearchRequestParameter.class.php';
 
 /**
  * [[機能説明]]
@@ -41,6 +41,9 @@ class Repository_View_Edit_Admin extends RepositoryAction
     //Add new prefix2013/12/24T.Ichikawa --start--
     var $prefixJalcDoi = null;
     var $prefixCrossRef = null;
+    // Add DataCite 2015/02/10 K.Sugimoto --start--
+    var $prefixDataCite = null;
+    // Add DataCite 2015/02/10 K.Sugimoto --end--
     var $prefixCnri = null;
     var $prefixYHandle = null;
     //Add new prefix 2013/12/24 T.Ichikawa --end--
@@ -58,12 +61,34 @@ class Repository_View_Edit_Admin extends RepositoryAction
     // Add Detail Search 2013/11/20 R.Matsuura --end--
     public $oaipmh_output_flag = null;
     
+    public $institution_name = null;
+    
+    // Add Default Search Type 2014/12/03 K.Sugimoto --start--
+    public $default_search_type = null;
+    // Add Default Search Type 2014/12/03 K.Sugimoto --end--
+
+    // Add Usage Statistics link display setting 2014/12/16 K.Matsushita --start--
+    public $usagestatistics_link_display = null;
+    // Add Usage Statistics link display setting 2014/12/16 K.Matsushita --end--
+
+    // Add ranking tab display setting 2014/12/19 K.Matsushita --start--
+    public $ranking_tab_display = null;
+    // Add ranking tab display setting 2014/12/19 K.Matsushita --end--
+    
+    // Add DataCite 2015/02/10 K.Sugimoto --start--
+    public $prefix_flag = null;
+    public $exist_doi_item = null;
+    // Add DataCite 2015/02/10 K.Sugimoto --end--
+    
+    public $logTableStatus = null;
+    
+    
     /**
      * [[機能説明]]
      *
      * @access  public
      */
-    function execute()
+    function executeApp()
     {
         $istest = true;             // テスト用フラグ
         try {           
@@ -103,7 +128,9 @@ class Repository_View_Edit_Admin extends RepositoryAction
             if($tmp_dir != "" && $tmp_dir != null){
                 // ワークディレクトリ削除
                 $this->removeDirectory($tmp_dir);
-                unlink("./.rnd");
+                if(file_exists("./.rnd")){
+                    unlink("./.rnd");
+                }
                 if(file_exists(BASE_DIR."/htdocs/weko/capcha.png")){
                     unlink(BASE_DIR."/htdocs/weko/capcha.png");
                 }
@@ -305,58 +332,68 @@ class Repository_View_Edit_Admin extends RepositoryAction
             // ----------------------------------------------------
             // site license
             // ----------------------------------------------------
-            if(isset($admin_params['site_license']['param_value'])) {
-                $site_license = explode("|", $admin_params['site_license']['param_value']);
-            }else {
-                $site_license = array();
-            }
+            // サイトライセンス基本情報取得
+            $query = "SELECT * FROM ". DATABASE_PREFIX. "repository_sitelicense_info ".
+                     "WHERE is_delete = ? ".
+                     "ORDER BY show_order ASC ;";
+            $params = array();
+            $params[] = 0;
+            $sl_info = $this->Db->execute($query, $params);
+            
             $cnt_ipaddress = 0;
+            $sitelicense_id = array();
             $sitelicense_org = array();
+            $sitelicense_group = array();
             $ipaddress_from = array();
             $ipaddress_to = array();
             $sitelicense_mail = array();
-            for($ii=0; $ii<count($site_license); $ii++){
-                if(array_key_exists($ii, $site_license) && strlen($site_license[$ii]) > 0)
-                {
-                    $param_site_license = explode(",", $site_license[$ii]);
-                    if(array_key_exists(1, $param_site_license))
-                    {
-                        $from = explode(".", $param_site_license[1]);
-                        if(count($from) == 4){
-                            array_push($sitelicense_org, $param_site_license[0]);
-                            array_push($sitelicense_mail, $param_site_license[3]);
-                            array_push($ipaddress_from, array($from[0], $from[1], $from[2], $from[3]));
-                            if(array_key_exists(2, $param_site_license))
-                            {
-                                $to = explode(".", $param_site_license[2]);
-                                if(count($to) == 4){
-                                    array_push($ipaddress_to, array($to[0], $to[1], $to[2], $to[3]));
-                                } else {
-                                    array_push($ipaddress_to, array("", "", "", ""));
-                                }
-                            }
+            for($ii=0; $ii<count($sl_info); $ii++){
+                // 機関ID
+                $sitelicense_id[$ii] = $sl_info[$ii]["organization_id"];
+                // 機関名
+                $sitelicense_org[$ii] = $sl_info[$ii]["organization_name"];
+                // 組織名
+                $sitelicense_group[$ii] = $sl_info[$ii]["group_name"];
+                // IPアドレス
+                // サイトライセンスIP情報取得
+                $query = "SELECT * FROM ". DATABASE_PREFIX. "repository_sitelicense_ip_address ".
+                         "WHERE organization_id = ? ".
+                         "AND is_delete = ? ;";
+                $params = array();
+                $params[] = $sl_info[$ii]["organization_id"];
+                $params[] = 0;
+                $ip_address = $this->Db->execute($query, $params);
+                if(isset($ip_address)) {
+                    for($jj = 0; $jj < count($ip_address); $jj++) {
+                        // 開始IPアドレス
+                        if(strlen($ip_address[$jj]["start_ip_address"]) > 0) {
+                            $start_ip_address = explode(".", $ip_address[$jj]["start_ip_address"]);
+                            $ipaddress_from[$ii][$jj] = array($start_ip_address[0], $start_ip_address[1], $start_ip_address[2], $start_ip_address[3]);
+                        } else {
+                            $ipaddress_from[$ii][$jj] = array("", "", "", "");
+                        }
+                        // 終了IPアドレス
+                        if(strlen($ip_address[$jj]["finish_ip_address"]) > 0) {
+                            $finish_ip_address = explode(".", $ip_address[$jj]["finish_ip_address"]);
+                            $ipaddress_to[$ii][$jj] = array($finish_ip_address[0], $finish_ip_address[1], $finish_ip_address[2], $finish_ip_address[3]);
+                        } else {
+                            $ipaddress_to[$ii][$jj] = array("", "", "", "");
                         }
                     }
+                } else {
+                        $ipaddress_from[$ii][0] = array("", "", "", "");
+                        $ipaddress_to[$ii][0] = array("", "", "", "");
                 }
+                // メールアドレス
+                $sitelicense_mail[$ii] = $sl_info[$ii]["mail_address"];
             }
-            // Bugfix Input scrutiny 2011/06/17 Y.Nakao --start--
-            // decode explode delimiters.
-            $sitelicense_org = str_replace("&#124;", "|", $sitelicense_org);
-            $sitelicense_org = str_replace("&#44;", ",", $sitelicense_org);
-            $sitelicense_org = str_replace("&#46;", ".", $sitelicense_org);
-            // Bugfix Input scrutiny 2011/06/17 Y.Nakao --end--
-            // Add decode mail address T.Ichikawa 2014/04/11 --start--
-            // decode explode delimiters.
-            $sitelicense_mail = str_replace("&#124;", "|", $sitelicense_mail);
-            $sitelicense_mail = str_replace("&#44;", ",", $sitelicense_mail);
-            $sitelicense_mail = str_replace("&#46;", ".", $sitelicense_mail);
-            // Add decode mail address T.Ichikawa 2014/04/11 --end--
+            
+            $admin_params["sitelicense_id"]["param_value"] = $sitelicense_id;
             $admin_params["sitelicense_org"]["param_value"] = $sitelicense_org;
+            $admin_params["sitelicense_group"]["param_value"] = $sitelicense_group;
             $admin_params["ip_sitelicense_from"]["param_value"] = $ipaddress_from;
             $admin_params["ip_sitelicense_to"]["param_value"] = $ipaddress_to;
             $admin_params["sitelicense_mail"]["param_value"] = $sitelicense_mail;
-            
-            // Add site license 2008/10/20 Y.Nakao --end--
             
             // Add item type select for site license 2009/01/06 A.Suzuki --start--
             $site_license_item_id = explode(",", $admin_params['site_license_item_type_id']['param_value']);
@@ -470,10 +507,11 @@ class Repository_View_Edit_Admin extends RepositoryAction
             // Add send feedback mail to sitelicense user 2014/04/22 T.Ichikawa --end--
             
             // Add feedback mail 2012/08/22 A.Suzuki --start--
-            $SendMail = new RepositoryUsagestatisticsSendMail($this->Session, $this->Db, $this->TransStartDate);
-            
             // Get send mail status
-            $SendMail->openProgressFile(false);
+            $this->infoLog("businessSendusagestatisticsmail", __FILE__, __CLASS__, __LINE__);
+            $SendMail = BusinessFactory::getFactory()->getBusiness("businessSendusagestatisticsmail");
+            // 引数は一番最後以外ダミー（リファレンス渡しになっているので一応変数を書いている）
+            $status = $SendMail->openProgressFile($mailAddress, $orderNum, $isAuhtor, $authorId, false);
             
             $admin_params["feedbackMail_uri"]["path"] = BASE_URL ."/?action=repository_action_common_usagestatisticsmail&login_id=[login_id]&password=[password]";
             $excludeUserDataList = array();
@@ -507,7 +545,7 @@ class Repository_View_Edit_Admin extends RepositoryAction
             }
             $this->Session->setParameter("excludeUserDataList", $excludeUserDataList);
             $this->Session->setParameter("excludeUserDataText", $excludeUserDataText);
-            $this->Session->setParameter("sendFeedbackStatus", $SendMail->getStatus());
+            $this->Session->setParameter("sendFeedbackStatus", $status);
             $this->Session->setParameter("feedbackSendMailActivateFlagOrg", $admin_params["send_feedback_mail_activate_flg"]["param_value"]);
             
             // Add feedback mail 2012/08/22 A.Suzuki --end--
@@ -721,6 +759,11 @@ class Repository_View_Edit_Admin extends RepositoryAction
             if(!isset($this->prefixCrossRef)) {
                 $this->prefixCrossRef = $repositoryHandleManager->getCrossRefPrefix();
             }
+        	// Add DataCite 2015/02/10 K.Sugimoto --start--
+            if(!isset($this->prefixDataCite)) {
+                $this->prefixDataCite = $repositoryHandleManager->getDataCitePrefix();
+            }
+        	// Add DataCite 2015/02/10 K.Sugimoto --end--
             if(!isset($this->prefixCnri)) {
                 $this->prefixCnri = $repositoryHandleManager->getCnriPrefix();
             }
@@ -835,6 +878,179 @@ class Repository_View_Edit_Admin extends RepositoryAction
                     $this->oaipmh_output_flag = $result[0]['param_value'];
                 }
             }
+            
+            // Add Default Search Type 2014/12/03 K.Sugimoto --start--
+            // Default Search Type
+            if(isset($admin_params["default_search_type"]["param_value"]) 
+                && strlen($admin_params["default_search_type"]["param_value"]) > 0)
+            {
+                $this->default_search_type = $admin_params["default_search_type"]["param_value"];
+            }
+            else
+            {
+            	$searchParam = new RepositorySearchRequestParameter();
+            	$result = $searchParam->getDefaultSearchType();
+                if(count($result) > 0)
+                {
+                    $this->default_search_type = $result[0]['param_value'];
+                }
+            }
+            // Add Default Search Type 2014/12/03 K.Sugimoto --end--
+
+            // Add Usage Statistics link display setting 2014/12/16 K.Matsushita --start--
+            if(isset($admin_params["usagestatistics_link_display"]["param_value"])
+            && strlen($admin_params["usagestatistics_link_display"]["param_value"]) > 0)
+            {
+                $this->usagestatistics_link_display = $admin_params["usagestatistics_link_display"]["param_value"];
+            }
+            else
+            {
+                $query = "SELECT param_value ".
+                        "FROM ".DATABASE_PREFIX."repository_parameter ".
+                        "WHERE param_name = ? ".
+                        "AND is_delete = ? ;";
+                $params = array();
+                $params[] = "usagestatistics_link_display";
+                $params[] = 0;
+                $result = $this->dbAccess->executeQuery($query, $params);
+                if(count($result) > 0)
+                {
+                    $this->usagestatistics_link_display = $result[0]['param_value'];
+                }
+            }
+            
+            // institution name
+            if(isset($admin_params["institution_name"]["param_value"]) 
+                && strlen($admin_params["institution_name"]["param_value"]) > 0)
+            {
+                $this->institution_name = $admin_params["institution_name"]["param_value"];
+            }
+            else
+            {
+                $query = "SELECT param_value ".
+                         "FROM ".DATABASE_PREFIX."repository_parameter ".
+                         "WHERE param_name = ? ".
+                         "AND is_delete = ? ;";
+                $params = array();
+                $params[] = "institution_name";
+                $params[] = 0;
+                $result = $this->dbAccess->executeQuery($query, $params);
+                if(count($result) > 0)
+                {
+                    $this->institution_name = $result[0]['param_value'];
+                }
+            }
+            
+            // Add Usage Statistics link display setting 2014/12/16 K.Matsushita --end--
+
+            // Add ranking tab display setting 2014/12/19 K.Matsushita --start--
+            if(isset($admin_params["ranking_tab_display"]["param_value"])
+            && strlen($admin_params["ranking_tab_display"]["param_value"]) > 0)
+            {
+                $this->ranking_tab_display = $admin_params["ranking_tab_display"]["param_value"];
+            }
+            else
+            {
+                $query = "SELECT param_value ".
+                        "FROM ".DATABASE_PREFIX."repository_parameter ".
+                        "WHERE param_name = ? ".
+                        "AND is_delete = ? ;";
+                $params = array();
+                $params[] = "ranking_tab_display";
+                $params[] = 0;
+                $result = $this->dbAccess->executeQuery($query, $params);
+                if(count($result) > 0)
+                {
+                    $this->ranking_tab_display = $result[0]['param_value'];
+                }
+            }
+            // Add ranking tab display setting 2014/12/19 K.Matsushita --end--
+            
+        	// Add DataCite 2015/02/10 K.Sugimoto --start--
+	        $query = "SELECT COUNT(*) ".
+	                 "FROM ".DATABASE_PREFIX."repository_doi_status ;";
+            $params = array();
+	        $result = $this->dbAccess->executeQuery($query, $params);
+	        
+	        if(count($result) > 0 && $result[0]["COUNT(*)"] != 0){
+	        	$this->exist_doi_item = 1;
+	        }else{
+	        	$this->exist_doi_item = 0;
+	        }
+
+            if(isset($admin_params["perfix_flag"]["param_value"]) 
+                && strlen($admin_params["prefix_flag"]["param_value"]) > 0)
+            {
+                $this->prefix_flag = $admin_params["prefix_flag"]["param_value"];
+            }
+            else
+            {
+	            $query = "SELECT param_value ".
+	                     "FROM ".DATABASE_PREFIX. "repository_parameter ".
+				         "WHERE `param_name` = ? ".
+                         "AND is_delete = ? ;";
+			    $params = array();
+			    $params[] = "prefix_flag";
+			    $params[] = 0;
+                $result = $this->dbAccess->executeQuery($query, $params);
+                if(count($result) > 0)
+                {
+                    $this->prefix_flag = $result[0]['param_value'];
+                }
+            }
+        	// Add DataCite 2015/02/10 K.Sugimoto --end--
+
+		    // Auto Input Metadata by CrossRef DOI 2015/03/02 K.Sugimoto --start--
+            if(!isset($admin_params["CrossRefQueryServicesAccount"]["param_value"]))
+            {
+                $query = "SELECT param_value ".
+                        "FROM ".DATABASE_PREFIX."repository_parameter ".
+                        "WHERE param_name = ? ".
+                        "AND is_delete = ? ;";
+                $params = array();
+                $params[] = "crossref_query_service_account";
+                $params[] = 0;
+                $result = $this->dbAccess->executeQuery($query, $params);
+                if(count($result) > 0)
+                {
+			    	$admin_params["CrossRefQueryServicesAccount"]["param_value"] = $result[0]["param_value"];
+                }
+            }
+		    // Auto Input Metadata by CrossRef DOI 2015/03/02 K.Sugimoto --end--
+            
+            // Add RobotList 2015/04/06 S.Suzuki --start--
+            $query = "SELECT * ".
+                     "FROM ".DATABASE_PREFIX."repository_robotlist_master " . 
+                     "WHERE is_delete = ? ; ";
+            $params = array();
+            $params[] = 0;
+            $result = $this->dbAccess->executeQuery($query, $params);
+            
+            $robotlistInfo = array();
+            
+            for ($ii = 0; $ii < count($result); $ii++){
+                $robotlistInfo[$ii]["robotlist_id"] = $result[$ii]["robotlist_id"];
+                $robotlistInfo[$ii]["url"] = $result[$ii]["robotlist_url"];
+                $robotlistInfo[$ii]["check"]  = $result[$ii]["is_robotlist_use"];
+                $robotlistInfo[$ii]["version"]  = $result[$ii]["robotlist_version"];
+                $robotlistInfo[$ii]["date"]  = $result[$ii]["robotlist_date"];
+                $robotlistInfo[$ii]["revision"]  = $result[$ii]["robotlist_revision"];
+                $robotlistInfo[$ii]["author"]  = $result[$ii]["robotlist_author"];
+            }
+            
+            $admin_params["robotlist"] = $robotlistInfo;
+            
+            // lock テーブルを見て実行中か確認
+            $query = "SELECT * ".
+                     "FROM ".DATABASE_PREFIX."repository_lock " . 
+                     "WHERE process_name = ? ; ";
+            $params = array();
+            $params[] = "Repository_Action_Common_Robotlist";
+            
+            $result = $this->dbAccess->executeQuery($query, $params);
+            
+            $this->logTableStatus = $result[0]["status"];
+            // Add RobotList 2015/04/06 S.Suzuki --start--
             
             // ----------------------------------------------------
             // 終了処理

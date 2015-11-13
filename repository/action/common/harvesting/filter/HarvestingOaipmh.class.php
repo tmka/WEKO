@@ -1,9 +1,9 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: HarvestingOaipmh.class.php 42605 2014-10-03 01:02:01Z keiya_sugimoto $
+// $Id: HarvestingOaipmh.class.php 58676 2015-10-10 12:33:17Z tatsuya_koyasu $
 //
-// Copyright (c) 2007 - 2008, National Institute of Informatics, 
+// Copyright (c) 2007 - 2008, National Institute of Informatics,
 // Research and Development Center for Scientific Information Resources
 //
 // This program is licensed under a Creative Commons BSD Licence
@@ -19,6 +19,7 @@ require_once WEBAPP_DIR. '/modules/repository/components/RepositoryOutputFilter.
 require_once WEBAPP_DIR. '/modules/repository/components/RepositorySearchTableProcessing.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryHandleManager.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/Checkdoi.class.php';
+require_once WEBAPP_DIR. '/modules/repository/components/FW/AppException.class.php';
 
 /**
  * Repository module OAI-PMH harvesting class
@@ -52,7 +53,7 @@ class HarvestingOaipmh extends RepositoryAction
     /**
      * metadataPrefix
      *
-     * @var string metadataPrefix:oai_dc/junii2/oai_lom/lido/spase
+     * @var string metadataPrefix:oai_dc/junii2/oai_lom/lido
      */
     private $metadataPrefix = "";
     /**
@@ -82,13 +83,13 @@ class HarvestingOaipmh extends RepositoryAction
     /**
      * harvesting log message
      * in "error message" or "warning message"
-     * 
+     *
      * @var array
      */
     private $logMsg = array();
     /**
      * harvesting status for log
-     * 
+     *
      * @var int
      */
     private $harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_OK;
@@ -116,28 +117,28 @@ class HarvestingOaipmh extends RepositoryAction
      * @var classObject
      */
     private $filter = null;
-    
+
     // Add Selective Harvesting 2013/09/04 R.Matsuura --start--
     /**
      * from date for selective harvesting
-     * 
+     *
      * @var int
      */
     private $from_date = null;
     /**
      * until date for selective harvesting
-     * 
+     *
      * @var int
      */
     private $until_date = null;
     /**
      * set parameter for selective harvesting
-     * 
+     *
      * @var string
      */
     private $set_param = null;
     // Add Selective Harvesting 2013/09/04 R.Matsuura --end--
-    
+
     // ---------------------------------------------
     // Const
     // ---------------------------------------------
@@ -146,12 +147,13 @@ class HarvestingOaipmh extends RepositoryAction
     const METADATAPREFIX_JUNII2 = RepositoryConst::OAIPMH_METADATA_PREFIX_JUNII2;
     const METADATAPREFIX_OAILOM = RepositoryConst::OAIPMH_METADATA_PREFIX_LOM;
     const METADATAPREFIX_LIDO = RepositoryConst::OAIPMH_METADATA_PREFIX_LIDO;
-    const METADATAPREFIX_SPASE = RepositoryConst::OAIPMH_METADATA_PREFIX_SPASE;
+    const METADATAPREFIX_LIDO = RepositoryConst::OAIPMH_METADATA_PREFIX_SPASE;
+
     // tag
     const OAIPMH_TAG_IDENTIFIER = RepositoryConst::OAIPMH_TAG_IDENTIFIER;
     const OAIPMH_TAG_DATESTAMP = RepositoryConst::OAIPMH_TAG_DATESTAMP;
     const OAIPMH_TAG_SETSPEC = RepositoryConst::OAIPMH_TAG_SET_SPEC;
-    
+
     // ---------------------------------------------
     // Method
     // ---------------------------------------------
@@ -164,10 +166,10 @@ class HarvestingOaipmh extends RepositoryAction
         $this->Session = $Session;
         $this->Db = $Db;
     }
-    
+
     /**
      * Get now date
-     * 
+     *
      * @return string
      */
     private function getNowDate()
@@ -175,26 +177,26 @@ class HarvestingOaipmh extends RepositoryAction
         $DATE = new Date();
         return $DATE->getDate().".000";
     }
-    
+
     /**
      * Set member: repositoryId
-     * 
+     *
      * @param int $repositoryId
      */
     public function setRepositoryId($repositoryId)
     {
         $this->repositoryId = $repositoryId;
     }
-    
+
     /**
      * Set member: baseUrl
-     * 
+     *
      * @param string $baseUrl
      */
     public function setBaseUrl($baseUrl)
     {
         $this->baseUrl = $baseUrl;
-        
+
         // set join
         $this->join = "?";
         if(is_numeric(strpos($this->baseUrl, "?action=repository_oaipmh")))
@@ -202,10 +204,10 @@ class HarvestingOaipmh extends RepositoryAction
             $this->join = "&";
         }
     }
-    
+
     /**
      * Set member: metadataPrefix
-     * 
+     *
      * @param string $metadataPrefix
      */
     public function setMetadataPrefix($metadataPrefix)
@@ -213,61 +215,61 @@ class HarvestingOaipmh extends RepositoryAction
         $this->metadataPrefix = $metadataPrefix;
         $this->setFilter();
     }
-    
+
     /**
      * Set member: postIndexId
-     * 
+     *
      * @param int $postIndexId
      */
     public function setPostIndexId($postIndexId)
     {
         $this->postIndexId = $postIndexId;
     }
-    
+
     /**
      * Set member: isAutoSoting
-     * 
+     *
      * @param int $isAutoSoting
      */
     public function setIsAutoSoting($isAutoSoting)
     {
         $this->isAutoSoting = $isAutoSoting;
     }
-    
+
     /**
      * Set member: requestUrl
-     * 
+     *
      * @param string $requestUrl
      */
     public function setRequestUrl($requestUrl)
     {
         $this->requestUrl = $requestUrl;
     }
-    
+
     /**
      * Set member: xmlFile
-     * 
+     *
      * @param string $xmlFile
      */
     public function setXmlFile($xmlFile)
     {
         $this->xmlFile = $xmlFile;
     }
-    
+
     /**
      * Set member: responseDate
-     * 
+     *
      * @param string $responseDate
      */
     public function setResponseDate($responseDate)
     {
         $this->responseDate = $responseDate;
     }
-    
+
     /**
      * Get Identify URL
-     * 
-     * @return string 
+     *
+     * @return string
      */
     public function getIdentifyUrl()
     {
@@ -278,11 +280,11 @@ class HarvestingOaipmh extends RepositoryAction
         }
         return $url;
     }
-    
+
     /**
      * Get ListSets URL
-     * 
-     * @return string 
+     *
+     * @return string
      */
     public function getListSetsUrl()
     {
@@ -293,11 +295,11 @@ class HarvestingOaipmh extends RepositoryAction
         }
         return $url;
     }
-    
+
     /**
      * Get ListRecords URL
-     * 
-     * @return string 
+     *
+     * @return string
      */
     public function getListRecordsUrl()
     {
@@ -311,10 +313,10 @@ class HarvestingOaipmh extends RepositoryAction
         }
         return $url;
     }
-    
+
     /**
      * Set OAI-PMH filter class
-     * 
+     *
      */
     public function setFilter()
     {
@@ -323,23 +325,21 @@ class HarvestingOaipmh extends RepositoryAction
             require_once WEBAPP_DIR.'/modules/repository/action/common/harvesting/filter/HarvestingOaipmhLom.class.php';
             $this->filter = new HarvestingOaipmhLom($this->Session, $this->Db);
         }
-        else if($this->metadataPrefix == self::METADATAPREFIX_LIDO)
+        else if($this->metadataPrefix == self::METADATAPREFIX_SPASE)
         {
             require_once WEBAPP_DIR.'/modules/repository/action/common/harvesting/filter/HarvestingOaipmhLido.class.php';
             $this->filter = new HarvestingOaipmhLido($this->Session, $this->Db);
         }
-        
-        else if($this->metadataPrefix == self::METADATAPREFIX_SPASE)
+        else if($this->metadataPrefix == self::METADATAPREFIX_LIDO)
         {
         	require_once WEBAPP_DIR.'/modules/repository/action/common/harvesting/filter/HarvestingOaipmhSpase.class.php';
         	$this->filter = new HarvestingOaipmhSpase($this->Session, $this->Db);
         }
-        
     }
-    
+
     /**
      * Get harvesting start date
-     * 
+     *
      * @param string &$startDate
      * @return bool
      */
@@ -359,13 +359,13 @@ class HarvestingOaipmh extends RepositoryAction
         {
             $startDate = $result[0]["param_value"];
         }
-        
+
         return true;
     }
-    
+
     /**
      * Get harvesting end date
-     * 
+     *
      * @param string &$endDate
      * @return bool
      */
@@ -385,13 +385,13 @@ class HarvestingOaipmh extends RepositoryAction
         {
             $endDate = $result[0]["param_value"];
         }
-        
+
         return true;
     }
-    
+
     /**
      * Parse ListSets
-     * 
+     *
      * @param string $nextUrl
      * @return bool
      */
@@ -405,15 +405,15 @@ class HarvestingOaipmh extends RepositoryAction
         $this->editTree->Session = $this->Session;
         $this->editTree->Db = $this->Db;
         $this->editTree->setDefaultAccessControlList();
-        
+
         $this->setLangResource();
-        
+
         $setXml = "";
         $resTokenXml = "";
         $setOpenFlag = false;
         $resTokenOpenFlag = false;
         $nextUrl = "";
-        
+
         // read file
         $fp = fopen($this->xmlFile, "r");
         while(!feof($fp)){
@@ -422,18 +422,18 @@ class HarvestingOaipmh extends RepositoryAction
             $line = str_replace("\r\n", "", $line);
             $line = str_replace("\n", "", $line);
             $line = trim($line);
-            
+
             if($setOpenFlag)
             {
                 $setXml .= $line;
-                
+
                 // "set" tag close
                 if(preg_match("/^<\/set>$/", $line) > 0)
                 {
                     // set registed index time
                     $this->TransStartDate = $this->getNowDate();
                     $this->editTree->TransStartDate = $this->TransStartDate;
-                    
+
                     // init
                     $setOpenFlag = false;
                     // init log status
@@ -441,24 +441,24 @@ class HarvestingOaipmh extends RepositoryAction
                     $this->makeIndexFromListSets($setXml);
                     $setXml = '';
                 }
-                
+
             }
             else if($resTokenOpenFlag)
             {
                 $resTokenXml .= $line;
-                
+
                 // "resumptionToken" tag close
                 if(preg_match("/^<\/resumptionToken>$/", $line) > 0)
                 {
                     $resTokenOpenFlag = false;
                     $resumptionToken = "";
-                    
+
                     $resTokenXml = str_replace("\r\n", "\n", $resTokenXml);
                     $resTokenXml = str_replace("\r", "\n", $resTokenXml);
                     $resTokenXml = str_replace("\n", "", $resTokenXml);
-                    
+
                     $resumptionToken = preg_replace("/\<resumptionToken ?.*\>(.*)\<\/resumptionToken\>/", "$1", $resTokenXml);
-                    
+
                     if(strlen($resumptionToken) > 0)
                     {
                         // Create next URL (Get ListSets continue)
@@ -469,19 +469,19 @@ class HarvestingOaipmh extends RepositoryAction
             else if($resResponseDateFlag)
             {
                 $resResponseDateXml .= $line;
-                
+
                 // "responseDate" tag close
                 if(preg_match("/^<\/responseDate>$/", $line) > 0)
                 {
                     $resResponseDateFlag = false;
                     $this->responseDate = "";
-                    
+
                     $resResponseDateXml = str_replace("\r\n", "\n", $resResponseDateXml);
                     $resResponseDateXml = str_replace("\r", "\n", $resResponseDateXml);
                     $resResponseDateXml = str_replace("\n", "", $resResponseDateXml);
-                    
+
                     $resResponseDateXml = preg_replace("/^<responseDate ?.*>(.*)<\/responseDate>$/", "$1", $resResponseDateXml);
-                    
+
                     // private number <- responseDate
                     $this->responseDate = $resResponseDateXml;
                 }
@@ -495,14 +495,14 @@ class HarvestingOaipmh extends RepositoryAction
                     $setXml = $line;
                     $this->logMsg = array();
                 }
-                
+
                 // "resumtionToken" tag open
                 else if(preg_match("/^<resumptionToken +.*>|<resumptionToken>$/", $line) > 0)
                 {
                     $resTokenOpenFlag = true;
                     $resTokenXml = $line;
                 }
-                
+
                 // "responseDate" tag open
                 else if(preg_match("/^<responseDate +.*>|<responseDate>$/", $line) > 0){
                     $resResponseDateFlag = true;
@@ -511,18 +511,18 @@ class HarvestingOaipmh extends RepositoryAction
             }
         }
         fclose($fp);
-        
+
         // Create next URL (Get ListRecords)
         if(strlen($nextUrl) < 1)
         {
             // delete old index
             // select old indexes
             $this->getHarvestingStartDate($startDate);
-            $query = " SELECT * ". 
-                     " FROM ".DATABASE_PREFIX."repository_index ". 
-                     " WHERE repository_id = ? ". 
-                     " AND LENGTH(set_spec) > ? ". 
-                     " AND is_delete != ? ". 
+            $query = " SELECT * ".
+                     " FROM ".DATABASE_PREFIX."repository_index ".
+                     " WHERE repository_id = ? ".
+                     " AND LENGTH(set_spec) > ? ".
+                     " AND is_delete != ? ".
                      " AND mod_date < ? ";
             $params = array();
             $params[] = $this->repositoryId;
@@ -560,17 +560,17 @@ class HarvestingOaipmh extends RepositoryAction
                     return false;
                 }
             }
-            
+
             $nextUrl = $this->baseUrl.$this->join."verb=ListRecords&metadataPrefix=".$this->metadataPrefix;
-            
+
             // Add Selective Harvesting 2013/09/04 R.Matsuura --start--
             $nextUrl .= $this->getHarvestingParam();
             // Add Selective Harvesting 2013/09/04 R.Matsuura --end--
         }
-        
+
         return true;
     }
-    
+
     /**
      * Parse Records
      *
@@ -590,9 +590,9 @@ class HarvestingOaipmh extends RepositoryAction
         $resResponseDateFlag = false;
         $nextUrl = "";
         $metadata = array();
-        
+
         $this->itemRegister = new ItemRegister($this->Session, $this->Db);
-        
+
         // read file
         $fp = fopen($this->xmlFile, "r");
         while(!feof($fp))
@@ -612,18 +612,18 @@ class HarvestingOaipmh extends RepositoryAction
                 $line = str_replace("\n", "", $line);
             }
             $line = trim($line);
-            
+
             if($recordOpenFlag)
             {
                 if($headerOpenFlag)
                 {
                     $headerXml .= $line;
-                    
+
                     // "header" tag close
                     if(preg_match("/^<\/header>$/", $line) > 0)
                     {
                         $headerOpenFlag = false;
-                        
+
                         // Get header data
                         if(!$this->getHeaderDataFromListRecords($headerXml, $metadata))
                         {
@@ -636,12 +636,12 @@ class HarvestingOaipmh extends RepositoryAction
                 else if($metadatarOpenFlag)
                 {
                     $metadataXml .= $line;
-                    
+
                     // "metadata" tag close
                     if(preg_match("/^<\/metadata>$/", $line) > 0)
                     {
                         $metadatarOpenFlag = false;
-                        
+
                         // Get metadata
                         if(!$this->getMetadataFromListRecords($metadataXml, $metadata))
                         {
@@ -659,14 +659,14 @@ class HarvestingOaipmh extends RepositoryAction
                         $headerOpenFlag = true;
                         $headerXml = $line;
                     }
-                    
+
                     // "metadata" tag open
                     else if(preg_match("/^<metadata +.*>|<metadata>$/", $line) > 0)
                     {
                         $metadatarOpenFlag = true;
                         $metadataXml = $line;
                     }
-                    
+
                     // "record" tag close
                     else if(preg_match("/^<\/record>$/", $line) > 0)
                     {
@@ -675,7 +675,7 @@ class HarvestingOaipmh extends RepositoryAction
                         $headerIdentifier = "";
                         $headerDatastump = "";
                         $setSpecArray = array();
-                        
+
                         // Call check metadata
                         if($this->checkMetadata($metadata))
                         {
@@ -687,20 +687,20 @@ class HarvestingOaipmh extends RepositoryAction
             else if($resTokenOpenFlag)
             {
                 $resTokenXml .= $line;
-                
+
                 // "resumptionToken" tag close
                 if(preg_match("/^<\/resumptionToken>$/", $line) > 0)
                 {
                     $resTokenOpenFlag = false;
                     $resumptionToken = "";
-                    
+
                     $resTokenXml = str_replace("\r\n", "\n", $resTokenXml);
                     $resTokenXml = str_replace("\r", "\n", $resTokenXml);
                     $resTokenXml = str_replace("\n", "", $resTokenXml);
                     $resTokenXml = str_replace(RepositoryConst::XML_LF, "", $resTokenXml);
-                    
+
                     $resumptionToken = preg_replace("/\<resumptionToken ?.*\>(.*)\<\/resumptionToken\>/", "$1", $resTokenXml);
-                    
+
                     if(strlen($resumptionToken) > 0)
                     {
                         // Create next URL (Get ListRecords continue)
@@ -711,20 +711,20 @@ class HarvestingOaipmh extends RepositoryAction
             else if($resResponseDateFlag)
             {
                 $resResponseDateXml .= $line;
-                
+
                 // "responseDate" tag close
                 if(preg_match("/^<\/responseDate>$/", $line) > 0)
                 {
                     $resResponseDateFlag = false;
                     $this->responseDate = "";
-                    
+
                     $resResponseDateXml = str_replace("\r\n", "\n", $resResponseDateXml);
                     $resResponseDateXml = str_replace("\r", "\n", $resResponseDateXml);
                     $resResponseDateXml = str_replace("\n", "", $resResponseDateXml);
                     $resResponseDateXml = str_replace(RepositoryConst::XML_LF, "", $resResponseDateXml);
-                    
+
                     $resResponseDateXml = preg_replace("/^<responseDate ?.*>(.*)<\/responseDate>$/", "$1", $resResponseDateXml);
-                    
+
                     // private number <- responseDate
                     $this->responseDate = $resResponseDateXml;
                 }
@@ -739,21 +739,21 @@ class HarvestingOaipmh extends RepositoryAction
                     $metadataXml = "";
                     $metadata = array();
                     $this->TransStartDate = $this->getNowDate();
-                    if(($this->metadataPrefix == self::METADATAPREFIX_OAILOM || $this->metadataPrefix == self::METADATAPREFIX_LIDO || $this->metadataPrefix == self::METADATAPREFIX_SPASE) && $this->filter != null)
+                    if(($this->metadataPrefix == self::METADATAPREFIX_OAILOM || $this->metadataPrefix == self::METADATAPREFIX_LIDO) && $this->filter != null)
                     {
                         $this->filter->setTransStartDate($this->TransStartDate);
                     }
                     $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_OK;
                     $this->logMsg = array();
                 }
-                
+
                 // "resumtionToken" tag open
                 else if(preg_match("/^<resumptionToken +.*>|<resumptionToken>$/", $line) > 0)
                 {
                     $resTokenOpenFlag = true;
                     $resTokenXml = $line;
                 }
-                
+
                 // "responseDate" tag open
                 else if(preg_match("/^<responseDate +.*>|<responseDate>$/", $line) > 0){
                     $resResponseDateFlag = true;
@@ -762,7 +762,7 @@ class HarvestingOaipmh extends RepositoryAction
             }
         }
         fclose($fp);
-        
+
         if(strlen($nextUrl) == 0)
         {
             // Recount index contents
@@ -773,10 +773,10 @@ class HarvestingOaipmh extends RepositoryAction
             $this->editTree->recountContents($topParentIndexId);
             $this->editTree->recountPrivateContents($topParentIndexId);		// Add private_contents count K.Matsuo 2013/05/07
         }
-        
+
         return true;
     }
-    
+
     /**
      * Regist index by ListSets and regist items by ListRecords
      *
@@ -804,7 +804,7 @@ class HarvestingOaipmh extends RepositoryAction
                 return false;
             }
         }
-        
+
         // ListRecords
         else if(preg_match("/^.*verb=ListRecords.*$/", $this->requestUrl) == 1)
         {
@@ -823,14 +823,14 @@ class HarvestingOaipmh extends RepositoryAction
                 return false;
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * Create progress text
-     * 
-     * @return string 
+     *
+     * @return string
      */
     public function createProgressText()
     {
@@ -853,10 +853,10 @@ class HarvestingOaipmh extends RepositoryAction
         {
             $progressText .= $this->getListRecordsUrl()."\n";
         }
-        
+
         return $progressText;
     }
-    
+
     /**
      * set harvesting log.
      *
@@ -869,7 +869,7 @@ class HarvestingOaipmh extends RepositoryAction
             array_push($this->logMsg, $logMsg);
         }
     }
-    
+
     /**
      * set harvesting log status
      *
@@ -879,17 +879,17 @@ class HarvestingOaipmh extends RepositoryAction
     {
         $this->harvestingLogStatus = $status;
     }
-    
+
     /**
      * make index from ListSets
-     * 
+     *
      * @param string $listSetsXml "<set><setSpec>xxx</setSpec><setName>xxx</setName></set>"
      */
     private function makeIndexFromListSets($listSetsXml)
     {
         $setSpec = "";
         $setName = "";
-        
+
         // parse xml
         try
         {
@@ -908,7 +908,7 @@ class HarvestingOaipmh extends RepositoryAction
             $this->entryHarvestingLog(RepositoryConst::HARVESTING_OPERATION_ID_LISTSETS, '', '', '', '', '', '', '', '');
             return false;
         }
-        
+
         // Get elements
         foreach($vals as $val)
         {
@@ -942,7 +942,7 @@ class HarvestingOaipmh extends RepositoryAction
         $ret = false;
         // index id that updates
         $indexId = $this->postIndexId;
-        
+
         // Add harvesting 2012/03/13 T.Koyasu -start-
         // split setSpec
         // array[]=string
@@ -955,7 +955,7 @@ class HarvestingOaipmh extends RepositoryAction
         $this->editTree->getAccessGroupData($this->editTree->getDefaultAccessRoleRoom(), $this->editTree->getDefaultExclusiveAclGroups(), $groupData);
         $authData = array();
         $this->editTree->getAccessAuthData($this->editTree->getDefaultAccessRoleIds(), $this->editTree->getDefaultExclusiveRoleIds(), $authData);
-        
+
         $updateValue = 0;
 
         for($ii=0;$ii<count($setSpecArray);$ii++){
@@ -996,14 +996,14 @@ class HarvestingOaipmh extends RepositoryAction
             else
             {
                 $newIndexData = array();
-                
+
                 // create insert index data
                 // create new index id
                 $newIndexId = $this->editTree->getNewIndexId();
-                
+
                 // set showOrder(this process for the index is not exists from D&D)
                 $showOrder = 1;
-                $query = " SELECT show_order ". 
+                $query = " SELECT show_order ".
                          " FROM ". DATABASE_PREFIX. "repository_index ".
                          " WHERE parent_index_id = ? ".
                          " ORDER BY show_order DESC";
@@ -1020,7 +1020,7 @@ class HarvestingOaipmh extends RepositoryAction
                 } else {
                     $showOrder = 1 + $result[0]['show_order'];
                 }
-                
+
                 $newIndexData['index_id'] = $newIndexId;
                 if($ii == (count($setSpecArray) - 1)){
                     $newIndexData["index_name"] = $setName;
@@ -1052,7 +1052,7 @@ class HarvestingOaipmh extends RepositoryAction
                 $newIndexData["repository_id"] = $this->repositoryId;
                 $newIndexData["set_spec"] = $setSpecArray[$ii];
                 $newIndexData["harvest_public_state"] = 0;
-                
+
                 // insert index
                 $result = $this->editTree->insertIndex($newIndexData);
                 if($result === false){
@@ -1073,10 +1073,10 @@ class HarvestingOaipmh extends RepositoryAction
             array_push($this->logMsg, "repository_harvesting_success_setspec");
         }
         $this->entryHarvestingLog(RepositoryConst::HARVESTING_OPERATION_ID_LISTSETS, $updateValue, $setSpec, '', $parentIndexId, '', '', '', $this->editTree->TransStartDate);
-        
+
         return true;
     }
-    
+
     /**
      * Get metadata array from ListRecords(header)
      *
@@ -1107,7 +1107,7 @@ class HarvestingOaipmh extends RepositoryAction
             $this->entryHarvestingLog(RepositoryConst::HARVESTING_OPERATION_ID_LISTRECORD, "", "", "", "", "", "", $this->requestUrl, "");
             return false;
         }
-            
+
         // Get elements
         foreach($vals as $val)
         {
@@ -1118,20 +1118,20 @@ class HarvestingOaipmh extends RepositoryAction
                 {
                     $tagName = RepositoryConst::HARVESTING_COL_HEADERIDENTIFIER;
                 }
-                
+
                 if(!array_key_exists($tagName, $metadata))
                 {
                     $metadata[$tagName] = array();
                 }
-                
+
                 $tagData = array("value" => "", "attributes" => array());
                 $tagData["value"] = $this->forXmlChangeDecode($val["value"]);
                 $tagData["attributes"] = $val["attributes"];
-                
+
                 array_push($metadata[$tagName], $tagData);
             }
         }
-        
+
         $identifier = "";
         $datestamp = "";
         $setSpecStr = "";
@@ -1149,7 +1149,7 @@ class HarvestingOaipmh extends RepositoryAction
         {
             $setSpecStr = $this->getSetSpecStr($metadata[RepositoryConst::HARVESTING_COL_SETSPEC]);
         }
-        
+
         // Error check
         if(strlen($identifier) == 0)
         {
@@ -1167,7 +1167,7 @@ class HarvestingOaipmh extends RepositoryAction
                                         $setSpecStr, "", $identifier, "", $this->requestUrl, $datestamp);
             return false;
         }
-        
+
         // Warning check
         if($this->isAutoSoting == 1 && strlen($setSpecStr) == 0)
         {
@@ -1177,10 +1177,10 @@ class HarvestingOaipmh extends RepositoryAction
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * Get metadata array from ListRecords(record)
      *
@@ -1191,7 +1191,7 @@ class HarvestingOaipmh extends RepositoryAction
      */
     private function getMetadataFromListRecords($metadataXml, &$metadata)
     {
-        if($this->metadataPrefix == self::METADATAPREFIX_OAILOM || $this->metadataPrefix == self::METADATAPREFIX_LIDO || $this->metadataPrefix == self::METADATAPREFIX_SPASE)
+        if($this->metadataPrefix == self::METADATAPREFIX_OAILOM || $this->metadataPrefix == self::METADATAPREFIX_LIDO)
         {
             if(!$this->filter->setMetadataFromListRecords($metadataXml, $this->repositoryId, $metadata))
             {
@@ -1224,7 +1224,7 @@ class HarvestingOaipmh extends RepositoryAction
                 $this->entryHarvestingLog(RepositoryConst::HARVESTING_OPERATION_ID_LISTRECORD, "", "", "", "", "", "", $this->requestUrl, "");
                 return false;
             }
-                
+
             // Get elements
             foreach($vals as $val)
             {
@@ -1234,24 +1234,24 @@ class HarvestingOaipmh extends RepositoryAction
                     {
                         $metadata[$val["tag"]] = array();
                     }
-                    
+
                     $tagData = array("value" => "", "attributes" => array());
                     $tagData["value"] = $this->forXmlChangeDecode($val["value"]);
                     $tagData["attributes"] = $val["attributes"];
-                    
+
                     array_push($metadata[$val["tag"]], $tagData);
                 }
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * check index exists
-     * 
+     *
      * @param string $setSpec
-     * @param int $indexId 
+     * @param int $indexId
      * @return true = index exists / false = index no exists
      */
     private function indexExists($setSpec, &$indexId)
@@ -1283,10 +1283,10 @@ class HarvestingOaipmh extends RepositoryAction
             $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
         }
         $indexId = $result[0]['index_id'];
-        
+
         return true;
     }
-    
+
     /**
      * Check metadata
      *
@@ -1295,17 +1295,17 @@ class HarvestingOaipmh extends RepositoryAction
      */
     private function checkMetadata($metadata)
     {
-        // If status is 'deleted', no check and return 'true'. 
+        // If status is 'deleted', no check and return 'true'.
         if($metadata[RepositoryConst::HARVESTING_COL_HEADER][0]["attributes"][RepositoryConst::HARVESTING_COL_STATUS] == "deleted")
         {
             return true;
         }
-        
+
         $identifier = $metadata[RepositoryConst::HARVESTING_COL_HEADERIDENTIFIER][0]["value"];
         $datestamp = $metadata[RepositoryConst::HARVESTING_COL_DATESTAMP][0]["value"];
         $setSpecStr = $this->getSetSpecStr($metadata[RepositoryConst::HARVESTING_COL_SETSPEC]);
-        
-        if($this->metadataPrefix == self::METADATAPREFIX_OAILOM || $this->metadataPrefix == self::METADATAPREFIX_LIDO || $this->metadataPrefix == self::METADATAPREFIX_SPASE)
+
+        if($this->metadataPrefix == self::METADATAPREFIX_OAILOM || $this->metadataPrefix == self::METADATAPREFIX_LIDO)
         {
             $logStatus = $this->harvestingLogStatus;
             $logMsg = $this->logMsg;
@@ -1324,13 +1324,13 @@ class HarvestingOaipmh extends RepositoryAction
             // If not exist required tags, make key as value is empty
             if($this->metadataPrefix == self::METADATAPREFIX_OAIDC)
             {
-                if( !array_key_exists(strtoupper(RepositoryConst::DUBLIN_CORE_TITLE), $metadata) && 
+                if( !array_key_exists(strtoupper(RepositoryConst::DUBLIN_CORE_TITLE), $metadata) &&
                     !array_key_exists(strtoupper(RepositoryConst::DUBLIN_CORE_PREFIX.RepositoryConst::DUBLIN_CORE_TITLE), $metadata))
                 {
                     $metadata[strtoupper(RepositoryConst::DUBLIN_CORE_TITLE)] = array();
                 }
-                
-                if( !array_key_exists(strtoupper(RepositoryConst::DUBLIN_CORE_LANGUAGE), $metadata) && 
+
+                if( !array_key_exists(strtoupper(RepositoryConst::DUBLIN_CORE_LANGUAGE), $metadata) &&
                     !array_key_exists(strtoupper(RepositoryConst::DUBLIN_CORE_PREFIX.RepositoryConst::DUBLIN_CORE_LANGUAGE), $metadata))
                 {
                     $metadata[strtoupper(RepositoryConst::DUBLIN_CORE_LANGUAGE)] = array();
@@ -1343,26 +1343,26 @@ class HarvestingOaipmh extends RepositoryAction
                 {
                     $metadata[strtoupper(RepositoryConst::JUNII2_TITLE)] = array();
                 }
-                
+
                 // language
                 if(!array_key_exists(strtoupper(RepositoryConst::JUNII2_LANGUAGE), $metadata))
                 {
                     $metadata[strtoupper(RepositoryConst::JUNII2_LANGUAGE)] = array();
                 }
-                
+
                 // NIItype
                 if(!array_key_exists(strtoupper(RepositoryConst::JUNII2_NIITYPE), $metadata))
                 {
                     $metadata[strtoupper(RepositoryConst::JUNII2_NIITYPE)] = array();
                 }
-                
+
                 // URI
                 if(!array_key_exists(strtoupper(RepositoryConst::JUNII2_URI), $metadata))
                 {
                     $metadata[strtoupper(RepositoryConst::JUNII2_URI)] = array();
                 }
             }
-            
+
             foreach ($metadata as $tagName => $tagValues)
             {
                 if($this->metadataPrefix == self::METADATAPREFIX_OAIDC)
@@ -1383,10 +1383,10 @@ class HarvestingOaipmh extends RepositoryAction
                 }
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * Upsert item data from ListRecords
      *
@@ -1396,11 +1396,11 @@ class HarvestingOaipmh extends RepositoryAction
     private function makeItemDataFromListRecords($metadata)
     {
         $ret = false;
-        
+
         // Set date for ItemRegister
         $this->itemRegister->setEditStartDate($this->TransStartDate);
         $this->itemRegister->TransStartDate = $this->TransStartDate;
-        
+
         $updateStatus = RepositoryConst::HARVESTING_LOG_UPDATE_NO_UPDATE;
         $setSpecStr = $this->getSetSpecStr($metadata[RepositoryConst::HARVESTING_COL_SETSPEC]);
         $indexIdStr = $this->getSetSpecIndexIdStr($metadata[RepositoryConst::HARVESTING_COL_SETSPEC]);
@@ -1412,7 +1412,7 @@ class HarvestingOaipmh extends RepositoryAction
         $isDelete = "";
         $errMsg = "";
         $whatsNewFlag = false;
-        
+
         // check item exists
         if($this->isItemExists($metadata, $itemId, $itemNo, $lastModDate, $isDelete))
         {
@@ -1424,7 +1424,7 @@ class HarvestingOaipmh extends RepositoryAction
                 {
                     // to Update
                     $updateStatus = RepositoryConst::HARVESTING_LOG_UPDATE_UPDATE;
-                    
+
                     // If delete -> update
                     if($isDelete == "1")
                     {
@@ -1445,12 +1445,12 @@ class HarvestingOaipmh extends RepositoryAction
                 {
                     // to Update
                     $updateStatus = RepositoryConst::HARVESTING_LOG_UPDATE_UPDATE;
-                    
+
                     // Set flag for add to what's new module
                     $whatsNewFlag = true;
                 }
             }
-            
+
             if($updateStatus == RepositoryConst::HARVESTING_LOG_UPDATE_UPDATE)
             {
                 // Update
@@ -1469,7 +1469,7 @@ class HarvestingOaipmh extends RepositoryAction
                 {
                     $this->filter->setItemIdForIrData($itemId, $itemNo, $metadata, $irBasic, $irMetadataArray);
                 }
-                
+
                 try
                 {
                     // Update item data
@@ -1493,7 +1493,7 @@ class HarvestingOaipmh extends RepositoryAction
                                 "", $setSpecStr, $indexIdStr, $identifier, $itemId, $this->requestUrl, $datestamp);
                         return false;
                     }
-                    
+
                     // Update metadata
                     $result = $this->deleteItemAttrData($itemId, $itemNo, $this->Session->getParameter("_user_id"), $errMsg);
                     if($result === false)
@@ -1505,7 +1505,7 @@ class HarvestingOaipmh extends RepositoryAction
                                 "", $setSpecStr, $indexIdStr, $identifier, $itemId, $this->requestUrl, $datestamp);
                         return false;
                     }
-                    
+
                     foreach($irMetadataArray as $irMetadata)
                     {
                         $result = $this->itemRegister->entryMetadata($irMetadata, $errMsg);
@@ -1519,6 +1519,17 @@ class HarvestingOaipmh extends RepositoryAction
                             return false;
                         }
                     }
+
+                    // BugFix when before and after update, assignment doi is failed T.Koyasu 2015/03/09 --start--
+                    // must check self_doi when after update item metadatas
+                    try{
+                        $this->itemRegister->updateSelfDoi($irBasic);
+                    } catch(AppException $ex){
+                        array_push($this->logMsg, $ex->getMessage());
+                        $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
+                    }
+
+                    // BugFix when before and after update, assignment doi is failed T.Koyasu 2015/03/09 --end--
                 }
                 catch (Exception $ex)
                 {
@@ -1566,7 +1577,7 @@ class HarvestingOaipmh extends RepositoryAction
                 $updateStatus = RepositoryConst::HARVESTING_LOG_UPDATE_INSERT;
                 $itemId = intval($this->Db->nextSeq("repository_item"));
                 $itemNo = 1;
-                
+
                 // Convert metadata for ItemRegister
                 $irBasic = null;
                 $irMetadata = null;
@@ -1582,7 +1593,7 @@ class HarvestingOaipmh extends RepositoryAction
                 {
                     $this->filter->setItemIdForIrData($itemId, $itemNo, $metadata, $irBasic, $irMetadataArray);
                 }
-                
+
                 try
                 {
                     // Insert item data
@@ -1596,7 +1607,7 @@ class HarvestingOaipmh extends RepositoryAction
                                 "", $setSpecStr, $indexIdStr, $identifier, $itemId, $this->requestUrl, $datestamp);
                         return false;
                     }
-                    
+
                     // Insert metadata
                     foreach($irMetadataArray as $irMetadata)
                     {
@@ -1611,7 +1622,7 @@ class HarvestingOaipmh extends RepositoryAction
                             return false;
                         }
                     }
-                    
+
                     // Set flag for add to what's new module
                     $whatsNewFlag = true;
                 }
@@ -1626,7 +1637,7 @@ class HarvestingOaipmh extends RepositoryAction
                 }
             }
         }
-        
+
         if($updateStatus != RepositoryConst::HARVESTING_LOG_UPDATE_NO_UPDATE)
         {
             // Entry position index
@@ -1638,7 +1649,7 @@ class HarvestingOaipmh extends RepositoryAction
                 return false;
             }
         }
-        
+
         if(strlen($itemId) > 0 && strlen($itemNo) > 0 && $updateStatus != RepositoryConst::HARVESTING_LOG_UPDATE_DELETE)
         {
             // Set item's status to public
@@ -1650,7 +1661,7 @@ class HarvestingOaipmh extends RepositoryAction
                 return false;
             }
         }
-        
+
         // success
         if($updateStatus == RepositoryConst::HARVESTING_LOG_UPDATE_INSERT)
         {
@@ -1668,31 +1679,40 @@ class HarvestingOaipmh extends RepositoryAction
         {
             array_push($this->logMsg, "repository_harvesting_success_no_update");
         }
-        $this->entryHarvestingLog(RepositoryConst::HARVESTING_OPERATION_ID_LISTRECORD, $updateStatus,
-                    "", $setSpecStr, $indexIdStr, $identifier, $itemId, $this->requestUrl, $datestamp);
-        
+
         // Library JaLC DOI Regist Check
-        
+
         if($this->metadataPrefix == self::METADATAPREFIX_JUNII2)
         {
             if($metadata[strtoupper(RepositoryConst::JUNII2_SELFDOI)][0]["attributes"]["RA"] === RepositoryConst::JUNII2_SELFDOI_RA_JALC)
             {
                 $checkdoi = new Repository_Components_Checkdoi($this->Session, $this->Db, $this->TransStartDate);
-                
+
                 $checkRegist = $checkdoi->checkDoiGrant($itemId, $itemNo, 2, 0);
                 if($checkRegist)
                 {
                     $handleManager = new RepositoryHandleManager($this->Session, $this->Db, $this->TransStartDate);
-                    $handleManager->registLibraryJalcdoiSuffix($itemId, $itemNo, $metadata[strtoupper(RepositoryConst::JUNII2_SELFDOI)][0]["value"]);
+                    try{
+                        $handleManager->registLibraryJalcdoiSuffix($itemId, $itemNo, $metadata[strtoupper(RepositoryConst::JUNII2_SELFDOI)][0]["value"]);
+                    } catch(AppException $ex){
+                        $error = $ex->getMessage();
+                        array_push($this->logMsg, $error);
+                        $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
+                        $this->debugLog($error. "::itemId=". $itemId. "::selfDoi=". $metadata[strtoupper(RepositoryConst::JUNII2_SELFDOI)][0]["value"], __FILE__, __CLASS__, __LINE__);
+                    }
                 }
             }
         }
+
+        $this->entryHarvestingLog(RepositoryConst::HARVESTING_OPERATION_ID_LISTRECORD, $updateStatus,
+                    "", $setSpecStr, $indexIdStr, $identifier, $itemId, $this->requestUrl, $datestamp);
+
         return true;
     }
-    
+
     /**
      * Check item exists
-     * 
+     *
      * @param array $metadata
      * @param int $itemId
      * @param int $itemNo
@@ -1707,7 +1727,7 @@ class HarvestingOaipmh extends RepositoryAction
         $itemNo = "";
         $datestamp = "";
         $isDelete = "";
-            
+
         if($this->metadataPrefix == self::METADATAPREFIX_OAILOM || $this->metadataPrefix == self::METADATAPREFIX_LIDO || $this->metadataPrefix == self::METADATAPREFIX_SPASE)
         {
             $result = $this->filter->isItemExists($metadata, $this->repositoryId, $itemId, $itemNo, $datestamp, $isDelete);
@@ -1730,7 +1750,7 @@ class HarvestingOaipmh extends RepositoryAction
             if($this->metadataPrefix == self::METADATAPREFIX_OAIDC)
             {
                 $query .= "  AND item_type_id = 20001);";   //item_type_id
-                
+
                 $params[] = 16; //attribute_id / Identifier
                 $params[] = $metadata[RepositoryConst::HARVESTING_COL_HEADERIDENTIFIER][0]["value"];  //attribute_value / Itentifier
                 $params[] = 15; //attribute_id / repositoryId
@@ -1747,21 +1767,21 @@ class HarvestingOaipmh extends RepositoryAction
                     }
                     $strItemTypeId .= $ii;
                 }
-                
+
                 $query .= "  AND item_type_id IN (".$strItemTypeId."));";   //item_type_id (20002~20015)
-                
+
                 $params[] = 53; //attribute_id / Identifier
                 $params[] = $metadata[RepositoryConst::HARVESTING_COL_HEADERIDENTIFIER][0]["value"];  //attribute_value / Itentifier
                 $params[] = 52; //attribute_id / repositoryId
                 $params[] = $this->repositoryId;  //attribute_value / repositoryId
             }
-            
+
             $result = $this->Db->execute($query, $params);
             if($result === false)
             {
                 return false;
             }
-            
+
             if(count($result) == 0)
             {
                 // Not exists
@@ -1771,7 +1791,7 @@ class HarvestingOaipmh extends RepositoryAction
             {
                 $itemId = $result[0]["item_id"];
                 $itemNo = $result[0]["item_no"];
-                
+
                 // Exists
                 $query = "SELECT attribute_value ".
                          "FROM ".DATABASE_PREFIX."repository_item_attr ".
@@ -1795,7 +1815,7 @@ class HarvestingOaipmh extends RepositoryAction
                 {
                     $datestamp = $result[0]["attribute_value"];
                 }
-                
+
                 // Get repository_item table's is_delete
                 $query = "SELECT is_delete ".
                          "FROM ".DATABASE_PREFIX."repository_item ".
@@ -1809,17 +1829,17 @@ class HarvestingOaipmh extends RepositoryAction
                 {
                     $isDelete = intval($result[0]["is_delete"]);
                 }
-                
+
                 return true;
             }
         }
     }
-    
+
     /**
-     * Processing which acquires index_id of setSpec 
+     * Processing which acquires index_id of setSpec
      * and updates "item_id" of "repository_position_index"TBL,
-     * and "item_no" 
-     * 
+     * and "item_no"
+     *
      * @param int $itemId
      * @param int $itemNo
      * @param array $setSpec
@@ -1831,7 +1851,7 @@ class HarvestingOaipmh extends RepositoryAction
         // init
         $indexInfo = array("item_id" => $itemId, "item_no" => $itemNo);
         $indexList = array();
-        
+
         // check itemId,itemNo
         if($itemId < 1 || $itemNo < 1){
             //Error
@@ -1839,7 +1859,7 @@ class HarvestingOaipmh extends RepositoryAction
             $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_ERROR;
             return false;
         }
-        
+
         // is auto sort?? ON
         if($this->isAutoSoting == 1){
             // SetSpec
@@ -1850,11 +1870,11 @@ class HarvestingOaipmh extends RepositoryAction
                     if(isset($setSpec[$ii]) && strlen($setSpec[$ii]["value"])>0 ){
                         // init
                         $indexId = "";
-                        
+
                         // explode by ":"
                         $setSpecEx = explode(":", $setSpec[$ii]["value"]);
                         $setSpecValue = end($setSpecEx);
-                        
+
                         // exist index?
                         if($this->indexExists($setSpecValue, $indexId)){
                             // $indexId >1 ??
@@ -1881,12 +1901,12 @@ class HarvestingOaipmh extends RepositoryAction
                     }
                 }
             }
-            
+
             if($isWarning == true || count($indexList) == 0){
                 // Warning
                 array_push($this->logMsg, "repository_harvesting_warning_miss_index");
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
-                
+
                 if(count($indexList) == 0)
                 {
                     $indexArray = array("index_id" => $this->postIndexId);
@@ -1919,7 +1939,7 @@ class HarvestingOaipmh extends RepositoryAction
                 array_push($indexList, $indexArray);
             }
         }
-        
+
         // Get registered index
         $this->getItemIndexData($itemId, $itemNo, $ResultList, $errorMsg);
         for($ii=0; $ii<count($ResultList["position_index"]); $ii++)
@@ -1938,7 +1958,7 @@ class HarvestingOaipmh extends RepositoryAction
                 // get all parent index_id
                 $parentIndexIdArray = array();
                 $this->getParentIndex($indexArray["index_id"], $parentIndexIdArray);
-                
+
                 // search postIndexId(harvest root index_id) in $parentIndexIdArray
                 $addFlg = true;
                 for($cnt = 0; $cnt < count($parentIndexIdArray); $cnt++)
@@ -1949,7 +1969,7 @@ class HarvestingOaipmh extends RepositoryAction
                         break;
                     }
                 }
-                
+
                 // exists: no add
                 // no exist: add
                 if($addFlg)
@@ -1959,7 +1979,7 @@ class HarvestingOaipmh extends RepositoryAction
                 // Mod no insert position index under post_index 2014/03/15 T.Koyasu --end--
             }
         }
-        
+
         //Update Or Insert
         // Mod if status is update or insert, position index is redefined 2014/03/13 T.Koyasu -start-
         if($updateStatus != RepositoryConst::HARVESTING_LOG_UPDATE_DELETE)
@@ -1974,13 +1994,13 @@ class HarvestingOaipmh extends RepositoryAction
             }
         }
         // Mod if status is update or insert, position index is redefined 2014/03/13 T.Koyasu -end-
-        
+
         return true;
     }
-    
+
     /**
      * harvesting log
-     * 
+     *
      * @param int $oparationId
      * @param int $status
      * @param int $update
@@ -1992,10 +2012,10 @@ class HarvestingOaipmh extends RepositoryAction
      * @param string $uri
      * @param string $lastModDate
      */
-    public function entryHarvestingLog(   $oparationId, $update='', $listSets='', $setSpec='', 
-                                            $indexId='', $identifier='', $itemId='', $uri='', $lastModDate='')
+    public function entryHarvestingLog(   $oparationId, $update=0, $listSets='', $setSpec='',
+                                            $indexId='', $identifier='', $itemId=0, $uri='', $lastModDate='')
     {
-        $query = "INSERT INTO ".DATABASE_PREFIX. RepositoryConst::DBTABLE_REPOSITORY_HARVESTING_LOG. 
+        $query = "INSERT INTO ".DATABASE_PREFIX. RepositoryConst::DBTABLE_REPOSITORY_HARVESTING_LOG.
                 " ( ".
                     RepositoryConst::DBCOL_REPOSITORY_HARVESTING_LOG_REPOSITORY_ID.", ".
                     RepositoryConst::DBCOL_REPOSITORY_HARVESTING_LOG_OPERATION_ID.", ".
@@ -2049,7 +2069,7 @@ class HarvestingOaipmh extends RepositoryAction
         $params[] = $this->Session->getParameter("_user_id");
         // ins_date
         $params[] = $this->TransStartDate;
-        
+
         $result = $this->Db->execute($query, $params);
         if($result=== false)
         {
@@ -2057,7 +2077,7 @@ class HarvestingOaipmh extends RepositoryAction
         }
         return true;
     }
-    
+
     /**
      * Convert metadata for DublinCore
      *
@@ -2071,17 +2091,17 @@ class HarvestingOaipmh extends RepositoryAction
     private function convertMetadataForDublinCore($itemId, $itemNo, $metadata, &$irBasic, &$irMetadataArray)
     {
         $itemTypeId = 20001;
-        
+
         // Divide date
         $tmpDate = explode(" ", $this->TransStartDate);
         $tmpDate = explode("-", $tmpDate[0]);
-        
+
         $irBasic = array(   "item_id" => $itemId, "item_no" => $itemNo, "item_type_id" => $itemTypeId,
                             "title" => "", "title_english" => "", "language" => "",
                             "pub_year" => intval($tmpDate[0]), "pub_month" => intval($tmpDate[1]), "pub_day" => intval($tmpDate[2]),
                             "serch_key" => "", "serch_key_english" => "");
         $irMetadataArray = array();
-        
+
         $titleArray = array();
         $languageArray = array();
         $creatorArray = array();
@@ -2097,12 +2117,12 @@ class HarvestingOaipmh extends RepositoryAction
         $relationArray = array();
         $coverageArray = array();
         $rightsArray = array();
-        
+
         // For tags
         foreach ($metadata as $tagNeme => $tagArray)
         {
             $upperName = strtoupper($tagNeme);
-            
+
             // For tag data
             foreach ($tagArray as $tagData)
             {
@@ -2134,7 +2154,7 @@ class HarvestingOaipmh extends RepositoryAction
                                     }
                                 }
                             }
-                            
+
                             if(!$addFlag)
                             {
                                 array_push($titleArray, $tagData["value"]);
@@ -2223,7 +2243,7 @@ class HarvestingOaipmh extends RepositoryAction
                 }
             }
         }
-        
+
         // Create metadata array
         // title
         if(strlen($irBasic["title"]) == 0 && strlen($irBasic["title_english"]) == 0)
@@ -2232,69 +2252,69 @@ class HarvestingOaipmh extends RepositoryAction
             array_splice($titleArray, 0, 1);
         }
         $this->makeMetadataArray($titleArray, $itemId, $itemNo, $itemTypeId, 1, "text", $irMetadataArray);
-        
+
         // language
         if(strlen($irBasic["language"]) == 0)
         {
             $irBasic["language"] = "ja";
         }
-        
+
         // creator
         $this->makeNameMetadataArrayForOaiDc($creatorArray, $itemId, $itemNo, $itemTypeId, 2, "", $irMetadataArray);
-        
+
         // description
         $this->makeMetadataArray($descriptionArray, $itemId, $itemNo, $itemTypeId, 3, "textarea", $irMetadataArray);
-        
+
         // publisher
         $this->makeNameMetadataArrayForOaiDc($publisherArray, $itemId, $itemNo, $itemTypeId, 4, "", $irMetadataArray);
-        
+
         // contributor
         $this->makeNameMetadataArrayForOaiDc($contributorArray, $itemId, $itemNo, $itemTypeId, 5, "", $irMetadataArray);
-        
+
         // date
         $this->makeMetadataArray($dateArray, $itemId, $itemNo, $itemTypeId, 6, "date", $irMetadataArray);
-        
+
         // type
         $this->makeMetadataArray($typeArray, $itemId, $itemNo, $itemTypeId, 7, "textarea", $irMetadataArray);
-        
+
         // format
         $this->makeMetadataArray($formatArray, $itemId, $itemNo, $itemTypeId, 8, "text", $irMetadataArray);
-        
+
         // identifier(URL)
         $this->makeMetadataArray($identifierUrlArray, $itemId, $itemNo, $itemTypeId, 9, "link", $irMetadataArray);
-        
+
         // identifier
         $this->makeMetadataArray($identifierArray, $itemId, $itemNo, $itemTypeId, 10, "text", $irMetadataArray);
-        
+
         // source
         $this->makeMetadataArray($sourceArray, $itemId, $itemNo, $itemTypeId, 11, "text", $irMetadataArray);
-        
+
         // relation
         $this->makeMetadataArray($relationArray, $itemId, $itemNo, $itemTypeId, 12, "text", $irMetadataArray);
-        
+
         // coverage
         $this->makeMetadataArray($coverageArray, $itemId, $itemNo, $itemTypeId, 13, "text", $irMetadataArray);
-        
+
         // rights
         $this->makeMetadataArray($rightsArray, $itemId, $itemNo, $itemTypeId, 14, "text", $irMetadataArray);
-        
+
         // repository_id
         $this->makeMetadataArray(array($this->repositoryId), $itemId, $itemNo, $itemTypeId, 15, "text", $irMetadataArray);
-        
+
         // contents_id
         $this->makeMetadataArray(   array($metadata[RepositoryConst::HARVESTING_COL_HEADERIDENTIFIER][0]["value"]),
                                     $itemId, $itemNo, $itemTypeId, 16, "text", $irMetadataArray);
-        
+
         // contents mod_date
         $this->makeMetadataArray(   array($metadata[RepositoryConst::HARVESTING_COL_DATESTAMP][0]["value"]),
                                     $itemId, $itemNo, $itemTypeId, 17, "text", $irMetadataArray);
-        
+
         // Set additional metadata
         $this->setAdditionalMetadata($itemId, $itemNo, $itemTypeId, $irMetadataArray);
-        
+
         return true;
     }
-    
+
     /**
      * Convert metadata for JuNii2
      *
@@ -2356,17 +2376,17 @@ class HarvestingOaipmh extends RepositoryAction
             default:
                 break;
         }
-        
+
         // Divide date
         $tmpDate = explode(" ", $this->TransStartDate);
         $tmpDate = explode("-", $tmpDate[0]);
-        
+
         $irBasic = array(   "item_id" => $itemId, "item_no" => $itemNo, "item_type_id" => $itemTypeId,
                             "title" => "", "title_english" => "", "language" => "",
                             "pub_year" => intval($tmpDate[0]), "pub_month" => intval($tmpDate[1]), "pub_day" => intval($tmpDate[2]),
                             "serch_key" => "", "serch_key_english" => "");
         $irMetadataArray = array();
-        
+
         $titleArray = array();
         $languageArray = array();
         $alternativeArray = array();
@@ -2443,12 +2463,12 @@ class HarvestingOaipmh extends RepositoryAction
         $dateofgrantedArray = array();
         $degreenameArray = array();
         $grantorArray = array();
-        
+
         // For tags
         foreach ($metadata as $tagNeme => $tagArray)
         {
             $upperName = strtoupper($tagNeme);
-            
+
             // For tag data
             foreach ($tagArray as $tagData)
             {
@@ -2478,7 +2498,7 @@ class HarvestingOaipmh extends RepositoryAction
                                     }
                                 }
                             }
-                            
+
                             if(!$addFlag)
                             {
                                 array_push($titleArray, $tagData["value"]);
@@ -2756,7 +2776,7 @@ class HarvestingOaipmh extends RepositoryAction
                 }
             }
         }
-        
+
         // Create metadata array
         // title
         if(strlen($irBasic["title"]) == 0 && strlen($irBasic["title_english"]) == 0)
@@ -2764,85 +2784,85 @@ class HarvestingOaipmh extends RepositoryAction
             $irBasic["title"] = $titleArray[0];
             array_splice($titleArray, 0, 1);
         }
-        
+
         // alternative
         $this->makeMetadataArray($alternativeArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("alternative", $itemTypeId), "text", $irMetadataArray);
-        
+
         // creator(japanese)
         $this->makeNameMetadataArrayForJuNii2($creatorJapaneseArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("creator", $itemTypeId, "japanese"), $creatorJapaneseLangArray, $creatorJapaneseIdArray, $irMetadataArray);
-        
+
         // creator
         $this->makeNameMetadataArrayForJuNii2($creatorArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("creator", $itemTypeId), $creatorLangArray, $creatorIdArray, $irMetadataArray);
-        
+
         // NIIsubject
         $this->makeMetadataArray($niiSubjectArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("NIIsubject", $itemTypeId), "text", $irMetadataArray);
-        
+
         // NDC
         $this->makeMetadataArray($ndcArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("NDC", $itemTypeId), "text", $irMetadataArray);
-        
+
         // NDLC
         $this->makeMetadataArray($ndlcArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("NDLC", $itemTypeId), "text", $irMetadataArray);
-        
+
         // BSH
         $this->makeMetadataArray($bshArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("BSH", $itemTypeId), "text", $irMetadataArray);
-        
+
         // NDLSH
         $this->makeMetadataArray($ndlshArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("NDLSH", $itemTypeId), "text", $irMetadataArray);
-        
+
         // MeSH
         $this->makeMetadataArray($meshArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("MeSH", $itemTypeId), "text", $irMetadataArray);
-        
+
         // DDC
         $this->makeMetadataArray($ddcArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("DDC", $itemTypeId), "text", $irMetadataArray);
-        
+
         // LCC
         $this->makeMetadataArray($lccArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("LCC", $itemTypeId), "text", $irMetadataArray);
-        
+
         // UDC
         $this->makeMetadataArray($udcArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("UDC", $itemTypeId), "text", $irMetadataArray);
-        
+
         // LCSH
         $this->makeMetadataArray($lcshArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("LCSH", $itemTypeId), "text", $irMetadataArray);
-        
+
         // description
         $this->makeMetadataArray($descriptionArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("description", $itemTypeId), "textarea", $irMetadataArray);
-        
+
         // publisher(japanese)
         $this->makeNameMetadataArrayForJuNii2($publisherJapaneseArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("publisher", $itemTypeId, "japanese"), $publisherJapaneseLangArray, $publisherJapaneseIdArray, $irMetadataArray);
-        
+
         // publisher
         $this->makeNameMetadataArrayForJuNii2($publisherArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("publisher", $itemTypeId), $publisherLangArray, $publisherIdArray, $irMetadataArray);
-        
+
         // contributor(japanese)
         $this->makeNameMetadataArrayForJuNii2($contributorJapaneseArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("contributor", $itemTypeId, "japanese"), $contributorJapaneseLangArray, $contributorJapaneseIdArray, $irMetadataArray);
-        
+
         // contributor
         $this->makeNameMetadataArrayForJuNii2($contributorArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("contributor", $itemTypeId), $contributorLangArray, $contributorIdArray, $irMetadataArray);
-        
+
         // date
         $this->makeMetadataArray($dateArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("date", $itemTypeId), "date", $irMetadataArray);
-        
+
         // type
         $this->makeMetadataArray($typeArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("type", $itemTypeId), "textarea", $irMetadataArray);
-        
+
         // format
         $this->makeMetadataArray($formatArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("format", $itemTypeId), "text", $irMetadataArray);
-        
+
         // identifier
         $this->makeMetadataArray($identifierArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("identifier", $itemTypeId), "text", $irMetadataArray);
-        
+
         // URI
         $this->makeMetadataArray($uriArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("URI", $itemTypeId), "link", $irMetadataArray);
-        
+
         // fulltextURL
         $this->makeMetadataArray($fulltextArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("fulltextURL", $itemTypeId), "link", $irMetadataArray);
-        
+
         // issn
         $this->makeMetadataArray($issnArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("issn", $itemTypeId), "text", $irMetadataArray);
-        
+
         // NCID
         $this->makeMetadataArray($ncidArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("NCID", $itemTypeId), "text", $irMetadataArray);
-        
+
         // biblio_info(jtitle, volume, issue, spage, epage, dateofissued)
         if( strlen($jtitleStr) > 0 || strlen($volumeStr) > 0 || strlen($issueStr) > 0
             || strlen($spageStr) > 0 || strlen($epageStr) > 0 || strlen($deteofissuedStr) > 0)
@@ -2850,126 +2870,126 @@ class HarvestingOaipmh extends RepositoryAction
             $this->makeBiblioInfoMetadataArray( $jtitleStr, $volumeStr, $issueStr, $spageStr, $epageStr,
                                                 $deteofissuedStr,$itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("jtitle,volume,issue,spage,epage,dateofissued", $itemTypeId), $irMetadataArray);
         }
-        
+
         // source
         $this->makeMetadataArray($sourceArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("source", $itemTypeId), "text", $irMetadataArray);
-        
+
         // language
         if(strlen($irBasic["language"]) == 0)
         {
             $irBasic["language"] = "ja";
         }
         $this->makeMetadataArray($languageArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("language", $itemTypeId), "text", $irMetadataArray);
-        
+
         // relation
         $this->makeMetadataArray($relationArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("relation", $itemTypeId), "text", $irMetadataArray);
-        
+
         // pmid
         $this->makeMetadataArray($pmidArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("pmid", $itemTypeId), "text", $irMetadataArray);
-        
+
         // doi
         $this->makeMetadataArray($doiArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("doi", $itemTypeId), "text", $irMetadataArray);
-        
+
         // isVersionOf
         $this->makeMetadataArray($isVersionOfArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("isVersionOf", $itemTypeId), "link", $irMetadataArray);
-        
+
         // hasVersion
         $this->makeMetadataArray($hasVersionArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("hasVersion", $itemTypeId), "link", $irMetadataArray);
-        
+
         // isReplacedBy
         $this->makeMetadataArray($isReplacedByArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("isReplacedBy", $itemTypeId), "link", $irMetadataArray);
-        
+
         // replaces
         $this->makeMetadataArray($replacesArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("replaces", $itemTypeId), "link", $irMetadataArray);
-        
+
         // isRequiredBy
         $this->makeMetadataArray($isRequiredByArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("isRequiredBy", $itemTypeId), "link", $irMetadataArray);
-        
+
         // requires
         $this->makeMetadataArray($requiresArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("requires", $itemTypeId), "link", $irMetadataArray);
-        
+
         // isPartOf
         $this->makeMetadataArray($isPartOfArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("isPartOf", $itemTypeId), "link", $irMetadataArray);
-        
+
         // hasPart
         $this->makeMetadataArray($hasPartArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("hasPart", $itemTypeId), "link", $irMetadataArray);
-        
+
         // isReferencedBy
         $this->makeMetadataArray($isReferencedByArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("isReferencedBy", $itemTypeId), "link", $irMetadataArray);
-        
+
         // references
         $this->makeMetadataArray($referencesArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("references", $itemTypeId), "link", $irMetadataArray);
-        
+
         // isFormatOf
         $this->makeMetadataArray($isFormatOfArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("isFormatOf", $itemTypeId), "link", $irMetadataArray);
-        
+
         // hasFormat
         $this->makeMetadataArray($hasFormatArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("hasFormat", $itemTypeId), "link", $irMetadataArray);
-        
+
         // coverage
         $this->makeMetadataArray($coverageArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("coverage", $itemTypeId), "text", $irMetadataArray);
-        
+
         // spatial
         $this->makeMetadataArray($spatialArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("spatial", $itemTypeId), "text", $irMetadataArray);
-        
+
         // NIIspatial
         $this->makeMetadataArray($niiSpatialArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("NIIspatial", $itemTypeId), "text", $irMetadataArray);
-        
+
         // temporal
         $this->makeMetadataArray($temporalArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("temporal", $itemTypeId), "text", $irMetadataArray);
-        
+
         // NIItemporal
         $this->makeMetadataArray($niiTemporalArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("NIItemporal", $itemTypeId), "text", $irMetadataArray);
-        
+
         // rights
         $this->makeMetadataArray($rightsArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("rights", $itemTypeId), "text", $irMetadataArray);
-        
+
         // textversion
         $this->makeMetadataArray($textversionArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("textversion", $itemTypeId), "select", $irMetadataArray);
-        
+
         // Add JuNii2 ver3 2013/09/25 R.Matsuura --start--
         // isbn
         $this->makeMetadataArray($isbnArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("isbn", $itemTypeId), "text", $irMetadataArray);
-        
+
         // naid
         $this->makeMetadataArray($naidArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("naid", $itemTypeId), "text", $irMetadataArray);
-        
+
         // ichushi
         $this->makeMetadataArray($ichushiArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("ichushi", $itemTypeId), "text", $irMetadataArray);
-        
+
         // grantid
         $this->makeMetadataArray($grantidArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("grantid", $itemTypeId), "text", $irMetadataArray);
-        
+
         // dateofgranted
         $this->makeMetadataArray($dateofgrantedArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("dateofgranted", $itemTypeId), "text", $irMetadataArray);
-        
+
         // degreename
         $this->makeMetadataArray($degreenameArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("degreename", $itemTypeId), "text", $irMetadataArray);
-        
+
         // grantor
         $this->makeMetadataArray($grantorArray, $itemId, $itemNo, $itemTypeId, $this->getAttrIdFromDbByMapping("grantor", $itemTypeId), "text", $irMetadataArray);
         // Add JuNii2 ver3 2013/09/25 R.Matsuura --end--
-        
+
         // repository_id
         $this->makeMetadataArray(array($this->repositoryId), $itemId, $itemNo, $itemTypeId, 52, "text", $irMetadataArray);
-        
+
         // contents_id
         $this->makeMetadataArray(   array($metadata[RepositoryConst::HARVESTING_COL_HEADERIDENTIFIER][0]["value"]),
                                     $itemId, $itemNo, $itemTypeId, 53, "text", $irMetadataArray);
-        
+
         // contents mod_date
         $this->makeMetadataArray(   array($metadata[RepositoryConst::HARVESTING_COL_DATESTAMP][0]["value"]),
                                     $itemId, $itemNo, $itemTypeId, 54, "text", $irMetadataArray);
-        
+
         // Set additional metadata
         $this->setAdditionalMetadata($itemId, $itemNo, $itemTypeId, $irMetadataArray);
-        
+
         return true;
     }
-    
+
     /**
      * makeMetadataArray
-     * 
+     *
      * @param array $attributeArray
      * @param int $itemId
      * @param int $itemNo
@@ -2993,13 +3013,13 @@ class HarvestingOaipmh extends RepositoryAction
                 $cnt++;
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * makeNameMetadataArrayOaiDc
-     * 
+     *
      * @param array $attributeArray
      * @param int $itemId
      * @param int $itemNo
@@ -3027,7 +3047,7 @@ class HarvestingOaipmh extends RepositoryAction
         {
             return false;
         }
-        
+
         $cnt = 1;
         for($ii=0; $ii<count($attributeArray); $ii++)
         {
@@ -3059,7 +3079,7 @@ class HarvestingOaipmh extends RepositoryAction
                         $family = $attributeArray[$ii];
                     }
                 }
-                
+
                 // Check author ID
                 if(isset($result[$cnt-1]))
                 {
@@ -3068,7 +3088,7 @@ class HarvestingOaipmh extends RepositoryAction
                         $authorId = intval($result[$cnt-1]["author_id"]);
                     }
                 }
-                
+
                 $metadata = array(  "item_id" => $itemId, "item_no" => $itemNo, "item_type_id" => $itemTypeId, "attribute_id" => $attributeId,
                                     "family" => $family, "name" => $name, "family_ruby" => "", "name_ruby" => "", "e_mail_address" => "",
                                     "author_id" => $authorId, "language" => $language, "input_type" => "name", "personal_name_no" => $cnt);
@@ -3076,13 +3096,13 @@ class HarvestingOaipmh extends RepositoryAction
                 $cnt++;
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * makeBiblioInfoMetadataArray
-     * 
+     *
      * @param string $jtitle
      * @param string $volume
      * @param string $issue
@@ -3096,7 +3116,7 @@ class HarvestingOaipmh extends RepositoryAction
      * @param array &$metadataArray
      * @return bool
      */
-    private function makeBiblioInfoMetadataArray(   $jtitle, $volume, $issue, $spage, $epage, $dateofissued, 
+    private function makeBiblioInfoMetadataArray(   $jtitle, $volume, $issue, $spage, $epage, $dateofissued,
                                                     $itemId, $itemNo, $itemTypeId, $attributeId, &$metadataArray)
     {
         $jtitleJpn = $jtitle;
@@ -3108,15 +3128,15 @@ class HarvestingOaipmh extends RepositoryAction
             $jtitleJpn = trim($exp[0]);
             $jtitleEng = trim($exp[1]);
         }
-        
+
         $metadata = array(  "item_id" => $itemId, "item_no" => $itemNo, "item_type_id" => $itemTypeId, "attribute_id" => $attributeId,
                             "biblio_name" => $jtitleJpn, "biblio_name_english" => $jtitleEng, "volume" => $volume, "issue" => $issue,
                             "start_page" => $spage, "end_page" => $epage, "date_of_issued" => $dateofissued, "input_type" => "biblio_info", "biblio_no" => 1);
         array_push($metadataArray, $metadata);
-        
+
         return true;
     }
-    
+
     /**
      * Check and convert language
      *
@@ -3198,7 +3218,7 @@ class HarvestingOaipmh extends RepositoryAction
         }
         return $lang;
     }
-    
+
     /**
      * Get setSpec string for harvesting log
      *
@@ -3219,10 +3239,10 @@ class HarvestingOaipmh extends RepositoryAction
                 $setSpecStr .= $setSpecVal["value"];
             }
         }
-        
+
         return $setSpecStr;
     }
-    
+
     /**
      * Get index_id sting for harvesting log
      *
@@ -3238,9 +3258,9 @@ class HarvestingOaipmh extends RepositoryAction
             {
                 $setSpecValEx = explode(":", $setSpecVal["value"]);
                 $setSpecValExValue = end($setSpecValEx);
-                
+
                 $indexId = "";
-                
+
                 // get index data
                 $query = "SELECT index_id ".
                         " FROM ".DATABASE_PREFIX. RepositoryConst::DBTABLE_REPOSITORY_INDEX.
@@ -3257,7 +3277,7 @@ class HarvestingOaipmh extends RepositoryAction
                     // not exists
                     continue;
                 }
-                
+
                 if(strlen($result[0]["index_id"]) > 0)
                 {
                     if(strlen($indexIdStr) > 0)
@@ -3268,10 +3288,10 @@ class HarvestingOaipmh extends RepositoryAction
                 }
             }
         }
-        
+
         return $indexIdStr;
     }
-    
+
     /**
      * setItemStatusToPublic
      *
@@ -3294,13 +3314,23 @@ class HarvestingOaipmh extends RepositoryAction
             return false;
         }
         $uri = $result[0]["uri"];
-        
+
         $repositoryHandleManager = new RepositoryHandleManager($this->Session, $this->Db, $this->TransStartDate);
-        
-        $result = $repositoryHandleManager->registerYHandleSuffix($result[0]["title"], $itemId, $itemNo);
-        
+
+        $suffix = $repositoryHandleManager->getYHandleSuffix($itemId, $itemNo);
+        if(strlen($suffix) === 0){
+            try{
+                $result = $repositoryHandleManager->registerYHandleSuffix($result[0]["title"], $itemId, $itemNo);
+            } catch(AppException $ex){
+                $error = $ex->getMessage();
+                array_push($this->logMsg, $error);
+                $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
+                $this->debugLog($error. "::itemId=". $itemId, __FILE__, __CLASS__, __LINE__);
+            }
+        }
+
         $uri = $repositoryHandleManager->getSubstanceUri($itemId, $itemNo);
-        
+
         // Update item table
         $query = "UPDATE ".DATABASE_PREFIX."repository_item ".
                  "SET review_status = 1, ".
@@ -3318,12 +3348,12 @@ class HarvestingOaipmh extends RepositoryAction
         {
             return false;
         }
-        
+
         // Add detail search 2013/11/25 K.Matsuo --start--
         $searchTableProcessing = new RepositorySearchTableProcessing($this->Session, $this->Db);
         $searchTableProcessing->updateSearchTableForItem($itemId, $itemNo);
         // Add detail search 2013/11/25 K.Matsuo --end--
-        
+
         // Add to what's new module
         if($whatsNewFlag){
             $result = $this->addWhatsnew($itemId, $itemNo);
@@ -3331,13 +3361,13 @@ class HarvestingOaipmh extends RepositoryAction
                 return false;
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * Update item delete flag
-     * 
+     *
      * @param int $itemId
      * @param int $itemNo
      * @param int &$isDelFlag
@@ -3349,7 +3379,7 @@ class HarvestingOaipmh extends RepositoryAction
         {
             $isDelFlag = 1;
         }
-        
+
         $query = "UPDATE ".DATABASE_PREFIX."repository_item ".
                  "SET is_delete = ? ".
                  "WHERE item_id = ? ".
@@ -3365,17 +3395,17 @@ class HarvestingOaipmh extends RepositoryAction
         }
         return true;
     }
-    
+
     /**
      * Get top parent index id
-     * 
+     *
      * @param int $indexId
      * @return int
      */
     private function getTopParentIndexId($indexId)
     {
         $retIndexId = $indexId;
-        
+
         if($retIndexId != 0)
         {
             $query = "SELECT parent_index_id ".
@@ -3390,19 +3420,19 @@ class HarvestingOaipmh extends RepositoryAction
             {
                 return $retIndexId;
             }
-            
+
             if($result[0]['parent_index_id'] > 0)
             {
                 $retIndexId = $this->getTopParentIndexId($result[0]['parent_index_id']);
             }
         }
-        
+
         return $retIndexId;
     }
-    
+
     /**
      * Set additional metadata
-     * 
+     *
      * @param int $itemId
      * @param int $itemNo
      * @param int $itemTypeId
@@ -3431,7 +3461,7 @@ class HarvestingOaipmh extends RepositoryAction
         {
             return false;
         }
-        
+
         // Get itemAttrType
         $query = "SELECT * ".
                  "FROM ".DATABASE_PREFIX.RepositoryConst::DBTABLE_REPOSITORY_ITEM_ATTR_TYPE." ".
@@ -3448,7 +3478,7 @@ class HarvestingOaipmh extends RepositoryAction
         {
             return false;
         }
-        
+
         foreach($result as $itemAttrType)
         {
             $inputType = $itemAttrType[RepositoryConst::DBCOL_REPOSITORY_ITEM_ATTR_TYPE_IMPUT_TYPE];
@@ -3477,13 +3507,13 @@ class HarvestingOaipmh extends RepositoryAction
                 $this->setAdditionalAttribute($itemId, $itemNo, $attrId, $itemTypeId, $inputType, $metadataArray);
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * Set additional biblioInfo
-     * 
+     *
      * @param int $itemId
      * @param int $itemNo
      * @param int $attrId
@@ -3512,17 +3542,17 @@ class HarvestingOaipmh extends RepositoryAction
         {
             return false;
         }
-        
+
         foreach($result as $biblioInfo)
         {
             $biblioInfo["input_type"] = RepositoryConst::ITEM_ATTR_TYPE_BIBLIOINFO;
             array_push($metadataArray, $biblioInfo);
         }
     }
-    
+
     /**
      * Set additional name
-     * 
+     *
      * @param int $itemId
      * @param int $itemNo
      * @param int $attrId
@@ -3552,7 +3582,7 @@ class HarvestingOaipmh extends RepositoryAction
         {
             return false;
         }
-        
+
         foreach($result as $personalName)
         {
             // Add JuNii2 ver3 2013/09/18 R.Matsuura --start--
@@ -3575,10 +3605,10 @@ class HarvestingOaipmh extends RepositoryAction
             array_push($metadataArray, $personalName);
         }
     }
-    
+
     /**
      * Set additional attribute
-     * 
+     *
      * @param int $itemId
      * @param int $itemNo
      * @param int $attrId
@@ -3607,48 +3637,48 @@ class HarvestingOaipmh extends RepositoryAction
         {
             return false;
         }
-        
+
         foreach($result as $itemAttr)
         {
             $itemAttr["input_type"] = $inputType;
             array_push($metadataArray, $itemAttr);
         }
     }
-    
+
     // Add Selective Harvesting 2013/09/04 R.Matsuura --start--
     /**
      * Set Harvesting From Date
-     * 
+     *
      * @param string $fromDate
      */
     public function setFromDate($fromDate)
     {
         $this->from_date = $fromDate;
     }
-    
+
     /**
      * Set Harvesting Until Date
-     * 
+     *
      * @param string $untilDate
      */
     public function setUntilDate($untilDate)
     {
         $this->until_date = $untilDate;
     }
-    
+
     /**
      * Set Harvesting Set Param
-     * 
+     *
      * @param string $setParam
      */
     public function setSetParam($setParam)
     {
         $this->set_param = $setParam;
     }
-    
+
     /**
      * Get Harvesting Param
-     * 
+     *
      * @return string $harvestParam
      */
     private function getHarvestingParam()
@@ -3669,11 +3699,11 @@ class HarvestingOaipmh extends RepositoryAction
         return $harvestParam;
     }
     // Add Selective Harvesting 2013/09/04 R.Matsuura --end--
-    
+
     // Add for JuNii2 Redaction 2013/09/16 R.Matsuura --start--
     /**
      * Check Oaidc Metadata
-     * 
+     *
      * @param string $tagName
      * @param array  $tagValues
      */
@@ -3693,7 +3723,7 @@ class HarvestingOaipmh extends RepositoryAction
                     $noTitleFlag = false;
                 }
             }
-            
+
             // Error log
             if($noTitleFlag)
             {
@@ -3704,7 +3734,7 @@ class HarvestingOaipmh extends RepositoryAction
                 return false;
             }
         }
-        
+
         // language
         //else if(strtoupper($tagName) == strtoupper(RepositoryConst::DUBLIN_CORE_LANGUAGE))
         else if(preg_match($patternLang, strtoupper($tagName)) == 1)
@@ -3725,17 +3755,17 @@ class HarvestingOaipmh extends RepositoryAction
         }
         return true;
     }
-    
+
     /**
      * Check JuNii2 Metadata
-     * 
+     *
      * @param string $tagName
      * @param array  $tagValues
      */
     private function checkJuNii2Metadata($tagName, $tagValues, $identifier, $datestamp, $setSpecStr)
     {
         $err_msg = $this->checkJuNii2MetadataInner($tagName, $tagValues);
-        
+
         // When error is there
         if($err_msg != "")
         {
@@ -3747,10 +3777,10 @@ class HarvestingOaipmh extends RepositoryAction
         }
         return true;
     }
-    
+
     /**
      * Check JuNii2 Metadata Inner
-     * 
+     *
      * @param string $tagName
      * @param array  $tagValues
      */
@@ -3768,7 +3798,7 @@ class HarvestingOaipmh extends RepositoryAction
                 return "repository_harvesting_error_get_title";
             }
         }
-        
+
         // language
         else if(strtoupper($tagName) == strtoupper(RepositoryConst::JUNII2_LANGUAGE))
         {
@@ -3786,7 +3816,7 @@ class HarvestingOaipmh extends RepositoryAction
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
         }
-        
+
         // NIIType
         else if(strtoupper($tagName) == strtoupper(RepositoryConst::JUNII2_NIITYPE))
         {
@@ -3819,7 +3849,7 @@ class HarvestingOaipmh extends RepositoryAction
                 }
             }
         }
-        
+
         // URI
         else if(strtoupper($tagName) == strtoupper(RepositoryConst::JUNII2_URI))
         {
@@ -3834,7 +3864,7 @@ class HarvestingOaipmh extends RepositoryAction
             else
             {
                 $accessFlag = false;
-                
+
                 /////////////////////////////
                 // HTTP_Request init
                 /////////////////////////////
@@ -3843,9 +3873,9 @@ class HarvestingOaipmh extends RepositoryAction
                 $option = null;
                 if($proxy['proxy_mode'] == 1)
                 {
-                    $option = array( 
+                    $option = array(
                                     "timeout" => 10,
-                                    "allowRedirects" => true, 
+                                    "allowRedirects" => true,
                                     "maxRedirects" => 3,
                                     "proxy_host"=>$proxy['proxy_host'],
                                     "proxy_port"=>$proxy['proxy_port'],
@@ -3855,31 +3885,31 @@ class HarvestingOaipmh extends RepositoryAction
                 }
                 else
                 {
-                    $option = array( 
+                    $option = array(
                                     "timeout" => 10,
-                                    "allowRedirects" => true, 
+                                    "allowRedirects" => true,
                                     "maxRedirects" => 3
                                 );
                 }
-                
+
                 // HTTP Request
                 $http = new HTTP_Request($tagValues[0]["value"], $option);
-                
+
                 // setting HTTP header
-                $http->addHeader("User-Agent", $_SERVER['HTTP_USER_AGENT']); 
+                $http->addHeader("User-Agent", $_SERVER['HTTP_USER_AGENT']);
                 $http->addHeader("Referer", $_SERVER['HTTP_REFERER']);
-                
+
                 /////////////////////////////
-                // run HTTP request 
+                // run HTTP request
                 /////////////////////////////
                 $response = $http->sendRequest();
-                if (!PEAR::isError($response)) { 
+                if (!PEAR::isError($response)) {
                     if($http->getResponseCode() == 200)
                     {
                         $accessFlag = true;
                     }
                 }
-                
+
                 if(!$accessFlag)
                 {
                     array_push($this->logMsg, "repository_harvesting_warning_access_uri");
@@ -3887,7 +3917,7 @@ class HarvestingOaipmh extends RepositoryAction
                 }
             }
         }
-        
+
         // jtitle
         else if(strtoupper($tagName) == strtoupper(RepositoryConst::JUNII2_JTITLE))
         {
@@ -3897,7 +3927,7 @@ class HarvestingOaipmh extends RepositoryAction
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
         }
-        
+
         // volume
         else if(strtoupper($tagName) == strtoupper(RepositoryConst::JUNII2_VOLUME))
         {
@@ -3907,7 +3937,7 @@ class HarvestingOaipmh extends RepositoryAction
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
         }
-        
+
         // issue
         else if(strtoupper($tagName) == strtoupper(RepositoryConst::JUNII2_ISSUE))
         {
@@ -3917,7 +3947,7 @@ class HarvestingOaipmh extends RepositoryAction
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
         }
-        
+
         // spage
         else if(strtoupper($tagName) == strtoupper(RepositoryConst::JUNII2_SPAGE))
         {
@@ -3927,7 +3957,7 @@ class HarvestingOaipmh extends RepositoryAction
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
         }
-        
+
         // epage
         else if(strtoupper($tagName) == strtoupper(RepositoryConst::JUNII2_EPAGE))
         {
@@ -3937,7 +3967,7 @@ class HarvestingOaipmh extends RepositoryAction
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
         }
-        
+
         // deteofissued
         else if(strtoupper($tagName) == strtoupper(RepositoryConst::JUNII2_DATE_OF_ISSUED))
         {
@@ -3947,7 +3977,7 @@ class HarvestingOaipmh extends RepositoryAction
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
         }
-        
+
         // pmid
         else if(strtoupper($tagName) == strtoupper(RepositoryConst::JUNII2_PMID))
         {
@@ -3957,7 +3987,7 @@ class HarvestingOaipmh extends RepositoryAction
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
         }
-        
+
         // doi
         else if(strtoupper($tagName) == strtoupper(RepositoryConst::JUNII2_DOI))
         {
@@ -3967,7 +3997,7 @@ class HarvestingOaipmh extends RepositoryAction
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
         }
-        
+
         // textversion
         else if(strtoupper($tagName) == strtoupper(RepositoryConst::JUNII2_TEXTVERSION))
         {
@@ -3976,14 +4006,14 @@ class HarvestingOaipmh extends RepositoryAction
                 array_push($this->logMsg, "repository_harvesting_warning_over_textversion");
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
-            
+
             if($tagValues[0]["value"] != "author" && $tagValues[0]["value"] != "publisher" && $tagValues[0]["value"] != "ETD" && $tagValues[0]["value"] != "none")
             {
                 array_push($this->logMsg, "repository_harvesting_warning_miss_textversion");
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
         }
-        
+
         //self DOI
         else if(strtoupper($tagName) == strtoupper(RepositoryConst::JUNII2_SELFDOI))
         {
@@ -3992,17 +4022,17 @@ class HarvestingOaipmh extends RepositoryAction
                 array_push($this->logMsg, "repository_harvesting_warning_over_selfDOI");
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
-            
-            
-            if(array_key_exists("RA", $tagValues["attributes"]) && 
-               strlen($tagValues["attributes"]["RA"]) > 0 && 
+
+
+            if(array_key_exists("RA", $tagValues["attributes"]) &&
+               strlen($tagValues["attributes"]["RA"]) > 0 &&
                $tagValues["attributes"]["RA"] != RepositoryConst::JUNII2_SELFDOI_RA_JALC)
             {
                 array_push($this->logMsg, "repository_harvesting_warning_miss_selfDOI");
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
         }
-        
+
         //NAID
         else if(strtoupper($tagName) == strtoupper(RepositoryConst::JUNII2_NAID))
         {
@@ -4011,7 +4041,7 @@ class HarvestingOaipmh extends RepositoryAction
                 array_push($this->logMsg, "repository_harvesting_warning_over_naid");
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
-            
+
             $str_uri = RepositoryOutputFilterJuNii2::naid($tagValues[0]["value"]);
             if($str_uri == "")
             {
@@ -4019,7 +4049,7 @@ class HarvestingOaipmh extends RepositoryAction
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
         }
-        
+
         //ichushi
         else if(strtoupper($tagName) == strtoupper(RepositoryConst::JUNII2_ICHUSHI))
         {
@@ -4028,7 +4058,7 @@ class HarvestingOaipmh extends RepositoryAction
                 array_push($this->logMsg, "repository_harvesting_warning_over_ichushi");
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
-            
+
             $str_uri = RepositoryOutputFilterJuNii2::ichushi($tagValues[0]["value"]);
             if($str_uri == "")
             {
@@ -4036,7 +4066,7 @@ class HarvestingOaipmh extends RepositoryAction
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
         }
-        
+
         //grantid
         else if(strtoupper($tagName) == strtoupper(RepositoryConst::JUNII2_GRANTID))
         {
@@ -4045,7 +4075,7 @@ class HarvestingOaipmh extends RepositoryAction
                 array_push($this->logMsg, "repository_harvesting_warning_over_grantid");
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
-            
+
             $str_id = RepositoryOutputFilterJuNii2::grantid($tagValues[0]["value"]);
             if($str_id == "")
             {
@@ -4053,7 +4083,7 @@ class HarvestingOaipmh extends RepositoryAction
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
         }
-        
+
         //deteofgranted
         else if(strtoupper($tagName) == strtoupper(RepositoryConst::JUNII2_DATEOFGRANTED))
         {
@@ -4062,7 +4092,7 @@ class HarvestingOaipmh extends RepositoryAction
                 array_push($this->logMsg, "repository_harvesting_warning_over_dateofgranted");
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
-            
+
             $str_date = RepositoryOutputFilter::date($tagValues[0]["value"]);
             if($str_date == "")
             {
@@ -4070,7 +4100,7 @@ class HarvestingOaipmh extends RepositoryAction
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
         }
-        
+
         //degreename
         else if(strtoupper($tagName) == strtoupper(RepositoryConst::JUNII2_DEGREENAME))
         {
@@ -4079,14 +4109,14 @@ class HarvestingOaipmh extends RepositoryAction
                 array_push($this->logMsg, "repository_harvesting_warning_over_degreename");
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
-            
+
             if($tagValues[0]["value"] == "")
             {
                 array_push($this->logMsg, "repository_harvesting_warning_get_degreename");
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
         }
-        
+
         //grantor
         else if(strtoupper($tagName) == strtoupper(RepositoryConst::JUNII2_GRANTOR))
         {
@@ -4095,14 +4125,14 @@ class HarvestingOaipmh extends RepositoryAction
                 array_push($this->logMsg, "repository_harvesting_warning_over_grantor");
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
-            
+
             if($tagValues[0]["value"] == "")
             {
                 array_push($this->logMsg, "repository_harvesting_warning_get_grantor");
                 $this->harvestingLogStatus = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
             }
         }
-        
+
         //creator
         else if(strtoupper($tagName) == strtoupper(RepositoryConst::JUNII2_CREATOR))
         {
@@ -4116,7 +4146,7 @@ class HarvestingOaipmh extends RepositoryAction
                 }
             }
         }
-        
+
         //publisher
         else if(strtoupper($tagName) == strtoupper(RepositoryConst::JUNII2_PUBLISHER))
         {
@@ -4130,7 +4160,7 @@ class HarvestingOaipmh extends RepositoryAction
                 }
             }
         }
-        
+
         //contributor
         else if(strtoupper($tagName) == strtoupper(RepositoryConst::JUNII2_CONTRIBUTOR))
         {
@@ -4145,10 +4175,10 @@ class HarvestingOaipmh extends RepositoryAction
             }
         }
     }
-    
+
     /**
      * get attribute ID from database by mapping
-     * 
+     *
      * @param string $strMapping
      * @param int $itemTypeId
      * @param string $lang
@@ -4166,19 +4196,19 @@ class HarvestingOaipmh extends RepositoryAction
         $params[] = $strMapping;
         $params[] = $itemTypeId;
         $params[] = $lang;
-        
+
         $result = $this->Db->execute($query, $params);
         if($result === false || count($result) != 1)
         {
             return -1;
         }
-        
+
         return $result[0]['attribute_id'];
     }
-    
+
     /**
      * put name metadata to arrays
-     * 
+     *
      * @param array $inputTypeNameMetadata
      * @param array $nameArray
      * @param array $idArray
@@ -4192,7 +4222,7 @@ class HarvestingOaipmh extends RepositoryAction
         {
             $uri = RepositoryOutputFilterJuNii2::convertId($inputTypeNameMetadata["attributes"]["ID"]);
         }
-        
+
         if(array_key_exists("LANG", $inputTypeNameMetadata["attributes"]) && strlen($inputTypeNameMetadata["attributes"]["LANG"]) > 0)
         {
             $checkStr = RepositoryOutputFilterJuNii2::langRFCForWEKO($inputTypeNameMetadata["attributes"]["LANG"]);
@@ -4201,7 +4231,7 @@ class HarvestingOaipmh extends RepositoryAction
         {
             $checkStr = "";
         }
-        
+
         if($checkStr == "japanese")
         {
             array_push($japaneseNameArray, $inputTypeNameMetadata["value"]);
@@ -4229,10 +4259,10 @@ class HarvestingOaipmh extends RepositoryAction
             array_push($langArray, $checkStr);
         }
     }
-    
+
     /**
      * makeNameMetadataArrayForJuNii2
-     * 
+     *
      * @param array $attributeArray
      * @param int $itemId
      * @param int $itemNo
@@ -4260,7 +4290,7 @@ class HarvestingOaipmh extends RepositoryAction
         {
             return false;
         }
-        
+
         $cnt = 1;
         for($ii=0; $ii<count($attributeArray); $ii++)
         {
@@ -4292,7 +4322,7 @@ class HarvestingOaipmh extends RepositoryAction
                         $family = $attributeArray[$ii];
                     }
                 }
-                
+
                 // Check author ID
                 if(isset($result[$cnt-1]))
                 {
@@ -4301,7 +4331,7 @@ class HarvestingOaipmh extends RepositoryAction
                         $authorId = intval($result[$cnt-1]["author_id"]);
                     }
                 }
-                
+
                 $metadata = array(  "item_id" => $itemId, "item_no" => $itemNo, "item_type_id" => $itemTypeId, "attribute_id" => $attributeId,
                                     "family" => $family, "name" => $name, "family_ruby" => "", "name_ruby" => "", "e_mail_address" => "",
                                     "author_id" => $authorId, "language" => $langArray[$ii], "input_type" => "name", "personal_name_no" => $cnt);
@@ -4314,7 +4344,7 @@ class HarvestingOaipmh extends RepositoryAction
                 $cnt++;
             }
         }
-        
+
         return true;
     }
     // Add for JuNii2 Redaction 2013/09/16 R.Matsuura --end--

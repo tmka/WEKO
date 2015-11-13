@@ -14,6 +14,7 @@
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.php';
 require_once WEBAPP_DIR. '/modules/repository/action/main/export/ExportCommon.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryItemAuthorityManager.class.php';
+require_once WEBAPP_DIR. '/modules/repository/components/RepositoryHandleManager.class.php';
 
 class RepositoryOutputTSV extends RepositoryAction
 {
@@ -1456,7 +1457,7 @@ class RepositoryOutputTSV extends RepositoryAction
             return false;
         }
         
-        // テキストを取得
+        // テキストデータ(item_attr)を取得
         $query = "SELECT attribute_no, attribute_value, TYPE.attribute_id AS attribute_id, attribute_name, input_type, TYPE.hidden AS hidden ". 
                  "FROM ". DATABASE_PREFIX ."repository_item_attr AS ATTR ".
                  ", ". DATABASE_PREFIX ."repository_item_attr_type AS TYPE ".
@@ -1553,7 +1554,7 @@ class RepositoryOutputTSV extends RepositoryAction
         $params[] = 0;
         // SELECT実行
         $result_Thumbnail_Table = $this->Db->execute($query, $params);
-        if($result_Thumnail_Table === false){
+        if($result_Thumbnail_Table === false){
             $Error_Msg = $this->Db->ErrorMsg();
             $this->Session->setParameter("error_cord",-1);
             return false;
@@ -1603,7 +1604,7 @@ class RepositoryOutputTSV extends RepositoryAction
         $params = null;
         $params[] = $Item_ID;
         $params[] = $Item_No;
-        $params[] = "file";
+        $params[] = self::FILE;
         $params[] = 0;
         $params[] = 0;
         // SELECT実行
@@ -1628,6 +1629,7 @@ class RepositoryOutputTSV extends RepositoryAction
                  "FILE.item_no = PRICE.item_no AND ".
                  "FILE.attribute_id = PRICE.attribute_id AND ".
                  "FILE.file_no = PRICE.file_no AND ".
+                 "TYPE.input_type = ? AND ".
                  "FILE.is_delete = ? AND ".
                  "PRICE.is_delete = ? AND ".
                  "TYPE.is_delete = ? ".
@@ -1636,6 +1638,7 @@ class RepositoryOutputTSV extends RepositoryAction
         $params = null;
         $params[] = $Item_ID;
         $params[] = $Item_No;
+        $params[] = self::FILE_PRICE;
         $params[] = 0;
         $params[] = 0;
         $params[] = 0;
@@ -1686,6 +1689,17 @@ class RepositoryOutputTSV extends RepositoryAction
                     $libraryJalcdoiPrefix = $handleManager->getLibraryJalcDoiPrefix();
                     $Result_List[self::SELF_DOI][0]["SELFDOI"] = $libraryJalcdoiPrefix."/".$libraryJalcdoiSuffix;
                 }
+        		// Add DataCite 2015/02/10 K.Sugimoto --start--
+                else
+                {
+	                $dataciteSuffix = $handleManager->getDataciteSuffix($Item_ID, $Item_No);
+	                if(isset($dataciteSuffix) && strlen($dataciteSuffix) > 0)
+	                {
+	                    $Result_List[self::SELF_DOI_RA][0]["RA"] = RepositoryConst::JUNII2_SELFDOI_RA_DATACITE;
+	                    $Result_List[self::SELF_DOI][0]["SELFDOI"] = "";
+	                }
+                }
+        		// Add DataCite 2015/02/10 K.Sugimoto --end--
             }
         }
         if($jalcdoiSuffix === false)

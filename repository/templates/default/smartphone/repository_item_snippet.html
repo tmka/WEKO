@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: repository_item_snippet.html 40393 2014-08-25 09:29:15Z tatsuya_koyasu $          -->
+<!--// $Id: repository_item_snippet.html 53594 2015-05-28 05:25:53Z kaede_matsushita $          -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -62,13 +62,13 @@
     <{* Include display html --start-- *}>
     <div class="repository_right_frame">
         <{if $smarty.session.serach_screen=="0"}>
-            <{include file="smartphone/repository_item_search_result.html"}>
+            <{include file=$smarty.const.WEBAPP_DIR|cat:'/modules/repository/templates/default/smartphone/repository_item_search_result.html'}>
         <{elseif $smarty.session.serach_screen=="1"}>
-            <{include file="smartphone/repository_item_detail.html"}>
+            <{include file=$smarty.const.WEBAPP_DIR|cat:'/modules/repository/templates/default/smartphone/repository_item_detail.html'}>
         <{elseif $smarty.session.serach_screen==2}>
-            <{include file="smartphone/repository_ranking.html"}>
+            <{include file=$smarty.const.WEBAPP_DIR|cat:'/modules/repository/templates/default/smartphone/repository_ranking.html'}>
         <{elseif $smarty.session.serach_screen==3}>
-            <{include file="smartphone/repository_item_contents.html"}>
+            <{include file=$smarty.const.WEBAPP_DIR|cat:'/modules/repository/templates/default/smartphone/repository_item_contents.html'}>
         <{/if}>
     </div>
     <{* Include display html --end-- *}>
@@ -125,7 +125,7 @@
         location.href="<{$smarty.const.BASE_URL}>/?action=pages_view_main&page_id="+<{$page_id}>;
     </script>
 <{else}>
-    <{include file="repository_scriptFileDownload.html"}>
+    <{include file=$smarty.const.WEBAPP_DIR|cat:'/modules/repository/templates/default/repository_scriptFileDownload.html'}>
 <{/if}>
 
 <{if $action.uri_export!=null && $action.uri_export.status=="login"}>
@@ -273,7 +273,7 @@
         }
 </script>
 <{* Script for indexSubTreeList Y.Nakao 2012/04/10 --end-- *}>
-<{include file="repository_script.html"}>
+<{include file=$smarty.const.WEBAPP_DIR|cat:'/modules/repository/templates/default/repository_script.html'}>
 <{* Bug Fix WEKO-2014-042 2014/07/18 T.Koyasu --start-- *}>
-<{include file="repository_search_script.html"}>
+<{include file=$smarty.const.WEBAPP_DIR|cat:'/modules/repository/templates/default/repository_search_script.html'}>
 <{* Bug Fix WEKO-2014-042 2014/07/18 T.Koyasu --end-- *}>

@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: RepositorySearch.class.php 43337 2014-10-29 04:59:45Z tomohiro_ichikawa $
+// $Id: RepositorySearch.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -13,12 +13,13 @@
 require_once WEBAPP_DIR."/modules/repository/components/RepositorySearchRequestParameter.class.php";
 require_once WEBAPP_DIR."/modules/repository/components/QueryGenerator.class.php";
 require_once WEBAPP_DIR."/modules/repository/components/RepositoryPluginManager.class.php";
+require_once WEBAPP_DIR."/modules/repository/files/plugin/searchkeywordconverter/Twobytechartohalfsizechar.class.php";
 
 /**
  * for search class object
  * 
  */
-class RepositorySearchQueryParameter
+class RepositorySearchQueryParameter 
 {
     public $search_term = null;
     public $index_id = null;
@@ -198,28 +199,49 @@ class RepositorySearch extends RepositorySearchRequestParameter
         
         $query = "SHOW ENGINES";
         $engines = $this->dbAccess->executeQuery($query);
-        for($ii = 0; $ii < count($engines); $ii++) {
-            if($engines[$ii]["Engine"] == "Mroonga" || $engines[$ii]["Engine"] == "mroonga") {
+        for($ii = 0; $ii < count($engines); $ii++)
+        {
+            // check search engine is Mroonga
+            if($engines[$ii]["Engine"] == "Mroonga" || $engines[$ii]["Engine"] == "mroonga")
+            {
                 $searchEngine = "mroonga";
-            } else {
-                // Bug Fix: using LIKE mysql-command in search on centos5 2014/10/27 T.Koyasu --start--
-                // check search engine is senna
-                try {
-                    $sennaStatus = $this->dbAccess->executeQuery("SHOW SENNA STATUS;");
-                    $searchEngine = "senna";
-                } catch (RepositoryException $Exception){
-                    $searchEngine = "";
-                }
-                // Bug Fix: using LIKE mysql-command in search on centos5 2014/10/27 T.Koyasu --end--
+                break;
             }
         }
+        // Bug Fix: using LIKE mysql-command in search on centos5 2014/10/27 T.Koyasu --start--
+        if(strlen($searchEngine) == 0)
+        {
+            // check search engine is senna
+            try
+            {
+                $sennaStatus = $this->dbAccess->executeQuery("SHOW SENNA STATUS;");
+                $searchEngine = "senna";
+            } catch (RepositoryException $Exception){
+                $searchEngine = "";
+            }
+        }
+        // Bug Fix: using LIKE mysql-command in search on centos5 2014/10/27 T.Koyasu --end--
         // グループID取得
         $groupList = null;
         $this->RepositoryAction->getUsersGroupList($groupList, $errMsg);
         $this->RepositoryAction->deleteRoomIdOfMyRoomAndPublicSpace($groupList);
         
+	    // Extend Search Keyword 2015/02/23 K.Sugimoto --start--
+        $search_term_half = $this->search_term;
+        $converterHalf = new Repository_Files_Plugin_Searchkeywordconverter_Twobytechartohalfsizechar();
+        $exceptArray = array("itemTypeList", "language", "textversion", "scList", "idList", "typeList", "riList");
+        $toSearchCondition = new ToSearchCondition();
+        foreach($search_term_half as $key => $value)
+        {
+	        if(!in_array($key, $exceptArray))
+	        {
+	        	$search_term_half[$key] = $converterHalf->toSearchCondition($value, $toSearchCondition);
+	        }
+        }
+	    // Extend Search Keyword 2015/02/23 K.Sugimoto --end--
+        
         // 検索条件オブジェクト作成
-        $countSearchInfo = new RepositorySearchQueryParameter($this->search_term, 
+        $countSearchInfo = new RepositorySearchQueryParameter($search_term_half, 
                                                               $this->index_id, 
                                                               $this->Session->getParameter("_user_id"), 
                                                               $user_auth_id, 
@@ -267,7 +289,7 @@ class RepositorySearch extends RepositorySearchRequestParameter
         }
         
         // 検索条件オブジェクトの作成
-        $searchInfo = new RepositorySearchQueryParameter($this->search_term, 
+        $searchInfo = new RepositorySearchQueryParameter($search_term_half, 
                                                          $this->index_id, 
                                                          $this->Session->getParameter("_user_id"), 
                                                          $user_auth_id, 
@@ -359,41 +381,330 @@ class RepositorySearch extends RepositorySearchRequestParameter
         {
             foreach($this->search_term as $key => $value)
             {
+                // Improve Search Log 2015/03/19 K.Sugimoto --start--
                 switch($key)
                 {
+                    // 簡易検索
                     case "all":
                     case "meta":
-                    case "title":
-                    case "creator":
-                    case "kw":
-                    case "scDes":
-                    case "des":
-                    case "pub":
-                    case "con":
-                    case "form":
-                    case "idDes":
-                    case "jtitle":
-                    case "sp":
-                    case "era":
-                    case "grantid":
-                    case "degreename":
-                    case "grantor":
+                    	$detailSearchItemId = 0;
                         // スペース区切りで1単語ずつに分割
                         $keywordArray = explode(" ", $value);
                         
-                        // ログ出力
-                        for($ii = 0; $ii < count($keywordArray); $ii++)
-                        {
-                            $this->RepositoryAction->entryLog(4, "", "", "", "", $keywordArray[$ii]);
-                        }
+                        break;
+                    // タイトル
+                    case "title":
+                    	$detailSearchItemId = 1;
+                        // スペース区切りで1単語ずつに分割
+                        $keywordArray = explode(" ", $value);
                         
                         break;
+                    // 著者名 OR 著者ID
+                    case "creator":
+                    	$detailSearchItemId = 2;
+                        // スペース区切りで1単語ずつに分割
+                        $keywordArray = explode(" ", $value);
                         
+                        break;
+                    // キーワード
+                    case "kw":
+                    	$detailSearchItemId = 3;
+                        // スペース区切りで1単語ずつに分割
+                        $keywordArray = explode(" ", $value);
+                        
+                        break;
+                    // 件名・分類
+                    case "scDes":
+                    	$detailSearchItemId = 4;
+                        // スペース区切りで1単語ずつに分割
+                        $keywordArray = explode(" ", $value);
+                        
+                        break;
+                    // 抄録・内容記述
+                    case "des":
+                    	$detailSearchItemId = 5;
+                        // スペース区切りで1単語ずつに分割
+                        $keywordArray = explode(" ", $value);
+                        
+                        break;
+                    // 公開者 OR 著者ID
+                    case "pub":
+                    	$detailSearchItemId = 6;
+                        // スペース区切りで1単語ずつに分割
+                        $keywordArray = explode(" ", $value);
+                        
+                        break;
+                    // 寄与者 OR 著者ID
+                    case "con":
+                    	$detailSearchItemId = 7;
+                        // スペース区切りで1単語ずつに分割
+                        $keywordArray = explode(" ", $value);
+                        
+                        break;
+                    // コンテンツ作成日
+                    case "date":
+                    	$detailSearchItemId = 8;
+                    	$keywordArray = array();
+                        $keywordArray[0] = $value;
+                        
+                        break;
+                    // アイテムタイプ
+                    case "itemTypeList":
+                    	$detailSearchItemId = 9;
+                        // カンマ区切りで1単語ずつに分割
+                        $keywordArray = explode(",", $value);
+                        
+                        break;
+                    // 資源タイプ
+                    case "typeList":
+                    	$detailSearchItemId = 10;
+                        // カンマ区切りで1単語ずつに分割
+                        $keywordArray = explode(",", $value);
+                    	$keywordArray = $this->transformNiiTypeIdToNiiTypeName($keywordArray);
+                        
+                        break;
+                    // フォーマット
+                    case "form":
+                    	$detailSearchItemId = 11;
+                        // スペース区切りで1単語ずつに分割
+                        $keywordArray = explode(" ", $value);
+                        
+                        break;
+                    // ID
+                    case "idDes":
+                    	$detailSearchItemId = 12;
+                        // スペース区切りで1単語ずつに分割
+                        $keywordArray = explode(" ", $value);
+                        
+                        break;
+                    // 雑誌名
+                    case "jtitle":
+                    	$detailSearchItemId = 13;
+                        // スペース区切りで1単語ずつに分割
+                        $keywordArray = explode(" ", $value);
+                        
+                        break;
+                    // 出版年
+                    case "pubYearFrom":
+                    case "pubYearUntil":
+                    	$detailSearchItemId = 14;
+                    	$keywordArray = array();
+                        $keywordArray[0] = $value;
+                        
+                        break;
+                    // 言語
+                    case "ln":
+                    	$detailSearchItemId = 15;
+                        // カンマ区切りで1単語ずつに分割
+                        $keywordArray = explode(",", $value);
+                        
+                        break;
+                    // 地域
+                    case "sp":
+                    	$detailSearchItemId = 16;
+                        // スペース区切りで1単語ずつに分割
+                        $keywordArray = explode(" ", $value);
+                        
+                        break;
+                    // 時代
+                    case "era":
+                    	$detailSearchItemId = 17;
+                        // スペース区切りで1単語ずつに分割
+                        $keywordArray = explode(" ", $value);
+                        
+                        break;
+                    // 権利
+                    case "riDes":
+                    	$detailSearchItemId = 18;
+                        // スペース区切りで1単語ずつに分割
+                        $keywordArray = explode(" ", $value);
+                        
+                        break;
+                    // 権利
+                    case "riList":
+                    	$detailSearchItemId = 18;
+                        // カンマ区切りで1単語ずつに分割
+                        $keywordArray = explode(",", $value);
+                    	$keywordArray = $this->transformRightIdToRightName($keywordArray);
+                        
+                        break;
+                    // 著者版フラグ
+                    case "textver":
+                    	$detailSearchItemId = 19;
+                        // カンマ区切りで1単語ずつに分割
+                        $keywordArray = explode(",", $value);
+                        
+                        break;
+                    // 学位授与番号
+                    case "grantid":
+                    	$detailSearchItemId = 20;
+                        // スペース区切りで1単語ずつに分割
+                        $keywordArray = explode(" ", $value);
+                        
+                        break;
+                    // 学位授与年月日
+                    case "grantDateFrom":
+                    case "grantDateUntil":
+                    	$detailSearchItemId = 21;
+                    	$keywordArray = array();
+                        $keywordArray[0] = $value;
+                        
+                        break;
+                    // 学位名
+                    case "degreename":
+                    	$detailSearchItemId = 22;
+                        // スペース区切りで1単語ずつに分割
+                        $keywordArray = explode(" ", $value);
+                        
+                        break;
+                    // 学位授与機関
+                    case "grantor":
+                    	$detailSearchItemId = 23;
+                        // スペース区切りで1単語ずつに分割
+                        $keywordArray = explode(" ", $value);
+                        
+                        break;
+                    // インデックス
+                    case "idx":
+                    	$detailSearchItemId = 24;
+                        // カンマ区切りで1単語ずつに分割
+                        $keywordArray = explode(",", $value);
+                        
+                        break;
+                    // 公開日
+                    case "pubDateFrom":
+                    case "pubDateUntil":
+                    	$detailSearchItemId = 25;
+                    	$keywordArray = array();
+                        $keywordArray[0] = $value;
+                        
+                        break;
+                    
                     default:
+                        $keywordArray = array();
                         break;
                 }
+                
+                // ログ出力
+                for($ii = 0; $ii < count($keywordArray); $ii++)
+                {
+                    if(strlen($this->TransStartDate) == 0)
+                    {
+                        $date = new Date();
+                        $this->TransStartDate = $date->getDate().".000";
+                    }
+                    // Mod entryLog T.Koyasu 2015/03/06 --start--
+                    require_once WEBAPP_DIR. '/modules/repository/components/FW/AppLogger.class.php';
+                    AppLogger::infoLog("businessLogmanager", __FILE__, __CLASS__, __LINE__);
+                    BusinessFactory::initialize($this->Session, $this->Db, $this->TransStartDate);
+                    $logManager = BusinessFactory::getFactory()->getBusiness("businessLogmanager");
+                    
+                    $logManager->entryLogForKeywordSearch($keywordArray[$ii], $detailSearchItemId);
+                    // Mod entryLog T.Koyasu 2015/03/06 --end--
+                }
+                // Improve Search Log 2015/03/19 K.Sugimoto --end--
             }
         }
     }
+    
+    // Improve Search Log 2015/03/19 K.Sugimoto --start--
+    /**
+     * 資源タイプ変換
+     *
+     * @param Array $niiTypeArray
+     */
+    private function transformNiiTypeIdToNiiTypeName($niiTypeArray)
+    {
+        for($ii = 0; $ii < count($niiTypeArray); $ii++)
+        {
+            switch($niiTypeArray[$ii])
+            {
+            	case 0:
+            		$niiTypeArray[$ii] = "Journal Article";
+            		break;
+            	case 1:
+            		$niiTypeArray[$ii] = "Thesis or Dissertation";
+            		break;
+            	case 2:
+            		$niiTypeArray[$ii] = "Departmental Bulletin Paper";
+            		break;
+            	case 3:
+            		$niiTypeArray[$ii] = "Conference Paper";
+            		break;
+            	case 4:
+            		$niiTypeArray[$ii] = "Presentation";
+            		break;
+            	case 5:
+            		$niiTypeArray[$ii] = "Book";
+            		break;
+            	case 6:
+            		$niiTypeArray[$ii] = "Technical Report";
+            		break;
+            	case 7:
+            		$niiTypeArray[$ii] = "Research Paper";
+            		break;
+            	case 8:
+            		$niiTypeArray[$ii] = "Article";
+            		break;
+            	case 9:
+            		$niiTypeArray[$ii] = "Preprint";
+            		break;
+            	case 10:
+            		$niiTypeArray[$ii] = "Learning Material";
+            		break;
+            	case 11:
+            		$niiTypeArray[$ii] = "Data or Dataset";
+            		break;
+            	case 12:
+            		$niiTypeArray[$ii] = "Software";
+            		break;
+            	case 13:
+            		$niiTypeArray[$ii] = "Others";
+            		break;
+            	default:
+            		break;
+            }
+        }
+        return $niiTypeArray;
+    }
+    
+    /**
+     * 権利変換
+     *
+     * @param Array $niiTypeArray
+     */
+    private function transformRightIdToRightName($rightArray)
+    {
+        $returnArray = array();
+        
+        for($ii = 0; $ii < count($rightArray); $ii++)
+        {
+            switch($rightArray[$ii])
+            {
+            	case 101:
+            		$returnArray[] = "CC BY";
+            		break;
+            	case 102:
+            		$returnArray[] = "CC BY-SA";
+            		break;
+            	case 103:
+            		$returnArray[] = "CC BY-ND";
+            		break;
+            	case 104:
+            		$returnArray[] = "CC BY-NC";
+            		break;
+            	case 105:
+            		$returnArray[] = "CC BY-NC-SA";
+            		break;
+            	case 106:
+            		$returnArray[] = "CC BY-NC-ND";
+            		break;
+            	default:
+            		break;
+            }
+        }
+        return $returnArray;
+    }
+    // Improve Search Log 2015/03/19 K.Sugimoto --end--
 }
 ?>

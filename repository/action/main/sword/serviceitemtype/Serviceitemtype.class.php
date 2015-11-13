@@ -20,7 +20,7 @@ require_once WEBAPP_DIR. '/modules/repository/components/Factory.class.php';
 class Repository_Action_Main_Sword_Serviceitemtype extends RepositoryAction
 {
     
-    function executeForWeko()
+    function executeApp()
     {
         $swordManager = Repository_Components_Factory::getComponent('Repository_Components_Swordmanager');
         

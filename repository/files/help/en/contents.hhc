@@ -63,7 +63,7 @@
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="サプリメンタルコンテンツ">
 				<param name="Local" value="html\workflow_supple.html">
-		</UL>
+				</UL>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="管理者">
 			<param name="Local" value="html\index.html">

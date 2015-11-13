@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: item_detail.html 39150 2014-07-28 08:48:19Z tomohiro_ichikawa $        -->
+<!--// $Id: item_detail.html 54835 2015-06-25 04:10:46Z keiya_sugimoto $        -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -187,7 +187,7 @@
 					アイテムの利用統計が閲覧出来ます。<br/>
 					また、アイテム詳細画面に、サイト開設時からのファイル毎のダウンロード回数が、リアルタイムで表示されます。<br/>
 					<br/>
-					
+
 					<center><img src="./img/item_detail_tokei.png" alt="利用統計表示"></center><br/>
 					<br/>
 					アイテム詳細画面の利用統計リンクをクリックすると、利用統計画面がポップアップで表示されます。<br/>
@@ -199,6 +199,17 @@
 					<ul>
 						<li>利用統計の集計が行われている場合のみ「利用統計を見る」リンクが表示されます。</br>
 						利用統計の集計方法については<a href="./setting.html#run_DB">WEKO管理 データベース管理</a>をご覧ください。
+						</li>
+						</br>
+						<li>管理画面で利用統計リンクを表示する設定にしている場合のみ「利用統計を見る」リンクが表示されます。</br>
+						利用統計リンク表示の設定方法については<a href="./setting.html#view_UsageStatistics_link">WEKO管理 利用統計リンク表示設定</a>をご覧ください。
+						</li>
+						</br>
+						<li>利用統計機能は月末締めで行われる集計結果を元にしているため、新規登録されてから月が切り替わっていないアイテムの利用統計を表示できません。</br>
+						それらのアイテムについては以下のようなメッセージが表示されます。
+						<br/>
+						<center><img src="./img/item_detail_usagesatistics_not_exist.png" alt="利用統計表示"></center><br/>
+						<br/>
 						</li>
 					</ul>
 				</div>
@@ -242,7 +253,7 @@
 						■既存登録<br/>
 						<div class="page_list">
 							サプリメンタルWEKOに登録されている既存のアイテムをサプリメンタルコンテンツとして登録します。<br/>
-							登録するアイテムのパーマリンクURLをテキストボックスに入力し、「登録」ボタンをクリックするとパーマリンク先のアイテム情報を取得します。<br/>
+							登録するアイテムのWEKO URLまたはパーマリンクURLをテキストボックスに入力し、「登録」ボタンをクリックするとパーマリンク先のアイテム情報を取得します。<br/>
 							<br/>
 							<center><img src="./img/supple_entry_popup_02.png" alt="サプリメンタルコンテンツ既存登録ポップアップ"></center><br/>
 							<br/>
@@ -250,6 +261,10 @@
 							<br/>
 							<center><img src="./img/supple_permalink.png" alt="パーマリンクURL"></center><br/>
 							<br/>
+							アイテムのWEKO URLは、アイテムリスト画面内のアイテム名にカーソルを合わし、右クリック→「リンクのURLをコピーで(A)」で取得できます。<br/>
+							<br/>
+							<center><img src="./img/supple_weko_url.png" alt="サプリメンタルコンテンツ既存登録ポップアップ"></center><br/>
+                            <br/>
 							アイテムの情報取得が正常に完了すると、サプリメンタルコンテンツとして登録されます。<br/>
 							<br/>
 							査読待の表示がある場合は他のユーザーに公開されていません。<br/>
@@ -290,7 +305,7 @@
 						</ul>
 					</div>
 				</div>
-				
+
 				<h3><a name="edit">アイテム編集</a></h3>
 				<div class="page_list">
 					アイテムの編集権限を持つ場合、「公開」ボタンまたは「非公開」ボタン、「編集」ボタン、「削除」ボタンが表示されます。<br/>
@@ -307,7 +322,7 @@
 					<center><img src="./img/item_detail_edit.png" alt="アイテム編集"></center><br/>
 					<br/>
 				</div>
-				<h3><a name="edit">検索ワード表示機能</a></h3>
+				<h3><a name="refererSearchKeyword">検索ワード表示機能</a></h3>
 				<div class="page_list">
 					アイテムがどのようなワードによって検索されているかを表示します。<br/>
 					<br/>
@@ -326,7 +341,7 @@
 				</div>
 				<br/>
 				<br/>
-				
+
 			</div>
 			<p align="center"><font size="2"><a href="../index.html" target="_top">WEKO Help Top</a></font></p>
 		</div>

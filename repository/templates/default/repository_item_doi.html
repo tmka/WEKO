@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: repository_item_doi.html 42605 2014-10-03 01:02:01Z keiya_sugimoto $          -->
+<!--// $Id: repository_item_doi.html 49321 2015-03-03 12:15:32Z keiya_sugimoto $          -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -12,6 +12,11 @@
 
 <{strip}>
 <div id="repository<{$id}>_jalcdoiDiv">
+	<{if strlen($action.doi_count_msg) > 0}>
+	    <div class = "info al">
+	        <{$action.doi_count_msg}>
+	    </div>
+	<{/if}>
 	<table class="full">	
 		<tr>
 			<th class="pd10 th01">
@@ -45,40 +50,80 @@
 				<th class="pd10 al th01"><{$lang.repository_item_enterdoi_target_item}></th>
 			</tr>
 			<tr>
+			    <td class="pd10">
+			    <center>
+	                <input type="button" class="btn_blue" value="<{$lang.repository_item_add_doi}>" onclick="repositoryCls['<{$id}>'].repositoryDoiSet(<{$action.sortIndexId}>); return false;" style="margin : 10px !important">
+	            </center>
+			    </td>
+			</tr>
+			<tr>
 				<td>
 					<div>
 						<form id="enter_doi_form">
 							<table id="repository_doi_item_list<{$id}>" class="full">
 								<tr>
-									<{if $action.exist_jalcdoi_prefix == true}>
-										<th style="border: 1px solid #E0E0E0;">
-											<{$lang.repository_item_edit_jalcdoi}>
+									<{if $action.exist_jalcdoi_prefix == true && $smarty.const._REPOSITORY_JALC_DOI == true}>
+										<th style="border: 1px solid #E0E0E0; padding-top : 5px; padding-bottom : 5px;">
+    										<label style="display: block; width:100%;height:100%;" for="registing_all_jalcdoi_checkbox">
+											    <center>
+											        <B><{$lang.repository_item_edit_jalcdoi}></B><br>
+											        <input type="checkbox" id="registing_all_jalcdoi_checkbox" name="registing_all_jalcdoi_items" onclick="javascript: checkAll('registing_all_jalcdoi_checkbox');">
+											    </center>
+											</label>
 										</th>
 									<{/if}>
-									<{if $action.exist_crossref_prefix == true}>
-										<th style="border: 1px solid #E0E0E0;">
-											<{$lang.repository_item_edit_crossref}>
+									<{if $action.exist_crossref_prefix == true && $smarty.const._REPOSITORY_JALC_CROSSREF_DOI == true}>
+										<th style="border: 1px solid #E0E0E0; padding-top : 5px; padding-bottom : 5px;">
+    										<label style="display: block; width:100%;height:100%;" for="registing_all_crossref_checkbox">
+    										    <center>
+											        &nbsp;&nbsp;&nbsp;<B><{$lang.repository_item_edit_crossref}></B>&nbsp;&nbsp;&nbsp;<br>
+											        <input type="checkbox" id="registing_all_crossref_checkbox" name="registing_all_crossref_items" onclick="javascript: checkAll('registing_all_crossref_checkbox');">
+											    </center>
+											</label>
 										</th>
 									<{/if}>
-									<th style="border: 1px solid #E0E0E0;">
-										<{$lang.repository_item_edit_item_name}>
+									<{if $action.exist_datacite_prefix == true && $smarty.const._REPOSITORY_JALC_DATACITE_DOI == true}>
+										<th style="border: 1px solid #E0E0E0; padding-top : 5px; padding-bottom : 5px;">
+    										<label style="display: block; width:100%;height:100%;" for="registing_all_datacite_checkbox">
+    										    <center>
+											        &nbsp;&nbsp;&nbsp;<B><{$lang.repository_item_edit_datacite}></B>&nbsp;&nbsp;&nbsp;<br>
+											        <input type="checkbox" id="registing_all_datacite_checkbox" name="registing_all_datacite_items" onclick="javascript: checkAll('registing_all_datacite_checkbox');">
+											    </center>
+											</label>
+										</th>
+									<{/if}>
+									<th style="border: 1px solid #E0E0E0; padding-top : 5px; padding-bottom : 5px;">
+										<center>
+										    <{$lang.repository_item_edit_item_name}>
+										</center>
 									</th>
 								</tr>
 								<{foreach from=$action.doiData item=itemData name="doiItemList"}>
 									<{assign var="cnt" value=$smarty.foreach.doiItemList.iteration-1}> 
 									<tr id="repository_doi_management_<{$itemData.item_id}>" height="30px" style="border: 1px solid #E0E0E0;">
 										<{* td *}>
-										<{if $action.exist_jalcdoi_prefix == true}>
-											<td width="10%" style="border: 1px solid #E0E0E0;">
-												<input type="checkbox" id="registing_jalcdoi_checkbox<{$id}>_<{$cnt}>" name="registing_jalcdoi_items[]" value="<{$itemData.item_id}>" style="margin-left:45%" <{if $itemData.jalc_doi == 1}>disabled<{/if}> onclick="javascript: changeCheck('registing_jalcdoi_checkbox<{$id}>_<{$cnt}>', 'registing_crossref_checkbox<{$id}>_<{$cnt}>');">
+										<{if $action.exist_jalcdoi_prefix == true && $smarty.const._REPOSITORY_JALC_DOI == true}>
+											<td width="15%" style="border: 1px solid #E0E0E0;">
+												<center>
+												    <input type="checkbox" id="registing_jalcdoi_checkbox<{$id}>_<{$cnt}>" name="registing_jalcdoi_items[]" value="<{$itemData.item_id}>" <{if $itemData.jalc_doi == 1}>disabled<{/if}> onclick="javascript: changeCheck('registing_jalcdoi_checkbox<{$id}>_<{$cnt}>', 'registing_crossref_checkbox<{$id}>_<{$cnt}>', 'registing_datacite_checkbox<{$id}>_<{$cnt}>');">
+												</center>
 											</td>
 										<{/if}>
-										<{if $action.exist_crossref_prefix == true}>
-											<td width="10%" style="border: 1px solid #E0E0E0;">
-												<input type="checkbox" id="registing_crossref_checkbox<{$id}>_<{$cnt}>" name="registing_crossref_items[]" value="<{$itemData.item_id}>" style="margin-left:45%" <{if $itemData.cross_ref == 1}>disabled<{/if}> onclick="javascript: changeCheck('registing_crossref_checkbox<{$id}>_<{$cnt}>', 'registing_jalcdoi_checkbox<{$id}>_<{$cnt}>');">
+										<{if $action.exist_crossref_prefix == true && $smarty.const._REPOSITORY_JALC_CROSSREF_DOI == true}>
+											<td width="15%" style="border: 1px solid #E0E0E0;">
+												<center>
+												    <input type="checkbox" id="registing_crossref_checkbox<{$id}>_<{$cnt}>" name="registing_crossref_items[]" value="<{$itemData.item_id}>" <{if $itemData.cross_ref == 1}>disabled<{/if}> onclick="javascript: changeCheck('registing_crossref_checkbox<{$id}>_<{$cnt}>', 'registing_jalcdoi_checkbox<{$id}>_<{$cnt}>', 'registing_datacite_checkbox<{$id}>_<{$cnt}>');">
+												</center>
 											</td>
 										<{/if}>
-										<td style="padding: 2px; padding-left: 10px;" class="al" width="500">
+										<{if $action.exist_datacite_prefix == true && $smarty.const._REPOSITORY_JALC_DATACITE_DOI == true}>
+											<td width="15%" style="border: 1px solid #E0E0E0;">
+												<center>
+												    <input type="checkbox" id="registing_datacite_checkbox<{$id}>_<{$cnt}>" name="registing_datacite_items[]" value="<{$itemData.item_id}>" <{if $itemData.datacite == 1}>disabled<{/if}> onclick="javascript: changeCheck('registing_datacite_checkbox<{$id}>_<{$cnt}>', 'registing_crossref_checkbox<{$id}>_<{$cnt}>', 'registing_jalcdoi_checkbox<{$id}>_<{$cnt}>');">
+												</center>
+											</td>
+										<{/if}>
+										<td style="padding: 2px; padding-left: 10px;" class="al" width="55%">
 											<a href="#" onclick="javascript: repositoryCls['<{$id}>'].repositoryWorkflowItemDetail(event, <{$itemData.item_id}>,<{$itemData.item_no}>, true); return false;">
 											<{if $itemData.title!="" }>
 											  <{$itemData.title}>
@@ -94,22 +139,11 @@
 					</div>
 				</td>
 			</tr>
-			<tr>
-				<td>
-					<select id="jalc_all_check" name="default_disp_type" onchange="javascript: checkAll();" align="left" style="margin-top:4px; margin-left:10px">
-						<option value="0"><{$lang.repository_item_edit_select}></option>
-						<{if $action.exist_jalcdoi_prefix == true}>
-							<option value="1"><{$lang.repository_item_enterjalcdoi_all_check}></option>
-						<{/if}>
-						<{if $action.exist_crossref_prefix == true}>
-							<option value="2"><{$lang.repository_item_entercrossref_all_check}></option>
-						<{/if}>
-					</select>
-				</td>
-			</tr>
 		<{/if}>
 	</table>
-	<input type="button" class="btn_blue" value="<{$lang.repository_execute}>" onclick="repositoryCls['<{$id}>'].repositoryDoiSet(<{$action.sortIndexId}>); return false;">
+	<{if count($action.doiData) > 0}>
+	    <input type="button" class="btn_blue" value="<{$lang.repository_item_add_doi}>" onclick="repositoryCls['<{$id}>'].repositoryDoiSet(<{$action.sortIndexId}>); return false;" style="margin : 10px !important">
+	<{/if}>
 </div>
 
 <{/strip}>
@@ -128,31 +162,112 @@
 	}
 </script>
 <script class="nc_script" type="text/javascript">
-    checkAll = function()
+    checkAll = function(last)
     {
-        var checkall_select = $('jalc_all_check');
-        if(checkall_select.value == 1)
+        var check_flag = 0;
+        var last_check = document.getElementById(last);
+        var all_jalc = document.getElementById("registing_all_jalcdoi_checkbox");
+        var all_crossref = document.getElementById("registing_all_crossref_checkbox");
+        var all_datacite = document.getElementById("registing_all_datacite_checkbox");
+        if(last_check == all_jalc)
         {
-            var checkedbox = document.getElementsByName("registing_jalcdoi_items[]");
-            var delete_check = document.getElementsByName("registing_crossref_items[]");
+            if(all_jalc.checked == true)
+            {
+                check_flag = 1;
+                var checkedbox = document.getElementsByName("registing_jalcdoi_items[]");
+                var delete_check = document.getElementsByName("registing_crossref_items[]");
+                var delete_check_other = document.getElementsByName("registing_datacite_items[]");
+                if(all_crossref)
+                {
+                    all_crossref.checked = false;
+                }
+                if(all_datacite)
+                {
+                    all_datacite.checked = false;
+                }
+            }
+            else if(all_jalc.checked == false)
+            {
+                check_flag = 2;
+                var checkedbox = document.getElementsByName("registing_jalcdoi_items[]");
+            }
         }
-        else if(checkall_select.value == 2)
+        else if(last_check == all_crossref)
         {
-            var checkedbox = document.getElementsByName("registing_crossref_items[]");
-            var delete_check = document.getElementsByName("registing_jalcdoi_items[]");
+            if(all_crossref.checked == true)
+            {
+                check_flag = 1;
+                var checkedbox = document.getElementsByName("registing_crossref_items[]");
+                var delete_check = document.getElementsByName("registing_jalcdoi_items[]");
+                var delete_check_other = document.getElementsByName("registing_datacite_items[]");
+                if(all_jalc)
+                {
+                    all_jalc.checked = false;
+                }
+                if(all_datacite)
+                {
+                    all_datacite.checked = false;
+                }
+            }
+            else if(all_crossref.checked == false)
+            {
+                check_flag = 2;
+                var checkedbox = document.getElementsByName("registing_crossref_items[]");
+            }
+        }
+        else if(last_check == all_datacite)
+        {
+            if(all_datacite.checked == true)
+            {
+                check_flag = 1;
+                var checkedbox = document.getElementsByName("registing_datacite_items[]");
+                var delete_check = document.getElementsByName("registing_jalcdoi_items[]");
+                var delete_check_other = document.getElementsByName("registing_crossref_items[]");
+                if(all_jalc)
+                {
+                    all_jalc.checked = false;
+                }
+                if(all_crossref)
+                {
+                    all_crossref.checked = false;
+                }
+            }
+            else if(all_datacite.checked == false)
+            {
+                check_flag = 2;
+                var checkedbox = document.getElementsByName("registing_datacite_items[]");
+            }
         }
         if(checkedbox)
         {
-            for(var cnt = 0; cnt < checkedbox.length; cnt++)
+            if(check_flag == 1)
             {
-                if(checkedbox[cnt].disabled == false)
+                for(var cnt = 0; cnt < checkedbox.length; cnt++)
                 {
-                    checkedbox[cnt].checked = true;
+                    if(checkedbox[cnt].disabled == false)
+                    {
+                        checkedbox[cnt].checked = true;
+                    }
+                    
+                    if(delete_check[cnt])
+                    {
+                        delete_check[cnt].checked = false;
+                    }
+                    
+                    if(delete_check_other[cnt])
+                    {
+                        delete_check_other[cnt].checked = false;
+                    }
                 }
-                
-                if(delete_check[cnt])
+            }
+            else if(check_flag == 2)
+            {
+                for(var cnt = 0; cnt < checkedbox.length; cnt++)
                 {
-                    delete_check[cnt].checked = false;
+                    if(checkedbox[cnt].disabled == false)
+                    {
+                        checkedbox[cnt].checked = false;
+                    }
                 }
             }
         }
@@ -161,10 +276,14 @@
     }
 </script>
 <script class="nc_script" type="text/javascript">
-    changeCheck = function(last, before)
+    changeCheck = function(last, before, before_other)
     {
         var last_checked = document.getElementById(last);
         var before_checked = document.getElementById(before);
+        var before_other_checked = document.getElementById(before_other);
+        var all_jalc = document.getElementById("registing_all_jalcdoi_checkbox");
+        var all_crossref = document.getElementById("registing_all_crossref_checkbox");
+        var all_datacite = document.getElementById("registing_all_datacite_checkbox");
         
         if (last_checked && before_checked) 
         {
@@ -172,6 +291,25 @@
             {
                 before_checked.checked = false;
             }
+        }
+        if (last_checked && before_other_checked) 
+        {
+            if(last_checked.checked == true)
+            {
+                before_other_checked.checked = false;
+            }
+        }
+        if (all_jalc)
+        {
+            all_jalc.checked = false;
+        }
+        if (all_crossref)
+        {
+            all_crossref.checked = false;
+        }
+        if (all_datacite)
+        {
+            all_datacite.checked = false;
         }
         
         return false;

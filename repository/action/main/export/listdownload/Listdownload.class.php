@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Listdownload.class.php 40577 2014-08-28 00:43:12Z tatsuya_koyasu $
+// $Id: Listdownload.class.php 56716 2015-08-19 14:05:15Z tomohiro_ichikawa $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -105,109 +105,94 @@ class Repository_Action_Main_Export_Listdownload extends RepositoryAction
      *
      * @access  public
      */
-    function execute()
+    function executeApp()
     {
-        try {
-            ini_set('memory_limit', -1);
-            // セッション情報が設定されていない場合は、異常終了とする
-            if ($this->Session != null) {
-                // エラー処理を記述する。（未実装）
-                // return 'false'
-            }
-
-            // 共通の初期処理
-            $result = $this->initAction();
-            if ( $result == false ){
-                // 未実装
-                print "初期処理でエラー発生";
-            }
-            
-            // Modify Export data not mediation session for all_Export and contens_all_print Y.Nakao 2013/05/09 --start-
-            
-            // 一覧画面の表示対象となった、アイテム情報を取得する
-            $this->Session->removeParameter("item_info");
-            if($this->exportItemId == null || !is_array($this->exportItemId) || count($this->exportItemId)==0){
-                return 'false';
-            }
-            $this->item_infos = array();
-            for($ii=0;$ii<count($this->exportItemId);$ii++)
-            {
-                $itemData = array();
-                $this->getItemTableData($this->exportItemId[$ii], 
-                                        $this->exportItemNo[$ii], 
-                                        $itemData, 
-                                        $errMsg);
-                array_push($this->item_infos, array('item_id' => $itemData['item'][0]['item_id'], 
-                                                    'item_no' => $itemData['item'][0]['item_no'], 
-                                                    'ins_user_id' => $itemData['item'][0]['ins_user_id'], 
-                                                    'title' => $itemData['item'][0]['title'], 
-                                                    'title_english' => $itemData['item'][0]['title_english']));
-            }
-            // Modify Export data not mediation session for all_Export and contens_all_print Y.Nakao 2013/05/09 --end-
-            
-                
-            // 作業用ディレクトリ作成
-            //$date = date("YmdHis");
-            $query = "SELECT DATE_FORMAT(NOW(), '%Y%m%d%H%i%s') AS now_date;";
-            $result = $this->Db->execute($query);
-            if($result === false || count($result) != 1){
-                return 'false';
-            }
-            $date = $result[0]['now_date'];
-            $this->tmp_dir = WEBAPP_DIR."/uploads/repository/_".$date;
-            mkdir( $this->tmp_dir, 0777 );
-
-            // WEKOImport形式の場合
-            if($this->select_export == 0){
-                // WEKOImportファイル作成/ダウンロード
-                $this->downloadWekoimportFile();
-            }
-            //BIBTEX形式の場合
-            else if($this->select_export == 1){
-                // BIBTEXファイル作成/ダウンロード
-                $this->downloadBibtexFile();
-            }
-            //OAI-PMH形式の場合
-            else if($this->select_export == 2){
-                // OAI-PMHファイル作成/ダウンロード
-                $this->downloadOaiPmhFile();
-            }
-            //SWRC形式の場合
-            else if($this->select_export == 3){
-                // SWRCファイル作成/ダウンロード
-                $this->downloadSwrcFile();
-            }
-            //ELS形式の場合
-            else if($this->select_export == 4){
-                // ELSファイル作成/ダウンロード
-                $this->downloadElsFile();
-                
-            }
-            else if($this->select_export == 5){
-                // TSVファイル作成/ダウンロード
-                $this->downloadTsvFile();
-            }
-            else{}  //あり得ない
-
-            // ワークディレクトリ削除
-            $this->removeDirectory($this->tmp_dir);
-
-
-            // アクション終了処理
-            $result = $this->exitAction();  // トランザクションが成功していればCOMMITされる
-            if ( $result == false ){
-                // 未実装
-                print "終了処理失敗";
-            }
-            
-            // zipファイル損傷対応 2008/08/25 Y.Nakao --start--
-            exit();
-            // zipファイル損傷対応 2008/08/25 Y.Nakao --end--
-
-            
-        } catch ( RepositoryException $exception){
-            // 未実装
+        ini_set('memory_limit', -1);
+        // セッション情報が設定されていない場合は、異常終了とする
+        if ($this->Session != null) {
+            // エラー処理を記述する。（未実装）
+            // return 'false'
         }
+
+        // 共通の初期処理
+        $result = $this->initAction();
+        if ( $result == false ){
+            // 未実装
+            print "初期処理でエラー発生";
+        }
+        
+        // Modify Export data not mediation session for all_Export and contens_all_print Y.Nakao 2013/05/09 --start-
+        
+        // 一覧画面の表示対象となった、アイテム情報を取得する
+        $this->Session->removeParameter("item_info");
+        if($this->exportItemId == null || !is_array($this->exportItemId) || count($this->exportItemId)==0){
+            return 'false';
+        }
+        $this->item_infos = array();
+        for($ii=0;$ii<count($this->exportItemId);$ii++)
+        {
+            $itemData = array();
+            $this->getItemTableData($this->exportItemId[$ii], 
+                                    $this->exportItemNo[$ii], 
+                                    $itemData, 
+                                    $errMsg);
+            array_push($this->item_infos, array('item_id' => $itemData['item'][0]['item_id'], 
+                                                'item_no' => $itemData['item'][0]['item_no'], 
+                                                'ins_user_id' => $itemData['item'][0]['ins_user_id'], 
+                                                'title' => $itemData['item'][0]['title'], 
+                                                'title_english' => $itemData['item'][0]['title_english']));
+        }
+        // Modify Export data not mediation session for all_Export and contens_all_print Y.Nakao 2013/05/09 --end-
+        
+            
+        // 作業用ディレクトリ作成
+        $this->infoLog("businessWorkdirectory", __FILE__, __CLASS__, __LINE__);
+        $businessWorkdirectory = BusinessFactory::getFactory()->getBusiness("businessWorkdirectory");
+        
+        $this->tmp_dir = $businessWorkdirectory->create();
+
+        // WEKOImport形式の場合
+        if($this->select_export == 0){
+            // WEKOImportファイル作成/ダウンロード
+            $this->downloadWekoimportFile();
+        }
+        //BIBTEX形式の場合
+        else if($this->select_export == 1){
+            // BIBTEXファイル作成/ダウンロード
+            $this->downloadBibtexFile();
+        }
+        //OAI-PMH形式の場合
+        else if($this->select_export == 2){
+            // OAI-PMHファイル作成/ダウンロード
+            $this->downloadOaiPmhFile();
+        }
+        //SWRC形式の場合
+        else if($this->select_export == 3){
+            // SWRCファイル作成/ダウンロード
+            $this->downloadSwrcFile();
+        }
+        //ELS形式の場合
+        else if($this->select_export == 4){
+            // ELSファイル作成/ダウンロード
+            $this->downloadElsFile();
+            
+        }
+        else if($this->select_export == 5){
+            // TSVファイル作成/ダウンロード
+            $this->downloadTsvFile();
+        }
+        else{}  //あり得ない
+        
+        // アクション終了処理
+        $result = $this->exitAction();  // トランザクションが成功していればCOMMITされる
+        if ( $result == false ){
+            // 未実装
+            print "終了処理失敗";
+        }
+        
+        // zipファイル損傷対応 2008/08/25 Y.Nakao --start--
+        exit();
+        // zipファイル損傷対応 2008/08/25 Y.Nakao --end--
     }
 
     /*
@@ -324,7 +309,7 @@ class Repository_Action_Main_Export_Listdownload extends RepositoryAction
      */
     private function downloadWekoimportFile(){
         // Exportファイルはimport.xml（仮）とする
-        $filename = $this->tmp_dir . "/import.xml";
+        $filename = $this->tmp_dir . "import.xml";
 
         $buf = "<?xml version=\"1.0\"?>\n" .
                "    <export>\n";
@@ -388,13 +373,13 @@ class Repository_Action_Main_Export_Listdownload extends RepositoryAction
 
         File_Archive::extract(
             $output_files,
-            File_Archive::toArchive($zip_file, File_Archive::toFiles( $this->tmp_dir."/" ))
+            File_Archive::toArchive($zip_file, File_Archive::toFiles( $this->tmp_dir ))
         );
         
         //ダウンロードアクション処理
         // Add RepositoryDownload action 2010/03/30 A.Suzuki --start--
         $repositoryDownload = new RepositoryDownload();
-        $repositoryDownload->downloadFile($this->tmp_dir."/".$zip_file, "export.zip");
+        $repositoryDownload->downloadFile($this->tmp_dir.$zip_file, "export.zip");
         // Add RepositoryDownload action 2010/03/30 A.Suzuki --end--
     }
 
@@ -406,7 +391,7 @@ class Repository_Action_Main_Export_Listdownload extends RepositoryAction
         $buf = "";  //出力文字列
         // Exportファイルはbibtex.txtとする
         $filename = "bibtex.txt";
-        $filepath = $this->tmp_dir ."/".$filename;
+        $filepath = $this->tmp_dir .$filename;
         
         // ファイルをオープンする
         $fp = fopen( $filepath, "w" );
@@ -475,7 +460,7 @@ class Repository_Action_Main_Export_Listdownload extends RepositoryAction
             //ERROR
             unlink($filename);
             $filename = "error.txt";
-            $filepath = $this->tmp_dir ."/".$filename;
+            $filepath = $this->tmp_dir .$filename;
             $fp = fopen( $filepath, "w" );
             $buf = "Data was not able to be outputted.";
             fputs($fp, $buf);
@@ -495,7 +480,7 @@ class Repository_Action_Main_Export_Listdownload extends RepositoryAction
     private function downloadOaiPmhFile(){
         // Exportファイルはoai_pmh.xmlとする
         $filename = "oai_pmh.xml";
-        $filepath = $this->tmp_dir ."/".$filename;
+        $filepath = $this->tmp_dir .$filename;
         
         // ファイルオープン
         $fp = fopen( $filepath, "w" );
@@ -619,7 +604,7 @@ class Repository_Action_Main_Export_Listdownload extends RepositoryAction
             //ERROR
             unlink($filename);
             $filename = "error.txt";
-            $filepath = $this->tmp_dir ."/".$filename;
+            $filepath = $this->tmp_dir .$filename;
             $fp = fopen( $filepath, "w" );
             $buf = "Data was not able to be outputted.";
             fputs($fp, $buf);
@@ -640,7 +625,7 @@ class Repository_Action_Main_Export_Listdownload extends RepositoryAction
     private function downloadSwrcFile(){
         // Exportファイルはswrc.xmlとする
         $filename = "swrc.xml";
-        $filepath = $this->tmp_dir . "/".$filename;
+        $filepath = $this->tmp_dir .$filename;
 
         //download is OK?
         $isDownloadFlg = false;
@@ -733,7 +718,7 @@ class Repository_Action_Main_Export_Listdownload extends RepositoryAction
             //ERROR
             unlink($filename);
             $filename = "error.txt";
-            $filepath = $this->tmp_dir ."/".$filename;
+            $filepath = $this->tmp_dir .$filename;
             $fp = fopen( $filepath, "w" );
             $buf = "Data was not able to be outputted.";
             fputs($fp, $buf);
@@ -753,7 +738,7 @@ class Repository_Action_Main_Export_Listdownload extends RepositoryAction
     private function downloadElsFile(){
         // Exportファイルはels.tsvとする
         $filename = "els.tsv";
-        $filepath = $this->tmp_dir . "/".$filename;
+        $filepath = $this->tmp_dir .$filename;
         
         $this->smartyAssign = $this->Session->getParameter("smartyAssign");
         $els_common = new ElsCommon($this->Session, $this->Db, $this->smartyAssign);
@@ -788,7 +773,7 @@ class Repository_Action_Main_Export_Listdownload extends RepositoryAction
         if(strlen($buf) < 1){
             unlink($filename);
             $filename = "error.txt";
-            $filepath = $this->tmp_dir ."/".$filename;
+            $filepath = $this->tmp_dir .$filename;
             $fp = fopen( $filepath, "w" );
             // エラーメッセージを出力
             $buf = "Data was not able to be outputted.";
@@ -807,12 +792,12 @@ class Repository_Action_Main_Export_Listdownload extends RepositoryAction
      */
     private function downloadTsvFile(){
         $filename = "export.tsv";
-        $filepath = $this->tmp_dir ."/".$filename;
+        $filepath = $this->tmp_dir .$filename;
         $repositoryOutputTSV = new RepositoryOutputTSV($this->Db, $this->Session);
         // TSV作成
         if (!$repositoryOutputTSV->outputTsv( $filepath, $this->item_infos )){
             $filename = "error.txt";
-            $filepath = $this->tmp_dir ."/".$filename;
+            $filepath = $this->tmp_dir .$filename;
             $fp = fopen( $filepath, "w" );
             // エラーメッセージを出力
             $buf = "Data was not able to be outputted.";
@@ -827,7 +812,7 @@ class Repository_Action_Main_Export_Listdownload extends RepositoryAction
         $this->createExportZipFile($output_files, $zip_file);
         //ダウンロードアクション処理
         $repositoryDownload = new RepositoryDownload();
-        $repositoryDownload->downloadFile($this->tmp_dir."/".$zip_file, "exportTSV.zip");
+        $repositoryDownload->downloadFile($this->tmp_dir.$zip_file, "exportTSV.zip");
         
     }
     
@@ -872,7 +857,7 @@ class Repository_Action_Main_Export_Listdownload extends RepositoryAction
 
         File_Archive::extract(
             $output_files,
-            File_Archive::toArchive($zipFileName, File_Archive::toFiles( $this->tmp_dir."/" ))
+            File_Archive::toArchive($zipFileName, File_Archive::toFiles( $this->tmp_dir ))
         );
     }
     

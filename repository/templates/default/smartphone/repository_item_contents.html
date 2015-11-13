@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: repository_item_contents.html 40393 2014-08-25 09:29:15Z tatsuya_koyasu $          -->
+<!--// $Id: repository_item_contents.html 53594 2015-05-28 05:25:53Z kaede_matsushita $          -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -11,7 +11,7 @@
 <!--// ---------------------------------------------------------------------->
 <{strip}>
     <div class="mt10">
-        <{include file="repository_item_search_indexlist.html"}>
+        <{include file=$smarty.const.WEBAPP_DIR|cat:'/modules/repository/templates/default/smartphone/repository_item_search_indexlist.html'}>
         <form id="export_print" method="post">
             <div id="search_print_order" class="pd10">
                 <table class="repository_contents_table">

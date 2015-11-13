@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: LogAnalyzor.class.php 41652 2014-09-17 08:16:26Z tomohiro_ichikawa $
+// $Id: LogAnalyzor.class.php 48595 2015-02-18 08:36:51Z tomohiro_ichikawa $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -242,6 +242,112 @@ class Repository_Components_Loganalyzor extends RepositoryLogicBase
         $group_daily = " GROUP BY DAILY ";
         
         return $group_daily;
+    }
+    
+    /**
+     * check site license
+     * 
+     * @param string $abbreviation
+     * @param array $start_ip
+     * @param array $finish_ip
+     * @param array $user_id
+     * @return string
+     */
+    public function checkSitelicenseQuery($abbreviation, $start_ip, $finish_ip, $user_id) {
+        // カラム名の設定
+        if(strlen($abbreviation) > 0) {
+            $ip_column = $abbreviation.".numeric_ip_address";
+            $user_column = $abbreviation.".user_id";
+        } else {
+            $ip_column = "numeric_ip_address";
+            $user_column = "user_id";
+        }
+        
+        // サブクエリ文作成
+        // IPアドレス判定
+        $sitelicense = "";
+        for($ii = 0; $ii < count($start_ip); $ii++) {
+            // IPが無い場合はスルー
+            if(strlen($start_ip[$ii]) > 0 && strlen($finish_ip[$ii]) > 0) {
+                 // IPが複数ある場合はORで繋ぐ
+                if(strlen($sitelicense) > 0) {
+                    $sitelicense .= " OR ";
+                }
+                // 終了IPが未設定だった場合は一致検索を行う
+                if(strlen($finish_ip[$ii]) == 0) {
+                    $sitelicense .= $ip_column. " = ". $start_ip[$ii];
+                } else {
+                    // IP範囲の設定
+                    $start_ip_address = 0;
+                    $finish_ip_address = 0;
+                    // 開始IPの方が終了IPより大きい設定がされていた場合
+                    if($start_ip[$ii] > $finish_ip[$ii]) {
+                        // 開始IPと終了IPを入れ替える
+                        $start_ip_address = $finish_ip[$ii];
+                        $finish_ip_address = $start_ip[$ii];
+                    } else {
+                        $start_ip_address = $start_ip[$ii];
+                        $finish_ip_address = $finish_ip[$ii];
+                    }
+                    $sitelicense .= "(".
+                                    $start_ip_address. " <= ". $ip_column.
+                                    " AND ".
+                                    $ip_column. " <= ". $finish_ip_address.
+                                    ")";
+                }
+            }
+        }
+        // 組織所属判定
+        if(count($user_id) > 0) {
+            if(strlen($sitelicense) > 0) {
+                $sitelicense .= " OR ";
+            }
+            $sitelicense .= $user_column. " IN ( ";
+            for($ii = 0; $ii < count($user_id); $ii++) {
+                if($ii > 0) {
+                    $sitelicense .= ", ";
+                }
+                $sitelicense .= "'". $user_id[$ii]. "'";
+            }
+            $sitelicense .= " ) ";
+        }
+        
+        if(strlen($sitelicense) > 0) {
+            $sitelicense = " AND ( ". $sitelicense. " ) ";
+        }
+        
+        return $sitelicense;
+    }
+    
+    /**
+     * check site license
+     * 
+     * @param string $abbreviation
+     * @param array $item_type_id
+     * @return string
+     */
+    public function exclusiveSitelicenseItemtypeQuery($abbreviation, $item_type_id) {
+        // カラム名の設定
+        if(strlen($abbreviation) > 0) {
+            $item_type_id_column = $abbreviation. ".item_type_id";
+        } else {
+            $item_type_id_column = "item_type_id";
+        }
+        
+        // サブクエリ文作成
+        $exclusive_item_type = "";
+        if(count($item_type_id) > 0) {
+            $exclusive_item_type .= " AND ". $item_type_id_column. " NOT IN ( ";
+            for($ii = 0; $ii < count($item_type_id); $ii++) {
+                if($ii > 0) {
+                    $exclusive_item_type .= ", ";
+                }
+                $exclusive_item_type .= $item_type_id[$ii];
+            }
+            $exclusive_item_type .= " ) ";
+        }
+        
+        return $exclusive_item_type;
     }
 }
 ?>

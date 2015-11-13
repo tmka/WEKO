@@ -13,6 +13,6 @@
 	<script class="nc_script" type="text/javascript">
 		var fileInfo = "<{$action.fileIdx}>";
 		var fileInfoArray = fileInfo.split("_");
-		location.href="<{$smarty.const.BASE_URL}>/?action=repository_action_common_download&item_id=<{$action.item_id}>"+"&item_no="+fileInfoArray[0]+"&attribute_id="+fileInfoArray[1]+"&file_no="+fileInfoArray[2]+"&block_id=<{$block_id}>&page_id=<{$page_id}>";
+		location.href="<{$smarty.const.BASE_URL}>/?action=repository_action_common_download&item_id="+fileInfoArray[0]+"&item_no="+fileInfoArray[1]+"&attribute_id="+fileInfoArray[2]+"&file_no="+fileInfoArray[3]+"&block_id=<{$block_id}>&page_id=<{$page_id}>";
 	</script>
 <{/if}>

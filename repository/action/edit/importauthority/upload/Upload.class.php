@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Upload.class.php 38124 2014-07-01 06:56:02Z rei_matsuura $
+// $Id: Upload.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -13,6 +13,7 @@
 
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 //require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.php';
+require_once WEBAPP_DIR. '/modules/repository/components/common/WekoAction.class.php';
 
 /**
  * [[機能説明]]
@@ -21,7 +22,7 @@
  * @access      public
  */
 //class Repository_Action_Edit_Importauthority_Upload extends RepositoryAction
-class Repository_Action_Edit_Importauthority_Upload
+class Repository_Action_Edit_Importauthority_Upload extends WekoAction
 {
 
     public $Session = null;
@@ -32,7 +33,7 @@ class Repository_Action_Edit_Importauthority_Upload
      *
      * @access  public
      */
-    public function execute()
+    public function executeApp()
     {
         // ガーベージフラグが"1"の場合、いつかファイル・DB共にクリアしてくれる。
         // ただし、詳細なタイミングは不明。

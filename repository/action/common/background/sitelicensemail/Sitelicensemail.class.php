@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Sitelicensemail.class.php 43734 2014-11-07 03:59:44Z tatsuya_koyasu $
+// $Id: Sitelicensemail.class.php 56700 2015-08-19 12:30:34Z tomohiro_ichikawa $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -76,7 +76,19 @@ class Repository_Action_Common_Background_Sitelicensemail extends BackgroundProc
      * @var Object
      */
     public $smartyAssign = null;
-
+    /**
+     * year
+     *
+     * @var int
+     */
+    public $year = null;
+    
+    /**
+     * month
+     *
+     * @var int
+     */
+    public $month = null;
     /**
      * constructer
      */
@@ -91,22 +103,12 @@ class Repository_Action_Common_Background_Sitelicensemail extends BackgroundProc
      * @param fileList deleted file
      */
     protected function prepareBackgroundProcess(&$sl_user_info) {
-        $this->user_authority_id = "";
-        $this->authority_id = "";
-        $this->user_id = "";
+        $this->debugLog(__FUNCTION__, __FILE__, __CLASS__, __LINE__);
+        
         // check login
-        $result = null;
-        $error_msg = null;
-        $return = $this->checkLogin($this->login_id, $this->password, $result, $error_msg);
+        $return = $this->checkExecuteAuthority();
         if($return == false){
             print("Incorrect Login!\n");
-            $this->failTrans();
-            $this->exitAction();
-            return false;
-        }
-        // check user authority id
-        if($this->user_authority_id < $this->repository_admin_base || $this->authority_id < $this->repository_admin_room){
-            print("You do not have permission to send sitelicense mail.\n");
             $this->failTrans();
             $this->exitAction();
             return false;
@@ -115,15 +117,14 @@ class Repository_Action_Common_Background_Sitelicensemail extends BackgroundProc
         $this->setLangResource();
         $this->smartyAssign = $this->Session->getParameter("smartyAssign");
         
-        // 機関データ取得
-        $query = "SELECT * FROM ". DATABASE_PREFIX. "repository_send_mail_sitelicense ".
-                 "ORDER BY no ASC ".
-                 "LIMIT 0,1 ;";
-        $result = $this->dbAccess->executeQuery($query);
-        if(count($result) == 0) {
+        // サイトライセンスメール用のビジネスクラス取得
+        $this->infoLog("businessSendsitelicensemail", __FILE__, __CLASS__, __LINE__);
+        $sendSitelicense = BusinessFactory::getFactory()->getBusiness("businessSendsitelicensemail");
+        
+        // サイトライセンスユーザー情報1件取得
+        $sl_user_info = $sendSitelicense->getSendSitelicenseUser();
+        if(count($sl_user_info) == 0) {
             return false;
-        } else {
-            $sl_user_info = $result;
         }
         
         return true;
@@ -136,33 +137,37 @@ class Repository_Action_Common_Background_Sitelicensemail extends BackgroundProc
      * @param Array $sl_user_info
      */
     protected function executeBackgroundProcess($sl_user_info) {
-        if($sl_user_info[0]["mail_address"] != "") {
+        $this->debugLog(__FUNCTION__, __FILE__, __CLASS__, __LINE__);
+        
+        if(strlen($sl_user_info[0]["mail_address"]) > 0) {
             $send_zip_name = "";
             
-            $this->createFeedbackReport(WEBAPP_DIR.'/uploads/repository/tmp/', $sl_user_info[0]["start_ip_address"], $sl_user_info[0]["finish_ip_address"]);
-            $this->compressFile(WEBAPP_DIR.'/uploads/repository/tmp/', $send_zip_name);
-            $this->sendSitelicenseReport(WEBAPP_DIR.'/uploads/repository/', $send_zip_name, $sl_user_info[0]["mail_address"], $sl_user_info[0]["organization_name"]);
+            $this->createFeedbackReport($sl_user_info[0]["organization_id"]);
+            $this->compressFile($send_zip_name);
+            $this->sendSitelicenseReport($send_zip_name, $sl_user_info[0]["mail_address"], $sl_user_info[0]["organization_name"]);
         }
+        // 送信が終わったサイトライセンスユーザー情報を削除する
         $this->deleteSitelicenseUserInfo($sl_user_info);
     }
     
     /** 
      * create feedback report
      * 
-     * @param string $tmp_dir
-     * @param string $start_ip
-     * @param string $finish_ip
+     * @param int $sitelicense_id
      */
-    private function createFeedbackReport($tmp_dir, $start_ip, $finish_ip) {
+    private function createFeedbackReport($sitelicense_id) {
+        // サイトライセンスメール用のビジネスクラス取得
+        $this->infoLog("businessSendsitelicensemail", __FILE__, __CLASS__, __LINE__);
+        $sendSitelicense = BusinessFactory::getFactory()->getBusiness("businessSendsitelicensemail");
+        
         // 一時ディレクトリが存在しない場合作成する
-	    if(!file_exists($tmp_dir)) {
-            mkdir( $tmp_dir, 0777 );
-        }
+        $sendSitelicense = $sendSitelicense->createSitelicenseMailTmpDir();
         
         // レポート作成に必要なパラメータを作成する
         // サイトライセンスログの範囲を指定する
-        $start_date = date("Y-m-d", mktime(0, 0, 0, date("m") - 1, 1, date("Y"))). " 00:00:00.000";
-        $finish_date = date("Y-m-d", mktime(0, 0, 0, date("m"), 0, date("Y"))). " 23:59:59:999";
+        $start_date = $this->createStartYearMonthStringFormatYmdhis($this->year, $this->month);
+        $finish_date = $this->createFinishYearMonthStringFormatYmdhis($this->year, $this->month);
+        
         // サイト名を取得する
         $language = $this->Session->getParameter("_lang");
         $query = "SELECT conf_value FROM ". DATABASE_PREFIX. "config_language ".
@@ -173,28 +178,41 @@ class Repository_Action_Common_Background_Sitelicensemail extends BackgroundProc
         $params[] = $language;
         $result = $this->dbAccess->executeQuery($query, $params);
         $organization_name = $result[0]["conf_value"];
-        $this->createSearchReport($tmp_dir, $start_date, $finish_date, $start_ip, $finish_ip, $organization_name);
-        $this->createDownloadReport($tmp_dir, $start_date, $finish_date, $start_ip, $finish_ip, $organization_name);
-        $this->createUsagestaticsReport($tmp_dir, $start_date, $finish_date, $start_ip, $finish_ip, $organization_name);
+        
+        // 検索レポートを作成する
+        $this->createSearchReport($start_date, $finish_date, $organization_name, $sitelicense_id);       /* 中の処理をビジネスに移す予定 */
+        // ダウンロードレポートを作成する
+        $this->createDownloadReport($start_date, $finish_date, $organization_name, $sitelicense_id);
+        // 利用統計レポートを作成する
+        $this->createUsagestaticsReport($start_date, $finish_date, $organization_name, $sitelicense_id);
     }
     
     /** 
      * create search log report
      * 
-     * @param string $tmp_dir
-     * @param string $start_ip
-     * @param string $finish_ip
+     * @param string $start_date
+     * @param string $finish_date
+     * @param string $organization_name
+     * @param int    $sitelicense_id
      */
-    private function createSearchReport($tmp_dir, $start_date, $finish_date, $start_ip, $finish_ip, $organization_name) {
+    private function createSearchReport($start_date, $finish_date, $organization_name, $sitelicense_id) {
+        // サイトライセンスメール用のビジネスクラス取得
+        $this->infoLog("businessSendsitelicensemail", __FILE__, __CLASS__, __LINE__);
+        $sendSitelicense = BusinessFactory::getFactory()->getBusiness("businessSendsitelicensemail");
+        
+        // 検索回数デフォルト値
         $search_count = 0;
-        $result = $this->getSearchKeywordPerMonthly($start_date, $finish_date, $start_ip, $finish_ip);
-        if(strlen($result[0]["COUNT(record_date)"]) != 0) {
-            $search_count = $result[0]["COUNT(record_date)"];
+        // 指定した機関のサイトライセンスユーザーによる検索ログの件数を取得する
+        $result = $sendSitelicense->getLogCountBySitelicenseId($start_date, $finish_date, $sitelicense_id, RepositoryConst::LOG_OPERATION_SEARCH);
+        if(isset($result) && count($result) > 0) {
+            $search_count = $result[0]["CNT"];
         }
-        $log_file = $tmp_dir. "SearchReport_".date("Ym", mktime(0, 0, 0, date("m") - 1, 1, date("Y"))).".tsv";
+        // レポート文面の作成
+        $log_file = "SearchReport_".$this->createYearMonthStringFormatYm($this->year, $this->month).".tsv";
+        
         $report_header = $this->smartyAssign->getLang("repository_sitelicense_mail_body_title")."\t".$organization_name."\r\n".
                          $this->smartyAssign->getLang("repository_sitelicense_mail_body_create_date")."\t".date("Y-m-d")."\r\n".
-                         $this->smartyAssign->getLang("repository_sitelicense_mail_body_month")."\t".date("Y-m", mktime(0, 0, 0, date("m") - 1, 1, date("Y")))."\r\n".
+                         $this->smartyAssign->getLang("repository_sitelicense_mail_body_month")."\t".$this->createYearMonthStringFormatYmAddHyphen($this->year, $this->month)."\r\n".
                          "\t".
                          $this->smartyAssign->getLang("repository_sitelicense_mail_body_interface_name")."\t".
                          $this->smartyAssign->getLang("repository_sitelicense_mail_body_search_keyword")."\r\n";
@@ -203,30 +221,32 @@ class Repository_Action_Common_Background_Sitelicensemail extends BackgroundProc
         
         $report = $report_header. $report_body;
         
-        $BOM = pack('C*',0xEF,0xBB,0xBF);
-        $log_report = fopen($log_file, "w");
-        fwrite($log_report, $BOM.$report);
-        fclose($log_report);
+        // レポートファイル作成
+        $sendSitelicense->createReport($log_file, $report);
     }
     
     /** 
      * create download log report
      * 
-     * @param string $tmp_dir
-     * @param string $start_ip
-     * @param string $finish_ip
+     * @param string $start_date
+     * @param string $finish_date
+     * @param string $organization_name
+     * @param int    $sitelicense_id
      */
-    private function createDownloadReport($tmp_dir, $start_date, $finish_date, $start_ip, $finish_ip, $organization_name) {
-        $result = $this->getUsagePerJournalPerMonthly($start_date, $finish_date, $start_ip, $finish_ip);
-        
+    private function createDownloadReport($start_date, $finish_date, $organization_name, $sitelicense_id) {
+        // ダウンロード合計回数デフォルト値
         $sum_download = 0;
+        // 指定した機関のサイトライセンスユーザーによる利用統計情報を取得する
+        $result = $this->getUsagePerJournalPerMonthly($start_date, $finish_date, $sitelicense_id);
+        
+        // レポート文面の作成
         for($ii = 0; $ii < count($result["index_info"]);  $ii++) {
             $sum_download += intval($result["index_info"][$ii]["download"]);
         }
-        $log_file = $tmp_dir. "DownloadReport_".date("Ym", mktime(0, 0, 0, date("m") - 1, 1, date("Y"))).".tsv";
+        $log_file = "DownloadReport_".$this->createYearMonthStringFormatYm($this->year, $this->month).".tsv";
         $report_header = $this->smartyAssign->getLang("repository_sitelicense_mail_body_title")."\t".$organization_name."\r\n".
                          $this->smartyAssign->getLang("repository_sitelicense_mail_body_create_date")."\t".date("Y-m-d")."\r\n".
-                         $this->smartyAssign->getLang("repository_sitelicense_mail_body_month")."\t".date("Y-m", mktime(0, 0, 0, date("m") - 1, 1, date("Y")))."\r\n".
+                         $this->smartyAssign->getLang("repository_sitelicense_mail_body_month")."\t".$this->createYearMonthStringFormatYmAddHyphen($this->year, $this->month)."\r\n".
                          "\t".
                          $this->smartyAssign->getLang("repository_sitelicense_mail_body_setspec")."\t".
                          $this->smartyAssign->getLang("repository_sitelicense_mail_body_interface_name")."\t".
@@ -251,27 +271,31 @@ class Repository_Action_Common_Background_Sitelicensemail extends BackgroundProc
         }
         $report = $report_header. $report_body;
         
-        $BOM = pack('C*',0xEF,0xBB,0xBF);
-        $log_report = fopen($log_file, "w");
-        fwrite($log_report, $BOM.$report);
-        fclose($log_report);
+        // サイトライセンスメール用のビジネスクラス取得
+        $this->infoLog("businessSendsitelicensemail", __FILE__, __CLASS__, __LINE__);
+        $sendSitelicense = BusinessFactory::getFactory()->getBusiness("businessSendsitelicensemail");
         
+        // レポートファイル作成
+        $sendSitelicense->createReport($log_file, $report);
     }
     
     /** 
      * create usage statistics report
      * 
-     * @param string $tmp_dir
-     * @param string $start_ip
-     * @param string $finish_ip
+     * @param string $start_date
+     * @param string $finish_date
+     * @param string $organization_name
+     * @param int    $sitelicense_id
      */
-    private function createUsagestaticsReport($tmp_dir, $start_date, $finish_date, $start_ip, $finish_ip, $organization_name) {
-        $result = $this->getUsagePerJournalPerMonthly($start_date, $finish_date, $start_ip, $finish_ip);
+    private function createUsagestaticsReport($start_date, $finish_date, $organization_name, $sitelicense_id) {
+        // 指定した機関のサイトライセンスユーザーによる利用統計情報を取得する
+        $result = $this->getUsagePerJournalPerMonthly($start_date, $finish_date, $sitelicense_id);
         
-        $log_file = $tmp_dir. "UsagestatisticsReport_".date("Ym", mktime(0, 0, 0, date("m") - 1, 1, date("Y"))).".tsv";
+        // レポート文面の作成
+        $log_file = "UsagestatisticsReport_".$this->createYearMonthStringFormatYm($this->year, $this->month).".tsv";
         $report_header = $this->smartyAssign->getLang("repository_sitelicense_mail_body_title")."\t".$organization_name."\r\n".
                          $this->smartyAssign->getLang("repository_sitelicense_mail_body_create_date")."\t".date("Y-m-d")."\r\n".
-                         $this->smartyAssign->getLang("repository_sitelicense_mail_body_month")."\t".date("Y-m", mktime(0, 0, 0, date("m") - 1, 1, date("Y")))."\r\n".
+                         $this->smartyAssign->getLang("repository_sitelicense_mail_body_month")."\t".$this->createYearMonthStringFormatYmAddHyphen($this->year, $this->month)."\r\n".
                          "\t".
                          $this->smartyAssign->getLang("repository_sitelicense_mail_body_setspec")."\t".
                          $this->smartyAssign->getLang("repository_sitelicense_mail_body_interface_name")."\t".
@@ -297,36 +321,12 @@ class Repository_Action_Common_Background_Sitelicensemail extends BackgroundProc
         }
         $report = $report_header. $report_body;
         
-        $BOM = pack('C*',0xEF,0xBB,0xBF);
-        $log_report = fopen($log_file, "w");
-        fwrite($log_report, $BOM.$report);
-        fclose($log_report);        
-    }
-    
-    /** 
-     * get search keyword per monthly
-     * 
-     * @param string $start_date
-     * @param string $finish_date
-     * @param string $start_ip
-     * @param string $finish_ip
-     */
-    private function getSearchKeywordPerMonthly($start_date, $finish_date, $start_ip, $finish_ip) {
-        $query = "SELECT *,COUNT(record_date),". Repository_Components_Loganalyzor::dateformatMonthlyQuery(""). 
-                 " FROM ". Repository_Components_Loganalyzor::execlusiveDoubleAccessSubQuery(RepositoryConst::LOG_OPERATION_SEARCH, "", $start_date, $finish_date, RepositoryConst::LOG_OPERATION_SEARCH). 
-                 " WHERE record_date >= ? ".
-                 Repository_Components_Loganalyzor::execlusiveIpAddressQuery(""). 
-                 Repository_Components_Loganalyzor::execlusiveRobotsQuery(""). 
-                 " AND operation_id = ? ". 
-                 $this->getTargetIpAddressRangeQuery($start_ip, $finish_ip, ""). 
-                 Repository_Components_Loganalyzor::perMonthlyQuery(). " ;";
-        $params = array();
-        $params[] = $start_date;
-        $params[] = RepositoryConst::LOG_OPERATION_SEARCH;
+        // サイトライセンスメール用のビジネスクラス取得
+        $this->infoLog("businessSendsitelicensemail", __FILE__, __CLASS__, __LINE__);
+        $sendSitelicense = BusinessFactory::getFactory()->getBusiness("businessSendsitelicensemail");
         
-        $result = $this->dbAccess->executeQuery($query, $params);
-        
-        return $result;
+        // レポートファイル作成
+        $sendSitelicense->createReport($log_file, $report);
     }
     
     /** 
@@ -334,42 +334,50 @@ class Repository_Action_Common_Background_Sitelicensemail extends BackgroundProc
      * 
      * @param string $start_date
      * @param string $finish_date
-     * @param string $start_ip
-     * @param string $finish_ip
+     * @param int    $sitelicense_id
      */
-    private function getUsagePerJournalPerMonthly($start_date, $finish_date, $start_ip, $finish_ip) {
-        $statistics = array();
-        $query = "SELECT issn, jtitle, jtitle_en, set_spec ".
-                 "FROM ". DATABASE_PREFIX. "repository_issn ".
-                 "WHERE is_delete = ? ;";
-        $params = array();
-        $params[] = 0;
-        $statistics["index_info"] = $this->dbAccess->executeQuery($query, $params);
-
-        $issn = array("");
-        for($ii = 0; $ii < count($statistics["index_info"]); $ii++) {
-            $issn[] = $statistics["index_info"][$ii]["issn"];
+    private function getUsagePerJournalPerMonthly($start_date, $finish_date, $sitelicense_id) {
+        // サイトライセンスメール用のビジネスクラス取得
+        $this->infoLog("businessSendsitelicensemail", __FILE__, __CLASS__, __LINE__);
+        $sendSitelicense = BusinessFactory::getFactory()->getBusiness("businessSendsitelicensemail");
+        
+        // 統計情報配列にISSN情報設定
+        $online_issn = $sendSitelicense->getOnlineIssn();
+        if(count($online_issn) == 0) {
+            return array();
         }
-        // set download values group by issn
-        $download_result = $this->getItemsDownloadPerMonthly($issn, $start_date, $finish_date, $start_ip, $finish_ip);
+        $statistics = array();
+        $statistics["index_info"] = $online_issn;
+        
+        // クエリパラメータ用のISSN文字列を作成する
+        $issn_param = "";
+        for($ii = 0; $ii < count($statistics["index_info"]); $ii++) {
+            if($ii > 0) {
+                $issn_param .= ",";
+            }
+            $issn_param .= "'". $statistics["index_info"][$ii]["issn"]. "'";
+        }
+        
+        // ISSN毎のダウンロードログ取得
+        $download_result = $sendSitelicense->getLogBySitelicenseId($issn_param, $start_date, $finish_date, $sitelicense_id, RepositoryConst::LOG_OPERATION_DOWNLOAD_FILE);
         for($ii = 0; $ii < count($statistics["index_info"]); $ii++) {
             // initialize value of downlooad
             $statistics["index_info"][$ii]["download"] = 0;
             for($jj = 0; $jj < count($download_result); $jj++) {
                 if($download_result[$jj]["online_issn"] == $statistics["index_info"][$ii]["issn"]) {
-                    $statistics["index_info"][$ii]["download"] = $download_result[$jj]["COUNT(DISTINCT LOG.record_date)"];
+                    $statistics["index_info"][$ii]["download"] = $download_result[$jj]["CNT"];
                 }
             }
         }
         
-        // set view values group by issn
-        $view_result = $this->getItemsViewPerMonthly($issn, $start_date, $finish_date, $start_ip, $finish_ip);
+        // ISSN毎の閲覧ログ取得
+        $view_result = $sendSitelicense->getLogBySitelicenseId($issn_param, $start_date, $finish_date, $sitelicense_id, RepositoryConst::LOG_OPERATION_DETAIL_VIEW);
         for($ii = 0; $ii < count($statistics["index_info"]); $ii++) {
             // initialize value of view
             $statistics["index_info"][$ii]["view"] = 0;
             for($jj = 0; $jj < count($view_result); $jj++) {
                 if($view_result[$jj]["online_issn"] == $statistics["index_info"][$ii]["issn"]) {
-                    $statistics["index_info"][$ii]["view"] = $view_result[$jj]["COUNT(DISTINCT LOG.record_date)"];
+                    $statistics["index_info"][$ii]["view"] = $view_result[$jj]["CNT"];
                 }
             }
         }
@@ -378,140 +386,20 @@ class Repository_Action_Common_Background_Sitelicensemail extends BackgroundProc
     }
     
     /** 
-     * get item download records per month
-     * 
-     * @param string $issn
-     * @param string $start_date
-     * @param string $finish_date
-     */
-    private function getItemsDownloadPerMonthly($issn, $start_date, $finish_date, $start_ip, $finish_ip) {
-        $online_issn = "";
-        for($ii = 0; $ii < count($issn); $ii++) {
-            if($ii != 0) {
-                $online_issn .= ",";
-            }
-            $online_issn .= "'". $issn[$ii]. "'";
-        }
-        $query = "SELECT COUNT(DISTINCT LOG.record_date), ". 
-                 " IDX.online_issn, ".
-                 Repository_Components_Loganalyzor::dateformatMonthlyQuery("LOG").
-                 " FROM (". Repository_Components_Loganalyzor::execlusiveDoubleAccessSubQuery(RepositoryConst::LOG_OPERATION_DOWNLOAD_FILE, "", $start_date, $finish_date, RepositoryConst::LOG_OPERATION_DOWNLOAD_FILE). ") AS LOG, ".
-                        DATABASE_PREFIX. "repository_index AS IDX, ".
-                        DATABASE_PREFIX. "repository_position_index AS POS, ".
-                        DATABASE_PREFIX. "repository_item AS ITEM ".
-                 " WHERE LOG.record_date >= ? ".
-                 " AND LOG.record_date <= ? ".
-                 " ". Repository_Components_Loganalyzor::execlusiveIpAddressQuery("LOG").
-                 " ". Repository_Components_Loganalyzor::execlusiveRobotsQuery("LOG").
-                 " AND LOG.operation_id = ? ".
-                 " AND IDX.biblio_flag = ? ".
-                 " AND IDX.online_issn IN ( ". $online_issn. " ) ".
-                 " AND IDX.index_id = POS.index_id ".
-                 " AND POS.item_id = LOG.item_id ".
-                 " AND POS.item_id = ITEM.item_id ".
-                 $this->getTargetIpAddressRangeQuery($start_ip, $finish_ip, "LOG").
-                 $this->getExclusiveSitelicenseItemtype("ITEM").
-                 " ". Repository_Components_Loganalyzor::perMonthlyQuery(). ", IDX.online_issn ;";
-        $params = array();
-        $params[] = $start_date;
-        $params[] = $finish_date;
-        $params[] = RepositoryConst::LOG_OPERATION_DOWNLOAD_FILE;
-        $params[] = 1;
-        
-        $result = $this->dbAccess->executeQuery($query, $params);
-        
-        return $result;
-    }
-    
-    /** 
-     * get item view records per month
-     * 
-     * @param string $issn
-     * @param string $start_date
-     * @param string $finish_date
-     */
-    private function getItemsViewPerMonthly($issn, $start_date, $finish_date, $start_ip, $finish_ip) {
-        $online_issn = "";
-        for($ii = 0; $ii < count($issn); $ii++) {
-            if($ii != 0) {
-                $online_issn .= ",";
-            }
-            $online_issn .= "'". $issn[$ii]. "'";
-        }
-    
-        $query = "SELECT COUNT(DISTINCT LOG.record_date), ".
-                 " IDX.online_issn, ".
-                 Repository_Components_Loganalyzor::dateformatMonthlyQuery("LOG").
-                 " FROM ". Repository_Components_Loganalyzor::execlusiveDoubleAccessSubQuery(RepositoryConst::LOG_OPERATION_DETAIL_VIEW, "", $start_date, $finish_date, RepositoryConst::LOG_OPERATION_DETAIL_VIEW). " AS LOG, ".
-                        DATABASE_PREFIX. "repository_index AS IDX, ".
-                        DATABASE_PREFIX. "repository_position_index AS POS, ".
-                        DATABASE_PREFIX. "repository_item AS ITEM ".
-                 " WHERE LOG.record_date >= ? ".
-                 " AND LOG.record_date <= ? ".
-                 " ". Repository_Components_Loganalyzor::execlusiveIpAddressQuery("LOG").
-                 " ". Repository_Components_Loganalyzor::execlusiveRobotsQuery("LOG").
-                 " AND LOG.operation_id = ? ".
-                 " AND IDX.biblio_flag = ? ".
-                 " AND IDX.online_issn IN ( ". $online_issn. " ) ".
-                 " AND IDX.index_id = POS.index_id ".
-                 " AND POS.item_id = LOG.item_id ".
-                 " AND POS.item_id = ITEM.item_id ".
-                 $this->getTargetIpAddressRangeQuery($start_ip, $finish_ip, "LOG").
-                 $this->getExclusiveSitelicenseItemtype("ITEM").
-                 " ". Repository_Components_Loganalyzor::perMonthlyQuery(). ", IDX.online_issn ;";
-        $params = array();
-        $params[] = $start_date;
-        $params[] = $finish_date;
-        $params[] = RepositoryConst::LOG_OPERATION_DETAIL_VIEW;
-        $params[] = 1;
-        
-        $result = $this->dbAccess->executeQuery($query, $params);
-
-        return $result;
-        
-    }
-    
-    /** 
-     * make ip range query parts
-     * 
-     * @param stirng $start_ip
-     * @param string $finish_ip
-     * @param string $abbreviation
-     */
-    private function getTargetIpAddressRangeQuery($start_ip, $finish_ip, $abbreviation) {
-        $query_parts_ip = "";
-        if($abbreviation == "") {
-            $query_parts_ip = " AND numeric_ip_address >= ". $start_ip.
-                              " AND numeric_ip_address <= ". $finish_ip;
-        } else {
-            $query_parts_ip = " AND ". $abbreviation. ".numeric_ip_address >= ".$start_ip.
-                              " AND ". $abbreviation. ".numeric_ip_address <= ". $finish_ip;
-        }
-        
-        return $query_parts_ip;
-    }
-    
-    /** 
      * compress file
      * 
-     * @param string $dir_path
+     * @param string &$zip_file
      */
-    private function compressFile($dir_path, &$zip_file) {
-        $output_files = array($dir_path);
+    private function compressFile(&$zip_file) {
         // set zip file name
-        $zip_file = "SiteLicenseUserReport_". date("Ym", mktime(0, 0, 0, date("m") - 1, 1, date("Y"))). ".zip";
-        // compress zip file	
-        File_Archive::extract(
-            $output_files,
-            File_Archive::toArchive($zip_file, File_Archive::toFiles(WEBAPP_DIR.'/uploads/repository/'))
-        );
-        if ($handle = opendir($dir_path)) {
-            while (false !== ($file = readdir($handle))) {
-                unlink($dir_path. $file);
-            }
-        closedir($handle);
-        $this->removeDirectory($dir_path);
-        }
+        $zip_file = "SiteLicenseUserReport_". $this->createYearMonthStringFormatYm($this->year, $this->month). ".zip";
+        
+        // サイトライセンスメール用のビジネスクラス取得
+        $this->infoLog("businessSendsitelicensemail", __FILE__, __CLASS__, __LINE__);
+        $sendSitelicense = BusinessFactory::getFactory()->getBusiness("businessSendsitelicensemail");
+        
+        // compress zip file
+        $sendSitelicense->compressToZip($zip_file);
     }
     
     /** 
@@ -521,27 +409,35 @@ class Repository_Action_Common_Background_Sitelicensemail extends BackgroundProc
      * @param string $mail_address
      * @param string $organization_name
      */
-    private function sendSitelicenseReport($file_path, $file_name, $mail_address, $organization_name) {
-        // サイト名と管理者メールアドレスを取得する
-        $query = "SELECT conf_value FROM ". DATABASE_PREFIX. "config ".
+    private function sendSitelicenseReport($file_name, $mail_address, $organization_name) {
+        $file_path = WEBAPP_DIR. "/uploads/repository/";
+        
+        // サイト名を取得する
+        $language = $this->Session->getParameter("_lang");
+        $query = "SELECT conf_value FROM ". DATABASE_PREFIX. "config_language ".
                  "WHERE conf_name = ? ".
-                 "OR conf_name = ? ".
-                 "ORDER BY conf_id ASC ;";
+                 "AND lang_dirname = ? ;";
         $params = array();
         $params[] = "sitename";
+        $params[] = $language;
+        $site_name = $this->dbAccess->executeQuery($query, $params);
+        // 管理者メールアドアレスを取得する
+        $query = "SELECT conf_value FROM ". DATABASE_PREFIX. "config ".
+                 "WHERE conf_name = ? ;";
+        $params = array();
         $params[] = "from";
-        $result = $this->dbAccess->executeQuery($query, $params);
+        $admin_mail = $this->dbAccess->executeQuery($query, $params);
         
         // タイトル
-        $sub = "[". $result[0]["conf_value"]. "] ".
-               date("Y-m", mktime(0, 0, 0, date("m") - 1, 1, date("Y"))).
+        $sub = "[". $site_name[0]["conf_value"]. "] ".
+               $this->createYearMonthStringFormatYmAddHyphen($this->year, $this->month).
                " ".$this->smartyAssign->getLang("repository_sitelicense_mail_subject");
         $this->mailMain->setSubject($sub);
         // 本文
         $body = sprintf($this->smartyAssign->getLang("repository_sitelicense_mail_body_dear"), $organization_name)."\n\n".
-                sprintf($this->smartyAssign->getLang("repository_sitelicense_mail_body_thank"), $result[0]["conf_value"])."\n".
-                date("Y-m", mktime(0, 0, 0, date("m") - 1, 1, date("Y"))).$this->smartyAssign->getLang("repository_sitelicense_mail_body_announcement")."\n\n".
-                sprintf($this->smartyAssign->getLang("repository_sitelicense_mail_body_unnecessary"), $result[1]["conf_value"])."\n\n\n".
+                sprintf($this->smartyAssign->getLang("repository_sitelicense_mail_body_thank"), $site_name[0]["conf_value"])."\n".
+                sprintf($this->smartyAssign->getLang("repository_sitelicense_mail_body_announcement"), $this->createYearMonthStringFormatYmAddHyphen($this->year, $this->month))."\n\n".
+                sprintf($this->smartyAssign->getLang("repository_sitelicense_mail_body_unnecessary"), $admin_mail[0]["conf_value"])."\n\n\n".
                 $this->smartyAssign->getLang("repository_sitelicense_mail_body_explain_rule_1")."\n".
                 $this->smartyAssign->getLang("repository_sitelicense_mail_body_explain_rule_2")."\n\n".
                 $this->smartyAssign->getLang("repository_sitelicense_mail_body_explain_format")."\n\n".
@@ -553,15 +449,11 @@ class Repository_Action_Common_Background_Sitelicensemail extends BackgroundProc
                 $this->smartyAssign->getLang("repository_sitelicense_mail_body_explain_usagestatistics_1")."\n".
                 $this->smartyAssign->getLang("repository_sitelicense_mail_body_explain_usagestatistics_2")."\n\n\n".
                 "------------------------------------------------"."\n".
-                sprintf($this->smartyAssign->getLang("repository_sitelicense_mail_footer_contact"), $result[0]["conf_value"])."\n".
-                $result[1]["conf_value"];
+                sprintf($this->smartyAssign->getLang("repository_sitelicense_mail_footer_contact"), $site_name[0]["conf_value"])."\n".
+                $admin_mail[0]["conf_value"];
         $this->mailMain->setBody($body);
         // 送り先
         $users = array();
-        // メールアドレスをデコード
-        $mail_address = str_replace("&#124;", "|", $mail_address);
-        $mail_address = str_replace("&#44;", ",", $mail_address);
-        $mail_address = str_replace("&#46;", ".", $mail_address);
         $users[0]["email"] = $mail_address;
         $users[0]["handle"] = $organization_name;
         $this->mailMain->setToUsers($users);
@@ -597,42 +489,97 @@ class Repository_Action_Common_Background_Sitelicensemail extends BackgroundProc
      * @param Array $sl_user_info
      */
     private function deleteSitelicenseUserInfo($sl_user_info) {
-        $query = "DELETE FROM ".DATABASE_PREFIX ."repository_send_mail_sitelicense ".
-                 "WHERE organization_name = ? ".
-                 "AND start_ip_address = ? ".
-                 "AND finish_ip_address = ? ".
-                 "AND mail_address = ? ;";
-        $params = array();
-        $params[] = $sl_user_info[0]["organization_name"];
-        $params[] = $sl_user_info[0]["start_ip_address"];
-        $params[] = $sl_user_info[0]["finish_ip_address"];
-        $params[] = $sl_user_info[0]["mail_address"];
-        $this->dbAccess->executeQuery($query, $params);
+        // サイトライセンスメール用のビジネスクラス取得
+        $this->infoLog("businessSendsitelicensemail", __FILE__, __CLASS__, __LINE__);
+        $sendSitelicense = BusinessFactory::getFactory()->getBusiness("businessSendsitelicensemail");
         
-        $this->exitAction();
+        // 1件指定して削除
+        $sendSitelicense->deleteSendSitelicenseuser($sl_user_info[0]["organization_id"]);
     }
     
-    /** 
-     * get exclusive sitelicense itemtype
-     * 
-     * @param string $abbreviation
+    /**
+     * check execute authority
+     *
+     * @return bool
      */
-    private function getExclusiveSitelicenseItemtype($abbreviation) {
-        $query = "SELECT param_value FROM ".DATABASE_PREFIX ."repository_parameter ".
-                 "WHERE param_name = ? ;";
-        $params = array();
-        $params = "site_license_item_type_id";
-        $result = $this->dbAccess->executeQuery($query, $params);
-        $item_type_id_query = "";
-        if(strlen($result[0]["param_value"]) > 0) {
-            if($abbreviation == "") {
-                $item_type_id_query = " AND item_type_id NOT IN (". $result[0]["param_value"]. ") ";
-            } else {
-                $item_type_id_query = " AND ". $abbreviation.".item_type_id NOT IN (". $result[0]["param_value"]. ") ";
-            }
+    private function checkExecuteAuthority() {
+        // Init user authorities
+        $this->user_authority_id = "";
+        $this->authority_id = "";
+        $this->user_id = "";
+        
+        // Check login
+        $result = null;
+        $error_msg = null;
+        $return = $this->checkLogin($this->login_id, $this->password, $result, $error_msg);
+        if($return == false) {
+            $this->failTrans();
+            $this->exitAction();
+            print("Incorrect Login!\n");
+            return false;
         }
         
-        return $item_type_id_query;
+        // Check user authority id
+        if($this->user_authority_id < $this->repository_admin_base || $this->authority_id < $this->repository_admin_room) {
+            $this->failTrans();
+            $this->exitAction();
+            print("You do not have permission to update.\n");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    private function createStartYearMonthStringFormatYmdhis($requestYear, $requestMonth){
+        if( isset($requestYear) && 
+            isset($requestMonth) && 
+            intval($requestYear) > 0 && 
+            intval($requestMonth) > 0 && 
+            12 >= intval($requestMonth)){
+            
+            return date("Y-m-d", mktime(0, 0, 0, intval($requestMonth), 1, intval($requestYear))). " 00:00:00.000";
+        } else {
+            return date("Y-m-d", mktime(0, 0, 0, date("m") - 1, 1, date("Y"))). " 00:00:00.000";
+        }
+    }
+    
+    private function createFinishYearMonthStringFormatYmdhis($requestYear, $requestMonth){
+        if( isset($requestYear) && 
+            isset($requestMonth) && 
+            intval($requestYear) > 0 && 
+            intval($requestMonth) > 0 && 
+            12 >= intval($requestMonth)){
+            
+            return date("Y-m-d", mktime(0, 0, 0, intval($requestMonth) + 1, 0, intval($requestYear))). " 23:59:59:999";
+        } else {
+            return date("Y-m-d", mktime(0, 0, 0, date("m"), 0, date("Y"))). " 23:59:59:999";
+        }
+    }
+    
+    private function createYearMonthStringFormatYm($requestYear, $requestMonth){
+        if( isset($requestYear) && 
+            isset($requestMonth) && 
+            intval($requestYear) > 0 && 
+            intval($requestMonth) > 0 && 
+            12 >= intval($requestMonth)){
+            
+            return date("Ym", mktime(0, 0, 0, intval($requestMonth), 1, intval($requestYear)));
+        } else {
+            return date("Ym", mktime(0, 0, 0, date("m") - 1, 1, date("Y")));
+        }
+    }
+    
+    private function createYearMonthStringFormatYmAddHyphen($requestYear, $requestMonth){
+    if( isset($requestYear) && 
+            isset($requestMonth) && 
+            intval($requestYear) > 0 && 
+            intval($requestMonth) > 0 && 
+            12 >= intval($requestMonth)){
+            
+            return date("Y-m", mktime(0, 0, 0, intval($requestMonth), 1, intval($requestYear)));
+        } else {
+            return date("Y-m", mktime(0, 0, 0, date("m") - 1, 1, date("Y")));
+        }
     }
 }
 ?>

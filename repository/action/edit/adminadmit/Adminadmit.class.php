@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Adminadmit.class.php 42605 2014-10-03 01:02:01Z keiya_sugimoto $
+// $Id: Adminadmit.class.php 58145 2015-09-28 04:23:40Z keiya_sugimoto $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -18,6 +18,7 @@ require_once WEBAPP_DIR. '/modules/repository/components/NameAuthority.class.php
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryHarvesting.class.php';
 require_once WEBAPP_DIR. '/modules/repository/action/edit/tree/Tree.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryHandleManager.class.php';
+require_once WEBAPP_DIR. '/modules/repository/components/RepositoryDatabaseConst.class.php';
 
 /**
  * repository module admin action
@@ -102,7 +103,9 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 	// Add Site License 2008/10/09 Y.Nakao --start--
 	//var $site_license = null;	// site license authorization
 	// Add Site License 2008/10/09 Y.Nakao --end--
+	var $sitelicense_id = null;      // org id for site license
 	var $sitelicense_org = null;	// org name for site license
+	var $sitelicense_group = null;   // org group name for site license
 	var $ip_sitelicense_from = null;	// ip address from for site license
 	var $ip_sitelicense_to = null;	// ip address to for site license
 	// Add mail address for feedback mail 2014/04/11 T.Ichikawa --start--
@@ -303,6 +306,9 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
      */
     public $prefixJalcDoi = null;
     public $prefixCrossRef = null;
+    // Add DataCite 2015/02/09 K.Sugimoto --start--
+    public $prefixDataCite = null;
+    // Add DataCite 2015/02/09 K.Sugimoto --end--
     public $prefixCnri = null;
     // Add prefix Admin T.Ichikawa 2013/12/24 --end--
     
@@ -351,25 +357,40 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
     // OAI-PMH Output Flag
     public $oaipmh_output_flag = null;
     
+    // Institution Name
+    public $institutionName = null;
+    
+    // Add Default Search Type 2014/12/03 K.Sugimoto --start--
+    // Default Search Type
+    public $default_search_type = null;
+    // Add Default Search Type 2014/12/03 K.Sugimoto --end--
+    
+    // Add Usage Statistics link display setting 2014/12/16 K.Matsushita --start--
+    public $usagestatistics_link_display = null;
+    // Add Usage Statistics link display setting 2014/12/16 K.Matsushita --end--
+
+    // Add ranking tab display setting 2014/12/19 K.Matsushita --start--
+    public $ranking_tab_display = null;
+    // Add ranking tab display setting 2014/12/19 K.Matsushita --end--
+    
+    // Add DataCite 2015/02/09 K.Sugimoto --start--
+    // PrefixID Add Flag
+    public $prefix_flag = null;
+    // Add DataCite 2015/02/09 K.Sugimoto --end--
+    
+    // Auto Input Metadata by CrossRef DOI 2015/03/02 K.Sugimoto --start--
+    public $CrossRefQueryServicesAccount = null;
+    // Auto Input Metadata by CrossRef DOI 2015/03/02 K.Sugimoto --end--
+    
+    // Add RobotList 2015/04/06 S.Suzuki --start--
+    public $robotlistValid = null;
+    // Add RobotList 2015/04/06 S.Suzuki --end--
+    
 	/**
 	 * @access  public
 	 */
-	function execute()
+	function executeApp()
 	{
-		try {
-			// ----------------------------------------------------
-			// call init action
-			// ----------------------------------------------------
-			$result = $this->initAction();			
-			if ( $result === false ) {
-				$exception = new RepositoryException( ERR_MSG_xxx-xxx1, xxx-xxx1 );	//主メッセージとログIDを指定して例外を作成
-				$DetailMsg = null;							 	 //詳細メッセージ文字列作成
-				sprintf( $DetailMsg, ERR_DETAIL_xxx-xxx1);
-				$exception->setDetailMsg( $DetailMsg );			 //詳細メッセージ設定
-				$this->failTrans();								 //トランザクション失敗を設定(ROLLBACK)
-				throw $exception;
-			}
-			
             // add get lang 2012/12/05 A.Jin --start--
             $smartyAssign = $this->Session->getParameter("smartyAssign");    // for get language resource
             // add get lang 2012/12/05 A.Jin --end--
@@ -403,36 +424,32 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 			
 			// check date : year, month, date
 			if($this->prvd_Identify_earliestDatestamp_year == null) {
-				$this->Session->setParameter("error_msg", "error : invalid date input.");
-				$this->failTrans();		//ROLLBACK
-                $this->exitAction();
-				return 'error';
+                $this->Session->setParameter("error_msg", "error : invalid date input.");
+                $this->errorLog("error : invalid date input.", __FILE__, __CLASS__, __LINE__);
+                throw new AppException("error : invalid date input.");
 			}
 			if( checkdate(	intval($this->prvd_Identify_earliestDatestamp_month),
 							intval($this->prvd_Identify_earliestDatestamp_day),
 							intval($this->prvd_Identify_earliestDatestamp_year)) == false ) {
-				$this->Session->setParameter("error_msg", "error : invalid date input.");
-				$this->failTrans();		//ROLLBACK
-                $this->exitAction();
-				return 'error';
+                $this->Session->setParameter("error_msg", "error : invalid date input.");
+                $this->errorLog("error : invalid date input.", __FILE__, __CLASS__, __LINE__);
+                throw new AppException("error : invalid date input.");
 			}					
 			// Add Selective Harvesting 2013/09/04 R.Matsuura --start--
 			for($ii=0;$ii<count($this->harvesting_from_date_year);$ii++) {
 			    if(checkdate( intval($this->harvesting_from_date_month[$ii]),
 			                  intval($this->harvesting_from_date_day[$ii]),
 			                  intval($this->harvesting_from_date_year[$ii])) == false ) {
-    			    $this->Session->setParameter("error_msg", "error : invalid date input.");
-                    $this->failTrans();     //ROLLBACK
-                    $this->exitAction();
-                    return 'error';
+                    $this->Session->setParameter("error_msg", "error : invalid date input.");
+                    $this->errorLog("error : invalid date input.", __FILE__, __CLASS__, __LINE__);
+                    throw new AppException("error : invalid date input.");
 			    }
                 if(checkdate( intval($this->harvesting_until_date_month[$ii]),
                               intval($this->harvesting_until_date_day[$ii]),
                               intval($this->harvesting_until_date_year[$ii])) == false ) {
                     $this->Session->setParameter("error_msg", "error : invalid date input.");
-                    $this->failTrans();     //ROLLBACK
-                    $this->exitAction();
-                    return 'error';
+                    $this->errorLog("error : invalid date input.", __FILE__, __CLASS__, __LINE__);
+                    throw new AppException("error : invalid date input.");
                 }
                 
                 // Consolidated inthe form of YYYY-MM-DDThh:mm:ssZ
@@ -451,9 +468,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
                             $this->harvesting_until_date_second[$ii] . "Z";
                 if($from_date > $until_date) {
                     $this->Session->setParameter("error_msg", "error : invalid date input.");
-                    $this->failTrans();     //ROLLBACK
-                    $this->exitAction();
-                    return 'error';
+                    $this->errorLog("error : invalid date input.", __FILE__, __CLASS__, __LINE__);
+                    throw new AppException("error : invalid date input.");
                 }
             }
 			// Add Selective Harvesting 2013/09/04 R.Matsuura --end--
@@ -467,11 +483,9 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 		   	$result = $this->getParamTableRecord($admin_records, $Error_Msg);
 	   		if ($result === false) {
 				$errMsg = $this->Db->ErrorMsg();
-				$tmpstr = sprintf("item_coef_cp update failed : %s", $ii, $jj, $errMsg ); 
-				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//ROLLBACK
-                $this->exitAction();
-				return 'error';
+				$tmpstr = sprintf("item_coef_cp update failed : %s", $ii, $jj, $errMsg );
+                $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 
 			// ----------------------------------------------------
@@ -484,9 +498,9 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				// If Edit start time different update time then not update
 				if( $admin_records_old[$key]['mod_date'] != $value['mod_date'] ) {	
 					$this->Session->setParameter("error_msg", "error : probably " . $key . " was updated by other admin.");
-					$this->failTrans();		//ROLLBACK
-                    $this->exitAction();
-					return 'error';
+					$tmpstr = "error : probably " . $key . " was updated by other admin.";
+                    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
 				}
 			}
 			
@@ -508,7 +522,7 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
                 }
                 // Mod Item handle management T.Koyasu 2014/01/28 --end--
 				// end action
-				$result = $this->exitAction();
+				//$result = $this->exitAction();
 				return 'success';
 			}
 			// Add get Prefix 2008/11/19 --end--
@@ -544,9 +558,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 					$errMsg = $this->Db->ErrorMsg();
 					$tmpstr = sprintf("default_disp_type update failed : %s", $ii, $jj, $errMsg ); 
 					$this->Session->setParameter("error_msg", $tmpstr);
-					$this->failTrans();		//ROLLBACK
-                    $this->exitAction();
-					return 'error';
+                    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
 				}
 			}
 			// Add default display type setting 2008/12/8 A.Suzuki --end--
@@ -559,9 +572,7 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 					$errMsg = $this->Db->ErrorMsg();
 					$tmpstr = sprintf("disp_index_type update failed : %s", $ii, $jj, $errMsg ); 
 					$this->Session->setParameter("error_msg", $tmpstr);
-					$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                    $this->exitAction();
-					return 'error';
+                    throw new AppException($tmpstr);
 				}
 			}
 			if( $this->default_disp_index != null ){
@@ -573,9 +584,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 					$errMsg = $this->Db->ErrorMsg();
 					$tmpstr = sprintf("default_disp_index update failed : %s", $ii, $jj, $errMsg ); 
 					$this->Session->setParameter("error_msg", $tmpstr);
-					$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                    $this->exitAction();
-					return 'error';
+                    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
 				}
 			}
 			
@@ -589,9 +599,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 					$errMsg = $this->Db->ErrorMsg();
 					$tmpstr = sprintf("select_language update failed : %s", $ii, $jj, $errMsg ); 
 					$this->Session->setParameter("error_msg", $tmpstr);
-					$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                    $this->exitAction();
-					return 'error';
+                    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
 				}
 			}
 			// Add select_language 2009/07/01 A.Suzuki --end--
@@ -615,9 +624,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("alternative_language update failed : %s", $ii, $jj, $errMsg ); 
 				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-				return 'error';
+                $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			// Add alternative language setting 2009/08/11 A.Suzuki --end--
 			
@@ -631,9 +639,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 					$errMsg = $this->Db->ErrorMsg();
 					$tmpstr = sprintf("currency_setting update failed : %s", $ii, $jj, $errMsg ); 
 					$this->Session->setParameter("error_msg", $tmpstr);
-					$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                    $this->exitAction();
-					return 'error';
+                    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
 				}
 			}
 			// Add currency_setting 2009/06/29 A.Suzuki --end--
@@ -648,12 +655,78 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 					$errMsg = $this->Db->ErrorMsg();
 					$tmpstr = sprintf("ranking_disp_setting update failed : %s", $ii, $jj, $errMsg ); 
 					$this->Session->setParameter("error_msg", $tmpstr);
-					$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                    $this->exitAction();
-					return 'error';
+                    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
 				}
 			}
 			// Add ranking disp setting 2008/12/1 A.Suzuki --end-- 
+			
+			// Add ranking tab display setting 2014/12/19 K.Matsushita --start--
+			// 現在の設定値取得
+			$paramsGetRankingDisplay = array('param_name' => 'ranking_tab_display');
+			$rankingDisplayInfo = $this->Db->selectExecute("repository_parameter",$paramsGetRankingDisplay);
+			if ($rankingDisplayInfo === false) {
+			    return 'error';
+			}
+			
+			// DBの値とセッションの値を比較
+			if( $rankingDisplayInfo[0]['param_value'] !== $this->ranking_tab_display ){
+			    // 異なる場合
+			    
+			    // maple.ini書き換え
+			    $view_main_maple_ini_file_path = WEBAPP_DIR. '/modules/repository/view/main/maple.ini';
+			    
+			    // Check file read & write rights
+			    if(is_readable($view_main_maple_ini_file_path) && is_writable($view_main_maple_ini_file_path)){
+			        
+			        // 読み込み
+			        $fp = fopen($view_main_maple_ini_file_path, "r");
+			        $maple_ini_text = array();
+			        while ($line = fgets($fp)) {
+			            $maple_ini_text[] = $line;
+			        }
+			        fclose($fp);
+			        
+			        // 書き込み
+			        $fp = fopen($view_main_maple_ini_file_path, "w");
+			        for($ii = 0; $ii < count($maple_ini_text); $ii++){
+			             
+			            if( $this->ranking_tab_display == 1 && strpos($maple_ini_text[$ii], "define:repository_view_main_ranking") !== false ){
+			                $maple_ini_text[$ii] = '_ranking = "define:repository_view_main_ranking"'."\n";
+			            }
+			            else if( $this->ranking_tab_display == 0 && strpos($maple_ini_text[$ii], "define:repository_view_main_ranking") !== false )
+			            {
+			                $maple_ini_text[$ii] = ';_ranking = "define:repository_view_main_ranking"'."\n";//先頭をコメントアウト
+			            }
+			            fwrite($fp, $maple_ini_text[$ii]);
+			        }
+			        fclose($fp);
+			        
+			        // DBの値を更新
+			        if( $this->ranking_tab_display != null ){
+			            // ランキング管理 : ランキングタブ表示設定
+			            $params[0] = $this->ranking_tab_display;	// param_value
+			            $params[3] = 'ranking_tab_display';		// param_name
+			            $result = $this->updateParamTableData($params, $Error_Msg);
+			            if ($result === false) {
+			                $errMsg = $this->Db->ErrorMsg();
+			                $tmpstr = sprintf("ranking_tab_display_setting update failed : %s", $ii, $jj, $errMsg );
+			                $this->Session->setParameter("error_msg", $tmpstr);
+                            $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                            throw new AppException($tmpstr);
+			            }
+			        }
+			    }
+			    else{
+			        // エラーメッセージ
+			        $tmpstr = "error: impossible to read and write view/main/maple.ini";
+			        $this->Session->setParameter("error_msg", $tmpstr);
+                    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
+			    }
+			}
+			// Add ranking tab display setting 2014/12/19 K.Matsushita --end--
+			
 			
 			if( $this->ranking_term_recent_regist != null ){
 				// ランキング管理 : 新規登録期間
@@ -664,9 +737,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 					$errMsg = $this->Db->ErrorMsg();
 					$tmpstr = sprintf("ranking_term_recent_regist update failed : %s", $ii, $jj, $errMsg ); 
 					$this->Session->setParameter("error_msg", $tmpstr);
-					$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                    $this->exitAction();
-					return 'error';
+				    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
 				}
 			}
 			if( $this->ranking_term_stats != null ){
@@ -677,10 +749,9 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				if ($result === false) {
 					$errMsg = $this->Db->ErrorMsg();
 					$tmpstr = sprintf("ranking_term_stats update failed : %s", $ii, $jj, $errMsg ); 
-					$this->Session->setParameter("error_msg", $tmpstr);
-					$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                    $this->exitAction();
-					return 'error';
+                    $this->Session->setParameter("error_msg", $tmpstr);
+				    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
 				}
 			}
 			if( $this->ranking_disp_num != null ){
@@ -691,10 +762,9 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				if ($result === false) {
 					$errMsg = $this->Db->ErrorMsg();
 					$tmpstr = sprintf("ranking_disp_num update failed : %s", $ii, $jj, $errMsg ); 
-					$this->Session->setParameter("error_msg", $tmpstr);
-					$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                    $this->exitAction();
-					return 'error';
+                    $this->Session->setParameter("error_msg", $tmpstr);
+				    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
 				}
 			}
 			// ランキング表示可否, 最も閲覧されたアイテム
@@ -709,10 +779,9 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 			if ($result === false) {
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("ranking_is_disp_browse_item update failed : %s", $ii, $jj, $errMsg ); 
-				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-				return 'error';
+                $this->Session->setParameter("error_msg", $tmpstr);
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			// ランキング表示可否, 最もダウンロードされたアイテム
 			if( $this->ranking_is_disp_download_item == null ){
@@ -726,10 +795,9 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 			if ($result === false) {
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("ranking_is_disp_download_item update failed : %s", $ii, $jj, $errMsg ); 
-				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-				return 'error';
+                $this->Session->setParameter("error_msg", $tmpstr);
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			// ランキング表示可否, 最もアイテムを作成したユーザ
 			if( $this->ranking_is_disp_item_creator == null ){
@@ -744,9 +812,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("ranking_is_disp_item_creator update failed : %s", $ii, $jj, $errMsg ); 
 				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-				return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			// ランキング表示可否, 最も検索されたキーワード
 			if( $this->ranking_is_disp_keyword == null ){
@@ -761,9 +828,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("ranking_is_disp_keyword update failed : %s", $ii, $jj, $errMsg ); 
 				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-				return 'error';
+                $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			// ランキング表示可否, 新着アイテム
 			if( $this->ranking_is_disp_recent_item == null ){
@@ -778,9 +844,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("ranking_is_disp_recent_item update failed : %s", $ii, $jj, $errMsg ); 
 				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-				return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 /*
 			// アイテム数／ファイル要領制限関連は保留
@@ -852,9 +917,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 					$errMsg = $this->Db->ErrorMsg();
 					$tmpstr = sprintf("export_is_include_files update failed : %s", $ii, $jj, $errMsg ); 
 					$this->Session->setParameter("error_msg", $tmpstr);
-					$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                    $this->exitAction();
-					return 'error';
+    			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
 				}
 			}
 			// Add review mail setting 2009/09/24 Y.Nakao --start--
@@ -872,9 +936,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("review_flg update failed : %s", $ii, $jj, $errMsg ); 
 				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-				return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			// アイテム管理 : 査読後のアイテム公開方式
 			if( $this->item_auto_public != null ){
@@ -885,9 +948,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 					$errMsg = $this->Db->ErrorMsg();
 					$tmpstr = sprintf("item_auto_public update failed : %s", $ii, $jj, $errMsg ); 
 					$this->Session->setParameter("error_msg", $tmpstr);
-					$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                    $this->exitAction();
-					return 'error';
+    			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
 				}
 			}
 			// 査読通知メール設定
@@ -903,9 +965,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("review_mail_flg update failed : %s", $ii, $jj, $errMsg ); 
 				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-				return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			
             // Bugfix input scrutiny 2011/06/17 Y.Nakao --start--
@@ -930,9 +991,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("review_mail update failed : %s", $ii, $jj, $errMsg ); 
 				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-				return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			// Add review mail setting 2009/09/24 Y.Nakao --end--
 			
@@ -945,9 +1005,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 					$errMsg = $this->Db->ErrorMsg();
 					$tmpstr = sprintf("prvd_Identify_adminEmail update failed : %s", $ii, $jj, $errMsg ); 
 					$this->Session->setParameter("error_msg", $tmpstr);
-					$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                    $this->exitAction();
-					return 'error';
+    			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
 				}
 			}
 			// OAI-PMH管理 : リポジトリ名
@@ -959,9 +1018,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 					$errMsg = $this->Db->ErrorMsg();
 					$tmpstr = sprintf("prvd_Identify_repositoryName update failed : %s", $ii, $jj, $errMsg ); 
 					$this->Session->setParameter("error_msg", $tmpstr);
-					$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                    $this->exitAction();
-					return 'error';
+    			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
 				}
 			}
 			// OAI-PMH管理 : earliest_datestamp
@@ -978,9 +1036,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("prvd_Identify_earliestDatestamp update failed : %s", $ii, $jj, $errMsg ); 
 				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-				return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			
 			// Add command path setting 2008/08/07 Y.Nakao --start--
@@ -997,9 +1054,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("path_wvWare update failed : %s", $ii, $jj, $errMsg ); 
 				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-				return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			// Server environment : pass to xlhtml
 			if( $this->path_xlhtml != null ){
@@ -1014,9 +1070,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("path_xlhtml update failed : %s", $ii, $jj, $errMsg ); 
 				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//ROLLBACK
-                $this->exitAction();
-				return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			// Server environment : pass to poppler
 			if( $this->path_poppler != null ){
@@ -1031,9 +1086,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("path_poppler update failed : %s", $ii, $jj, $errMsg ); 
 				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//ROLLBACK
-                $this->exitAction();
-				return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			// Server environment : pass to ImageMagick
 			if( $this->path_ImageMagick != null ){
@@ -1048,9 +1102,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("path_ImageMagick update failed : %s", $errMsg ); 
 				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//ROLLBACK
-                $this->exitAction();
-				return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
             // Add pdftk 2012/06/07 A.Suzuki --start--
             // Server environment : path to pdftk
@@ -1066,9 +1119,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
                 $errMsg = $this->Db->ErrorMsg();
                 $tmpstr = sprintf("path_pdftk update failed : %s", $errMsg ); 
                 $this->Session->setParameter("error_msg", $tmpstr);
-                $this->failTrans();     //ROLLBACK
-                $this->exitAction();
-                return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
             }
             // Add pdftk 2012/06/07 A.Suzuki --end--
             
@@ -1086,9 +1138,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
                 $errMsg = $this->Db->ErrorMsg();
                 $tmpstr = sprintf("path_ffmpeg update failed : %s", $errMsg);
                 $this->Session->setParameter("error_msg", $tmpstr);
-                $this->failTrans();         // ROLLBACK
-                $this->exitAction();
-                return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
             }
             // Add multimedia support 2012/08/27 T.Koyasu -end-
             // Add external serarch word 2014/05/23 K.Matsuo -start-
@@ -1105,97 +1156,26 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
                 $errMsg = $this->Db->ErrorMsg();
                 $tmpstr = sprintf("path_mecab update failed : %s", $errMsg);
                 $this->Session->setParameter("error_msg", $tmpstr);
-                $this->failTrans();         // ROLLBACK
-                $this->exitAction();
-                return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
             }
             // Add external serarch word 2014/05/23 K.Matsuo -end-
 			// Add command path setting 2008/08/07 Y.Nakao --end--
 
 			// Add Site License 2008/10/09 Y.Nakao --start--
 			// Add Site License 2008/10/20 Y.Nakao --start--
-			$site_license = "";
-			$cnt_ipaddress = 0;
-			for($ii=0; $ii<count($this->sitelicense_org); $ii++){
-                // Bugfix Input scrutiny 2011/06/17 Y.Nakao --start--
-                // replace explode delimiters.
-                $this->sitelicense_org = str_replace("|", "&#124;", $this->sitelicense_org);
-                $this->sitelicense_org = str_replace(",", "&#44;", $this->sitelicense_org);
-                $this->sitelicense_org = str_replace(".", "&#46;", $this->sitelicense_org);
-                // Bugfix Input scrutiny 2011/06/17 Y.Nakao --end--
-                // Add mail address for feedback mail 2014/04/11 T.Ichikawa --start--
-                $this->sitelicense_mail = str_replace("|", "&#124;", $this->sitelicense_mail);
-                $this->sitelicense_mail = str_replace(",", "&#44;", $this->sitelicense_mail);
-                $this->sitelicense_mail = str_replace(".", "&#46;", $this->sitelicense_mail);
-                // Add mail address for feedback mail 2014/04/11 T.Ichikawa --end--
-				if($ii != 0){
-					$site_license .= "|";
-				}
-				if(	str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 0]) != "" &&
-					str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 1]) != "" &&
-					str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 2]) != "" &&
-					str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 3]) != "")
-				{
-					if(	str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 0]) != "" && 
-						str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 1]) != "" && 
-						str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 2]) != "" && 
-						str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 3]) != "")
-					{
-						$site_license .= str_replace(" ", "", $this->sitelicense_org[$ii]).",";
-						
-						$from = sprintf("%03d",intval(str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 0]))).
-								sprintf("%03d",intval(str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 1]))).
-								sprintf("%03d",intval(str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 2]))).
-								sprintf("%03d",intval(str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 3])));
-						$to = sprintf("%03d",intval(str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 0]))).
-							  sprintf("%03d",intval(str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 1]))).
-							  sprintf("%03d",intval(str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 2]))).
-							  sprintf("%03d",intval(str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 3])));
-						
-						if($from > $to){
-							$site_license .= str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 0]). "." .
-											 str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 1]). "." .
-											 str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 2]). "." .
-											 str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 3]). ",";
-							$site_license .= str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 0]). "." .
-											 str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 1]). "." .
-											 str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 2]). "." .
-											 str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 3]). ",";
-						} else {
-							$site_license .= str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 0]). "." .
-											 str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 1]). "." .
-											 str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 2]). "." .
-											 str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 3]). ",";
-							$site_license .= str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 0]). "." .
-											 str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 1]). "." .
-											 str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 2]). "." .
-											 str_replace(" ", "", $this->ip_sitelicense_to[$ii + $cnt_ipaddress + 3]). ",";
-						}
-					} else {
-						$site_license .= str_replace(" ", "", $this->sitelicense_org[$ii]).",";
-						$site_license .= str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 0]). "." .
-										 str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 1]). "." .
-										 str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 2]). "." .
-										 str_replace(" ", "", $this->ip_sitelicense_from[$ii + $cnt_ipaddress + 3]). ",";
-						$site_license .= ",";
-					}
-                    // Add mail address for feedback mail 2014/04/11 T.Ichikawa --start--
-                    $site_license .= str_replace(" ", "", $this->sitelicense_mail[$ii]);
-                    // Add mail address for feedback mail 2014/04/11 T.Ichikawa --end--
-				}
-				$cnt_ipaddress += 3;
-			}
-			
-			$params[0] = $site_license;	// param_value
-			$params[3] = 'site_license';		// param_name
-			$result = $this->updateParamTableData($params, $Error_Msg);
+            // Sitelicense 2015/01/21 T.Ichikawa --start--
+            $result = $this->executeUpdateSitelicense($Error_Msg);
 			if ($result === false) {
 				$errMsg = $this->Db->ErrorMsg();
-				$tmpstr = sprintf("site_license update failed : %s", $errMsg ); 
-				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//ROLLBACK
-                $this->exitAction();
-				return 'error';
+                if(strlen($errMsg) > 0) {
+                    $tmpstr = sprintf("site_license update failed : %s", $errMsg ); 
+                } else {
+                    $tmpstr = sprintf("site_license update failed : %s", $Error_Msg ); 
+                }
+                $this->Session->setParameter("error_msg", $tmpstr);
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			// Add Site License 2008/10/20 Y.Nakao --end--
 			// Add Site License 2008/10/09 Y.Nakao --end--
@@ -1212,9 +1192,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("AWSAccessKeyId update failed : %s", $errMsg ); 
 				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-				return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			// Add AWSAccessKeyId 2008/11/18 A.Suzuki --end--
 			
@@ -1230,9 +1209,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("AWSSecretAccessKey update failed : %s", $errMsg );
 				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-				return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			// Add AWSSecretAccessKey 2010/03/01 S.Nonomura --end--
 			
@@ -1247,10 +1225,9 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
             if ($result === false) {
                 $errMsg = $this->Db->ErrorMsg();
                 $tmpstr = sprintf("AWSSecretAccessKey update failed : %s", $errMsg );
-                $this->Session->setParameter("error_msg", $tmpstr);
-                $this->failTrans();     //トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-                return 'error';
+				$this->Session->setParameter("error_msg", $tmpstr);
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
             }
             // Add AssociateTag for modify API Y.Nakao 2011/10/19 --end--
             
@@ -1269,8 +1246,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
                 $tmpstr = sprintf("ichushiIsConnect update failed : %s", $errMsg );
                 $this->Session->setParameter("error_msg", $tmpstr);
                 $this->failTrans();     //トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-                return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
             }
             
             if($this->ichushiLoginId == null)
@@ -1284,9 +1261,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
                 $errMsg = $this->Db->ErrorMsg();
                 $tmpstr = sprintf("ichushiLoginId update failed : %s", $errMsg );
                 $this->Session->setParameter("error_msg", $tmpstr);
-                $this->failTrans();     //トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-                return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
             }
             
             if($this->ichushiLoginPasswd == null)
@@ -1322,9 +1298,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
                         $errMsg = $this->Db->ErrorMsg();
                         $tmpstr = sprintf("ichushiLoginPasswd update failed : %s", $errMsg );
                         $this->Session->setParameter("error_msg", $tmpstr);
-                        $this->failTrans();     //トランザクション失敗を設定(ROLLBACK)
-                        $this->exitAction();
-                        return 'error';
+        			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                        throw new AppException($tmpstr);
                     }
                     
                 } else {
@@ -1341,9 +1316,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("site_license_item_type_id update failed : %s", $errMsg ); 
 				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-				return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			// Add Item Type Select for Site License 2009/01/06 A.Suzuki --end--
 			
@@ -1355,9 +1329,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("sort_disp update failed : %s", $errMsg ); 
 				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-				return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			
 			$params[0] = $this->sort_not_disp;	// param_value
@@ -1367,9 +1340,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("sort_not_disp update failed : %s", $errMsg ); 
 				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-				return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			
 			$params[0] = $this->sort_disp_default_index."|".$this->sort_disp_default_keyword;	// param_value
@@ -1379,9 +1351,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("sort_disp_default update failed : %s", $errMsg ); 
 				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-				return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			// Add search result setting 2009/03/13 A.Suzuki --start--
 			
@@ -1393,9 +1364,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("default_list_view_num update failed : %s", $errMsg ); 
 				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-				return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			$this->Session->removeParameter("list_view_num");
 			// Add default_list_view_num 2009/03/27 A.Suzuki --end--
@@ -1422,9 +1392,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("log_exclusion update failed : %s", $errMsg ); 
 				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//ROLLBACK
-                $this->exitAction();
-				return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			
 			// Add supple WEKO setting 2009/09/09 A.Suzuki --start--
@@ -1437,9 +1406,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
                 if(preg_match("/^(https?|ftp)(:\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+)$/", $this->supple_weko_url) == 0){
                     $this->supple_weko_url = "";
                     $this->Session->setParameter("error_msg", "ERROR : supple weko URL");
-                    $this->failTrans();
-                    $this->exitAction();
-                    return 'error';
+    			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
                 }
             }
             // Bugfix form sanitizing Y.Nakao 2011/06/16 --end--
@@ -1450,9 +1418,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("supple_weko_url update failed : %s", $errMsg ); 
 				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-				return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			
 			// サプリコンテンツ査読承認のON/OFF
@@ -1468,9 +1435,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				$errMsg = $this->Db->ErrorMsg();
 				$tmpstr = sprintf("review_flg_supple update failed : %s", $ii, $jj, $errMsg ); 
 				$this->Session->setParameter("error_msg", $tmpstr);
-				$this->failTrans();		//トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-				return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
 			}
 			// Add supple WEKO setting 2009/09/09 A.Suzuki --end--
 			
@@ -1484,9 +1450,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 					$errMsg = $this->Db->ErrorMsg();
 					$tmpstr = sprintf("help_icon_display update failed : %s", $ii, $jj, $errMsg ); 
 					$this->Session->setParameter("error_msg", $tmpstr);
-					$this->failTrans();		//ROLLBACK
-                    $this->exitAction();
-					return 'error';
+    			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
 				}
 			}
 			// Add index list 2011/4/5 S.Abe --start--
@@ -1499,9 +1464,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
                     $errMsg = $this->Db->ErrorMsg();
                     $tmpstr = sprintf("select_index_list_display update failed : %s", $ii, $jj, $errMsg ); 
                     $this->Session->setParameter("error_msg", $tmpstr);
-                    $this->failTrans();     //ROLLBACK
-                    $this->exitAction();
-                    return 'error';
+    			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
                 }
             }
 			// Add index list 2011/4/5 S.Abe --end--
@@ -1514,9 +1478,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 					$errMsg = $this->Db->ErrorMsg();
 					$tmpstr = sprintf("oaiore_icon_display update failed : %s", $ii, $jj, $errMsg ); 
 					$this->Session->setParameter("error_msg", $tmpstr);
-					$this->failTrans();		//ROLLBACK
-                    $this->exitAction();
-					return 'error';
+    			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
 				}
 			}
 			// Add help icon and OAI-ORE icon setting 2010/02/10 K.Ando --end--
@@ -1537,9 +1500,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
                 $errMsg = $this->Db->ErrorMsg();
                 $tmpstr = sprintf("exclude_address_for_feedback update failed : %s", $errMsg ); 
                 $this->Session->setParameter("error_msg", $tmpstr);
-                $this->failTrans();     //トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-                return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
             }
             
             $params[0] = $this->feedback_exclude_address_list;  // param_value
@@ -1549,9 +1511,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
                 $errMsg = $this->Db->ErrorMsg();
                 $tmpstr = sprintf("exclude_address_for_feedback update failed : %s", $errMsg ); 
                 $this->Session->setParameter("error_msg", $tmpstr);
-                $this->failTrans();     //トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-                return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
             }
             // Add send feedback mail 2012/08/24 A.Suzuki --end--
             // Add send sitelicense mail 2014/04/23 T.Ichikawa --start--
@@ -1570,9 +1531,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
                 $errMsg = $this->Db->ErrorMsg();
                 $tmpstr = sprintf("exclude_address_for_sitelicense update failed : %s", $errMsg ); 
                 $this->Session->setParameter("error_msg", $tmpstr);
-                $this->failTrans();     //トランザクション失敗を設定(ROLLBACK)
-                $this->exitAction();
-                return 'error';
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
             }
             // Add send sitelicense mail 2014/04/23 T.Ichikawa --end--
 			// Add private tree parameter K.Matsuo 2013/4/5 --start--
@@ -1592,9 +1552,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 					$errMsg = $this->Db->ErrorMsg();
 					$tmpstr = sprintf("is_make_privatetree update failed : %s", $errMsg ); 
 					$this->Session->setParameter("error_msg", $tmpstr);
-					$this->failTrans();     //トランザクション失敗を設定(ROLLBACK)
-					$this->exitAction();
-					return 'error';
+    			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
 				}
 				// Add file rewrite for privatetree edit tab authority K.Matsuo 2013/04/24 --start--
 				$define_inc_file_path = WEBAPP_DIR. '/modules/repository/config/define.inc.php';
@@ -1624,9 +1583,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 					$errMsg = $this->Db->ErrorMsg();
 					$tmpstr = sprintf("is_make_privatetree update failed : %s", $errMsg ); 
 					$this->Session->setParameter("error_msg", $tmpstr);
-					$this->failTrans();     //トランザクション失敗を設定(ROLLBACK)
-					$this->exitAction();
-					return 'error';
+    			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
 				}
 			}
 			// Add file rewrite for privatetree edit tab authority K.Matsuo 2013/04/24 --end--
@@ -1638,9 +1596,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 					$errMsg = $this->Db->ErrorMsg();
 					$tmpstr = sprintf("privatetree_sort_order update failed : %s", $errMsg ); 
 					$this->Session->setParameter("error_msg", $tmpstr);
-					$this->failTrans();     //トランザクション失敗を設定(ROLLBACK)
-					$this->exitAction();
-					return 'error';
+    			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
 				}
 			}
 			if($this->privatetree_parent_indexid != null){
@@ -1653,16 +1610,15 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 						$errMsg = $this->Db->ErrorMsg();
 						$tmpstr = sprintf("privatetree_parent_indexid update failed : %s", $errMsg ); 
 						$this->Session->setParameter("error_msg", $tmpstr);
-						$this->failTrans();     //トランザクション失敗を設定(ROLLBACK)
-						$this->exitAction();
-						return 'error';
+        			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                        throw new AppException($tmpstr);
 					}
 					// 現在のプライベートツリーの親インデックスを新しく設定した親インデックスに変更
 					$query = "SELECT `index_id` ".
 							 "FROM ". DATABASE_PREFIX ."repository_index ".
 							 "WHERE `owner_user_id` != '' AND " .
 							 "`parent_index_id` = ? AND ".
-							 "`is_delete` = '0' ".
+							 "`is_delete` = 0 ".
 							 "ORDER BY show_order ;";
 					$queryParams = null;
 					$queryParams[] = $admin_records['privatetree_parent_indexid']['param_value'];
@@ -1690,6 +1646,20 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 				}
 			}
 			// Add private tree parameter K.Matsuo 2013/4/5 --end--
+			
+			// Add institution Name S.Suzuki 2014/12/19 --start--
+            $params[0] = $this->institutionName;    // param_value
+            $params[3] = 'institution_name';        // param_name
+            $result = $this->updateParamTableData($params, $Error_Msg);
+            if ($result === false) {
+                $errMsg = $this->Db->ErrorMsg();
+                $tmpstr = sprintf("institution_name update failed : %s", $errMsg ); 
+                $this->Session->setParameter("error_msg", $tmpstr);
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
+            }
+			// Add institution Name S.Suzuki 2014/12/19 --end--
+			
 			// Add external author ID prefix 2010/11/11 A.Suzuki --start--
             if($this->external_author_id_prefix_text != null){
 			    $NameAuthority = new NameAuthority($this->Session, $this->Db);
@@ -1703,9 +1673,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 			    }
                 $result = $NameAuthority->entryExternalAuthorIdPrefix($prefix_data);
                 if($result===false){
-                    $this->failTrans();     //ROLLBACK
-                    $this->exitAction();
-                    return 'error';
+    			    $this->errorLog($this->Db->ErrorMsg(), __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
                 }
             }
 			// Add external author ID prefix 2010/11/11 A.Suzuki --end--
@@ -1839,10 +1808,10 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
                     // Upsert repositories data
                     if(!$Harvesting->UpsertRepositoriesData($harvestingRepositories, $user_id, $edit_start_date))
                     {
-                        $this->Session->setParameter("error_msg", "Failed to upsert repository information for Harvesting.");
-                        $this->failTrans();     //ROLLBACK
-                        $this->exitAction();
-                        return 'error';
+                        $tmpstr = "Failed to upsert repository information for Harvesting.";
+                        $this->Session->setParameter("error_msg", $tmpstr);
+        			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                        throw new AppException($tmpstr);
                     }
                 }
             }
@@ -1861,29 +1830,27 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
                     $errMsg = $this->Db->ErrorMsg();
                     $tmpstr = sprintf("headerType update failed : %s", $errMsg ); 
                     $this->Session->setParameter("error_msg", $tmpstr);
-                    $this->failTrans(); //ROLLBACK
-                    $this->exitAction();
-                    return 'error';
+    			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
                 }
             }
             
-            // PDF cover header text
-            if($this->pdf_cover_header_text != null){
-                $params = array();
-                $params[RepositoryConst::DBCOL_REPOSITORY_PDF_COVER_PARAMETER_PARAM_NAME] = RepositoryConst::PDF_COVER_PARAM_NAME_HEADER_TEXT;
-                $params[RepositoryConst::DBCOL_REPOSITORY_PDF_COVER_PARAMETER_TEXT] = mb_strimwidth($this->pdf_cover_header_text, 0, 100);
-                $params[RepositoryConst::DBCOL_COMMON_MOD_USER_ID] = $user_id;
-                $params[RepositoryConst::DBCOL_COMMON_MOD_DATE] = $this->TransStartDate;
-                $result = $this->updatePdfCoverParamByParamName($params);
-                if ($result === false) {
-                    $errMsg = $this->Db->ErrorMsg();
-                    $tmpstr = sprintf("headerText update failed : %s", $errMsg ); 
-                    $this->Session->setParameter("error_msg", $tmpstr);
-                    $this->failTrans(); //ROLLBACK
-                    $this->exitAction();
-                    return 'error';
-                }
+            // PDF cover header text 
+            // Delete null check(pdf_cover_header_text) K.Matsushita 2015/2/5 --start--
+            $params = array();
+            $params[RepositoryConst::DBCOL_REPOSITORY_PDF_COVER_PARAMETER_PARAM_NAME] = RepositoryConst::PDF_COVER_PARAM_NAME_HEADER_TEXT;
+            $params[RepositoryConst::DBCOL_REPOSITORY_PDF_COVER_PARAMETER_TEXT] = mb_strimwidth($this->pdf_cover_header_text, 0, 100);
+            $params[RepositoryConst::DBCOL_COMMON_MOD_USER_ID] = $user_id;
+            $params[RepositoryConst::DBCOL_COMMON_MOD_DATE] = $this->TransStartDate;
+            $result = $this->updatePdfCoverParamByParamName($params);
+            if ($result === false) {
+                $errMsg = $this->Db->ErrorMsg();
+                $tmpstr = sprintf("headerText update failed : %s", $errMsg ); 
+                $this->Session->setParameter("error_msg", $tmpstr);
+			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($tmpstr);
             }
+            // Delete null check(pdf_cover_header_text) K.Matsushita 2015/2/5 --end--
             
             // PDF cover header image
             $uploadFile = $this->Session->getParameter("repositoryAdminFileList");
@@ -1914,23 +1881,22 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
                     $errMsg = $this->Db->ErrorMsg();
                     $tmpstr = sprintf("headerImage update failed : %s", $errMsg ); 
                     $this->Session->setParameter("error_msg", $tmpstr);
-                    $this->failTrans(); //ROLLBACK
-                    $this->exitAction();
-                    return 'error';
+    			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
                 }
             }
             else if(is_array($uploadFile) && count($uploadFile) > 0)
             {
                 if(!is_numeric(strpos($uploadFile["mimetype"],"image")) || !$this->checkHeaderImageExtension($uploadFile["extension"]))
                 {
-                    $this->Session->setParameter("error_msg", "Uploaded file to the Header Image cannot be used!");
+                    $tmpstr = "Uploaded file to the Header Image cannot be used!";
+                    $this->Session->setParameter("error_msg", $tmpstr);
                     
                     // delete upload file
                     $this->uploadsAction->delUploadsById($uploadFile["upload_id"]);
                     
-                    $this->failTrans(); //ROLLBACK
-                    $this->exitAction();
-                    return 'error';
+    			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
                 }
                 else
                 {
@@ -1956,9 +1922,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
                         // delete upload file
                         $this->uploadsAction->delUploadsById($uploadFile["upload_id"]);
                         
-                        $this->failTrans(); //ROLLBACK
-                        $this->exitAction();
-                        return 'error';
+        			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                        throw new AppException($tmpstr);
                     }
                     $path = WEBAPP_DIR. "/uploads/repository/".$uploadFile['physical_file_name'];
                     $ret = $this->Db->updateBlobFile(
@@ -1976,9 +1941,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
                         // delete upload file
                         $this->uploadsAction->delUploadsById($uploadFile["upload_id"]);
                         
-                        $this->failTrans(); //ROLLBACK
-                        $this->exitAction();
-                        return 'error';
+        			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                        throw new AppException($tmpstr);
                     }
                     
                     // delete upload file
@@ -1998,9 +1962,8 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
                     $errMsg = $this->Db->ErrorMsg();
                     $tmpstr = sprintf("headerAlign update failed : %s", $errMsg ); 
                     $this->Session->setParameter("error_msg", $tmpstr);
-                    $this->failTrans(); //ROLLBACK
-                    $this->exitAction();
-                    return 'error';
+    			    $this->errorLog($tmpstr, __FILE__, __CLASS__, __LINE__);
+                    throw new AppException($tmpstr);
                 }
             }
             
@@ -2010,7 +1973,17 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 			
             //Add Prefix Admin 2013/12/24 T.Ichikawa --start--
             $repositoryHandleManager = new RepositoryHandleManager($this->Session, $this->dbAccess, $this->TransStartDate);
-            $repositoryHandleManager->registerPrefix($this->prefixJalcDoi, $this->prefixCrossRef, $this->prefixCnri);
+        	// Add DataCite 2015/02/09 K.Sugimoto --start--
+            $repositoryHandleManager->registerPrefix($this->prefixJalcDoi, $this->prefixCrossRef, $this->prefixDataCite, $this->prefixCnri);
+            if(isset($repositoryHandleManager->err_msg) && strlen($repositoryHandleManager->err_msg) > 0)
+            {
+                //エラーメッセージ「PrefixIDのフォーマットが不正です」
+                $error_message = $smartyAssign->getLang("repository_admin_prefix_incorrect");
+                $this->Session->setParameter("error_msg", $error_message);
+			    $this->errorLog($error_message, __FILE__, __CLASS__, __LINE__);
+                throw new AppException($error_message);
+            }
+        	// Add DataCite 2015/02/09 K.Sugimoto --end--
             //Add Prefix Admin 2013/12/24 T.Ichikawa --end--
 			
             // Add Detail Search 2013/11/20 R.Matsuura --start--
@@ -2049,28 +2022,67 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
 		    $params[] = "output_oaipmh";
 		    $this->dbAccess->executeQuery($query, $params);
             
+            // Add Default Search Type 2014/12/03 K.Sugimoto --start--
+            // Default Search Type
+            $query = "UPDATE ".DATABASE_PREFIX. "repository_parameter ".
+			         "SET `param_value` = ? ".
+			         "WHERE `param_name` = ? ;";
+		    $params = array();
+		    $params[] = $this->default_search_type;
+		    $params[] = "default_search_type";
+		    $this->dbAccess->executeQuery($query, $params);
+            // Add Default Search Type 2014/12/03 K.Sugimoto --end--
+
+            // Add Usage Statistics link display setting 2014/12/16 K.Matsushita --start--
+            $query = "UPDATE ".DATABASE_PREFIX. "repository_parameter ".
+                    "SET `param_value` = ? ".
+                    "WHERE `param_name` = ? ;";
+            $params = array();
+            $params[] = $this->usagestatistics_link_display;
+            $params[] = "usagestatistics_link_display";
+            $this->dbAccess->executeQuery($query, $params);
+            // Add Usage Statistics link display setting 2014/12/16 K.Matsushita --start--
+            
+            // Add DataCite 2015/02/09 K.Sugimoto --start--
+	        $query = "SELECT COUNT(*) ".
+	                 "FROM ".DATABASE_PREFIX."repository_doi_status ;";
+            $params = array();
+	        $result = $this->dbAccess->executeQuery($query, $params);
+	        
+	        if(isset($this->prefix_flag) && $result[0]["COUNT(*)"] == 0){
+	            // PrefixID Add Flag
+	            $query = "UPDATE ".DATABASE_PREFIX. "repository_parameter ".
+				         "SET `param_value` = ? ".
+				         "WHERE `param_name` = ? ;";
+			    $params = array();
+			    $params[] = $this->prefix_flag;
+			    $params[] = "prefix_flag";
+			    $this->dbAccess->executeQuery($query, $params);
+		    }
+            // Add DataCite 2015/02/09 K.Sugimoto --end--
+            
+            // Auto Input Metadata by CrossRef DOI 2015/03/02 K.Sugimoto --start--
+            $query = "UPDATE ".DATABASE_PREFIX. "repository_parameter ".
+                    "SET `param_value` = ? ".
+                    "WHERE `param_name` = ? ;";
+            $params = array();
+            $params[] = $this->CrossRefQueryServicesAccount;
+            $params[] = "crossref_query_service_account";
+            $this->dbAccess->executeQuery($query, $params);
+            // Auto Input Metadata by CrossRef DOI 2015/03/02 K.Sugimoto --end--
+            
+            // Add RobotList 2015/04/06 S.Suzuki --start--
+            $this->robotlistCheckboxUpdate();
+            // Add RobotList 2015/04/06 S.Suzuki --end--
+            
 			// アクション終了処理
-			$result = $this->exitAction();	// トランザクションが成功していればCOMMITされる
+			// $result = $this->exitAction();	// トランザクションが成功していればCOMMITされる
 			// return 'success';
 			
 			// redirect
 			$this->Session->setParameter("redirect_flg", "admin");
 			return 'redirect';
 			
-		}
-		catch ( RepositoryException $Exception) {
-			//エラーログ出力
-            $this->logFile(
-				"SampleAction",					//クラス名
-				"execute",						//メソッド名
-				$Exception->getCode(),			//ログID
-				$Exception->getMessage(),		//主メッセージ
-				$Exception->getDetailMsg() );	//詳細メッセージ			
-			//アクション終了処理
-	  		$this->exitAction();				   //トランザクションが失敗していればROLLBACKされる		
-			//異常終了
-			return "error";
-		}
 	}
 	
 	/**
@@ -2217,5 +2229,320 @@ class Repository_Action_Edit_Adminadmit extends RepositoryAction
         
         return true;
 	}
+    
+    // Add multi ip address 2015/01/21 T.Ichikawa --start--
+    /**
+     * update sitelicense info
+     * 
+     * @return boolean
+     */
+    private function executeUpdateSitelicense(&$errMsg="")
+    {
+        // 一度全てのデータを削除状態にする
+        $query = "UPDATE ".DATABASE_PREFIX. "repository_sitelicense_info ".
+                 "SET show_order = ?, del_user_id = ?, del_date = ?, is_delete = ? ;";
+        $params = array();
+        $params[] = 0;
+        $params[] = $this->Session->getParameter("_user_id");
+        $params[] = $this->TransStartDate;
+        $params[] = 1;
+        $result1 = $this->dbAccess->executeQuery($query, $params);
+        $query = "UPDATE ".DATABASE_PREFIX. "repository_sitelicense_ip_address ".
+                 "SET del_user_id = ?, del_date = ?, is_delete = ? ;";
+        $params = array();
+        $params[] = $this->Session->getParameter("_user_id");
+        $params[] = $this->TransStartDate;
+        $params[] = 1;
+        $result2 = $this->dbAccess->executeQuery($query, $params);
+        if($result1 == false || $result2 == false) {
+            $errMsg = "Updating database is failed";
+            return false;
+        }
+        
+        // サイトライセンス情報を取得する
+        $show_order = 0;
+        for($ii= 0 ; $ii < count($this->sitelicense_id); $ii++) {
+            $this->sitelicense_org[$ii] = str_replace(" ", "", $this->sitelicense_org[$ii]);
+            // 機関名が入力されていない場合はエラー
+            if(strlen($this->sitelicense_org[$ii]) == 0) {
+                $errMsg = "Please enter Organization name";
+                return false;
+            } else {
+                // 新規追加の機関の場合はIDを発行する
+                if($this->sitelicense_id[$ii] == 0) {
+                    // 最新のサイトライセンス機関IDを取得する
+                    $query = "SELECT organization_id FROM ". DATABASE_PREFIX. "repository_sitelicense_info ".
+                             "ORDER BY organization_id DESC ".
+                             "LIMIT 0, 1 ;";
+                    $sitelicense_seq_id = $this->dbAccess->executeQuery($query);
+                    if(count($sitelicense_seq_id) > 0) {
+                        $this->sitelicense_id[$ii] = intval($sitelicense_seq_id[0]["organization_id"]) + 1;
+                    } else {
+                        $this->sitelicense_id[$ii] = 1;
+                    }
+                }
+                $this->sitelicense_group[$ii] = str_replace(" ", "", $this->sitelicense_group[$ii]);
+                $this->sitelicense_mail[$ii] = str_replace(" ", "", $this->sitelicense_mail[$ii]);
+                
+                // IPアドレス整形
+                $ip_address = array();
+                $cnt_enable_ip = 0;
+                for($jj = 0; $jj < count($this->ip_sitelicense_from[$ii]); $jj++) {
+                    // 開始IP
+                    $tmp_start_ip = str_replace(" ", "", $this->ip_sitelicense_from[$ii][$jj][0]). ".".
+                                    str_replace(" ", "", $this->ip_sitelicense_from[$ii][$jj][1]). ".".
+                                    str_replace(" ", "", $this->ip_sitelicense_from[$ii][$jj][2]). ".".
+                                    str_replace(" ", "", $this->ip_sitelicense_from[$ii][$jj][3]);
+                    if(preg_match("/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/", $tmp_start_ip) == 1) {
+                        $ip_address[$cnt_enable_ip]["start"] = $tmp_start_ip;
+                        // 終了IP
+                        $tmp_finish_ip = str_replace(" ", "", $this->ip_sitelicense_to[$ii][$jj][0]). ".".
+                                         str_replace(" ", "", $this->ip_sitelicense_to[$ii][$jj][1]). ".".
+                                         str_replace(" ", "", $this->ip_sitelicense_to[$ii][$jj][2]). ".".
+                                         str_replace(" ", "", $this->ip_sitelicense_to[$ii][$jj][3]);
+                        if(preg_match("/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/", $tmp_finish_ip) == 1) {
+                            $ip_address[$cnt_enable_ip]["finish"] = $tmp_finish_ip;
+                        } else {
+                            $ip_address[$cnt_enable_ip]["finish"] = "";
+                        }
+                        
+                        $cnt_enable_ip++;
+                    }
+                }
+                
+                // 組織名もIPアドレスもない場合エラー
+                if(count($ip_address) == 0 && strlen($this->sitelicense_group[$ii]) == 0) {
+                    $errMsg = "Please enter OrganizationName or IP Adress Range ";
+                    return false;
+                } else if(count($ip_address) == 0 && strlen($this->sitelicense_group[$ii]) > 0) {
+                    // 組織名のみ入力されている場合IP配列に空文字を追加
+                    $ip_address[0]["start"] = "";
+                    $ip_address[0]["finish"] = "";
+                }
+                
+                // サイトライセンス機関情報登録
+                $show_order++;
+                $query = "INSERT INTO ". DATABASE_PREFIX. "repository_sitelicense_info ".
+                         "(organization_id, show_order, organization_name, group_name, mail_address, ins_user_id, mod_user_id, del_user_id, ins_date, mod_date, del_date, is_delete) ".
+                         "VALUES ".
+                         "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ".
+                         "ON DUPLICATE KEY UPDATE ".
+                         "show_order = ?, ".
+                         "organization_name = ?, ".
+                         "group_name = ?, ".
+                         "mail_address = ?, ".
+                         "mod_user_id = ?, ".
+                         "del_user_id = ?, ".
+                         "mod_date = ?, ".
+                         "del_date = ?, ".
+                         "is_delete = ? ;";
+                $params = array();
+                $params[] = $this->sitelicense_id[$ii];               // INSERT:機関ID
+                $params[] = $show_order;                              // INSERT:ソート順
+                $params[] = $this->sitelicense_org[$ii];              // INSERT:機関名
+                $params[] = $this->sitelicense_group[$ii];            // INSERT:組織名
+                $params[] = $this->sitelicense_mail[$ii];             // INSERT:メールアドレス
+                $params[] = $this->Session->getParameter("_user_id"); // INSERT:登録者
+                $params[] = $this->Session->getParameter("_user_id"); // INSERT:更新者
+                $params[] = "";                                       // INSERT:削除者
+                $params[] = $this->TransStartDate;                    // INSERT:登録日時
+                $params[] = $this->TransStartDate;                    // INSERT:更新日時
+                $params[] = "";                                       // INSERT:削除日時
+                $params[] = 0;                                        // INSERT:削除フラグ
+                $params[] = $show_order;                              // UPDATE:ソート順
+                $params[] = $this->sitelicense_org[$ii];              // UPDATE:機関名
+                $params[] = $this->sitelicense_group[$ii];            // UPDATE:組織名
+                $params[] = $this->sitelicense_mail[$ii];             // UPDATE:メールアドレス
+                $params[] = $this->Session->getParameter("_user_id"); // UPDATE:更新者
+                $params[] = "";                                       // UPDATE:削除者
+                $params[] = $this->TransStartDate;                    // UPDATE:更新日時
+                $params[] = "";                                       // UPDATE:削除日時
+                $params[] = 0;                                        // UPDATE:削除フラグ
+                $result = $this->dbAccess->executeQuery($query, $params);
+                if($result == false) {
+                    $errMsg = "Updating database is failed";
+                    return false;
+                }
+                
+                // サイトライセンスIP情報登録
+                if(count($ip_address) > 0) {
+                    $ip_address_no = 0;
+                    for($jj = 0; $jj < count($ip_address); $jj++) {
+                        $ip_address_no++;
+                        $query = "INSERT INTO ". DATABASE_PREFIX. "repository_sitelicense_ip_address ".
+                                 "(organization_id, organization_no, start_ip_address, finish_ip_address, ins_user_id, mod_user_id, del_user_id, ins_date, mod_date, del_date, is_delete) ".
+                                 "VALUES ".
+                                 "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ".
+                                 "ON DUPLICATE KEY UPDATE ".
+                                 "start_ip_address = ?, ".
+                                 "finish_ip_address = ?, ".
+                                 "mod_user_id = ?, ".
+                                 "del_user_id = ?, ".
+                                 "mod_date = ?, ".
+                                 "del_date = ?, ".
+                                 "is_delete = ? ;";
+                        $params = array();
+                        $params[] = $this->sitelicense_id[$ii];               // INSERT:機関ID
+                        $params[] = $ip_address_no;                           // INSERT:機関IPアドレスNo
+                        $params[] = $ip_address[$jj]["start"];                // INSERT:IPアドレス（開始部分）
+                        $params[] = $ip_address[$jj]["finish"];               // INSERT:IPアドレス（終了部分）
+                        $params[] = $this->Session->getParameter("_user_id"); // INSERT:登録者
+                        $params[] = $this->Session->getParameter("_user_id"); // INSERT:更新者
+                        $params[] = "";                                       // INSERT:削除者
+                        $params[] = $this->TransStartDate;                    // INSERT:登録日時
+                        $params[] = $this->TransStartDate;                    // INSERT:更新日時
+                        $params[] = "";                                       // INSERT:削除日時
+                        $params[] = 0;                                        // INSERT:削除フラグ
+                        $params[] = $ip_address[$jj]["start"];                // UPDATE:IPアドレス（開始部分）
+                        $params[] = $ip_address[$jj]["finish"];               // UPDATE:IPアドレス（終了部分）
+                        $params[] = $this->Session->getParameter("_user_id"); // UPDATE:更新者
+                        $params[] = "";                                       // UPDATE:削除者
+                        $params[] = $this->TransStartDate;                    // UPDATE:更新日時
+                        $params[] = "";                                       // UPDATE:削除日時
+                        $params[] = 0;                                        // UPDATE:削除フラグ
+                        $result = $this->dbAccess->executeQuery($query, $params);
+                        if($result == false) {
+                            $errMsg = "Updating database is failed";
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        
+        return true;
+    }
+    // Add multi ip address 2015/01/21 T.Ichikawa --end--
+    
+    // Add RobotList 2015/04/06 S.Suzuki --start--
+    /**
+     * update robotlist status
+     * 
+     * @return boolean
+     */
+    private function robotlistCheckboxUpdate()
+    {
+        // 現在の全てのロボットリストマスタの情報
+        $query = "SELECT * " . 
+                 "FROM " . DATABASE_PREFIX . "repository_robotlist_master ; ";
+        
+        $params = array();
+        $robotlistMasters = $this->Db->execute($query, $params);
+        
+        if($robotlistMasters === false) {
+            $this->errorLog($this->Db->ErrorMsg(), __FILE__, __CLASS__, __LINE__);
+            throw new AppException($this->Db->ErrorMsg());
+        }
+        
+        for ($ii = 0; $ii < count($robotlistMasters); $ii++) {
+            // 更新後のクローラーリストが有効の場合
+            if ($this->isRobotlistEnabled($robotlistMasters[$ii]["robotlist_id"], $this->robotlistValid)) {
+                $this->enableRobotlist($robotlistMasters[$ii]);
+            }
+            // 更新後のクローラーリストが無効の場合
+            else {
+                $this->disableRobotlist($robotlistMasters[$ii]);
+            }
+        }
+    }
+    
+    /**
+     * check robotlist enabled
+     * 
+     */
+    private function isRobotlistEnabled($robotlist_id, $robotlistValid)
+    {
+        if(!isset($robotlistValid))
+        {
+            return false;
+        }
+        
+        $result = array_key_exists($robotlist_id, $robotlistValid);
+        
+        return $result;
+    }
+    
+    /**
+     * update checked robotlist
+     * 
+     */
+    private function enableRobotlist($robotlist)
+    {
+        // 更新前のクローラーリストが無効の場合
+        // 有効の場合、ログ削除を実施したかどうかの情報を持つため、変更しない
+        if ($robotlist["is_robotlist_use"] == RepositoryDatabaseConst::ROBOTLIST_MASTER_NOTUSED)
+        {
+            $this->updateRobotlistDataStatus($robotlist["robotlist_id"], RepositoryDatabaseConst::ROBOTLIST_DATA_STATUS_NOTDELETED);
+            $this->updateRobotlistMasterStatus($robotlist["robotlist_id"], RepositoryDatabaseConst::ROBOTLIST_MASTER_USED);
+        }
+        
+    }
+
+    /**
+     * update unchecked robotlist
+     * 
+     */
+    private function disableRobotlist($robotlist)
+    {
+        // 更新前のクローラーリストが有効の場合
+        if ($robotlist["is_robotlist_use"] == RepositoryDatabaseConst::ROBOTLIST_MASTER_USED)
+        {
+            $this->updateRobotlistDataStatus($robotlist["robotlist_id"], RepositoryDatabaseConst::ROBOTLIST_DATA_STATUS_DISABLED);
+            $this->updateRobotlistMasterStatus($robotlist["robotlist_id"], RepositoryDatabaseConst::ROBOTLIST_MASTER_NOTUSED);
+        }
+    }
+
+    /**
+     * update robotlist data status
+     * 
+     */
+    private function updateRobotlistDataStatus($robotlist_id, $status)
+    {
+        $query = "UPDATE " . DATABASE_PREFIX . "repository_robotlist_data " . 
+                 "SET status = ?, " . 
+                 "mod_user_id = ?, " . 
+                 "mod_date = ? " . 
+                 "WHERE robotlist_id = ? ; " ;
+        
+        $params = array();
+        $params[] = $status; 
+        $params[] = $this->Session->getParameter("_user_id");
+        $params[] = $this->TransStartDate;
+        $params[] = $robotlist_id;
+        
+        $update = $this->Db->execute($query, $params);
+        
+        if($update === false) {
+            $this->errorLog($this->Db->ErrorMsg(), __FILE__, __CLASS__, __LINE__);
+            throw new AppException($this->Db->ErrorMsg());
+        }
+    }
+
+    /**
+     * update robotlist master status
+     * 
+     */
+    private function updateRobotlistMasterStatus($robotlist_id, $status)
+    {
+        $query = "UPDATE " . DATABASE_PREFIX . "repository_robotlist_master " . 
+                 "SET is_robotlist_use = ?, " . 
+                 "mod_user_id = ?, " . 
+                 "mod_date = ? " . 
+                 "WHERE robotlist_id = ? ; " ;
+        
+        $params = array();
+        $params[] = $status; 
+        $params[] = $this->Session->getParameter("_user_id");
+        $params[] = $this->TransStartDate;
+        $params[] = $robotlist_id;
+        
+        $update = $this->Db->execute($query, $params);
+        
+        if($update === false) {
+            $this->errorLog($this->Db->ErrorMsg(), __FILE__, __CLASS__, __LINE__);
+            throw new AppException($this->Db->ErrorMsg());
+        }
+    }
+    // Add RobotList 2015/04/06 S.Suzuki --end--
 }
 ?>

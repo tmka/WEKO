@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: repository_item_edit_files.html 40168 2014-08-20 06:24:18Z keiya_sugimoto $          -->
+<!--// $Id: repository_item_edit_files.html 53594 2015-05-28 05:25:53Z kaede_matsushita $          -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -27,19 +27,38 @@
 			<{* FLOW *}>
 			<tr>
 				<td align="center">
-					<{if $smarty.session._lang == "japanese"}>
-						<{if $smarty.session.doi_itemtype_flag == true}>
-							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_2.png" alt="" />
-						<{else}>
-							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_2.png" alt="" />
-						<{/if}>
-					<{else}>
-						<{if $smarty.session.doi_itemtype_flag == true}>
-							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_2_eng.png" alt="" />
-						<{else}>
-							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_2_eng.png" alt=""/>
-						<{/if}>
-					 <{/if}>
+                    <{if $smarty.session._lang == "japanese"}>
+                        <{if $smarty.session.doi_itemtype_flag == true}>
+                            <img id="fileImg<{$id}>_JPN_DOI" usemap="#flowImgMap<{$id}>_doi" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_2.png" />
+                        <{else}>
+                            <img id="fileImg<{$id}>_JPN" usemap="#flowImgMap<{$id}>" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_2.png" />
+                        <{/if}>
+                    <{else}>
+                        <{if $smarty.session.doi_itemtype_flag == true}>
+                            <img id="fileImg<{$id}>_ENG_DOI" usemap="#flowImgMap<{$id}>_doi" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_doi_2_eng.png" />
+                        <{else}>
+                            <img id="fileImg<{$id}>_ENG" usemap="#flowImgMap<{$id}>" src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_select_type_2_eng.png" />
+                        <{/if}>
+                    <{/if}>
+                    <map name="flowImgMap<{$id}>">
+                        <{if $smarty.session.edit_flag != 1}>
+                            <area onclick="repositoryCls['<{$id}>'].repositoryItemUploadFiles('selecttype'); return false;" title="<{$lang.repository_item_selecttype}>" style="cursor: pointer;" shape="poly" coords="0,0,0,37,132,37,140,19,140,18,132,0">
+                        <{/if}>
+                        <{*<area onclick="repositoryCls['<{$id}>'].repositoryItemUploadFiles('files'); return false;" title="<{$lang.repository_item_editfiles}>" style="cursor: pointer;" shape="poly" coords="132,0,140,18,140,19,132,37,272,37,280,19,280,18,272,0">*}>
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemUploadFiles('texts'); return false;" title="<{$lang.repository_item_edittexts}>" style="cursor: pointer;" shape="poly" coords="272,0,280,18,280,19,272,37,412,37,420,19,420,18,412,0">
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemUploadFiles('links'); return false;" title="<{$lang.repository_item_editlinks}>" style="cursor: pointer;" shape="poly" coords="412,0,420,18,420,19,412,37,552,37,560,19,560,18,552,0">
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemUploadFiles('confirm'); return false;" title="<{$lang.repository_item_confirm}>" style="cursor: pointer;" shape="poly" coords="552,0,560,18,560,19,552,37,701,37,701,0">
+                    </map>
+                    <map name="flowImgMap<{$id}>_doi">
+                        <{if $smarty.session.edit_flag != 1}>
+                            <area onclick="repositoryCls['<{$id}>'].repositoryItemUploadFiles('selecttype'); return false;" title="<{$lang.repository_item_selecttype}>" style="cursor: pointer;" shape="poly" coords="0,0,0,37,132,37,140,19,140,18,132,0">
+                        <{/if}>
+                        <{*<area onclick="repositoryCls['<{$id}>'].repositoryItemUploadFiles('files'); return false;" title="<{$lang.repository_item_editfiles}>" style="cursor: pointer;" shape="poly" coords="132,0,140,18,140,19,132,37,272,37,280,19,280,18,272,0">*}>
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemUploadFiles('texts'); return false;" title="<{$lang.repository_item_edittexts}>" style="cursor: pointer;" shape="poly" coords="272,0,280,18,280,19,272,37,412,37,420,19,420,18,412,0">
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemUploadFiles('links'); return false;" title="<{$lang.repository_item_editlinks}>" style="cursor: pointer;" shape="poly" coords="412,0,420,18,420,19,412,37,552,37,560,19,560,18,552,0">
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemUploadFiles('doi'); return false;" title="<{$lang.repository_item_add_doi}>" style="cursor: pointer;" shape="poly" coords="552,0,560,18,560,19,552,37,692,37,700,19,700,18,692,0">
+                        <area onclick="repositoryCls['<{$id}>'].repositoryItemUploadFiles('confirm'); return false;" title="<{$lang.repository_item_confirm}>" style="cursor: pointer;" shape="poly" coords="692,0,700,18,700,19,692,37,841,37,841,0">
+                    </map>
 				</td>
 			</tr>
 		</table>
@@ -57,16 +76,25 @@
 		<input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_main_item_selecttype'); return false;">
 		<{/if}>
 		<input type="button" class="btn_blue" value="<{$lang.repository_save}>" onclick="repositoryCls['<{$id}>'].repositoryItemUploadFiles('stay'); return false;">
-		<input type="button" class="btn_next" value="<{$lang.repository_page_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemUploadFiles(''); return false;">
+		<input type="button" class="btn_next" value="<{$lang.repository_page_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemUploadFiles('next'); return false;">
 	</div>
 	<div class="paging"><b><{$lang.repository_itemtype}> : <{$smarty.session.item_type_all.item_type_name}></b></div>
-	<{if $action.error_msg != null}>
-		<div class="error_msg al">
-			<{section name=i loop=$action.error_msg}>
-				<{$action.error_msg[i]}><br />
-			<{/section}>
-		</div>
-	<{/if}>
+
+    <{if $action.errMsg != null && count($action.errMsg) > 0}>
+    <div class="error_msg al">
+        <{foreach from=$action.errMsg item=msg}>
+        <{$msg|smarty:nodefaults}><br/>
+        <{/foreach}>
+    </div>
+    <{/if}>
+    <{if $action.warningMsg != null && count($action.warningMsg) > 0}>
+    <div class="warning_msg al">
+        <{foreach from=$action.warningMsg item=msg}>
+        <{$msg|smarty:nodefaults}><br/>
+        <{/foreach}>
+    </div>
+    <{/if}>
+    
 	<div id="can_drop"><{$lang.repository_drag_and_drop}></div>
 	<div class="paging">
 		<form id="attachment_form<{$id}>" target="attachment_form<{$id}>" enctype="multipart/form-data">
@@ -240,7 +268,7 @@
 	<input type="button" class="btn_back" value="<{$lang.repository_return}>" onclick="commonCls.sendView('<{$id}>', 'repository_view_main_item_selecttype'); return false;">
 	<{/if}>
 	<input type="button" class="btn_blue" value="<{$lang.repository_save}>" onclick="repositoryCls['<{$id}>'].repositoryItemUploadFiles('stay'); return false;">
-	<input type="button" class="btn_next" value="<{$lang.repository_page_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemUploadFiles(''); return false;">
+	<input type="button" class="btn_next" value="<{$lang.repository_page_next}>" onclick="repositoryCls['<{$id}>'].repositoryItemUploadFiles('next'); return false;">
 </div>
 
 </div>

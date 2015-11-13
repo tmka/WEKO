@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Importauthority.class.php 30569 2014-01-09 07:37:40Z rei_matsuura $
+// $Id: Importauthority.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -26,7 +26,7 @@ class Repository_Action_Edit_Importauthority extends RepositoryAction
     public $Db = null;
     
     // menber
-    private $errMsg = null;
+    private $error_msg = null;
     private $lineNum = 0;
     
     // Const
@@ -51,7 +51,7 @@ class Repository_Action_Edit_Importauthority extends RepositoryAction
         }
     }
     
-    function executeForWeko()
+    function executeApp()
     {
         // get import.tsv file
         $this->lineNum = 0;
@@ -60,7 +60,7 @@ class Repository_Action_Edit_Importauthority extends RepositoryAction
         $fileData = $this->readFile($tmpFile);
         if($fileData === false)
         {
-            $this->errMsg = "error file read";
+            $this->error_msg = "error file read";
         }
         $this->lineNum = count($fileData);
         
@@ -86,12 +86,12 @@ class Repository_Action_Edit_Importauthority extends RepositoryAction
                 {
                     continue;
                 }
-                $nameAuthority->entryNameAuthority($metadataForNameAuthority[$nCnt], $this->errMsg);
+                $nameAuthority->entryNameAuthority($metadataForNameAuthority[$nCnt], $this->error_msg);
             }
         }
         
-        if(strlen($this->errMsg) > 0) {
-            echo $this->errMsg;
+        if(strlen($this->error_msg) > 0) {
+            echo $this->error_msg;
         }
         else
         {

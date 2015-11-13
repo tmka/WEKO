@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: RepositoryExternalSearchWordManager.class.php 38124 2014-07-01 06:56:02Z rei_matsuura $
+// $Id: RepositoryExternalSearchWordManager.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics,
 // Research and Development Center for Scientific Information Resources
@@ -51,6 +51,12 @@ class Repository_Components_RepositoryExternalSearchWordManager extends Reposito
         $external_search_words = $this->checkSearchWord($split_external_search_word);
         // deposit external search word
         for($ii = 0; $ii < count($external_search_words); $ii++) {
+            // bug fix external searchword empty 2015/04/10 K.Sugimoto --start--
+            if(strlen($external_search_words[$ii]) == 0)
+            {
+                continue;
+            }
+            // bug fix external searchword empty 2015/04/10 K.Sugimoto --end--
             $query = "SELECT * FROM ". DATABASE_PREFIX. "repository_item_external_searchword ".
                      "WHERE item_id = ? ".
                      "AND item_no = ? ".
@@ -124,7 +130,12 @@ class Repository_Components_RepositoryExternalSearchWordManager extends Reposito
             if(isset($devRef[$result[$ii]['search_word']])){
                 $divWord = preg_split($result[$ii]['delimiter'], $devRef[$result[$ii]['search_word']]);
                 for($jj = 0; $jj < count($divWord); $jj++){
-                    $external_search_words[] = $divWord[$jj];
+                    // bug fix external searchword empty 2015/04/09 K.Sugimoto --start--
+                    if(strlen($divWord[$jj]) > 0)
+                    {
+                        $external_search_words[] = $divWord[$jj];
+                    }
+                    // bug fix external searchword empty 2015/04/09 K.Sugimoto --end--
                 }
             }
         }

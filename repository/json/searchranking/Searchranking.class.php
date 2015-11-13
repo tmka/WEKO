@@ -29,7 +29,7 @@ class Repository_Json_Searchranking extends RepositoryAction
      *
      * @access  public
      */
-    function executeForWEKO()
+    function executeApp()
     {
         // ランキング設定を取得する
         $rankingDisplay = 0;

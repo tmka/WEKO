@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: SwordDelete.class.php 38124 2014-07-01 06:56:02Z rei_matsuura $
+// $Id: SwordDelete.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -330,7 +330,7 @@ class SwordDelete extends RepositoryAction
             return false;
         }
         $query = "SELECT user_authority_id FROM ".DATABASE_PREFIX."authorities ".
-                 "WHERE role_authority_id = '".$result[0]["role_authority_id"]."' ";
+                 "WHERE role_authority_id = ".$result[0]["role_authority_id"]." ";
         $result = $this->Db->execute($query);
         if($result === false || count($result) != 1){
             return false;

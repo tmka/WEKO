@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Crossdomainproxy.class.php 28536 2013-11-21 08:46:23Z shota_suzuki $
+// $Id: Crossdomainproxy.class.php 48455 2015-02-16 10:53:40Z atsushi_suzuki $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -19,7 +19,7 @@ require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.
 
 class Repository_Action_Common_Crossdomainproxy extends RepositoryAction
 {
-    function executeForWeko() {
+    function executeApp() {
         $url = html_entity_decode($_GET["ajaxRequest"]);
         
         $option = array("timeout" => 10, 

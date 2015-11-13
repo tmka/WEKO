@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: repository_mobile_item_contents.html 40393 2014-08-25 09:29:15Z tatsuya_koyasu $          -->
+<!--// $Id: repository_mobile_item_contents.html 47574 2015-02-02 07:33:54Z tomohiro_ichikawa $          -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -226,7 +226,7 @@
                                                 <{if $k > 0}>
                                                     , 
                                                 <{/if}>
-                                                <a href="" id="searchAuthorResult<{$id}>_<{$i}>_<{$j}>_<{$k}>" onclick="javascript: redirectAuthorSearch<{$id}>( 'searchAuthorResult<{$id}>_<{$i}>_<{$j}>_<{$k}>' ); return false; " >
+                                                <a href="<{$attr[k].url}>" >
                                                     <{$attr[k].family}> <{$attr[k].name}>
                                                 </a>
                                             <{/section}>
@@ -240,7 +240,7 @@
                                                 <{if $k > 0}>
                                                     , 
                                                 <{/if}>
-                                                <a href="" id="searchAuthorResult<{$id}>_<{$i}>_<{$j}>_<{$k}>" onclick="javascript: redirectAuthorSearch<{$id}>( 'searchAuthorResult<{$id}>_<{$i}>_<{$j}>_<{$k}>' ); return false; " >
+                                                <a href="<{$attr[k].url}>" >
                                                     <{$attr[k].family}> <{$attr[k].name}>
                                                 </a>
                                             <{/section}>

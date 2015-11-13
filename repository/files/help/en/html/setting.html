@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: setting.html 39583 2014-08-05 01:33:00Z keiya_sugimoto $          -->
+<!--// $Id: setting.html 54835 2015-06-25 04:10:46Z keiya_sugimoto $          -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -30,15 +30,18 @@
 				</ul>
 				<h3><a name="view">表示設定</a></h3>
 				<div class="page_list">
-					「表示設定」では下記6項目を設定することができます。<br/>
+					「表示設定」では下記10項目を設定することができます。<br/>
 					<ul>
 						<li><a href="#view_first_setting">初期表示設定</a></li>
 						<li><a href="#view_language">言語表示設定</a></li>
 						<li><a href="#view_unit_money">通貨単位設定</a></li>
-						<li><a href="#simple_list">インデックス一覧表示設定</a></li>
+						<li><a href="#simple_list">インデックスリンク表示設定</a></li>
 						<li><a href="#view_ranking">ランキング管理</a></li>
+						<li><a href="#default_search_setting">検索設定</a></li>
 						<li><a href="#view_detail_search">詳細検索条件設定</a></li>
 						<li><a href="#view_search">検索結果表示設定</a></li>
+						<li><a href="#view_icon">アイコン表示設定</a></li>
+						<li><a href="#view_UsageStatistics_link">利用統計リンク表示設定</a></li>
 					</ul>
 					「管理」タブを選択し、「表示設定」タブを選択すると表示設定画面が表示されます。<br/>
 					設定変更後は「適用」ボタンを押下し、変更を反映してください。<br/>
@@ -175,7 +178,7 @@
 						<center><img src="./img/setting_17.png" alt="通貨単位設定" border="0"/></center>
 						<br/>
 					</div>
-					<h4><a name="simple_list">インデックス一覧表示</a></h4>
+					<h4><a name="simple_list">インデックスリンク表示</a></h4>
 					<div class="page_list">
 						トップページのインデックス簡易アクセスUI表示を設定することができます。<br/>
 						設定するインデックス簡易アクセスUIはトップページの左側となります。
@@ -212,10 +215,19 @@
 									セレクトボックスから「DB保存情報を表示する」を選択すると、DBに登録されているランキング情報を利用したランキングが表示される<br/>
 								</td>
 							</tr>
+							
+							<tr>
+								<td nowrap>ランキング表示設定</td>
+								<td>
+									登録アイテムを新着アイテムとして扱う期間を設定する<br/>
+								</td>
+							</tr>
+							
 							<tr>
 								<td nowrap>新規登録期間</td>
 								<td>
-									登録アイテムを新着アイテムとして扱う期間を設定する<br/>
+									ランキングタブの表示／非表示を設定する<br/>
+									「表示する」を選択するとWEKOのトップページにランキングタブが表示される<br/>
 								</td>
 							</tr>
 							<tr>
@@ -247,6 +259,19 @@
 							<li>新規登録期間に設定できる日数は「1日」からとなります。</li>
 						</ul>
 					</div>
+					
+					<h4><a name="default_search_setting">検索設定</a></h4>
+					<div class="page_list">
+						WEKOの簡易検索および詳細検索のデフォルトの検索タイプを「全文検索」または「キーワード検索」のどちらかに設定することができます。<br/>
+						<br/>
+						<center><img src="./img/setting_default_search_setting.png" alt="検索設定" border="0"/></center>
+						<br/>
+						下記のように設定した値がトップページの検索画面に反映されます。<br/>
+						<br/>
+						<center><img src="./img/setting_top_seartch_type.png" alt="トップページの検索タイプ設定" border="0"/></center>
+						<br/>
+					</div>
+					
 					<h4><a name="view_detail_search">詳細検索条件設定</a></h4>
 					<div class="page_list">
 						使用可能な詳細検索条件およびデフォルトで表示する詳細検索条件について設定することができます。<br/>
@@ -297,6 +322,33 @@
 						</table>
 						<br/>
 					</div>
+					
+					<h4><a name="view_icon">アイコン表示設定</a></h4>
+					<div class="page_list">
+						トップページのヘルプアイコンとOAI-OREアイコンの表示／非表示を設定することができます。<br/>
+						<br/>
+						<center><img src="./img/setting_display_icon_setting.png" alt="アイコン表示設定" border="0"/></center>
+						<br/>
+						どちらも「表示する」を選択した場合、トップページ画面は以下のようになります。<br/>
+						<br/>
+						<center><img src="./img/setting_display_icon_top.png" alt="アイコン表示トップ画面" border="0"/></center>
+						<br/>
+					</div>
+					
+					
+					
+					<h4><a name="view_UsageStatistics_link">利用統計リンク表示設定</a></h4>
+					<div class="page_list">
+						アイテム詳細画面に利用統計リンクを表示するかしないかを設定することができます。<br/>
+						<br/>
+						<center><img src="./img/setting_usagestatistics_link.png" alt="利用統計リンク表示設定" border="0"/></center>
+						<br/>
+						「表示する」を選択した場合、アイテム詳細画面は以下のようになります。<br/>
+						<br/>
+						<center><img src="./img/setting_detail_usagestatistics_link.png" alt="利用統計リンク表示設定" border="0"/></center>
+						<br/>
+					</div>
+					
 				</div>
 				<h3><a name="run">運用設定</a></h3>
 				<div class="page_list">
@@ -388,9 +440,50 @@
 					</div>
 					<h4><a name="run_log">ログ解析管理</a></h4>
 					<div class="page_list">
+						<a name="exclude_log">■除外対象のログ削除</a><br/>
+						除外対象アドレスおよび共用クローラーリストから、指定されたIPアドレス、ユーザエージェントを持つアクセスログを削除します。<br/>
+						除外されるアクセスログは画面上で設定したIPアドレスおよび共用クローラーリストに<br/>
+						記載されているIPアドレスを持つアクセスログと、共用クローラーリストに記載されている<br/>
+						文字列に部分一致するユーザエージェントを持つアクセスログです。<br/>
+						<br/>
+						<center><img src="./img/setting_102.png" alt="ログ除外実行" border="0"/></center>
+						<br/>
+						【注意事項】
+						<ul>
+							<li><b style="color:#FF0000">アクセスログは物理削除となります</b></li>
+							<li><b style="color:#FF0000">設定後、設定されたIPアドレスおよび共用クローラーリストにて指定されたIPアドレスとユーザエージェントを持つアクセスはアクセスログに保存されなくなります</b></li>
+						</ul>
+						<br/>
+						除外対象のログを削除している間はログ集計を実施できません。<br/>
+						除外処理終了後、ログの集計が実施できるようになります。<br/>
+						影響を受ける集計結果を下記に記載いたします。
+						<ul>
+							<li>ランキング</li>
+							<li>利用統計</li>
+							<li>サイトライセンスフィードバックメール送信</li>
+							<li>利用統計フィードバックメール送信</li>
+							<li>定型レポート</li>
+							<li>カスタムレポート</li>
+						</ul>
+						<br/>
+						<a name="set_ipaddress">■除外対象アドレス</a><br/>
 						ログ解析から除外するIPアドレスを指定することができます。<br/>
 						<br/>
 						<center><img src="./img/setting_69.png" alt="ログ解析管理" border="0"/></center>
+						<br/>
+						<br/>
+						<a name="shared_crawler_list">■共用クローラーリスト</a><br/>
+						ログ解析から除外するIPアドレス、ユーザエージェントの部分一致キーワードリストを定義し、ネットワークを介して取得、設定することができます。<br/>
+						共用クローラーリストはNIIから提供されます。<br/>
+						表示されるバージョンなどは現在取り込んでいるクローラーリストの情報となります。<br/>
+						<br/>
+						<center><img src="./img/setting_103.png" alt="共用クローラーリスト" border="0"/></center>
+						<br/>
+						【注意事項】
+						<ul>
+							<li><b style="color:#FF0000">共用クローラーリストを無効にしても削除されたアクセスログは復活しません</b></li>
+							<li>有効に変更しログ削除実施後、指定されたIPアドレスおよび共用クローラーリストにて指定されているIPアドレスおよびユーザエージェントと部分一致するアクセスはログに保存されなくなります</li>
+						</ul>
 						<br/>
 					</div>
 					<h4><a name="run_license">サイトライセンス認可</a></h4>
@@ -399,6 +492,7 @@
 						サイトライセンスを認可されたIPアドレスからのアクセスであれば、課金ファイルが無料でダウンロードできるようになります。<br/>
 						また、サイトライセンスが認可されているIPアドレスからのアクセスであってもアイテムタイプごとに無料ダウンロード対象から除外することが可能です。<br/>
 						サイトライセンスユーザーの利用状況をフィードバックする事が出来ます。<br/>
+						<br/>
 						<center><img src="./img/setting_73.png" alt="サイトライセンス認可" border="0"/></center>
 						<br/>
 					</div>
@@ -662,16 +756,39 @@
 						■PrefixID(<a href="http://japanlinkcenter.org/jalc/" target="_blank">JaLC DOI</a>)
 						<br/>
 						JaLC DOIハンドルサーバのPrefixIDを設定することができます。<br/>
+						JaLC DOIのPrefix設定欄を表示するには、repository/config/define.inc.phpの_REPOSITORY_JALC_DOIをtrueにする必要があります。<br/>
 						<br/>
 						<center><img src="./img/setting_41.png" alt="" border="0"/></center>
 						<br/>
 						
 						<br/>
-						■PrefixID(<a href="http://www.crossref.org/" target="_blank">Cross Ref</a>)
+						■PrefixID(<a href="http://www.crossref.org/" target="_blank">JaLC CrossRef DOI</a>)
 						<br/>
-						Cross RefハンドルサーバのPrefixIDを設定することができます。<br/>
+						JaLC CrossRef DOIハンドルサーバのPrefixIDを設定することができます。<br/>
+						JaLC CrossRef DOIのPrefix設定欄を表示するには、repository/config/define.inc.phpの_REPOSITORY_JALC_CROSSREF_DOIをtrueにする必要があります。<br/>
 						<br/>
 						<center><img src="./img/setting_42.png" alt="" border="0"/></center>
+						<br/>
+						
+						<br/>
+						■PrefixID(<a href="https://www.datacite.org/" target="_blank">JaLC DataCite DOI</a>)
+						<br/>
+						JaLC DataCite DOIハンドルサーバのPrefixIDを設定することができます。<br/>
+						JaLC DataCite DOIのPrefix設定欄を表示するには、repository/config/define.inc.phpの_REPOSITORY_JALC_DATACITE_DOIをtrueにする必要があります。<br/>
+						<br/>
+						<center><img src="./img/setting_101.png" alt="" border="0"/></center>
+						<br/>
+						
+						<br/>
+						■機関内部ID
+						<br/>
+						複数のWEKOを所有する機関において、DOIの値が重複することを防ぐため、 下記のようにPrefixID(http://id.nii.ac.jp/)をSuffixに付加するか設定することができます。<br/>
+						<br/>
+						<center><img src="./img/setting_100.png" alt="" border="0"/></center>
+						<br/>
+						<font color="#f00">DOIが付与されたアイテムをすでに登録している場合、設定を変更することはできません。</font><br/>
+						<br/>
+						<center><img src="./img/setting_99.png" alt="" border="0"/></center>
 						<br/>
 						
 						<br/>
@@ -737,6 +854,20 @@
 						<ul>
 							<li>医中誌へ連携しない場合、及び「現在の連携状態」が未認証状態の場合、医中誌のfill機能が利用できなくなります。</li>
 							<li>医中誌へのIP認証が通っている場合、ログインID・ログインパスワードの設定は必要ありません。</li>
+						</ul>
+						<br/>
+						<br/>
+						■CrossRef Query Services Account
+						<br/>
+						アイテム登録時のfill機能において利用しているCrossRefの「CrossRef Query Services Account」を変更することができます。<br/>
+						「CrossRef Query Services Account」は、CrossRef連携に利用する登録アカウントです。 <br/>
+						<br/>
+						<center><img src="./img/setting_crossref_account.png" alt="CrossRefQueryServicesAccount" border="0"/></center>
+						<br/>
+						<br/>
+						【注意事項】
+						<ul>
+							<li>「CrossRef Query Services Account」が空白の場合、CrossRefのfill機能が利用できなくなります。</li>
 						</ul>
 					</div>
 					<h4><a name="server_OAIPMH">OAI-PMH設定</a></h4>

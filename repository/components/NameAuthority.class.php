@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: NameAuthority.class.php 30569 2014-01-09 07:37:40Z rei_matsuura $
+// $Id: NameAuthority.class.php 58457 2015-10-06 02:18:19Z tatsuya_koyasu $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -68,7 +68,7 @@ class NameAuthority extends Action
      * @return boolean
      * @access  public
      */
-    public function insNameAuthority($params=array())
+    private function insNameAuthority($params=array())
     {
         $result = $this->Db->insertExecute("repository_name_authority", $params);
         if ($result === false) {
@@ -83,24 +83,9 @@ class NameAuthority extends Action
      * @return boolean
      * @access  public
      */
-    public function updNameAuthority($params=array(), $where_params=array())
+    private function updNameAuthority($params=array(), $where_params=array())
     {
         $result = $this->Db->updateExecute("repository_name_authority", $params, $where_params);
-        if ($result === false) {
-            return false;
-        }
-        return true;
-    }
-    
-    /**
-     * Name Authority Delete
-     * @param array()
-     * @return boolean
-     * @access  public
-     */
-    public function delNameAuthority($where_params=array())
-    {
-        $result = $this->Db->deleteExecute("repository_name_authority", $where_params);
         if ($result === false) {
             return false;
         }
@@ -131,7 +116,7 @@ class NameAuthority extends Action
      * @return boolean
      * @access  public
      */
-    public function insExternalAuthorIdPrefix($params=array())
+    private function insExternalAuthorIdPrefix($params=array())
     {
         $result = $this->Db->insertExecute("repository_external_author_id_prefix", $params);
         if ($result === false) {
@@ -146,24 +131,9 @@ class NameAuthority extends Action
      * @return boolean
      * @access  public
      */
-    public function updExternalAuthorIdPrefix($params=array(), $where_params=array())
+    private function updExternalAuthorIdPrefix($params=array(), $where_params=array())
     {
         $result = $this->Db->updateExecute("repository_external_author_id_prefix", $params, $where_params);
-        if ($result === false) {
-            return false;
-        }
-        return true;
-    }
-    
-    /**
-     * External AuthorId Prefix Delete
-     * @param array()
-     * @return boolean
-     * @access  public
-     */
-    public function delExternalAuthorIdPrefix($where_params=array())
-    {
-        $result = $this->Db->deleteExecute("repository_external_author_id_prefix", $where_params);
         if ($result === false) {
             return false;
         }
@@ -182,69 +152,6 @@ class NameAuthority extends Action
     public function getExternalAuthorIdPrefix($where_params=array(), $order_params=array(), $func = null, $func_param = null)
     {
         $result = $this->Db->selectExecute("repository_external_author_id_prefix", $where_params, $order_params, null, null, $func, $func_param);
-        if ($result === false) {
-            return $result;
-        }
-        return $result;
-    }
-    
-    /**
-     * External AuthorId Suffix Insert
-     * @param array()
-     * @return boolean
-     * @access  public
-     */
-    public function insExternalAuthorIdSuffix($params=array())
-    {
-        $result = $this->Db->insertExecute("repository_external_author_id_suffix", $params);
-        if ($result === false) {
-            return false;
-        }
-        return true;
-    }
-    
-    /**
-     * External AuthorId Suffix Update
-     * @param array()
-     * @return boolean
-     * @access  public
-     */
-    public function updExternalAuthorIdSuffix($params=array(), $where_params=array())
-    {
-        $result = $this->Db->updateExecute("repository_external_author_id_suffix", $params, $where_params);
-        if ($result === false) {
-            return false;
-        }
-        return true;
-    }
-    
-    /**
-     * External AuthorId Suffix Delete
-     * @param array()
-     * @return boolean
-     * @access  public
-     */
-    public function delExternalAuthorIdSuffix($where_params=array())
-    {
-        $result = $this->Db->deleteExecute("repository_external_author_id_suffix", $where_params);
-        if ($result === false) {
-            return false;
-        }
-        return true;
-    }
-    
-    /**
-     * External AuthorId Suffix Select
-     * @param array where_params
-     * @param array order_params
-     * @param function func
-     * @param array    func_param
-     * @return boolean
-     * @access  public
-     */
-    public function getExternalAuthorIdSuffix($where_params=array(), $order_params=array(), $func = null, $func_param = null)
-    {
-        $result = $this->Db->selectExecute("repository_external_author_id_suffix", $where_params, $order_params, null, null, $func, $func_param);
         if ($result === false) {
             return $result;
         }
@@ -343,7 +250,7 @@ class NameAuthority extends Action
      * @param int $prefix_id
      * @return array()
      */
-    public function updateExternalAuthorIdPrefix($prefix_id){
+    private function updateExternalAuthorIdPrefix($prefix_id){
         $params = array(
                         "mod_user_id" => $this->user_id,
                         "del_user_id" => 0,
@@ -364,7 +271,7 @@ class NameAuthority extends Action
      *
      * @return int $new_prefix_id
      */
-    public function getNewPrefixId(){
+    private function getNewPrefixId(){
         $new_prefix_id = intval($this->Db->nextSeq("repository_external_author_id_prefix"));
         return $new_prefix_id;
     }
@@ -414,29 +321,6 @@ class NameAuthority extends Action
                     }
                 }
             }
-        }
-        return true;
-    }
-    
-    /**
-     * Delete external authorID suffix
-     *
-     * @param int $author_id
-     */
-    public function deleteExternalAuthorIdSuffix($author_id){
-        $query = "DELETE SUFFIX ".
-                 "FROM ".DATABASE_PREFIX."repository_external_author_id_suffix AS SUFFIX, ".
-                 "     ".DATABASE_PREFIX."repository_external_author_id_prefix AS PREFIX ".
-                 "WHERE SUFFIX.author_id = ? ".
-                 "AND SUFFIX.prefix_id = PREFIX.prefix_id ".
-                 "AND ((PREFIX.block_id = 0 AND PREFIX.room_id = 0) OR (PREFIX.block_id = ? AND PREFIX.room_id = ?));";
-        $params = array();
-        $params[] = $author_id;         // author_id
-        $params[] = $this->block_id;    // block_id
-        $params[] = $this->room_id;     // room_id
-        $result = $this->Db->execute($query, $params);
-        if($result===false){
-            return false;
         }
         return true;
     }
@@ -654,6 +538,262 @@ class NameAuthority extends Action
     }
     
     /**
+     * duplicate key insert external author id
+     * 外部著者IDを上書き保存する
+     *
+     * @param array $extAuthorIdArray[$ii]["prefix_id"]
+     *                                    ["suffix"]
+     *                                    ["old_prefix_id"]
+     *                                    ["old_suffix"]
+     *                                    ["prefix_name"]
+     * @param int $authorId
+     */
+    private function upsertExternalAuthorId($extAuthorIdArray, $authorId){
+        // Prefixが配列内に含まれているので、それを利用して保存する
+        // 上書きする必要があるため、Duplicate Key Insertを利用する
+        $query = "INSERT INTO ". DATABASE_PREFIX. "repository_external_author_id_suffix ".
+                 " (author_id, prefix_id, suffix, ins_user_id, mod_user_id, del_user_id, ins_date, mod_date, del_date, is_delete )".  
+                 " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ". 
+                 " ON DUPLICATE KEY UPDATE ". 
+                 "   suffix = ?, mod_user_id = ?, mod_date = ?;";
+        for($ii = 0; $ii < count($extAuthorIdArray); $ii++){
+            $params = array();
+            $params[] = $authorId;
+            $params[] = $extAuthorIdArray[$ii]["prefix_id"];
+            $params[] = $extAuthorIdArray[$ii]["suffix"];
+            $params[] = $this->user_id;
+            $params[] = $this->user_id;
+            $params[] = "";
+            $params[] = $this->mod_date;
+            $params[] = $this->mod_date;
+            $params[] = "";
+            $params[] = 0;
+            $params[] = $extAuthorIdArray[$ii]["suffix"];
+            $params[] = $this->user_id;
+            $params[] = $this->mod_date;
+            
+            $result = $this->Db->execute($query, $params);
+            if($result === false){
+                $ex = new Exception($this->Db->ErrorMsg());
+                throw $ex;
+            }
+        }
+    }
+    
+    
+    
+    /**
+     * Get a list of the author ID that partially match the external author ID
+     * 外部著者ID群に部分一致する著者IDの一覧を取得する
+     *
+     * @param array $extAuthorIdArray
+     * @return array: 外部著者IDのいずれかに一致した著者IDの一覧
+     *                $authorIds[$ii]["author_id"] = value
+     */
+    private function selectAuthorIdList($extAuthorIdArray){
+        $params = array();
+        $whereString = "";
+        for($ii = 0; $ii < count($extAuthorIdArray); $ii++){
+            if(strlen($whereString) > 0){
+                $whereString .= " OR ";
+            } else {
+                $whereString = " WHERE ";
+            }
+            $whereString .= " ( prefix_id = ? AND suffix = ?) ";
+            $params[] = $extAuthorIdArray[$ii]["prefix_id"];
+            $params[] = $extAuthorIdArray[$ii]["suffix"];
+        }
+        
+        // 入力された外部著者IDとの比較のため、suffixが部分一致する著者IDのリストを作成する
+        $query = "SELECT author_id ". 
+                 " FROM ". DATABASE_PREFIX. "repository_external_author_id_suffix ". 
+                 $whereString. 
+                 " GROUP BY author_id ". 
+                 " ORDER BY COUNT(author_id) DESC, author_id ASC;";
+        
+        $authorIds = $this->Db->execute($query, $params);
+        if($authorIds === false){
+            // データベースエラー
+            $ex = new Exception($this->Db->ErrorMsg());
+            throw $ex;
+        }
+        
+        return $authorIds;
+    }
+    
+    /**
+     * With the exception of the non-input, it is confirmed that there is no difference 
+     * in the external author ID stick string to an external author ID and the author ID
+     * 未入力を除き、外部著者ID群と著者IDに紐付く外部著者ID群に差異がないことを確認する
+     *
+     * @param array $extAuthorIdArray
+     * @param int $authorId
+     * @return boolean: true  -> データベースと入力の差異はある
+     *                  false -> データベースと入力に差異がない
+     */
+    private function isDiffExternalAuthorId($extAuthorIdArray, $authorId){
+        // 著者IDのprefixおよびsuffixを全て取得する
+        $query = "SELECT prefix_id, suffix ". 
+                 " FROM ". DATABASE_PREFIX. "repository_external_author_id_suffix ". 
+                 " WHERE author_id = ? ". 
+                 " AND is_delete = ?;";
+        $params = array();
+        $params[] = $authorId;
+        $params[] = 0;
+        $result = $this->Db->execute($query, $params);
+        if($result === false){
+            // データベースエラー
+            $ex = new Exception($this->Db->ErrorMsg());
+            throw $ex;
+        }
+        
+        // 入力された外部著者ID群と比較する
+        $isDiff = false;
+        for($jj = 0; $jj < count($extAuthorIdArray); $jj++){
+            for($kk = 0; $kk < count($result); $kk++){
+                if($extAuthorIdArray[$jj]["prefix_id"] == $result[$kk]["prefix_id"]){
+                    if(strcmp($extAuthorIdArray[$jj]["suffix"], $result[$kk]["suffix"]) == 0){
+                        // 問題無し
+                        break;
+                    } else {
+                        // 入力された外部著者ID群と著者IDを指定した外部著者ID群の間に差異がある
+                        $isDiff = true;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        if($isDiff === false){
+            // 外部著者IDには合致している
+            return false;
+        } else {
+            // ここまで来て外部著者IDに合致しないものがあった
+            return true;
+        }
+    }
+    
+    /**
+     * identify author id by input external id list and database
+     * データベースに登録されている外部著者IDと入力された外部著者ID群から著者を特定し、外部著者IDを登録する
+     *
+     * @param array $extAuthorIdArray
+     * @param int $authorId
+     * @return int
+     */
+    private function identifyAuthorId($extAuthorIdArray, $authorId){
+        $retAuthorId = 0;
+        if(!isset($authorId) || $authorId === 0){
+            // 著者の新規登録時
+            $retAuthorId = $this->identifyAuthorIdForNew($extAuthorIdArray);
+        } else {
+            // 著者の更新時
+            $retAuthorId = $this->identifyAuthorIdForEdit($extAuthorIdArray, $authorId);
+        }
+        return $retAuthorId;
+    }
+    
+    
+    /**
+     * identify author id by external id for new
+     * 著者新規登録時に外部著者ID群より著者IDを特定し、外部著者IDを登録する
+     *
+     * @param array $extAuthorIdArray[$ii]["prefix_id"]
+     *                                    ["suffix"]
+     *                                    ["old_prefix_id"]
+     *                                    ["old_suffix"]
+     *                                    ["prefix_name"]
+     * @return int: $authorId = 0 -> 該当著者無し
+     *              $authorId > 0 -> 該当著者の著者ID、外部著者IDに関して更新済み
+     */
+    private function identifyAuthorIdForNew($extAuthorIdArray){
+        $authorId = 0;
+        
+        // 外部著者ID群の要素が0である時、確実に該当著者は存在しない
+        if(count($extAuthorIdArray) > 0){
+            // 外部著者ID群に部分一致する著者IDの一覧を取得する
+            $authorIds = $this->selectAuthorIdList($extAuthorIdArray);
+            
+            for($ii = 0; $ii < count($authorIds); $ii++){
+                // 入力された外部著者IDとデータベースに保存されている著者IDに紐付く外部著者IDで差異があるかを調べる
+                // 未入力分は互いに無視される
+                if(!$this->isDiffExternalAuthorId($extAuthorIdArray, $authorIds[$ii]["author_id"])){
+                    $authorId = $authorIds[$ii]["author_id"];
+                    break;
+                }
+            }
+            
+            // upsert
+            if($authorId === 0){
+                $authorId = $this->getNewAuthorId();
+            }
+            
+            $this->upsertExternalAuthorId($extAuthorIdArray, $authorId);
+        } else {
+            // 外部著者ID群が空だった場合でも著者IDの発番は実施する
+            // 外部著者IDを登録はしないが個人名や著者名典拠にデータを入力するために必要
+            $authorId = $this->getNewAuthorId();
+        }
+        
+        return $authorId;
+    }
+    
+    /**
+     * is exists mail address by external id list
+     * 外部著者ID群内にメールアドレスが存在するかを確認する
+     *
+     * @param array $extAuthorIdArray[$ii]["prefix_id"]
+     *                                    ["suffix"]
+     *                                    ["old_prefix_id"]
+     *                                    ["old_suffix"]
+     *                                    ["prefix_name"]
+     * @return boolean: 外部著者ID群の中にメールアドレスが存在するか否か true ->  存在する
+     *                                                        false -> 存在しない
+     */
+    private function isExistsMailaddress($extAuthorIdArray){
+        // 外部著者ID群の中からpreifxが0である値がないかを探す
+        for($ii = 0; $ii < count($extAuthorIdArray); $ii++){
+            if($extAuthorIdArray[$ii]["prefix_id"] === 0){
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * identify author id by external id for editting
+     * 編集している著者の著者IDを外部著者IDから特定し、外部著者IDを登録する
+     *
+     * @param array $extAuthorIdArray
+     * @param int $editAuthorId: 編集中著者ID
+     * @return int: 外部著者IDから特定した著者ID
+     */
+    private function identifyAuthorIdForEdit($extAuthorIdArray, $editAuthorId){
+        if(count($extAuthorIdArray) === 0){
+            // 外部著者IDが空である場合、著者の同定を実施することはできない
+            // 著者の同定も行われないため、入力された著者IDを返す
+            return $editAuthorId;
+        }
+        
+        $authorId = 0;
+        
+        // 編集中著者IDに紐付く外部著者ID群と入力の外部著者ID群と比較する
+        if($this->isDiffExternalAuthorId($extAuthorIdArray, $editAuthorId)){
+            // 差異があるならば新しく同定可能な著者IDを探し、登録を実施する
+            $authorId = $this->identifyAuthorIdForNew($extAuthorIdArray);
+        } else {
+            // 外部著者IDを保存する
+            $authorId = $editAuthorId;
+            
+            // 差異がないなら追加分を含めて登録を実施する
+            $this->upsertExternalAuthorId($extAuthorIdArray, $authorId);
+        }
+        
+        return $authorId;
+    }
+    
+    /**
      * Entry NameAuthority data
      * 
      * @param array $metadata   $metadata["family"]
@@ -675,15 +815,7 @@ class NameAuthority extends Action
             return false;
         }
         
-        // Merge external authorID
-        if(!$noMerge){
-            $result = $this->mergeExtAuthorId($metadata["external_author_id"], $metadata["author_id"]);
-        }
-        
-        if(intval($metadata["author_id"])==0){
-            // New author data
-            $metadata["author_id"] = $this->getNewAuthorId();
-        }
+        $metadata["author_id"] = $this->identifyAuthorId($metadata["external_author_id"], $metadata["author_id"]);
         
         // Check exist same author ID
         $result = $this->getNameAuthorityData($metadata["author_id"], $metadata["language"]);
@@ -740,254 +872,7 @@ class NameAuthority extends Action
             }
         }
         
-        // Regist external authorID suffix
-        $result = $this->deleteExternalAuthorIdSuffix($metadata["author_id"]);
-        if($result === false){
-            $errMsg = $this->Db->ErrorMsg();
-            $this->failTrans(); //ROLLBACK
-            return false;
-        }
-        for($ii=0; $ii<count($metadata["external_author_id"]); $ii++){
-            if($metadata["external_author_id"][$ii]["prefix_id"]!="" 
-                && $metadata["external_author_id"][$ii]["suffix"] != "")
-            {
-                $where_params = array(
-                                        "author_id" => $metadata["author_id"],
-                                        "prefix_id" => $metadata["external_author_id"][$ii]["prefix_id"]
-                                    );
-                $result = $this->getExternalAuthorIdSuffix($where_params);
-                if(count($result)==0){
-                    // INSERT
-                    $params =array(
-                                    "author_id" => $metadata["author_id"],
-                                    "prefix_id" => $metadata["external_author_id"][$ii]["prefix_id"],
-                                    "suffix" => $metadata["external_author_id"][$ii]["suffix"],
-                                    "ins_user_id" => $this->user_id,
-                                    "mod_user_id" => $this->user_id,
-                                    "del_user_id" => 0,
-                                    "ins_date" => $this->mod_date,
-                                    "mod_date" => $this->mod_date,
-                                    "del_date" => "",
-                                    "is_delete" => 0
-                                );
-                    $result = $this->insExternalAuthorIdSuffix($params);
-                    if ($result === false) {
-                        return false;
-                    }
-                }
-            }
-        }
-        
         return $metadata["author_id"];
-    }
-    
-    /**
-     * Check same prefix and suffix
-     *
-     * @param array() $extAuthorIdArray[x]["prefix_id"]
-     *                                    ["suffix"]
-     * @param int $authorId
-     * @return int $rtnAuthorId
-     */
-    public function checkSamePrefixAndSuffix($extAuthorIdArray, $authorId=0){
-        $rtnAuthorId = 0;
-        $excludeAuthorIdArray = array();
-        for($ii=0;$ii<count($extAuthorIdArray);$ii++){
-            // Get authorIDs has same external authorID
-            if(strlen($authorId)!=0 && intval($authorId)!=0){
-                $where_params = array(
-                                        "prefix_id" => $extAuthorIdArray[$ii]["prefix_id"],
-                                        "suffix" => $extAuthorIdArray[$ii]["suffix"],
-                                        "author_id!=$authorId" => null,
-                                        "is_delete" => 0
-                                    );
-            } else {
-                $where_params = array(
-                                        "prefix_id" => $extAuthorIdArray[$ii]["prefix_id"],
-                                        "suffix" => $extAuthorIdArray[$ii]["suffix"],
-                                        "is_delete" => 0
-                                    );
-            }
-            $order_params = array("author_id" => "ASC");
-            $sameExtAuthorIdArray = $this->getExternalAuthorIdSuffix($where_params, $order_params);
-            if($sameExtAuthorIdArray === false){
-                return false;
-            }
-            for($jj=0;$jj<count($sameExtAuthorIdArray);$jj++){
-                $sameAuthorFlag = false;
-                // Check exclude author_id
-                if(in_array($sameExtAuthorIdArray[$jj]["author_id"], $excludeAuthorIdArray)){
-                    break;
-                }
-                // Get target author data
-                $where_params = array(
-                                        "author_id" => $sameExtAuthorIdArray[$jj]["author_id"],
-                                        "is_delete" => 0
-                                    );
-                $targetAuthorData = $this->getExternalAuthorIdSuffix($where_params);
-                if($targetAuthorData === false){
-                    return false;
-                }
-                $status = "none";
-                for($kk=0;$kk<count($targetAuthorData);$kk++){
-                    for($ll=0;$ll<count($extAuthorIdArray);$ll++){
-                        // Check prefix_id
-                        if($targetAuthorData[$kk]["prefix_id"] == $extAuthorIdArray[$ll]["prefix_id"]){
-                            // Same prefix_id
-                            // Check suffix
-                            if($targetAuthorData[$kk]["suffix"] == $extAuthorIdArray[$ll]["suffix"]){
-                                // Same external_author_id
-                                $status = "same";
-                                $sameAuthorFlag = true;
-                                break;
-                            } else {
-                                // Conflict
-                                $status = "conflict";
-                                break;
-                            }
-                        } else {
-                            // Different prefix_id
-                            $status = "none";
-                        }
-                    }
-                    if($status == "conflict"){
-                        array_push($excludeAuthorIdArray, $sameExtAuthorIdArray[$jj]["author_id"]);
-                        $sameAuthorFlag = false;
-                        break;
-                    }
-                }
-                if($sameAuthorFlag === true){
-                    $rtnAuthorId = intval($sameExtAuthorIdArray[$jj]["author_id"]);
-                    break;
-                }
-            }
-            if(strlen($rtnAuthorId)!=0 && $rtnAuthorId!=0){
-                break;
-            }
-        }
-        return $rtnAuthorId;
-    }
-    
-    /**
-     * Merge external authorID
-     *
-     * @param array() &$extAuthorIdArray[x]["prefix_id"]
-     *                                     ["suffix"]
-     * @param int &$authorId
-     * @param boolean $displayOnly  false: "extAuthorIdArray" return all.
-     *                               true: "extAuthorIdArray" return without the data block_id and room_id not match..
-     */
-    public function mergeExtAuthorId(&$extAuthorIdArray, &$authorId=0, $displayOnly=false){
-        // Get mergeable authorID
-        $margeAuthorId = $this->checkSamePrefixAndSuffix($extAuthorIdArray, $authorId);
-        if(strlen($margeAuthorId)!=0 && $margeAuthorId!=0 && $margeAuthorId!=$authorId){
-            if($authorId == 0){
-                // This author is new.
-                $authorId = $margeAuthorId;
-            }
-            // Get target external authorID
-            $where_params = array(
-                                    "author_id" => $margeAuthorId,
-                                    "is_delete" => 0
-                                );
-            $mergeExtAurhorIdArray = $this->getExternalAuthorIdSuffix($where_params);
-            if($mergeExtAurhorIdArray === false){
-                return false;
-            }
-            $addTarget = $this->addMergeExtAuthorId($extAuthorIdArray, $mergeExtAurhorIdArray, $margeAuthorId);
-            if($addTarget === false){
-                return false;
-            }
-            
-            if($authorId == $margeAuthorId){
-                for($ii=0;$ii<count($addTarget);$ii++){
-                    array_push($mergeExtAurhorIdArray, $addTarget[$ii]);
-                }
-                $extAuthorIdArray = $mergeExtAurhorIdArray;
-            } else {
-                $addTarget = $this->addMergeExtAuthorId($mergeExtAurhorIdArray, $extAuthorIdArray, $authorId);
-                if($addTarget === false){
-                    return false;
-                }
-                for($ii=0;$ii<count($addTarget);$ii++){
-                    array_push($extAuthorIdArray, $addTarget[$ii]);
-                }
-            }
-        }
-        if($displayOnly){
-            $tmp = array();
-            for($ii=0; $ii<count($extAuthorIdArray); $ii++){
-                // Get block_id and room_id by prefix_id
-                $where_params = array(
-                                        "prefix_id" => $extAuthorIdArray[$ii]["prefix_id"]
-                                    );
-                $result = $this->getExternalAuthorIdPrefix($where_params);
-                if($result === false){
-                    return false;
-                }
-                if( ($result[0]["block_id"]==0 && $result[0]["room_id"]==0) ||
-                    ($result[0]["block_id"]==$this->block_id && $result[0]["room_id"]==$this->room_id))
-                {
-                    array_push($tmp, $extAuthorIdArray[$ii]);
-                }
-            }
-            $extAuthorIdArray = $tmp;
-        }
-        return true;
-    }
-    
-    /**
-     * Add mergedata
-     *
-     * @param array() $from[x]["prefix_id"]
-     *                        ["suffix"]
-     * @param array() $to[x]["prefix_id"]
-     *                      ["suffix"]
-     * @param int $targetAuthorId
-     * @return array() $added
-     */
-    public function addMergeExtAuthorId($from, $to, $targetAuthorId){
-        $added = array();
-        if(intval($targetAuthorId)!=0){
-            for($ii=0;$ii<count($from);$ii++){
-                $addFlag = true;
-                for($jj=0;$jj<count($to);$jj++){
-                    if($from[$ii]["prefix_id"]==$to[$jj]["prefix_id"]
-                        && $from[$ii]["suffix"]==$to[$jj]["suffix"])
-                    {
-                        $addFlag = false;
-                        break;
-                    }
-                }
-                if($addFlag){
-                    $params = array(
-                                    "author_id" => $targetAuthorId,
-                                    "prefix_id" => $from[$ii]["prefix_id"],
-                                    "suffix" => $from[$ii]["suffix"],
-                                    "ins_user_id" => $this->user_id,
-                                    "mod_user_id" => $this->user_id,
-                                    "del_user_id" => "",
-                                    "ins_date" => $this->mod_date,
-                                    "mod_date" => $this->mod_date,
-                                    "del_date" => "",
-                                    "is_delete" => 0
-                                );
-                    $return = $this->insExternalAuthorIdSuffix($params);
-                    if($return === false){
-                        return false;
-                    }
-                    
-                    $prefix_name = $this->getExternalAuthorIdPrefixName($from[$ii]["prefix_id"]);
-                    array_push( $added,
-                                array(  "prefix_id" => $from[$ii]["prefix_id"],
-                                        "suffix" => $from[$ii]["suffix"],
-                                        "prefix_name" => $prefix_name
-                                )
-                            );
-                }
-            }
-        }
-        return $added;
     }
     
     /**
@@ -1030,7 +915,7 @@ class NameAuthority extends Action
      *
      * @param int $prefixId
      * @param string $suffix
-     * @return unknown
+     * @return int: 著者ID
      */
     public function getSuggestAuthorBySuffix($suffix){
         $query = "SELECT DISTINCT author_id ".

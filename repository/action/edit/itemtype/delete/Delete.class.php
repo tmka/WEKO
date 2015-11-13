@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Delete.class.php 30197 2013-12-19 09:55:45Z rei_matsuura $
+// $Id: Delete.class.php 47749 2015-02-04 04:03:14Z tomohiro_ichikawa $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -14,6 +14,7 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositorySearchTableProcessing.class.php';
+require_once WEBAPP_DIR. '/modules/repository/components/ItemtypeManager.class.php';
 
 /**
  * repositoryモジュール アイテムタイプ作成 アイテムタイプ削除アクション
@@ -99,9 +100,9 @@ class Repository_Action_Edit_Itemtype_Delete extends RepositoryAction
 					 "is_delete = ? ".
 					 "WHERE item_type_id = ?; ";
 			$params = null;
-			$params[] = $user_id;							// mod_user_id
+			$params[] = $this->Session->getParameter("_user_id");   // mod_user_id
 			$params[] = $this->TransStartDate;				// mod_date
-			$params[] = $user_id;							// del_user_id
+			$params[] = $this->Session->getParameter("_user_id");   // del_user_id
 			$params[] = $this->TransStartDate;				// del_date
 			$params[] = 1;									// is_delete
 			$params[] = $this->item_type_id;						// item_type_id
@@ -125,6 +126,11 @@ class Repository_Action_Edit_Itemtype_Delete extends RepositoryAction
             $searchTableProcessing = new RepositorySearchTableProcessing($this->Session, $this->Db);
             $searchTableProcessing->deleteDataFromSearchTable();
             // Add detail search 2013/11/25 K.Matsuo --end--
+            
+            // Add itemtype authority 2014/12/17 T.Ichikawa --start--
+            $itemtypeManager = new Repository_Components_ItemtypeManager($this->Session, $this->Db, $this->TransStartDate);
+            $itemtypeManager->removeExclusiveItemtypeAuthority($this->item_type_id);
+            // Add itemtype authority 2014/12/17 T.Ichikawa --end--
             
 			//exit commit
 			$result = $this->exitAction();

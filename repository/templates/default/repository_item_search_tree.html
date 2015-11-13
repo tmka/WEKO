@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: repository_item_search_tree.html 36236 2014-05-26 07:53:04Z satoshi_arata $          -->
+<!--// $Id: repository_item_search_tree.html 44638 2014-12-02 11:56:59Z tatsuya_koyasu $          -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -54,7 +54,8 @@
 						}
 					);
 		if(sel_mode=="" || sel_mode==null){
-			var str_tree = '<{$smarty.session.view_tree_html|smarty:nodefaults}>';
+			//var str_tree = '<{$smarty.session.view_tree_html|smarty:nodefaults}>';
+			var str_tree = '';
 			$(elm_name).innerHTML="";
 			var tree_node = document.createElement("span");
 			tree_node.innerHTML = str_tree;

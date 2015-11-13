@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Index.class.php 36534 2014-05-30 06:57:56Z rei_matsuura $
+// $Id: Index.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -215,7 +215,7 @@ class Repository_Action_Main_Sword_Index extends RepositoryAction
                 $this->Session->setParameter("_role_authority_id", $result[0]["role_authority_id"]);
                 // get user user_authority_id
                 $query = "SELECT user_authority_id FROM ". DATABASE_PREFIX ."authorities ".
-                        " WHERE role_authority_id = '".$result[0]["role_authority_id"]."' ";
+                        " WHERE role_authority_id = ".$result[0]["role_authority_id"]." ";
                 if(isset($this->logFh))
                 {
                     fwrite($this->logFh, "  Execute query: ". $query."\n");
@@ -318,7 +318,7 @@ class Repository_Action_Main_Sword_Index extends RepositoryAction
                 // check index name = "import" from parent index is root
                 $query = "SELECT index_id FROM ". DATABASE_PREFIX ."repository_index ".
                          "WHERE index_name = 'import' ".
-                         "AND parent_index_id = '0' ".
+                         "AND parent_index_id = 0 ".
                         " AND is_delete = 0; ";
                 if(isset($this->logFh))
                 {
@@ -348,9 +348,9 @@ class Repository_Action_Main_Sword_Index extends RepositoryAction
                     $index = array(
                                 "index_name"              => "import",
                                 "index_name_english"      => "import",
-                                "parent_index_id"         => "0",
+                                "parent_index_id"         => 0,
                                 "comment"                 => "",
-                                "public_state"            => "1",
+                                "public_state"            => 1,
                                 "pub_date"                => $pubDate,
                                 "access_role"             => $insert_auth_ids."|".$this->Session->getParameter("_auth_id"),
                                 "access_group"            => "",
@@ -531,7 +531,7 @@ class Repository_Action_Main_Sword_Index extends RepositoryAction
                             "index_name_english"      => $val['title_en'],
                             "parent_index_id"         => $val['pid'],
                             "comment"                 => $val['comment'],
-                            "public_state"            => "1",
+                            "public_state"            => 1,
                             "pub_date"                => $pubDate,
                             "access_role"             => $insert_auth_ids."|".$this->Session->getParameter("_auth_id"),
                             "access_group"            => "",

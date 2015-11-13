@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Fillcontributor.class.php 38124 2014-07-01 06:56:02Z rei_matsuura $
+// $Id: Fillcontributor.class.php 57381 2015-08-31 00:32:36Z tatsuya_koyasu $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources

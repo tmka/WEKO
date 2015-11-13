@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: Filldata.class.php 38124 2014-07-01 06:56:02Z rei_matsuura $
+// $Id: Filldata.class.php 58745 2015-10-13 05:55:10Z tatsuya_koyasu $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics,
 // Research and Development Center for Scientific Information Resources
@@ -16,6 +16,7 @@ require_once WEBAPP_DIR. '/modules/repository/components/RepositoryAction.class.
 require_once WEBAPP_DIR. '/modules/repository/components/JSON.php';
 require_once WEBAPP_DIR. '/modules/repository/components/NameAuthority.class.php';
 require_once WEBAPP_DIR. '/modules/repository/components/RepositoryIndexAuthorityManager.class.php';
+require_once WEBAPP_DIR. '/modules/repository/components/RepositoryHandleManager.class.php';
 
 /**
  * Fill biblio info from other site.
@@ -23,12 +24,15 @@ require_once WEBAPP_DIR. '/modules/repository/components/RepositoryIndexAuthorit
  *  - PubMed
  *  - Amazon
  *  - CiNii
+ *  - WEKO Item ID
+ *  - CrossRef DOI
  *
  */
 class Repository_Action_Main_Item_Filldata extends RepositoryAction
 {
     // const
     const DOI_URI_PREFIX = "http://dx.doi.org/";
+    const CROSSREF_URI = "http://www.crossref.org/openurl/";
     
     // requestparameter of fill
     var $type_fill = null;                    // site name for data get
@@ -263,6 +267,11 @@ class Repository_Action_Main_Item_Filldata extends RepositoryAction
                 case "ichushi":
                     $result = $this->fillIchushi($this->id_fill);
                     break;
+			    // Auto Input Metadata by CrossRef DOI 2015/03/04 K.Sugimoto --start--
+                case "crossref":
+                    $result = $this->fillCrossRef($this->id_fill);
+                    break;
+			    // Auto Input Metadata by CrossRef DOI 2015/03/04 K.Sugimoto --end--
                 default:
                     break;
             }
@@ -1341,6 +1350,382 @@ class Repository_Action_Main_Item_Filldata extends RepositoryAction
         
         return true;
     }
+    
+    /**
+     * extract prefix and suffix by crossref doi uri
+     * CrossRef DOIのURIからPrefixとSuffixを抽出し返す
+     *
+     * @param string $url: CrossRef DOIのURI
+     * @return string [prefix]/[suffix]
+     */
+    private function extractCrossRefDoiPrefixSuffix($url){
+        $prefix_suffix = "";
+        
+        // 実際はRepositoryHandleManagerにPrefixとSuffix取得用の
+        // 関数を作成し、それから取得するべきである(TODO)
+        // DOIの入力形式は下記の通り
+        //   - http://doi.org/[prefix]/[suffix]
+        //   - http://dx.doi.org/[prefix]/[suffix]
+        //   - doi:[prefix]/[suffix]
+        //   - info:doi/[prefix]/[suffix]
+        //   - [prefix]/[suffix]
+        if( preg_match("/^(info:|http:\/\/)/", $url) === 1 ){
+            if( preg_match("/^(info:doi|http:\/\/dx.doi.org|http:\/\/doi.org)\/([^\/]+)\/(.+)$/", $url, $matches) === 1 ){
+                // OK
+                $prefix = $matches[2];
+                $suffix = $matches[3];
+            } else {
+                // NG
+                $exception = new AppException("repository_invalid_crossref_doi_format");
+                $exception->addError('repository_invalid_crossref_doi_format');
+                $this->debugLog("repository_invalid_crossref_doi_format::url=". $url, __FILE__, __CLASS__, __LINE__);
+                throw $exception;
+            }
+        } else if( preg_match("/^doi:/", $url) === 1 ){
+            if( preg_match("/^doi:([^\/]+)\/(.+)$/", $url, $matches) === 1 ){
+                // OK
+                $prefix = $matches[1];
+                $suffix = $matches[2];
+            } else {
+                $exception = new AppException("repository_invalid_crossref_doi_format");
+                $exception->addError('repository_invalid_crossref_doi_format');
+                $this->debugLog("repository_invalid_crossref_doi_format::url=". $url, __FILE__, __CLASS__, __LINE__);
+                throw $exception;
+            }
+        } else if( preg_match("/^([^\/]+)\/(.+)$/", $url, $matches) === 1 ){
+            // OK
+            $prefix = $matches[1];
+            $suffix = $matches[2];
+        } else{
+            // NG
+            $exception = new AppException("repository_invalid_crossref_doi_format");
+            $exception->addError('repository_invalid_crossref_doi_format');
+            $this->debugLog("repository_invalid_crossref_doi_format::url=". $url, __FILE__, __CLASS__, __LINE__);
+            throw $exception;
+        }
+        
+        $handleManager = new RepositoryHandleManager($this->Session, $this->dbAccess, $this->TransStartDate);
+        $checkedSuffix = $handleManager->checkDoiFormat($suffix);
+        if(strlen($checkedSuffix) === 0){
+            $exception = new AppException("repository_invalid_crossref_doi_format");
+            $exception->addError('repository_invalid_crossref_doi_format');
+            $this->debugLog("repository_invalid_crossref_doi_format::url=". $url, __FILE__, __CLASS__, __LINE__);
+            throw $exception;
+        }
+        
+        $prefix_suffix = urlencode($prefix. "/". $checkedSuffix);
+        
+        return $prefix_suffix;
+    }
+    
+    // Auto Input Metadata by CrossRef DOI 2015/03/04 K.Sugimoto --start--
+    /**
+     * fill from CrossRef
+     *  + title (english)
+     *  + language
+     *  + creator (english)
+     *  + contributor (english)
+     *  + jtitle (english)
+     *  + issn
+     *  + isbn
+     *  + volume
+     *  + issue
+     *  + spage
+     *  + epage
+     *  + dateofissued
+     */
+    private function fillCrossRef( $crossref_doi ){
+        // get CrossRef account
+        $crossref_query_services_account = "";
+        $query = "SELECT param_value ".
+                "FROM ".DATABASE_PREFIX."repository_parameter ".
+                "WHERE param_name = ? ".
+                "AND is_delete = ? ;";
+        $params = array();
+        $params[] = "crossref_query_service_account";
+        $params[] = 0;
+        $result = $this->dbAccess->executeQuery($query, $params);
+        if(count($result) > 0 && strlen($result[0]['param_value']) > 0)
+        {
+            $crossref_query_services_account = $result[0]['param_value'];
+        }
+        $crossref_query_services_account = urlencode($crossref_query_services_account);
+        
+        // check space
+        $crossref_doi = str_replace(" ", "", $crossref_doi); // str replace space
+        $crossref_doi = str_replace("　", "", $crossref_doi); // str replace 2byte spase
+        if(!isset($crossref_doi) || strlen($crossref_doi) == 0){
+            $error = $this->smartyAssign->getLang("repository_item_fill_data_type_crossref")
+                    .$this->smartyAssign->getLang("repository_item_fill_data_no_metadata_error");
+            array_push($this->error_msg, $error );
+            return false;
+        }
+        
+        // request URL send for CrossRef
+        try{
+            $prefix_suffix = $this->extractCrossRefDoiPrefixSuffix($crossref_doi);
+        } catch(AppException $ex){
+            $error = $this->smartyAssign->getLang($ex->getMessage());
+            array_push($this->error_msg, $error );
+            $this->debugLog($ex->getMessage(), __FILE__, __CLASS__, __LINE__);
+            return false;
+        }
+        
+        $send_param = "";
+        $send_param .= self::CROSSREF_URI;
+        $send_param .= '?id=doi:';
+        $send_param .= $prefix_suffix;
+        $send_param .= '&noredirect=true';
+        $send_param .= '&pid=';
+        $send_param .= $crossref_query_services_account;
+        $send_param .= '&format=xsd-xml';
+        
+        /////////////////////////////
+        // HTTP_Request init
+        /////////////////////////////
+        // send http request
+        $option = array( 
+            "timeout" => "10",
+            "allowRedirects" => true, 
+            "maxRedirects" => 3, 
+        );
+        
+        // Modfy proxy 2011/12/06 Y.Nakao --start--
+        if($this->proxy['proxy_mode'] == 1)
+        {
+            $option = array( 
+                    "timeout" => "10",
+                    "allowRedirects" => true, 
+                    "maxRedirects" => 3,
+                    "proxy_host"=>$this->proxy['proxy_host'],
+                    "proxy_port"=>$this->proxy['proxy_port'],
+                    "proxy_user"=>$this->proxy['proxy_user'],
+                    "proxy_pass"=>$this->proxy['proxy_pass']
+                );
+        }
+        // Modfy proxy 2011/12/06 Y.Nakao --end--
+        
+        $http = new HTTP_Request($send_param, $option);
+        // setting HTTP header
+        $http->addHeader("User-Agent", $_SERVER['HTTP_USER_AGENT']); 
+        $http->addHeader("Referer", $_SERVER['HTTP_REFERER']);
+        
+        /////////////////////////////
+        // run HTTP request 
+        /////////////////////////////
+        $response = $http->sendRequest(); 
+        if (!PEAR::isError($response)) { 
+            $charge_code = $http->getResponseCode();// ResponseCode(200等)を取得 
+            $charge_header = $http->getResponseHeader();// ResponseHeader(レスポンスヘッダ)を取得 
+            $charge_body = $http->getResponseBody();// ResponseBody(レスポンステキスト)を取得 
+            $charge_Cookies = $http->getResponseCookies();// クッキーを取得 
+        }
+        // get response
+        if(isset($charge_body))
+        {
+        	$response_xml = $charge_body;
+        }
+        else
+        {
+        	$response_xml = null;
+        }
+        
+        /////////////////////////////
+        // parse response XML
+        /////////////////////////////
+        try{
+            $xml_parser = xml_parser_create();
+            $rtn = xml_parse_into_struct( $xml_parser, $response_xml, $vals );
+            if($rtn == 0 || $vals[0]['tag'] !== "CROSSREF_RESULT" || ($vals[11]['tag'] === "MSG" && urlencode($vals[11]['value']) === urlencode("unreasonable DOI found: doi=").$crossref_doi)){
+                $error = $this->smartyAssign->getLang("repository_item_fill_data_type_crossref")
+                        .$this->smartyAssign->getLang("repository_item_fill_data_no_metadata_error");
+                array_push($this->error_msg, $error );
+                return false;
+            }
+            xml_parser_free($xml_parser);
+        } catch(Exception $ex){
+            $error = $this->smartyAssign->getLang("repository_item_fill_data_type_crossref")
+                    .$this->smartyAssign->getLang("repository_item_fill_data_no_metadata_error");
+            array_push($this->error_msg, $error );
+            return false;
+        }
+        
+        /////////////////////////////
+        // get fill data
+        /////////////////////////////
+        $contributors_flg = false;
+        $contributor_flg = false;
+        $creator_flg = false;
+        $family_surname = null;
+        $family_suffix = null;
+        
+        foreach($vals as $val){
+            switch($val['tag']){
+                case "ISSN":
+                    if(strlen($this->issn) == 0){
+                        if(isset($val['value']) && strlen($val['value']) > 0){
+                            $this->issn = $val['value'];
+                        }
+                    }
+                    break;
+                case "ISBN":
+                    if(strlen($this->isbn) == 0){
+                        if(isset($val['value']) && strlen($val['value']) > 0){
+                            $this->isbn = $val['value'];
+                        }
+                    }
+                    break;
+                case "JOURNAL_TITLE":
+                    if(strlen($this->jtitle_english) == 0){
+                        if(isset($val['value']) && strlen($val['value']) > 0){
+                            $this->jtitle_english = $val['value'];
+                        }
+                    }
+                    break;
+                case "AUTHOR":
+                    if(isset($val['value']) && strlen($val['value']) > 0){
+                        // 著者名
+                        $author = array("family"=>"","given"=>"","family_ruby"=>"","given_ruby"=>"","email"=>"","author_id"=>"","language"=>"","external_author_id"=>array(array("prefix_id"=>"", "suffix"=>"", "old_prefix_id"=>"", "old_suffix"=>"", "prefix_name"=>"")));
+                        $author["family"] = $val['value'];
+                        array_push($this->creator_english, $author);
+                    }
+                    break;
+                case "CONTRIBUTORS":
+                    if(isset($val['type']) && $val['type'] === "open") {
+                    	$contributors_flg = true;
+                    } else if(isset($val['type']) && $val['type'] === "close") {
+                    	$contributors_flg = false;
+                    }
+                    break;
+                case "CONTRIBUTOR":
+                    if($contributors_flg) {
+	                    if(isset($val['type']) && $val['type'] === "open") {
+	                        // 著者名
+	                        $author = array("family"=>"","given"=>"","family_ruby"=>"","given_ruby"=>"","email"=>"","author_id"=>"","language"=>"","external_author_id"=>array(array("prefix_id"=>"", "suffix"=>"", "old_prefix_id"=>"", "old_suffix"=>"", "prefix_name"=>"")));
+		                    
+		                    if($val['attributes']['CONTRIBUTOR_ROLE'] != null && ($val['attributes']['CONTRIBUTOR_ROLE'] === "editor" || $val['attributes']['CONTRIBUTOR_ROLE'] === "chair" || $val['attributes']['CONTRIBUTOR_ROLE'] === "translator")){
+		                        $contributor_flg = true;
+
+		                    } else {
+		                        $creator_flg = true;
+		                    }
+	                    } else if(isset($val['type']) && $val['type'] === "close") {
+		                    if($contributor_flg) {
+		                        array_push($this->contributor_english, $author);
+		                    } else if($creator_flg) {
+		                        array_push($this->creator_english, $author);
+	                        }
+		                    $contributor_flg = false;
+	                        $creator_flg = false;
+	                    }
+                    }
+                    break;
+                case "GIVEN_NAME":
+                    if($contributors_flg) {
+	                    if($contributor_flg || $creator_flg) {
+	                        $author["given"] = $val['value'];
+                        }
+                    }
+                    break;
+                case "SURNAME":
+                    if($contributors_flg) {
+	                    if($contributor_flg || $creator_flg) {
+	                        $family_surname = $val['value'];
+
+		                    if(isset($family_surname) && isset($family_suffix)) {
+			                    $author["family"] = $family_surname." ".$family_suffix;
+			                    $family_surname = null;
+			                    $family_suffix = null;
+		                    }
+		                    else
+		                    {
+		                        $author["family"] = $family_surname;
+		                        $family_surname = null;
+		                    }
+	                    }
+                    }
+                    break;
+                case "SUFFIX":
+                    if($contributors_flg) {
+	                    if($contributor_flg || $creator_flg) {
+	                        $family_suffix = $val['value'];
+
+		                    if(isset($family_surname) && isset($family_suffix)) {
+			                    $author["family"] = $family_surname." ".$family_suffix;
+			                    $family_surname = null;
+			                    $family_suffix = null;
+		                    }
+	                    }
+                    }
+                    break;
+                case "ORGANIZATION":
+                    if($contributors_flg) {
+	                    if(isset($val['attributes']['CONTRIBUTOR_ROLE']) && ($val['attributes']['CONTRIBUTOR_ROLE'] === "editor" || $val['attributes']['CONTRIBUTOR_ROLE'] === "chair" || $val['attributes']['CONTRIBUTOR_ROLE'] === "translator")){
+	                        // 著者名
+	                        $author = array("family"=>"","given"=>"","family_ruby"=>"","given_ruby"=>"","email"=>"","author_id"=>"","language"=>"","external_author_id"=>array(array("prefix_id"=>"", "suffix"=>"", "old_prefix_id"=>"", "old_suffix"=>"", "prefix_name"=>"")));
+	                        $author["family"] = $val['value'];
+
+	                        array_push($this->contributor_english, $author);
+	                    } else {
+	                        // 著者名
+	                        $author = array("family"=>"","given"=>"","family_ruby"=>"","given_ruby"=>"","email"=>"","author_id"=>"","language"=>"","external_author_id"=>array(array("prefix_id"=>"", "suffix"=>"", "old_prefix_id"=>"", "old_suffix"=>"", "prefix_name"=>"")));
+	                        $author["family"] = $val['value'];
+
+	                        array_push($this->creator_english, $author);
+	                    }
+                    }
+                    break;
+                case "VOLUME":
+                    if(strlen($this->volume) == 0){
+                        if(isset($val['value']) && strlen($val['value']) > 0){
+                            $this->volume = $val['value'];
+                        }
+                    }
+                    break;
+                case "ISSUE":
+                    if(strlen($this->issue) == 0){
+                        if(isset($val['value']) && strlen($val['value']) > 0){
+                            $this->issue = $val['value'];
+                        }
+                    }
+                    break;
+                case "FIRST_PAGE":
+                    if(strlen($this->spage) == 0){
+                        if(isset($val['value']) && strlen($val['value']) > 0){
+                            $this->spage = $val['value'];
+                        }
+                    }
+                    break;
+                case "LAST_PAGE":
+                    if(strlen($this->epage) == 0){
+                        if(isset($val['value']) && strlen($val['value']) > 0){
+                            $this->epage = $val['value'];
+                        }
+                    }
+                    break;
+                case "YEAR":
+                    if(strlen($this->dateofissued) == 0){
+                        if(isset($val['value']) && strlen($val['value']) > 0){
+                            $this->dateofissued = $val['value'];
+                        }
+                    }
+                    break;
+                case "ARTICLE_TITLE":
+                    if(isset($val['value']) && strlen($val['value']) > 0){
+                        if(strlen($this->title_english) == 0){
+                            $this->title_english = $val['value'];
+                        }
+                    }
+                    break;
+                default:
+            }
+        }
+        
+        $this->language = "en";
+        
+        return true;
+    }
+    // Auto Input Metadata by CrossRef DOI 2015/03/04 K.Sugimoto --end--
         
     /**
      * Edit data fill in session
@@ -2734,6 +3119,26 @@ class Repository_Action_Main_Item_Filldata extends RepositoryAction
                     array_push($edit_attr, $name_init);
                     $item_attr[$ii] = $edit_attr;
                     $item_num_attr[$ii] = count($edit_attr);
+                } else if( $item_element[$ii]['input_type'] == "biblio_info" ){
+                    $item_attr[$ii][0] = array(
+                        'biblio_name' => '',
+                        'biblio_name_english' => '',
+                        'volume' => '',
+                        'issue' => '',
+                        'spage' => '',
+                        'epage' => '',
+                        'date_of_issued' => '',
+                        'year' => '',
+                        'month' => '',
+                        'day' => ''
+                    );
+                } else if( $item_element[$ii]['input_type'] == "date" ){
+                    $item_attr[$ii][0] = array(
+                        'date' => '',
+                        'date_year' => '',
+                        'date_month' => '',
+                        'date_day' => ''
+                    );
                 }
                 // Fix initialize for name Y.Nakao 2013.12.17 --end--
                 continue;
@@ -2958,8 +3363,39 @@ class Repository_Action_Main_Item_Filldata extends RepositoryAction
                     }
                 }
                 continue;
+            } else if($item_attr_type[$ii]['input_type'] === "name"){
+                $new_item_attr[$ii][0] = array(
+                    "family" => "",
+                    "given" => "",
+                    "family_ruby" => "",
+                    "given_ruby" => "",
+                    "email" => "",
+                    "author_id" => "",
+                    "language" => "",
+                    "external_author_id" => array(array('prefix_id'=>'', 'suffix'=>'', 'old_prefix_id'=>'', 'old_suffix'=>'', 'prefix_name'=>''))
+                );
+            } else if($item_attr_type[$ii]['input_type'] === "biblio_info"){
+                $new_item_attr[$ii][0] = array(
+                    'biblio_name' => '',
+                    'biblio_name_english' => '',
+                    'volume' => '',
+                    'issue' => '',
+                    'spage' => '',
+                    'epage' => '',
+                    'date_of_issued' => '',
+                    'year' => '',
+                    'month' => '',
+                    'day' => ''
+                );
+            } else if($item_attr_type[$ii]['input_type'] === "date"){
+                $new_item_attr[$ii][0] = array(
+                    "date" => "",
+                    "date_year" => "",
+                    "date_month" => "",
+                    "date_day" => ""
+                );
             }
-
+            
             //create Dummy array
             $edit_biblio_info = array(
                                       'biblio_name' => '',

@@ -1,6 +1,6 @@
 <!--// ---------------------------------------------------------------------->
 <!--//                                                                     -->
-<!--// $Id: repository_item_type_setting.html 22981 2013-05-30 05:43:08Z ayumi_jin $          -->
+<!--// $Id: repository_item_type_setting.html 48517 2015-02-17 08:02:38Z tomohiro_ichikawa $          -->
 <!--//                                                                     -->
 <!--// Copyright (c) 2007 - 2008, National Institute of Informatics,        -->
 <!--// Research and Development Center for Scientific Information Resources -->
@@ -142,7 +142,7 @@
   <tr>
    <td class="ranking_list_paging" style="text-align: center;">
     <div class="ranking_list_paging" style="text-align: center;">
-     <select name="item_type_id" class="w500px">
+     <select id="item_type_id<{$id}>" name="item_type_id" class="w500px" onchange="javascript: changeItemtype<{$id}>();">
       <!-- アイテムタイプ一覧をスクリプトで登録。valueは主キー, 表示はアイテムタイプ名 -->
       <{foreach from=$action.itemtype_data item=item_type}>
        <option value="<{$item_type[0]}>" <{if $smarty.session.item_type_edit_flag==0 && count($action.itemtype_data)>12}>SELECTED<{/if}>><{$item_type[1]}></option>
@@ -159,6 +159,79 @@
      <input type="button" class="btn_delete" value="<{$lang.repository_delete}>" onclick="if(!commonCls.confirm('<{$lang.repository_confimation_delete}>'))return false; repositoryCls['<{$id}>'].repositoryItemTypeDelete(); return false;">
     </div>
    </td>
+  </tr>
+  <!-- アイテムタイプ権限管理 -->
+  <tr>
+   <table class="tb00 w500px" align="center">
+    <tr class="tree_access_control" >
+      <th class="ranking_repos ranking_paging al item_edit_list4" colspan="2"><{$lang.repository_access_role}>(<{$lang.repository_authority_base}>)</th>
+    </tr>
+    <tr class="tree_access_control">
+     <td colspan="2" class="pt00 pb00 pr00 pl00 item_edit_list4">
+      <table class="tb00 full">
+       <tr>
+        <td class="ptb04 plr08 w45 al">
+         <{$lang.repository_edittree_insert_OFF}><br/>
+         <select multiple id="itemtype_exclusive_itemtype_acl_role_name<{$id}>" class="full h10em" disabled></select>
+        </td>
+        <td class="ptb04 plr08 w10 ac" valign="middle">
+         <br/>
+         <input type="button" 
+                class="btn_white" 
+                value="&gt;&gt;" 
+                id="itemtype_acl_add_auth_btn<{$id}>" 
+                onclick="javascript: moveItemtypeACLRole<{$id}>('itemtype_exclusive_itemtype_acl_role_name<{$id}>', 'itemtype_acl_role_name<{$id}>');" disabled/><br/>
+         <br/>
+         <input type="button" 
+                class="btn_white" 
+                value="&lt;&lt;" 
+                id="itemtype_acl_del_auth_btn<{$id}>" 
+                onclick="javascript: moveItemtypeACLRole<{$id}>('itemtype_acl_role_name<{$id}>', 'itemtype_exclusive_itemtype_acl_role_name<{$id}>');" disabled/>
+         <br/>
+        </td>
+        <td class="ptb04 plr08 w45 al">
+         <{$lang.repository_edittree_insert_ON}><br/>
+         <select multiple id="itemtype_acl_role_name<{$id}>" class="full h10em" disabled></select>
+        </td>
+       </tr>
+      </table>
+     </td>
+    </tr>
+    <tr class="tree_access_control">
+     <th class="ranking_repos ranking_paging al item_edit_list4" colspan="2"><{$lang.repository_access_role}>(<{$lang.repository_authority_room}>)</th>
+    </tr>
+    <tr class="tree_access_control">
+     <td colspan="2">
+      <table class="tb00 full">
+       <tr>
+        <td class="al" colspan="3">
+         <{$lang.repository_edittree_insert_ON}>
+         </br>
+         <label>
+          <input checked="checked" type="checkbox" disabled>
+          <{$smarty.const._AUTH_CHIEF_NAME}>
+         </label>
+         <label for="itemtype_acl_room_auth<{$smarty.const._AUTH_MODERATE}><{$id}>">
+          <input id="itemtype_acl_room_auth<{$smarty.const._AUTH_MODERATE}><{$id}>" value="<{$smarty.const._ON}>" onclick="commonCls.changeAuthority(this, '<{$id}>');" type="checkbox" disabled>
+          <{$smarty.const._AUTH_MODERATE_NAME}>
+         </label>
+         <label for="itemtype_acl_room_auth<{$smarty.const._AUTH_GENERAL}><{$id}>">
+          <input id="itemtype_acl_room_auth<{$smarty.const._AUTH_GENERAL}><{$id}>" value="<{$smarty.const._ON}>" onclick="commonCls.changeAuthority(this, '<{$id}>');" type="checkbox" disabled>
+          <{$smarty.const._AUTH_GENERAL_NAME}>
+         </label>
+        </td>
+       </tr>
+      </table>
+     </td>
+    </tr>
+    <tr class="tree_access_control">
+     <td>
+      <div class="pt10 pb10 ac">
+       <input type="button" class="btn_blue" align="center" id="itemtype_send_button<{$id}>" value="<{$lang.repository_send}>" onclick="sendItemtypeACLRole<{$id}>(); return false;" disabled/>
+      </div>
+     </td>
+    </tr>
+   </table>
   </tr>
  </table>
 </div>
@@ -191,3 +264,208 @@
 	}
 </script>
 
+<script class="nc_script" type="text/javascript">
+    changeItemtype<{$id}> = function(){
+        var selects = document.getElementById("item_type_id<{$id}>");
+        var itemTypeId = selects.options[selects.selectedIndex].value;
+        // アイテムタイプの権限情報をAjaxを使って問い合わせる
+        var pars='';
+        pars =  'action=repository_action_edit_itemtype_auth_load';
+        pars += '&page_id=<{$page_id}>';
+        pars += '&block_id=<{$block_id}>';
+        pars += '&item_type_id='+itemTypeId;
+        var url = "<{$smarty.const.BASE_URL}>/index.php";
+        var myAjax = new Ajax.Request(
+                        url,
+                        {
+                            method: 'get',
+                            parameters: pars, 
+                            onComplete: function(req) {
+                                itemTypeInfo = eval("("+req.responseText+")");
+                                changeItemtypeAuthView<{$id}>(itemTypeId, itemTypeInfo);
+                            }
+                        }
+                    );
+    }
+</script>
+
+<script class="nc_script" type="text/javascript">
+    changeItemtypeAuthView<{$id}> = function(itemTypeId, itemTypeInfo){
+        // ベース権限(閲覧権限なし)
+        var exclusive_base_acl_role = document.getElementById("itemtype_exclusive_itemtype_acl_role_name<{$id}>");
+        // 現在表示されている要素をリセット
+        for(var i=exclusive_base_acl_role.childNodes.length-1; i>=0; i--) {
+            exclusive_base_acl_role.removeChild(exclusive_base_acl_role.childNodes[i]);
+        }
+        // 子要素の追加
+        for(var i=0; i < itemTypeInfo.exclusive_base_auth.length; i=i+1) {
+            for(var key in itemTypeInfo.exclusive_base_auth[i]) {
+                var option = document.createElement("option");
+                option.setAttribute("value", key);
+                if(itemTypeInfo.exclusive_base_auth[i][key] == '_AUTH_SYSADMIN_NAME'){
+                    option.text = "<{$smarty.const._AUTH_SYSADMIN_NAME}>";
+                } else if(itemTypeInfo.exclusive_base_auth[i][key] == '_AUTH_ADMIN_NAME'){
+                    option.text = "<{$smarty.const._AUTH_ADMIN_NAME}>";
+                } else if(itemTypeInfo.exclusive_base_auth[i][key] == '_AUTH_CHIEF_NAME'){
+                    option.text = "<{$smarty.const._AUTH_CHIEF_NAME}>";
+                } else if(itemTypeInfo.exclusive_base_auth[i][key] == '_AUTH_MODERATE_NAME'){
+                    option.text = "<{$smarty.const._AUTH_MODERATE_NAME}>";
+                } else if(itemTypeInfo.exclusive_base_auth[i][key] == '_AUTH_GENERAL_NAME'){
+                    option.text = "<{$smarty.const._AUTH_GENERAL_NAME}>";
+                } else if(itemTypeInfo.exclusive_base_auth[i][key] == '_AUTH_GUEST_NAME'){
+                    option.text = "<{$smarty.const._AUTH_GUEST_NAME}>";
+                } else {
+                    option.text = decodeAuthNameHtmlSpecialChars<{$id}>(itemTypeInfo.exclusive_base_auth[i][key]);
+                }
+                exclusive_base_acl_role.appendChild(option);
+            }
+        }
+        // ベース権限(閲覧権限あり)
+        var base_acl_role = document.getElementById("itemtype_acl_role_name<{$id}>");
+        // 現在表示されている要素をリセット
+        for(var i=base_acl_role.childNodes.length-1; i>=0; i--) {
+            base_acl_role.removeChild(base_acl_role.childNodes[i]);
+        }
+        // 子要素の追加
+        for(var i=0; i < itemTypeInfo.base_auth.length; i=i+1) {
+            for(var key in itemTypeInfo.base_auth[i]) {
+                var option = document.createElement("option");
+                option.setAttribute("value", key);
+                if(itemTypeInfo.base_auth[i][key] == '_AUTH_SYSADMIN_NAME'){
+                    option.text = "<{$smarty.const._AUTH_SYSADMIN_NAME}>";
+                } else if(itemTypeInfo.base_auth[i][key] == '_AUTH_ADMIN_NAME'){
+                    option.text = "<{$smarty.const._AUTH_ADMIN_NAME}>";
+                } else if(itemTypeInfo.base_auth[i][key] == '_AUTH_CHIEF_NAME'){
+                    option.text = "<{$smarty.const._AUTH_CHIEF_NAME}>";
+                } else if(itemTypeInfo.base_auth[i][key] == '_AUTH_MODERATE_NAME'){
+                    option.text = "<{$smarty.const._AUTH_MODERATE_NAME}>";
+                } else if(itemTypeInfo.base_auth[i][key] == '_AUTH_GENERAL_NAME'){
+                    option.text = "<{$smarty.const._AUTH_GENERAL_NAME}>";
+                } else if(itemTypeInfo.base_auth[i][key] == '_AUTH_GUEST_NAME'){
+                    option.text = "<{$smarty.const._AUTH_GUEST_NAME}>";
+                } else {
+                    option.text = decodeAuthNameHtmlSpecialChars<{$id}>(itemTypeInfo.base_auth[i][key]);
+                }
+                base_acl_role.appendChild(option);
+            }
+        }
+        // ルーム権限
+        var moderaterCheck = document.getElementById("itemtype_acl_room_auth<{$smarty.const._AUTH_MODERATE}><{$id}>");
+        var generalCheck = document.getElementById("itemtype_acl_room_auth<{$smarty.const._AUTH_GENERAL}><{$id}>");
+        // 現在表示されているチェック状態をリセット
+        moderaterCheck.checked = false;
+        generalCheck.checked = false;
+        // ルーム権限からチェック状態を設定
+        if(itemTypeInfo.room_auth >= 3) {
+            // 何もしない
+        } else if(itemTypeInfo.room_auth >= 2) {
+            moderaterCheck.checked = true;
+        } else if(itemTypeInfo.room_auth >= 1) {
+            moderaterCheck.checked = true;
+            generalCheck.checked = true;
+        } else {
+            moderaterCheck.checked = true;
+            generalCheck.checked = true;
+        }
+        
+        // 各フォームの使用状態を変更する
+        // ハーベスト用アイテムタイプの権限は変更不可
+        if(itemTypeId > 20000) {
+            exclusive_base_acl_role.disabled = false;
+            base_acl_role.disabled = true;
+            var addButton = document.getElementById("itemtype_acl_add_auth_btn<{$id}>");
+            addButton.disabled = true;
+            var delButton = document.getElementById("itemtype_acl_del_auth_btn<{$id}>");
+            delButton.disabled = true;
+            moderaterCheck.disabled = true;
+            generalCheck.disabled = true;
+            var sendButton = document.getElementById("itemtype_send_button<{$id}>");
+            sendButton.disabled = true;
+        } else {
+            exclusive_base_acl_role.disabled = false;
+            base_acl_role.disabled = false;
+            var addButton = document.getElementById("itemtype_acl_add_auth_btn<{$id}>");
+            addButton.disabled = false;
+            var delButton = document.getElementById("itemtype_acl_del_auth_btn<{$id}>");
+            delButton.disabled = false;
+            moderaterCheck.disabled = false;
+            generalCheck.disabled = false;
+            var sendButton = document.getElementById("itemtype_send_button<{$id}>");
+            sendButton.disabled = false;
+        }
+    }
+</script>
+
+<script class="nc_script" type="text/javascript">
+    moveItemtypeACLRole<{$id}> = function(from, to){
+        // "FROM"で選択されているオプション要素を"TO"へ移動する
+        var selectFrom = document.getElementById(from);
+        var selectTo = document.getElementById(to);
+        // 複数選択されているオプションの情報を取得
+        for(var i=selectFrom.childNodes.length-1; i>=0; i--) {
+            if(selectFrom.childNodes[i].selected == true) {
+                var tmpOption = selectFrom.childNodes[i].cloneNode();
+                tmpOption.text = selectFrom.childNodes[i].text;
+                selectTo.appendChild(tmpOption);
+                selectFrom.removeChild(selectFrom.childNodes[i]);
+            }
+        }
+    }
+</script>
+
+<script class="nc_script" type="text/javascript">
+    sendItemtypeACLRole<{$id}> = function(){
+        // 選択中のアイテムタイプ
+        var selects = document.getElementById("item_type_id<{$id}>");
+        // 除外ベース権限
+        var exclusiveBaseAuth = document.getElementById("itemtype_exclusive_itemtype_acl_role_name<{$id}>");
+        // 除外ルーム権限
+        var exclusiveRoomAuthModerater = document.getElementById("itemtype_acl_room_auth<{$smarty.const._AUTH_MODERATE}><{$id}>");
+        var exclusiveRoomAuthGeneral = document.getElementById("itemtype_acl_room_auth<{$smarty.const._AUTH_GENERAL}><{$id}>");
+        
+        // パラメータ用のデータを設定する
+        var itemTypeIdParam = "";
+        var exclusiveBaseAuthParam = "";
+        var exclusiveRoomAuthParam = "";
+        // アイテムタイプID (数値)
+        var itemTypeIdParam = selects.options[selects.selectedIndex].value;
+        // 除外ベース権限(カンマ区切りの数値)
+        for(var i=0; i < exclusiveBaseAuth.childNodes.length; i++) {
+            if(exclusiveBaseAuthParam.length > 0) {
+                exclusiveBaseAuthParam += ',';
+            }
+            exclusiveBaseAuthParam += exclusiveBaseAuth.childNodes[i].value;
+        }
+        // 除外ルーム権限(数値)
+        if(exclusiveRoomAuthModerater.checked == true && exclusiveRoomAuthGeneral.checked == true) {
+            exclusiveRoomAuthParam = 1;
+        } else if(exclusiveRoomAuthModerater.checked == true) {
+            exclusiveRoomAuthParam = 2;
+        } else {
+            exclusiveRoomAuthParam = 3;
+        }
+        
+        // アイテムタイプの権限情報をAjaxを使って問い合わせる
+        var pars='';
+        pars += '&item_type_id='+itemTypeIdParam;
+        pars += '&exclusive_base_auth='+exclusiveBaseAuthParam;
+        pars += '&exclusive_room_auth='+exclusiveRoomAuthParam;
+        repositoryCls['<{$id}>'].repositoryItemTypeAuthorityAdd(pars);
+    }
+</script>
+
+<script class="nc_script" type="text/javascript">
+    decodeAuthNameHtmlSpecialChars<{$id}> = function(str){
+        str = str.replace(/&amp;/g,"&");
+        str = str.replace(/&quot;/g,"\"");
+        str = str.replace(/&#039;/g,"'");
+        str = str.replace(/&lt;/g,"<");
+        str = str.replace(/&gt;/g,">");
+        str = str.replace(/\\/g,"\\");
+        return str;
+    }
+</script>
+
+<script class="nc_script" type="text/javascript">
+    changeItemtype<{$id}>();
+</script>

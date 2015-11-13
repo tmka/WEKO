@@ -1,7 +1,7 @@
 <?php
 // --------------------------------------------------------------------
 //
-// $Id: RepositoryHarvesting.class.php 36366 2014-05-28 04:26:07Z rei_matsuura $
+// $Id: RepositoryHarvesting.class.php 53594 2015-05-28 05:25:53Z kaede_matsushita $
 //
 // Copyright (c) 2007 - 2008, National Institute of Informatics, 
 // Research and Development Center for Scientific Information Resources
@@ -900,7 +900,7 @@ class RepositoryHarvesting extends RepositoryAction
                          "del_user_id = '', ".
                          "mod_date = ?, ".
                          "del_date = '', ".
-                         "is_delete = '0' ".
+                         "is_delete = 0 ".
                          "WHERE repository_id = ?";
                 $params[] = $repoData[$ii]["repository_name"];
                 $params[] = $repoData[$ii]["base_url"];
@@ -908,8 +908,8 @@ class RepositoryHarvesting extends RepositoryAction
                 $params[] = $repoData[$ii]["until_date"];
                 $params[] = $repoData[$ii]["set_param"];
                 $params[] = $repoData[$ii]["metadata_prefix"];
-                $params[] = $repoData[$ii]["post_index_id"];
-                $params[] = $repoData[$ii]["automatic_sorting"];
+                $params[] = intval($repoData[$ii]["post_index_id"]);
+                $params[] = intval($repoData[$ii]["automatic_sorting"]);
                 $params[] = $repoData[$ii]["execution_date"];
                 $params[] = $user_id;
                 $params[] = $date;
@@ -930,8 +930,8 @@ class RepositoryHarvesting extends RepositoryAction
                 $params[] = $repoData[$ii]["until_date"];
                 $params[] = $repoData[$ii]["set_param"];
                 $params[] = $repoData[$ii]["metadata_prefix"];
-                $params[] = $repoData[$ii]["post_index_id"];
-                $params[] = $repoData[$ii]["automatic_sorting"];
+                $params[] = intval($repoData[$ii]["post_index_id"]);
+                $params[] = intval($repoData[$ii]["automatic_sorting"]);
                 $params[] = $repoData[$ii]["execution_date"];
                 $params[] = $user_id;
                 $params[] = $user_id;
