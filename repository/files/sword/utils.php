@@ -341,7 +341,7 @@ function process_headers($request)
     // Addition of HTTPS check 2010/02/03 S.Nonomura --end--
 
     //$generator = 'http://'.$request['HTTP_HOST'].$request['REQUEST_URI'];
-    $response['generator']          = ereg_replace('\?.*$', '', $generator);
+    $response['generator']          = preg_replace('\?.*$', '', $generator);
 
     // ---------------------------------------------------
     // option (SWORD Level:1)
@@ -358,9 +358,9 @@ function process_headers($request)
     if(isset($deposition)){
         # get original filename
         $filename = "deposit";
-        $token = split('[;]', $deposition);
+        $token = explode('[;]', $deposition);
         foreach($token as $value) {
-            $filename = split('[=]', $value);
+            $filename = explode('[=]', $value);
             if(!strcmp($filename[0],'filename')) {
                 $filename = $filename[1];
                 // BugFix single cotation Y.Nakao 2013/06/07 --start--
