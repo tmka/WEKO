@@ -3823,8 +3823,10 @@ class Repository_Action_Main_Update extends RepositoryAction
                     $this->updateWekoVersion221To222();
                 case 222:
                     $this->updateWekoVersion222To223();
+                case 223:
+                    $this->updateWekoVersionSpase();
                 default :
-                        //$this->updateWekoVersionSpase();
+                    //$this->updateWekoVersionSpase();
                     break;
             }
             $this->executeRecursiveProcessing();
@@ -5463,7 +5465,7 @@ class Repository_Action_Main_Update extends RepositoryAction
         $this->insertLockTable('Repository_Action_Common_Updateexternalsearchword', 0);
 
         // version up to 2.1.8
-        $this->versionUp('2.1.8');
+        $this->versionUp('2.2.4');
     }
 
     /**
