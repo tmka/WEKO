@@ -341,7 +341,7 @@ function process_headers($request)
     // Addition of HTTPS check 2010/02/03 S.Nonomura --end--
 
     //$generator = 'http://'.$request['HTTP_HOST'].$request['REQUEST_URI'];
-    $response['generator']          = preg_replace('\?.*$', '', $generator);
+    $response['generator']          = preg_replace('/\?.*$/', '', $generator);
 
     // ---------------------------------------------------
     // option (SWORD Level:1)
