@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Spase lang="en" xmlns="http://www.iugonet.org/data/schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.iugonet.org/data/schema http://www.iugonet.org/data/schema/iugonet.xsd ">
+  <Version>1.0.4</Version>
+  <DisplayData>
+  	<ResourceID>spase://iugonet//aaa</ResourceID>
+  	<ResourceHeader>
+  		<ResourceName>ResourceName</ResourceName>
+  		<ReleaseDate>2001-12-31T12:00:00</ReleaseDate>
+  		<Description>Description</Description>
+  		<Contact>
+  			<PersonID>PersonID</PersonID>
+  			<Role>ArchiveSpecialist</Role>
+  		</Contact>
+  	</ResourceHeader>
+  	<AccessInformation>
+  		<RepositoryID>RepositoryID</RepositoryID>
+  		<AccessURL>
+  			<URL>URL</URL>
+  		</AccessURL>
+  	</AccessInformation>
+  	<MeasurementType>ActivityIndex</MeasurementType>
+  	<Keyword>Test</Keyword>
+  </DisplayData>
+</Spase>
