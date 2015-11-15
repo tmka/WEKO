@@ -5817,8 +5817,8 @@ class Repository_Action_Main_Update extends RepositoryAction
             $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_RELEASEDATE;
             $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_DESCRIPTION;
             $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_ACKNOWLEDGEMENT;
-            $params[] = RepositoryConst::SPASE_CATALOG_CONTACT_PERSONID;
-            $params[] = RepositoryConst::SPASE_CATALOG_CONTACT_ROLE;
+            $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_CONTACT_PERSONID;
+            $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_CONTACT_ROLE;
             $params[] = RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_REPOSITORYID;
             $params[] = RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_AVAILABILITY;
             $params[] = RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_ACCESSRIGHTS;
