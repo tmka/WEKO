@@ -216,7 +216,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
     const SPASE_GRANULE_STOPDATE = "Granule.StopDate";
     const SPASE_GRANULE_SOURCE_SOURCETYPE = "Granule.Source.SourceType";
     const SPASE_GRANULE_SOURCE_URL = "Granule.Source.URL";
-    const SPSAE_GRANULE_SOUCE_DATAEXTENT_QUANTITY = "Granule.Source.DataExtent.Quantity";
+    const SPASE_GRANULE_SOURCE_DATAEXTENT_QUANTITY = "Granule.Source.DataExtent.Quantity";
     const SPASE_GRANULE_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATESYSTEMNAME = "Granule.SpatialCoverage.CoordinateSystem.CoordinateSystemName";
     const SPASE_GRANULE_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATEREPRESENTATION = "Granule.SpatialCoverage.CoordinateSystem.CoordinateRepresentation";
     const SPASE_GRANULE_SPATIALCOVERAGE_NORTHERNMOSTLATITUDE = "Granule.SpatialCoverage.NorthernmostLatitude";
