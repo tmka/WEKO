@@ -989,7 +989,7 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                     break;
                 case RepositoryConst::SPASE_REPOSITORY_ACCESSURL_URL:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
-                    $this->repository->addResourceheader_Contact_PersonID($tmp);
+                    $this->repository->addAccessurl_url($tmp);
                     break;
                 default :
                     break;
