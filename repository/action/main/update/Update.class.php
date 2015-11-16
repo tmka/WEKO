@@ -5817,8 +5817,8 @@ class Repository_Action_Main_Update extends RepositoryAction
             $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_RELEASEDATE;
             $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_DESCRIPTION;
             $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_ACKNOWLEDGEMENT;
-            $params[] = RepositoryConst::SPASE_CATALOG_CONTACT_PERSONID;
-            $params[] = RepositoryConst::SPASE_CATALOG_CONTACT_ROLE;
+            $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_CONTACT_PERSONID;
+            $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_CONTACT_ROLE;
             $params[] = RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_REPOSITORYID;
             $params[] = RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_AVAILABILITY;
             $params[] = RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_ACCESSRIGHTS;
@@ -5853,7 +5853,7 @@ class Repository_Action_Main_Update extends RepositoryAction
             $params[] = RepositoryConst::SPASE_CATALOG_PARAMETER_SUPPORT_SUPPORTQUANTITY;
             $params[] = RepositoryConst::SPASE_INSTRUMENT_RESOURCEID;
             $params[] = RepositoryConst::SPASE_INSTRUMENT_RESOURCEHEADER_RESOURCENAME;
-            $params[] = RepositoryConst::SPASE_INSTRUMENT_RESOURCEHEADER_RELEASEDATA;
+            $params[] = RepositoryConst::SPASE_INSTRUMENT_RESOURCEHEADER_RELEASEDATE;
             $params[] = RepositoryConst::SPASE_INSTRUMENT_RESOURCEHEADER_DESCRIPTION;
             $params[] = RepositoryConst::SPASE_INSTRUMENT_RESOURCEHEADER_CONTACT_PERSONID;
             $params[] = RepositoryConst::SPASE_INSTRUMENT_RESOURCEHEADER_CONTACT_ROLE;
@@ -5862,7 +5862,7 @@ class Repository_Action_Main_Update extends RepositoryAction
             $params[] = RepositoryConst::SPASE_INSTRUMENT_OBSEVATORYID;
             $params[] = RepositoryConst::SPASE_OBSERVATORY_RESOURCEID;
             $params[] = RepositoryConst::SPASE_OBSERVATORY_RESOURCEHEADER_RESOURCENAME;
-            $params[] = RepositoryConst::SPASE_OBSERVATORY_RESOURCEHEADER_RELEASEDATA;
+            $params[] = RepositoryConst::SPASE_OBSERVATORY_RESOURCEHEADER_RELEASEDATE;
             $params[] = RepositoryConst::SPASE_OBSERVATORY_RESOURCEHEADER_DESCRIPTION;
             $params[] = RepositoryConst::SPASE_OBSERVATORY_RESOURCEHEADER_CONTACT_PERSONID;
             $params[] = RepositoryConst::SPASE_OBSERVATORY_RESOURCEHEADER_CONTACT_ROLE;
@@ -5877,13 +5877,13 @@ class Repository_Action_Main_Update extends RepositoryAction
             $params[] = RepositoryConst::SPASE_PERSON_EMAIL;
             $params[] = RepositoryConst::SPASE_REPOSITORY_RESOURCEID;
             $params[] = RepositoryConst::SPASE_REPOSITORY_RESOURCEHEADER_RESOURCENAME;
-            $params[] = RepositoryConst::SPASE_REPOSITORY_RESOURCEHEADER_RELEASEDATA;
+            $params[] = RepositoryConst::SPASE_REPOSITORY_RESOURCEHEADER_RELEASEDATE;
             $params[] = RepositoryConst::SPASE_REPOSITORY_RESOURCEHEADER_DESCRIPTION;
             $params[] = RepositoryConst::SPASE_REPOSITORY_RESOURCEHEADER_CONTACT_PERSONID;
             $params[] = RepositoryConst::SPASE_REPOSITORY_RESOURCEHEADER_CONTACT_ROLE;
             $params[] = RepositoryConst::SPASE_REPOSITORY_ACCESSURL_URL;
             $params[] = RepositoryConst::SPASE_GRANULE_RESOURCEID;
-            $params[] = RepositoryConst::SPASE_GRANULE_RELEASEDATA;
+            $params[] = RepositoryConst::SPASE_GRANULE_RELEASEDATE;
             $params[] = RepositoryConst::SPASE_GRANULE_PARENTID;
             $params[] = RepositoryConst::SPASE_GRANULE_STARTDATE;
             $params[] = RepositoryConst::SPASE_GRANULE_STOPDATE;
@@ -5893,7 +5893,7 @@ class Repository_Action_Main_Update extends RepositoryAction
             $params[] = RepositoryConst::SPASE_GRANULE_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATESYSTEMNAME;
             $params[] = RepositoryConst::SPASE_GRANULE_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATEREPRESENTATION;
             $params[] = RepositoryConst::SPASE_GRANULE_SPATIALCOVERAGE_NORTHERNMOSTLATITUDE;
-            $params[] = RepositoryConst::SPASE_GRANULE_SPATIALCOVERAGE_SOUTHERNMOSTLATITUTE;
+            $params[] = RepositoryConst::SPASE_GRANULE_SPATIALCOVERAGE_SOUTHERNMOSTLATITUDE;
             $params[] = RepositoryConst::SPASE_GRANULE_SPATIALCOVERAGE_EASTERNMOSTLONGITUDE;
             $params[] = RepositoryConst::SPASE_GRANULE_SPATIALCOVERAGE_WESTERNMOSTLONGITUDE;
             $params[] = RepositoryConst::SPASE_GRANULE_SPATIALCOVERAGE_UNIT;

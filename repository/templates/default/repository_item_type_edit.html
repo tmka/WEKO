@@ -11,31 +11,31 @@
 <!--// ---------------------------------------------------------------------->
 <{*repositoryアイテムタイプ編集*}>
 <div class="ac mtb10">
-  
-  <table class="box_center">
-    <{*ヘルプ*}>
-    <{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
-      <tr>
-        <td align="right" class="ptb10">
-          <div>
-            <a href="#" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'itemtype_edit'); return false;" style="cursor: help;">
-              <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" align="right" alt="help">
-            </a>
-          </div>
-        </td>
-      </tr>
-    <{/if}>
-    <tr>
-      <td>
-        <{if $smarty.session._lang == "japanese"}>
-          <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_type_settings2.png" />
-        <{else}>
-          <img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_type_settings2_eng.png" />
-        <{/if}>
-      </td>
-    </tr>
-  </table>
-  
+	
+	<table class="box_center">
+		<{*ヘルプ*}>
+		<{if $smarty.session._lang=="japanese" && $action.help_icon_display == "1"}>
+			<tr>
+				<td align="right" class="ptb10">
+					<div>
+						<a href="#" onclick="repositoryCls['<{$id}>'].repositoryHelp(event,'itemtype_edit'); return false;" style="cursor: help;">
+							<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/default/help.png" align="right" alt="help">
+						</a>
+					</div>
+				</td>
+			</tr>
+		<{/if}>
+		<tr>
+			<td>
+				<{if $smarty.session._lang == "japanese"}>
+					<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_type_settings2.png" />
+				<{else}>
+					<img src="<{$smarty.const.CORE_BASE_URL}>/images/repository/<{$action.wekoThemeName}>/item_type_settings2_eng.png" />
+				<{/if}>
+			</td>
+		</tr>
+	</table>
+	
 </div>
 
 <{if $smarty.session.error_code!=""}>
@@ -242,7 +242,7 @@
              ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
              ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
              ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) ||
-             ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172)} >
+             ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172) }>
             <{$metadata[0]}>
             <{* add multi language 2013/07/23 K.Matsuo --start *}>
             <div align="right" style="min-width:100px">
@@ -263,8 +263,8 @@
         <{if ($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
              ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
              ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
-             ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37)||
-             ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172) }>
+             ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) ||
+            ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172) }>
          <input type="hidden" name="metadata_type[]" value="<{$metadata[1]}>"/>
         <{/if}>
 
@@ -272,7 +272,7 @@
              ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
              ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
              ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) ||
-            ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172)}>
+            ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172) }>
             <{* metadata *}>
             <{if $metadata[1]=="text"}><{$lang.repository_attribute_type_text}><{/if}>
             <{if $metadata[1]=="textarea"}><{$lang.repository_attribute_type_textarea}><{/if}>
@@ -397,7 +397,7 @@
                ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
                ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
                ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) ||
-                ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172)}>
+              ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172) }>
              <div style="padding: 2px;"><{$lang.repository_candidate}></div>
           <{else}>
              <div style="padding: 2px;"><{$lang.repository_selitem_explanation}></div>
@@ -407,15 +407,14 @@
             <{if ($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
                  ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
                  ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
-                 ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) || 
-                  ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172)}>
+                 ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) }>
              <input type="hidden" name="metadata_candidate[]" value="<{if $smarty.session.metadata_candidate[$loop_num]==""}> <{else}><{$smarty.session.metadata_candidate[$loop_num]}><{/if}>"/>
             <{/if}>
             <{if ($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
                  ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
                  ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
-                 ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) || 
-                  ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172)}>
+                 ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) ||
+                ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172) }>
                 <{$smarty.session.metadata_candidate[$loop_num]}>
             <{else}>
                 <input value="<{$smarty.session.metadata_candidate[$loop_num]}>" type="text" class="full" name="metadata_candidate[]">
@@ -424,15 +423,15 @@
            </div>
          </div>
         <!-- 2008/02/27 nakao -->
-       </td>  
-    <td class="item_edit_list al pr30">
-      <{* 必須 *}>
-      <label for="required<{$loop_num}>">
+       </td>	
+		<td class="item_edit_list al pr30">
+			<{* 必須 *}>
+			<label for="required<{$loop_num}>">
              <{if $metadata[2]==1 && (($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
                   ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
                   ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
                   ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) ||
-                  ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172)}>
+                 ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172) )}>
                  <input type="hidden" name="metadata_required[]" value="<{$metadata[7]}>"/>
              <{/if}>
              <input type="checkbox" id="required<{$loop_num}>" value="<{$metadata[7]}>" <{if $metadata[1]== "supple"}>disabled="disabled"<{/if}> <{if $metadata[2]==1 && $metadata[1]!= "supple"}>CHECKED<{/if}>
@@ -440,21 +439,20 @@
                    ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
                    ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
                    ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) ||
-                  ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172)}>
+                  ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172) }>
                disabled="disabled"
               <{else}>
                name="metadata_required[]"
               <{/if}>
              ><{$lang.repository_requier}>
             </label><br />
-      <{* 複数可否 *}>
-      <span id="plural_display<{$loop_num}>" <{if $metadata[1]=="supple"}>style="display:none;"<{/if}>>
+			<{* 複数可否 *}>
+			<span id="plural_display<{$loop_num}>" <{if $metadata[1]=="supple"}>style="display:none;"<{/if}>>
              <label for="plural<{$loop_num}>">
               <{if $metadata[4]==1 && (($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
                    ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
                    ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
-                   ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) ||
-                    ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172)}>
+                   ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) )}>
                   <input type="hidden" name="metadata_plural[]" value="<{$metadata[7]}>"/>
               <{/if}>
               <input type="checkbox" id="plural<{$loop_num}>" value="<{$metadata[7]}>" <{if ($metadata[4]==1 && $metadata[1]!="checkbox" && $metadata[1]!="radio" && $metadata[1]!="select" && $metadata[1]!="biblio_info" && $metadata[1]!="file_price") || $metadata[1]== "supple"}>CHECKED<{/if}> <{if $metadata[1]=="checkbox" || $metadata[1]=="radio" || $metadata[1]=="select" || $metadata[1]=="biblio_info" || $metadata[1]=="file_price" || $metadata[1]=="heading"}>disabled="disabled"<{/if}>
@@ -462,7 +460,7 @@
                     ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
                     ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
                     ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) ||
-                    ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172)}>
+                   ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172) }>
                 disabled="disabled"
                <{else}>
                 name="metadata_plural[]"
@@ -470,17 +468,17 @@
               ><{$lang.repository_plural}>
              </label>
             </span>
-      <{* 複数可否ダミー:チェックON *}>
-      <span id="plural_dummy<{$loop_num}>" <{if $metadata[1]!="supple"}>style="display:none"<{/if}>>
+			<{* 複数可否ダミー:チェックON *}>
+			<span id="plural_dummy<{$loop_num}>" <{if $metadata[1]!="supple"}>style="display:none"<{/if}>>
              <input type="checkbox" value="" CHECKED disabled="disabled"><{$lang.repository_plural}>
             </span><br />
-      <{* 一覧表示 *}>
-      <label for="disp<{$loop_num}>">
+			<{* 一覧表示 *}>
+			<label for="disp<{$loop_num}>">
              <{if $metadata[3]==1 && (($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
                   ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
                   ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
                   ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) ||
-                  ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172)}>
+                 ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172) )}>
               <input type="hidden" name="metadata_disp[]" value="<{$metadata[7]}>"/>
              <{/if}>
              <input type="checkbox" id="disp<{$loop_num}>" value="<{$metadata[7]}>" <{if $metadata[3]==1 && $metadata[6]!=1 && $metadata[1]!= "supple"}>CHECKED<{/if}> <{if $metadata[6]==1 || $metadata[1]== "supple"}>disabled="disabled"<{/if}>
@@ -488,23 +486,23 @@
                    ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
                    ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
                    ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) ||
-                  ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172)}>
+                  ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172) }>
                disabled="disabled"
               <{else}>
                name="metadata_disp[]"
               <{/if}>
              ><{$lang.repository_listview}>
             </label><br />
-      <{* 改行指定 *}>
-      <{* Add show thumbnail in search result 2012/02/10 T.Koyasu -start- *}>
-      <{* Add metadata[input_type]=="thumbnail" to 'if' *}>
-      <span id="newline_display<{$loop_num}>" <{if ($metadata[1]=="file" || $metadata[1]=="file_price" || $metadata[1]=="thumbnail") && $metadata[6]!=1}>style="display:none;"<{/if}>>
+			<{* 改行指定 *}>
+			<{* Add show thumbnail in search result 2012/02/10 T.Koyasu -start- *}>
+			<{* Add metadata[input_type]=="thumbnail" to 'if' *}>
+			<span id="newline_display<{$loop_num}>" <{if ($metadata[1]=="file" || $metadata[1]=="file_price" || $metadata[1]=="thumbnail") && $metadata[6]!=1}>style="display:none;"<{/if}>>
              <label for="newline<{$loop_num}>">
               <{if $metadata[5]==1 && (($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
                    ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
                    ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
                    ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) ||
-                    ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172)}>
+                  ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172) )}>
                <input type="hidden" name="metadata_newline[]" value="<{$metadata[7]}>"/>
               <{/if}>
               <input type="checkbox" id="newline<{$loop_num}>" name="metadata_newline[]" value="<{$metadata[7]}>" <{if ($metadata[5]==1 || $metadata[1]=="file" || $metadata[1]=="file_price" || $metadata[1]=="thumbnail") && ($metadata[6]!=1 && $metadata[1]!= "supple")}>CHECKED<{/if}> <{if $metadata[6]==1 || $metadata[1]== "supple"}>disabled="disabled"<{/if}>
@@ -512,7 +510,7 @@
                     ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
                     ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
                     ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) ||
-                    ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172)}>
+                   ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172) }>
                 disabled="disabled"
                <{else}>
                 name="metadata_newline[]"
@@ -520,19 +518,19 @@
               ><{$lang.repository_newline}>
              </label>
             </span>
-      <{* 改行指定ダミー:チェックON *}>
-      <{* Add metadata[input_type]!="thumbnail" to 'if' *}>
-      <span id="newline_dummy<{$loop_num}>" <{if ($metadata[1]!="file" && $metadata[1]!="file_price" && $metadata[1]!="thumbnail") || $metadata[6]==1}>style="display:none"<{/if}>>
+			<{* 改行指定ダミー:チェックON *}>
+			<{* Add metadata[input_type]!="thumbnail" to 'if' *}>
+			<span id="newline_dummy<{$loop_num}>" <{if ($metadata[1]!="file" && $metadata[1]!="file_price" && $metadata[1]!="thumbnail") || $metadata[6]==1}>style="display:none"<{/if}>>
              <input type="checkbox" value="" CHECKED disabled="disabled"><{$lang.repository_newline}>
             </span><br />
-      <{* Add show thumbnail in search result 2012/02/10 T.Koyasu -start- *}>
-      <{* 非表示指定 *}>
-      <label for="hidden<{$loop_num}>">
+			<{* Add show thumbnail in search result 2012/02/10 T.Koyasu -start- *}>
+			<{* 非表示指定 *}>
+			<label for="hidden<{$loop_num}>">
              <{if $metadata[6]==1 && (($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
                   ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
                   ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
                   ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) ||
-                  ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172)}>
+                 ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172) )}>
               <input type="hidden" name="metadata_hidden[]" value="<{$metadata[7]}>"/>
              <{/if}>
              <input type="checkbox" id="hidden<{$loop_num}>" name="metadata_hidden[]" value="<{$metadata[7]}>" <{if $metadata[6]==1}>CHECKED<{/if}> onclick="repositoryCls['<{$id}>'].checkSelectHidden(<{$loop_num}>);"
@@ -540,24 +538,24 @@
                    ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
                    ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
                    ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) ||
-                  ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172)}>
+                  ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172) }>
                disabled="disabled"
               <{else}>
                name="metadata_hidden[]"
               <{/if}>
              ><{$lang.repository_hidden}>
             </label>
-    </td>
+		</td>
       <{* 行入れ替え用 *}>
       <td class="item_edit_list ac">
        <{if !(($smarty.session.item_type_id == 20001 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 17) ||
             ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
             ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
-             ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) ||
-              ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172)}>
+             ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) || 
+           ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172) )}>
         <input type="button" class="btn_white" value="<{$lang.repository_up}>"
                onclick="repositoryCls['<{$id}>'].repositoryShuffleUp(<{$loop_num}>); return false;"
-               <{if $loop_num==0 || ($smarty.session.item_type_id == 20001 && $loop_num==17) || (($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015) && $loop_num==61) || ($smarty.session.item_type_id == 20016 && $loop_num==86) || ($smarty.session.item_type_id == 20017 && $loop_num==37)}>
+               <{if $loop_num==0 || ($smarty.session.item_type_id == 20001 && $loop_num==17) || (($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015) && $loop_num==61) || ($smarty.session.item_type_id == 20016 && $loop_num==86) || ($smarty.session.item_type_id == 20017 && $loop_num==37) || ($smarty.session.item_type_id == 20018 && $loop_num==172)}>
                 disabled="disabled"
                <{/if}>
         ><br/>
@@ -573,7 +571,7 @@
             ($smarty.session.item_type_id >= 20002 && $smarty.session.item_type_id <= 20015 && $loop_num >= 0 && $loop_num <= 60) ||
             ($smarty.session.item_type_id == 20016 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 86) || 
              ($smarty.session.item_type_id == 20017 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 37) ||
-              ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172)}>
+           ($smarty.session.item_type_id == 20018 && $smarty.session.attribute_id[$loop_num] >= 1 && $smarty.session.attribute_id[$loop_num] <= 172))}>
         <input type="button" class="btn_delete" value="<{$lang.repository_delete}>" onclick="repositoryCls['<{$id}>'].repositoryItemTypeEditDellmetadata(<{$loop_num}>); return false;">
        <{/if}>
       </td>
@@ -603,8 +601,8 @@
  <P>menba_session = <{$smarty.session.create_menba1}><P>
  -->
 <script class="nc_script" type="text/javascript">
-  createErrorMsg = function(){
-    return new Array("<{$lang.repository_itemtype_check_fileprice}>","<{$lang.repository_itemtype_check_supple}>", "<{$lang.repository_itemtype_check_heading}>");
-  }
+	createErrorMsg = function(){
+		return new Array("<{$lang.repository_itemtype_check_fileprice}>","<{$lang.repository_itemtype_check_supple}>", "<{$lang.repository_itemtype_check_heading}>");
+	}
 </script>
 <{include file="repository_script.html"}>

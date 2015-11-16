@@ -577,7 +577,7 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
                     $this->granule->addSource_URL($tmp);
                     break;
-                case RepositoryConst::SPSAE_GRANULE_SOUCE_DATAEXTENT_QUANTITY:
+                case RepositoryConst::SPASE_GRANULE_SOURCE_DATAEXTENT_QUANTITY:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
                     $this->granule->addSouce_Dataextent_Quantity($tmp);
                     break;
@@ -4950,7 +4950,7 @@ class Repository_Oaipmh_SPASE_Granule
   {
       $xml = $this->Souce_Dataextent_Quantity->output();
       if(strlen($xml)>0){
-          $value = explode(".",RepositoryConst::SPASE_R_RESOURCEHEADER_CONTACT_ROLE);
+          $value = explode(".",RepositoryConst::SPSAE_G_SOUCE_DATAEXTENT_QUANTITY);
           $xmlStr .= '<'.$value[count($value)-1].'>';
           $xmlStr .= $xml;
           $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
