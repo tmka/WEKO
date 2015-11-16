@@ -4556,7 +4556,7 @@ class Repository_Oaipmh_SPASE_Repository
     }
   }
 
-  public function addAccessurl_url(Repository_Oaipmh_SPASE_Identifier $Accessurl_url){
+  public function addAccessurl_url(Repository_Oaipmh_SPASE_LangString $Accessurl_url){
     if($this->Accessurl_url == null){
         $this->Accessurl_url = $Accessurl_url;
     }
