@@ -1228,7 +1228,15 @@
 											<th class="th_detail_line_repos vt al w20 ws"><{$attr_type[i].attribute_name}></th>
 											<td class="td_detail_line_repos w80">
 												<{section name=j loop=$item_attr[i]}>
-													<{$item_attr[i][j].attribute_value}>
+													<{if $item_attr[i][j].attribute_value|regex_replace:'!^spase:\/\/!':'x' ne $item_attr[i][j].attribute_value}>
+														<{*spase://形式の場合OpenSearchクエリの発行*}>
+														<a href="<{$smarty.const.BASE_URL}>/index.php?action=repository_opensearch&format=atom&keyword=<{$item_attr[i][j].attribute_value}>"
+														>
+														<{$item_attr[i][j].attribute_value}>
+														</a>
+													<{else}>
+														<{$item_attr[i][j].attribute_value}>
+													<{/if}>
 													<br/>
 												<{/section}>
 											</td>
