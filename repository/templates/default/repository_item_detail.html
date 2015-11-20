@@ -1230,7 +1230,7 @@
 												<{section name=j loop=$item_attr[i]}>
 													<{if $item_attr[i][j].attribute_value|regex_replace:'!^spase:\/\/!':'x' ne $item_attr[i][j].attribute_value}>
 														<{*spase://形式の場合OpenSearchクエリの発行*}>
-														<a href="<{$smarty.const.BASE_URL}>/index.php?action=repository_opensearch&format=atom&keyword=<{$item_attr[i][j].attribute_value}>"
+														<a href="<{$smarty.const.BASE_URL}>/?action=pages_view_main&active_action=repository_view_main_item_snippet&all=<{$item_attr[i][j].attribute_value}>&page_id=<{$page_id}>&block_id=<{$block_id}>"
 														>
 														<{$item_attr[i][j].attribute_value}>
 														</a>
