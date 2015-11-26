@@ -975,6 +975,7 @@ class RepositoryConst
 	const SPASE_NUMERICALDATA_ACCESSINFORMATION_DATAEXTENT_QUANTITY = "NumericalData.AccessInformation.DataExtent.Quantity";
 	const SPASE_NUMERICALDATA_PHENOMENONTYPE = "NumericalData.PhenomenonType";
 	const SPASE_NUMERICALDATA_MEASUREMENTTYPE = "NumericalData.MeasurementType";
+    const SPASE_NUMERICALDATA_KEYWORD = "NumericalData.Keyword";
 	const SPASE_NUMERICALDATA_TEMPORALDESCRIPTION_STARTDATE = "NumericalData.TemporalDescription.StartDate";
 	const SPASE_NUMERICALDATA_TEMPORALDESCRIPTION_STOPDATE = "NumericalData.TemporalDescription.StopDate";
 	const SPASE_NUMERICALDATA_TEMPORALDESCRIPTION_RELATIVESTOPDATE = "NumericalData.TemporalDescription.RelativeStopDate";
@@ -1016,6 +1017,7 @@ class RepositoryConst
 	const SPASE_ND_ACCESSINFORMATION_DATAEXTENT_QUANTITY = "AccessInformation.DataExtent.Quantity";
 	const SPASE_ND_PHENOMENONTYPE = "PhenomenonType";
 	const SPASE_ND_MEASUREMENTTYPE = "MeasurementType";
+    const SPASE_ND_KEYWORD = "Keyword";
 	const SPASE_ND_TEMPORALDESCRIPTION_STARTDATE = "TemporalDescription.StartDate";
 	const SPASE_ND_TEMPORALDESCRIPTION_STOPDATE = "TemporalDescription.StopDate";
 	const SPASE_ND_TEMPORALDESCRIPTION_RELATIVESTOPDATE = "TemporalDescription.RelativeStopDate";
@@ -1059,6 +1061,7 @@ class RepositoryConst
 	const SPASE_DISPLAYDATA_ACCESSINFORMATION_DATAEXTENT_QUANTITY = "DisplayData.AccessInformation.DataExtent.Quantity";
 	const SPASE_DISPLAYDATA_PHENOMENONTYPE = "DisplayData.PhenomenonType";
 	const SPASE_DISPLAYDATA_MEASUREMENTTYPE = "DisplayData.MeasurementType";
+    const SPASE_DISPLAYDATA_KEYWORD = "DisplayData.Keyword";
 	const SPASE_DISPLAYDATA_TEMPORALDESCRIPTION_STARTDATE = "DisplayData.TemporalDescription.StartDate";
 	const SPASE_DISPLAYDATA_TEMPORALDESCRIPTION_STOPDATE = "DisplayData.TemporalDescription.StopDate";
 	const SPASE_DISPLAYDATA_TEMPORALDESCRIPTION_RELATIVESTOPDATE = "DisplayData.TemporalDescription.RelativeStopDate";
@@ -1100,6 +1103,7 @@ class RepositoryConst
 	const SPASE_DD_ACCESSINFORMATION_DATAEXTENT_QUANTITY = "AccessInformation.DataExtent.Quantity";
 	const SPASE_DD_PHENOMENONTYPE = "PhenomenonType";
 	const SPASE_DD_MEASUREMENTTYPE = "MeasurementType";
+    const SPASE_DD_KEYWORD = "Keyword";
 	const SPASE_DD_TEMPORALDESCRIPTION_STARTDATE = "TemporalDescription.StartDate";
 	const SPASE_DD_TEMPORALDESCRIPTION_STOPDATE = "TemporalDescription.StopDate";
 	const SPASE_DD_TEMPORALDESCRIPTION_RELATIVESTOPDATE = "TemporalDescription.RelativeStopDate";
@@ -1144,6 +1148,7 @@ class RepositoryConst
 	const SPASE_CATALOG_ACCESSINFORMATION_DATAEXTENT_QUANTITY = "Catalog.AccessInformation.DataExtent.Quantity";
 	const SPASE_CATALOG_PHENOMENONTYPE = "Catalog.PhenomenonType";
 	const SPASE_CATALOG_MEASUREMENTTYPE = "Catalog.MeasurementType";
+    const SPASE_CATALOG_KEYWORD = "Catalog.Keyword";
 	const SPASE_CATALOG_TEMPORALDESCRIPTION_STARTDATE = "Catalog.TemporalDescription.StartDate";
 	const SPASE_CATALOG_TEMPORALDESCRIPTION_STOPDATE = "Catalog.TemporalDescription.StopDate";
 	const SPASE_CATALOG_TEMPORALDESCRIPTION_RELATIVESTOPDATE = "Catalog.TemporalDescription.RelativeStopDate";
@@ -1187,6 +1192,7 @@ class RepositoryConst
 
 	const SPASE_C_PHENOMENONTYPE = "PhenomenonType";
 	const SPASE_C_MEASUREMENTTYPE = "MeasurementType";
+    const SPASE_C_KEYWORD = "Keyword";
 	const SPASE_C_TEMPORALDESCRIPTION_STARTDATE = "TemporalDescription.StartDate";
 	const SPASE_C_TEMPORALDESCRIPTION_STOPDATE = "TemporalDescription.StopDate";
 	const SPASE_C_TEMPORALDESCRIPTION_RELATIVESTOPDATE = "TemporalDescription.RelativeStopDate";
@@ -1231,7 +1237,7 @@ class RepositoryConst
 	const SPASE_I_RESOURCEHEADER_DESCRIPTION = "ResourceHeader.Description";
 	const SPASE_I_RESOURCEHEADER_CONTACT_PERSONID = "ResourceHeader.Contact.PersonID";
 	const SPASE_I_RESOURCEHEADER_CONTACT_ROLE = "ResourceHeader.Contact.Role";
-	//const SPASE_I_TYPE = "Type";
+	const SPASE_I_TYPE = "Type";
 	const SPASE_I_INSTRUMENTTYPE = "InstrumentType";
 	const SPASE_I_INVESTIGATIONNAME = "InvestigationName";
 	const SPASE_I_OBSEVATORYID = "ObsevatoryID";

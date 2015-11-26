@@ -322,6 +322,10 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
                     $this->catalog->addMeasurementtype($tmp);
                     break;
+                case RepositoryConst::SPASE_CATALOG_KEYWORD:
+                    $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+                    $this->catalog->addKeyword($tmp);
+                    break;
                 case RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATESYSTEMNAME:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
                     $this->catalog->addSpatialcoverage_Coordinatesystem_Coordinatesystemname($tmp);
@@ -492,6 +496,10 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                 case RepositoryConst::SPASE_DISPLAYDATA_MEASUREMENTTYPE:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
                     $this->catalog->addMeasurementtype($tmp);
+                    break;
+                case RepositoryConst::SPASE_DISPLAYDATA_KEYWORD:
+                    $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+                    $this->catalog->addKeyword($tmp);
                     break;
                 case RepositoryConst::SPASE_DISPLAYDATA_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATESYSTEMNAME:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
@@ -807,6 +815,10 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
                     $this->numericaldata->addMeasurementtype($tmp);
                     break;
+                case RepositoryConst::SPASE_NUMERICALDATA_KEYWORD:
+                    $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+                    $this->numericaldata->addKeyword($tmp);
+                    break;
                 case RepositoryConst::SPASE_NUMERICALDATA_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATESYSTEMNAME:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
                     $this->numericaldata->addSpatialcoverage_Coordinatesystem_Coordinatesystemname($tmp);
@@ -1073,6 +1085,7 @@ class Repository_Oaipmh_SPASE_Catalog
 
   private $Phenomenontype = null;
   private $Measurementtype = null;
+  private $Keyword = null;
   private $Observedregion = null;
 
   private $Spatialcoverage_Coordinatesystem_Coordinatesystemname = null;
@@ -1292,6 +1305,12 @@ class Repository_Oaipmh_SPASE_Catalog
   public function addMeasurementtype(Repository_Oaipmh_SPASE_LangString $Measurementtype){
     if($this->Measurementtype == null){
         $this->Measurementtype = $Measurementtype;
+    }
+  }
+
+  public function addKeyword(Repository_Oaipmh_SPASE_LangString $Keyword){
+    if($this->Keyword == null){
+        $this->Keyword = $Keyword;
     }
   }
 
@@ -1784,6 +1803,17 @@ class Repository_Oaipmh_SPASE_Catalog
         }
     }
 
+    if($this->Keyword != null)
+    {
+        $xml = $this->Keyword->output();
+        if(strlen($xml)>0){
+            $value = explode(".",RepositoryConst::SPASE_C_KEYWORD);
+            $xmlStr .= '<'.$value[count($value)-1].'>';
+            $xmlStr .= $xml;
+            $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
+        }
+    }
+
     if($this->Temporaldescription_Startdate != null || $this->Temporaldescription_Stopdate != null
       ||$this->Temporaldescription_Relativestopdate != null){
 
@@ -1792,7 +1822,7 @@ class Repository_Oaipmh_SPASE_Catalog
     {
         $xml = $this->Temporaldescription_Startdate->output();
         if(strlen($xml)>0){
-            $value = explode(".",RepositoryConst::SPASE_C_MEASUREMENTTYPE);
+            $value = explode(".",RepositoryConst::SPASE_C_TEMPORALDESCRIPTION_STARTDATE);
             $xmlStr .= '<'.$value[count($value)-1].'>';
             $xmlStr .= $xml;
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
@@ -1803,7 +1833,7 @@ class Repository_Oaipmh_SPASE_Catalog
     {
         $xml = $this->Temporaldescription_Stopdate->output();
         if(strlen($xml)>0){
-            $value = explode(".",RepositoryConst::SPASE_C_MEASUREMENTTYPE);
+            $value = explode(".",RepositoryConst::SPASE_C_TEMPORALDESCRIPTION_STOPDATE);
             $xmlStr .= '<'.$value[count($value)-1].'>';
             $xmlStr .= $xml;
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
@@ -1814,7 +1844,7 @@ class Repository_Oaipmh_SPASE_Catalog
     {
         $xml = $this->Temporaldescription_Relativestopdate->output();
         if(strlen($xml)>0){
-            $value = explode(".",RepositoryConst::SPASE_C_MEASUREMENTTYPE);
+            $value = explode(".",RepositoryConst::SPASE_C_TEMPORALDESCRIPTION_RELATIVESTOPDATE);
             $xmlStr .= '<'.$value[count($value)-1].'>';
             $xmlStr .= $xml;
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
@@ -2009,6 +2039,7 @@ class Repository_Oaipmh_SPASE_Displaydata
 
   private $Phenomenontype = null;
   private $Measurementtype = null;
+  private $Keyword = null;
   private $Observedregion = null;
 
   private $Spatialcoverage_Coordinatesystem_Coordinatesystemname = null;
@@ -2208,6 +2239,12 @@ class Repository_Oaipmh_SPASE_Displaydata
   public function addMeasurementtype(Repository_Oaipmh_SPASE_LangString $Measurementtype){
     if($this->Measurementtype == null){
         $this->Measurementtype = $Measurementtype;
+    }
+  }
+
+  public function addKeyword(Repository_Oaipmh_SPASE_LangString $Keyword){
+    if($this->Keyword == null){
+        $this->Keyword = $Keyword;
     }
   }
 
@@ -2698,6 +2735,17 @@ class Repository_Oaipmh_SPASE_Displaydata
         }
     }
 
+    if($this->Keyword != null)
+    {
+        $xml = $this->Keyword->output();
+        if(strlen($xml)>0){
+            $value = explode(".",RepositoryConst::SPASE_DD_KEYWORD);
+            $xmlStr .= '<'.$value[count($value)-1].'>';
+            $xmlStr .= $xml;
+            $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
+        }
+    }
+
     if($this->Temporaldescription_Startdate != null || $this->Temporaldescription_Stopdate != null
       ||$this->Temporaldescription_Relativestopdate != null){
 
@@ -2706,7 +2754,7 @@ class Repository_Oaipmh_SPASE_Displaydata
     {
         $xml = $this->Temporaldescription_Startdate->output();
         if(strlen($xml)>0){
-            $value = explode(".",RepositoryConst::SPASE_DD_MEASUREMENTTYPE);
+            $value = explode(".",RepositoryConst::SPASE_DD_TEMPORALDESCRIPTION_STARTDATE);
             $xmlStr .= '<'.$value[count($value)-1].'>';
             $xmlStr .= $xml;
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
@@ -2717,7 +2765,7 @@ class Repository_Oaipmh_SPASE_Displaydata
     {
         $xml = $this->Temporaldescription_Stopdate->output();
         if(strlen($xml)>0){
-            $value = explode(".",RepositoryConst::SPASE_DD_MEASUREMENTTYPE);
+            $value = explode(".",RepositoryConst::SPASE_DD_TEMPORALDESCRIPTION_STOPDATE);
             $xmlStr .= '<'.$value[count($value)-1].'>';
             $xmlStr .= $xml;
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
@@ -2728,7 +2776,7 @@ class Repository_Oaipmh_SPASE_Displaydata
     {
         $xml = $this->Temporaldescription_Relativestopdate->output();
         if(strlen($xml)>0){
-            $value = explode(".",RepositoryConst::SPASE_DD_MEASUREMENTTYPE);
+            $value = explode(".",RepositoryConst::SPASE_DD_TEMPORALDESCRIPTION_RELATIVESTOPDATE);
             $xmlStr .= '<'.$value[count($value)-1].'>';
             $xmlStr .= $xml;
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
@@ -2920,6 +2968,7 @@ class Repository_Oaipmh_SPASE_NumericalData
 
   private $Phenomenontype = null;
   private $Measurementtype = null;
+  private $Keyword = null;
   private $Observedregion = null;
 
   private $Spatialcoverage_Coordinatesystem_Coordinatesystemname = null;
@@ -3123,6 +3172,12 @@ class Repository_Oaipmh_SPASE_NumericalData
   public function addMeasurementtype(Repository_Oaipmh_SPASE_LangString $Measurementtype){
     if($this->Measurementtype == null){
         $this->Measurementtype = $Measurementtype;
+    }
+  }
+
+  public function addKeyword(Repository_Oaipmh_SPASE_LangString $Keyword){
+    if($this->Keyword == null){
+        $this->Keyword = $Keyword;
     }
   }
 
@@ -3607,6 +3662,17 @@ class Repository_Oaipmh_SPASE_NumericalData
         }
     }
 
+    if($this->Keyword != null)
+    {
+        $xml = $this->Keyword->output();
+        if(strlen($xml)>0){
+            $value = explode(".",RepositoryConst::SPASE_ND_KEYWORD);
+            $xmlStr .= '<'.$value[count($value)-1].'>';
+            $xmlStr .= $xml;
+            $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
+        }
+    }
+
     if($this->Temporaldescription_Startdate != null || $this->Temporaldescription_Stopdate != null
       ||$this->Temporaldescription_Relativestopdate != null){
 
@@ -3615,7 +3681,7 @@ class Repository_Oaipmh_SPASE_NumericalData
     {
         $xml = $this->Temporaldescription_Startdate->output();
         if(strlen($xml)>0){
-            $value = explode(".",RepositoryConst::SPASE_ND_MEASUREMENTTYPE);
+            $value = explode(".",RepositoryConst::SPASE_ND_TEMPORALDESCRIPTION_STARTDATE);
             $xmlStr .= '<'.$value[count($value)-1].'>';
             $xmlStr .= $xml;
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
@@ -3626,7 +3692,7 @@ class Repository_Oaipmh_SPASE_NumericalData
     {
         $xml = $this->Temporaldescription_Stopdate->output();
         if(strlen($xml)>0){
-            $value = explode(".",RepositoryConst::SPASE_ND_MEASUREMENTTYPE);
+            $value = explode(".",RepositoryConst::SPASE_ND_TEMPORALDESCRIPTION_STOPDATE);
             $xmlStr .= '<'.$value[count($value)-1].'>';
             $xmlStr .= $xml;
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
@@ -3637,7 +3703,7 @@ class Repository_Oaipmh_SPASE_NumericalData
     {
         $xml = $this->Temporaldescription_Relativestopdate->output();
         if(strlen($xml)>0){
-            $value = explode(".",RepositoryConst::SPASE_ND_MEASUREMENTTYPE);
+            $value = explode(".",RepositoryConst::SPASE_ND_TEMPORALDESCRIPTION_RELATIVESTOPDATE);
             $xmlStr .= '<'.$value[count($value)-1].'>';
             $xmlStr .= $xml;
             $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
