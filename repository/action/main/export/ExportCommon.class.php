@@ -389,6 +389,7 @@ class ExportCommon extends RepositoryAction
                 "junii2_mapping=\"" .$item_attr_types["junii2_mapping"] . "\" " .               // junii2_mapping
                 "dublin_core_mapping=\"" .$item_attr_types["dublin_core_mapping"] . "\" " .     // dublin_core_mapping
                 "lom_mapping=\"" .$item_attr_types["lom_mapping"] . "\" " .                     // lom_mapping
+                "spase_mapping=\"" .$item_attr_types["spase_mapping"] . "\" " .                     // lom_mapping
                 "display_lang_type=\"" .$item_attr_types["display_lang_type"] . "\"/>\n";       // display_lang_type    add 2009/07/23 A.Suzuki
         
         // get item attr candidate
