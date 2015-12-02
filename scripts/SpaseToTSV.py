@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*- 
 
-import xml.dom.minidom
+from xml.dom import minidom
 import ConfigParser
 import sys
 
@@ -9,6 +9,8 @@ import sys
 settinfFile = "weko.ini"
 header_ar = []
 body_ar = []
+argvs = sys.argv 
+argc = len(argvs)
 
 
 ##ini_filename, extract_array
@@ -17,7 +19,7 @@ def getSetting(inifilename,attribute_ar=[]):
     inifile.read(inifilename)
 
     for key in inifile.options("WEKO"):
-
+        return 0
 
     ##このやり方ではなくforでやるべき
     #attribute_ar.appedn(inifile.get("type","value"))
@@ -42,7 +44,6 @@ def WriteHeader(ar,suffix_name=""):
     f.writerow(ar)
     #csvf.close()
     print "Wrote Header"
-    return None
 
 #Output header
 #WEKO基本要素+SPASE node
@@ -62,7 +63,7 @@ def outputHeader(node,tagname=""):
         #print ""
         return 0
     else:
-        print "a"
+        print "Error"
         
 
     # テキストもしくはコメントだった場合dataを表示する
@@ -91,17 +92,51 @@ def printAllElement(node, tagname=""):
         # 改行のみではなかった時のみ表示する
         if data!='\n': sys.stdout.write("{0}".format(node.data))
 
-
-
-
 ###main
-###ダイアログ生成
-###Granule　もしくはそれ以外
 
-dom = xml.dom.minidom.parse("DisplayData.xml")
+def main():
 
-outputHeader(dom.documentElement)
-#printAllElement(dom.documentElement)
+    ###Check argument
+    #if (argc !=1 ):
+    #    print "Error, Template: python SpasetToTSV.py TargetXML(SPASE format)"
+    #    quit()
+    ###ダイアログ生成
+    ###Granule　もしくはそれ以外かをチェック
+    print "Granule->y, others->Enter"
+    input_line = raw_input()
+    if (input_line == "y" or input_line == "Y"):
+    #####Extract metadata from Granule file########
+        doc = minidom.parse("Granule.xml")
+        spase_element = doc.getElementsByTagName("ResourceID")
+        for i, element in enumerate(spase_element) :
+            print( "{0} : {1}".format(i, element.childNodes[0].data) )
 
+        print "Granule Finished"
+        quit()
+    else:
+    #####Others ######
+        ##get file list from target directory
+        print "Please input CDF target directory(full path)"
+        target_dir = raw_input()
+        FileList = getFileList(target_dir)
+
+        ##Parse
+        dom = minidom.parse("DisplayData.xml")
+        ##Get Metadata type(NumericalData,DisplayData,etc)
+
+
+        #if not args or len(args) > 1:
+        #    print "Error, Template: python SpasetToTSV.py TargetDirectory"
+        #    quit()
+        ##Other data
+        print "Finished"
+        quit()
+    outputHeader(dom.documentElement)
+    #printAllElement(dom.documentElement)
+    
+    
+    
+if __name__=='__main__':
+    main()
 
     
