@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*- 
 
 from xml.dom import minidom
+import xml.etree.ElementTree as ET
 import ConfigParser
 import sys
-
+import os
 
 ##global definition
 settinfFile = "weko.ini"
@@ -100,6 +101,7 @@ def main():
     #if (argc !=1 ):
     #    print "Error, Template: python SpasetToTSV.py TargetXML(SPASE format)"
     #    quit()
+
     ###ダイアログ生成
     ###Granule　もしくはそれ以外かをチェック
     print "Granule->y, others->Enter"
@@ -113,25 +115,47 @@ def main():
 
         print "Granule Finished"
         quit()
+
     else:
     #####Others ######
         ##get file list from target directory
-        print "Please input CDF target directory(full path)"
-        target_dir = raw_input()
+        #print "Please input CDF target directory(full path)"
+        #target_dir = raw_input()
+        target_dir = os.getcwd() + '\\file\\'
         FileList = getFileList(target_dir)
-
+        print FileList
         ##Parse
-        dom = minidom.parse("DisplayData.xml")
+        #dom = minidom.parse("DisplayData.xml")
         ##Get Metadata type(NumericalData,DisplayData,etc)
+        tree = ET.parse('DisplayData.xml')
+        root = tree.getroot()
 
+        #ns = {'Spase': 'http://www.iugonet.org/data/schema'}
+        print root.findall("./Spase")
+
+        for attr in root.findall('{http://www.iugonet.org/data/schema}DisplayData'):
+            for dd in attr.iter('ResourceID'):
+                print(dd.attrib)
+        #for dd in root.findall(".//DisplayData[2]"):
+        #    print dd
+        '''
+        for actor in root.findall('Spase:DisplayData',ns):
+            name = actor.find('Spase:ResourceHeader',ns)
+            #print name.text
+            for char in actor.findall('Spase:ResourceName',ns):
+                print(' |-->', char.text)
+        '''
+        #elelist= root.findall(".//ResourceID")
+        #for ele in elelist:
+        #    print(ele.text);
 
         #if not args or len(args) > 1:
         #    print "Error, Template: python SpasetToTSV.py TargetDirectory"
         #    quit()
         ##Other data
-        print "Finished"
+        print "Others Finished"
         quit()
-    outputHeader(dom.documentElement)
+    #outputHeader(dom.documentElement)
     #printAllElement(dom.documentElement)
     
     
