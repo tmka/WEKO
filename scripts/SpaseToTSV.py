@@ -127,13 +127,152 @@ def main():
         ##Parse
         #dom = minidom.parse("DisplayData.xml")
         ##Get Metadata type(NumericalData,DisplayData,etc)
-        tree = ET.parse('DisplayData.xml')
+        namespaces = {'Spase': 'http://www.iugonet.org/data/schema'} # add more as needed
+        tree = ET.parse('NumericalData.xml')
         root = tree.getroot()
+        #print root.findall('Spase:DisplayData',namespaces)
+
+        print "#####test1######"
+        namespace = "{http://www.iugonet.org/data/schema}"
+        tag_list = []
+        tag_val = root.tag.replace(namespace,"") + "." ## Spase
+        tag_stack = "" ##save tag history
+        #tag_val = "" 
+        iter_ = tree.getiterator()
+        ccc = root.getchildren()
+        ##iterator for XML
+        count = 0
+        for elem in iter_:
+            #tag_list.append(elem)
+            if(count > 1):
+                break
+            else:
+                count = count + 1
+            for app in elem:
+                tag_val += str(app.tag).replace(namespace,"") + "."
+                tag_stack += str(app.tag).replace(namespace,"") + "."
+                if app.text.isspace() != True:
+                    print "paragraph1"
+                    #print "before tag_val = " + tag_val
+                    #print str(app.tag).replace(namespace,"")
+                    #print "tag_val[-1:]" + tag_val[-1:]
+                    while(tag_val[-1:] == "."):
+                                tag_val = tag_val.rstrip(".") #delete .
+                    print "%s = %s" % (tag_val, app.text)
+                    tag_val = tag_val.replace(str(app.tag).replace(namespace,""),"")
+                    #print "after tag_val = " + tag_val
+                    #print "app.tag = " + str(app.tag).replace(namespace,"")
+                else:
+                    for app2 in app:
+                        if(tag_val.find(str(app2.tag).replace(namespace,"")) == True):
+                            #delete tag
+                            tag_val = tag_val.replace(str(app2.tag).replace(namespace,""),"")
+                        else:
+                            tag_val += str(app2.tag).replace(namespace,"") + "."
+                        if app2.text.isspace() != True:
+                            print "paragraph2"
+                            #print "Second paragraph"
+                            while(tag_val[-1:] == "."):
+                                tag_val = tag_val.rstrip(".") #delete .
+                            print "%s = %s" % (tag_val, app2.text)
+                            tag_val = tag_val.replace(str(app2.tag).replace(namespace,""),"")
+                        else:
+                            for app3 in app2:
+                                #既にタグが含まれていた(=二回目)なら
+                                print "tag3=" + str(app3.tag).replace(namespace,"")
+                                if(tag_val.find(str(app3.tag).replace(namespace,"")) == True):
+                                    #delete tag
+                                    tag_val = tag_val.replace(str(app3.tag).replace(namespace,""),"")
+                                else:
+                                    tag_val += str(app3.tag).replace(namespace,"") + "."
+
+                                if app3.text.isspace() != True:
+                                    print "paragraph3"
+                                    #print "Third paragraph"
+                                    while(tag_val[-1:] == "."):
+                                        tag_val = tag_val.rstrip(".") #delete .
+                                    print "%s = %s" % (tag_val, app3.text)
+                                    tag_val = tag_val.replace(str(app3.tag).replace(namespace,""),"")
+                                else:
+                                    for app4 in app3:
+                                        tag_val += str(app4.tag).replace(namespace,"") + "."
+                                        if app4.text.isspace() != True:
+                                            print "paragraph4"
+                                            #print "Third paragraph"
+                                            while(tag_val[-1:] == "."):
+                                                tag_val = tag_val.rstrip(".") #delete .
+                                            print "%s = %s" % (tag_val, app4.text)
+                                            tag_val = tag_val.replace(str(app4.tag).replace(namespace,""),"")
+                                            #tag_val = tag_val.replace(str(app3.tag).replace(namespace,""),"")
+                                        else:
+                                            print "finished part4"
+                                            continue
+        print "tag = " + tag_val
+
+        print "#####test2######"
+        ###イテレータ 3段階までの深さに対応
+        ###version 1.0.3 の項目が上手く出力されない
+        appointments = root.getchildren()
+        tag_val = root.tag.replace(namespace,"") + "."
+        for appointment in appointments:
+            appt_children = appointment.getchildren()
+            tag_val += str(appointment.tag).replace(namespace,"") + "."
+            for appt_child in appt_children:
+                tag_val += str(appt_child.tag).replace(namespace,"") + "."
+                #print "tag=" + appt_child.tag.replace(namespace,"")
+                if appt_child.text.isspace() != True:
+                    print "%s=%s" % (tag_val, appt_child.text)
+                    tag_val = str(tag_val).replace(namespace,"")
+                else:
+                    appt_children2 = appt_child.getchildren()
+                    for appt_child2 in appt_children2:
+                        if appt_child2.text.isspace() != True:
+                            print "%s=%s" % (tag_val, appt_child2.text)
+                        else:
+                            tag_val += str(elem.tag).replace(namespace,"") + "."
+                            appt_children3 = appt_child2.getchildren()
+                            for appt_child3 in appt_children3:
+                                if appt_child3.text.isspace() != True:
+                                    print "%s=%s" % (tag_val, appt_child3.text)
+        print "tag = " + tag_val
+
+        '''
+        for node in tree.iter():
+            #print node.tag
+            for val in node:
+                print val.attrib.get('ResourceID')
+        '''
+    
+        '''
+        for node in tree.findall('.//DisplayData'):
+            url = node.attrib.get('ResourceID')
+            print url
+        '''
+
+        '''
+        for attrName, attrValue in element.attributes.items():
+            #do whatever you'd like
+            print "attribute %s = %s" % (attrName, attrValue)
+
+
+        '''
+        print "#####test3######"
+        for child in root:
+            for child2 in child:
+                print (child2.tag,child2.attrib)
+
+        '''
+        for value in root.findall('ResourceHeader'):
+            print value
+            rank = value.find('ResourceName').text
+            print rank
+        '''
+        #print root.findall('./NumericalData/ResourceID')
 
         #ns = {'Spase': 'http://www.iugonet.org/data/schema'}
-        print root.findall("./Spase")
+        #print root.findall(".")
 
-        for attr in root.findall('{http://www.iugonet.org/data/schema}DisplayData'):
+        for attr in root.findall('{http://www.iugonet.org/data/schema}NumericalData'):
             for dd in attr.iter('ResourceID'):
                 print(dd.attrib)
         #for dd in root.findall(".//DisplayData[2]"):
