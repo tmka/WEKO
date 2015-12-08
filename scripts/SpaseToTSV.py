@@ -292,7 +292,7 @@ def main():
             print "There are no files!"
             quit()
 
-        MetadataPath = os.getcwd() + "\\" + Metadata_type + ".tsv"
+        MetadataPath = os.getcwd() + "\\" + argvs[1].replace(".xml",".tsv")
 
         WriteHeader(header_ar)
         WriteGranule(FileList,body_ar,Metadata_type)
@@ -323,8 +323,7 @@ def main():
                 resourcename = body_ar[i]  
 
         print header_ar
-        MetadataPath = os.getcwd() + "\\" + Metadata_type + ".tsv"
-
+        MetadataPath = os.getcwd() + "\\" + argvs[1].replace(".xml",".tsv")
         WriteHeader(header_ar)
         WriteOtherSpaseMetadata(body_ar,Metadata_type,resourcename)
 
