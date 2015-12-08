@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Spase lang="en" xmlns="http://www.iugonet.org/data/schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.iugonet.org/data/schema http://www.iugonet.org/data/schema/iugonet.xsd ">
+  <Version>1.0.3</Version>
+  <Granule>
+  	<ResourceID>spase://IUGONET/Granule/KanazawaU/Akebono/VLF/MCA/H1/ak_h1_mca_20140101_v02</ResourceID>
+  	<ReleaseDate>2015-12-01T12:00:00</ReleaseDate>
+  	<ParentID>spase://IUGONET/NumericalData/KanazawaU/Akebono/VLF/MCA</ParentID>
+  	<StartDate>2014-01-01T00:00:00</StartDate>
+  	<StopDate>2014-01-01T23:59:59</StopDate>
+  	<Source>
+  		<SourceType>Data</SourceType>
+  		<URL>https://akebono-vlf.db.kanazawa-u.ac.jp/</URL>
+  	</Source>
+  </Granule>
+  
+  
+  
+  
+  
+  
+  
+</Spase>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Spase lang="en" xmlns="http://www.iugonet.org/data/schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.iugonet.org/data/schema http://www.iugonet.org/data/schema/iugonet.xsd ">
+  <Version>1.0.3</Version>
+  <NumericalData>
+  	<ResourceID>spase://IUGONET/NumericalData/KanazawaU/Akebono/MCA</ResourceID>
+  	<ResourceHeader>
+  		<ResourceName>Observation data from VLF/MCA onboard Akebono</ResourceName>
+  		<ReleaseDate>2015-12-01T12:00:00</ReleaseDate>
+  		<Description>Observation data from VLF/MCA onboard Akebono</Description>
+  		<Contact>
+  			<PersonID>spase://IUGONET/Person/Yoshiya.Kasahara</PersonID>
+  			<Role>MetadataContact</Role>
+  		</Contact>
+  	</ResourceHeader>
+  	<AccessInformation>
+  		<RepositoryID>spase:://IUGONET/Repository/KanazawaU/Akebono</RepositoryID>
+  		<AccessURL>
+  			<URL>https://akebono-vlf.db.kanazawa-u.ac.jp/</URL>
+  		</AccessURL>
+  	</AccessInformation>
+  	<MeasurementType>Waves.Passive</MeasurementType>
+  	<Keyword>Akebono VLF MCA</Keyword>
+  </NumericalData>
+</Spase>

@@ -2,7 +2,7 @@
 <Spase lang="en" xmlns="http://www.iugonet.org/data/schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.iugonet.org/data/schema http://www.iugonet.org/data/schema/iugonet.xsd ">
   <Version>1.0.4</Version>
   <DisplayData>
-  	<ResourceID>spase://iugonet//aaa</ResourceID>
+  	<ResourceID>spase://iugonet/DisplayData</ResourceID>
   	<ResourceHeader>
   		<ResourceName>ResourceName</ResourceName>
   		<ReleaseDate>2001-12-31T12:00:00</ReleaseDate>
