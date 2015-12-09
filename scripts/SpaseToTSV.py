@@ -285,6 +285,13 @@ def main():
         ##Spase attributes
         extractAllSpaseMetadata(argvs[1],header_ar,body_ar)
 
+        for i,val in enumerate(header_ar):
+            if (header_ar[i].find('Version') != -1):
+                del header_ar[i]
+                del body_ar[i]
+            if (header_ar[i].find('ResourceName') != -1): #get resourcename as a title(WEKO title)
+                resourcename = body_ar[i]
+
         ##get file list from target directory
         target_dir = os.getcwd() + '\\file\\'
         FileList = getFileList(target_dir)
@@ -311,18 +318,22 @@ def main():
         ##Spase attributes
         extractAllSpaseMetadata(argvs[1],header_ar,body_ar)
         for i,val in enumerate(header_ar):
-            if (val == 'File'):
+            print header_ar[i]
+            if (header_ar[i].find('File') != -1):
                 del header_ar[i]
                 del body_ar[i]
-            elif (val == 'Thumbnail'):
+                #Thumbnailも同時に消す
+            if (header_ar[i].find('Thumbnail') != -1):
+                del header_ar[i] 
+                del body_ar[i]
+            if (header_ar[i].find('Version') != -1):
                 del header_ar[i]
                 del body_ar[i]
-            elif (val.find("ResourceName") != -1): #get resourcename as a title(WEKO title)
+            if (header_ar[i].find('ResourceName') != -1): #get resourcename as a title(WEKO title)
                 resourcename = body_ar[i] 
-            elif (val.find("PersonName") != -1): #get Personame (for Person.xml)
+            if (header_ar[i].find('PersonName') != -1): #get Personame (for Person.xml)
                 resourcename = body_ar[i]  
 
-        print header_ar
         MetadataPath = os.getcwd() + "\\" + argvs[1].replace(".xml",".tsv")
         WriteHeader(header_ar)
         WriteOtherSpaseMetadata(body_ar,Metadata_type,resourcename)
