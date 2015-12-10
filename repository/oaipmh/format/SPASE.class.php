@@ -681,9 +681,9 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                     $tmp->addArray($tmp2);
                     $this->instrument->addInvestigationname($tmp);
                     break;
-                case RepositoryConst::SPASE_INSTRUMENT_OBSEVATORYID:
+                case RepositoryConst::SPASE_INSTRUMENT_OBSERVATORYID:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
-                    $this->instrument->addObsevatoryID($tmp);
+                    $this->instrument->addObservatoryID($tmp);
                     break;
                 default :
                     break;
@@ -3873,7 +3873,7 @@ class Repository_Oaipmh_SPASE_Instrument
 
   private $Instrumenttype = array();
   private $Investigationname = array();
-  private $ObsevatoryID = null;
+  private $ObservatoryID = null;
 
   private $repositoryAction = null;
 
@@ -3944,9 +3944,9 @@ class Repository_Oaipmh_SPASE_Instrument
     }
   }
 
-  public function addObsevatoryID(Repository_Oaipmh_SPASE_LangString $ObsevatoryID){
-    if($this->ObsevatoryID == null){
-        $this->ObsevatoryID = $ObsevatoryID;
+  public function addObservatoryID(Repository_Oaipmh_SPASE_LangString $ObservatoryID){
+    if($this->ObservatoryID == null){
+        $this->ObservatoryID = $ObservatoryID;
     }
   }
 
@@ -4088,17 +4088,17 @@ class Repository_Oaipmh_SPASE_Instrument
   $xmlStr .= '</Investigationname>'."\n";
   }
 
-  if($this->ObsevatoryID != null)
+  if($this->ObservatoryID != null)
   {
-    $xmlStr .= '<ObsevatoryID>'."\n";
-      $xml = $this->ObsevatoryID->output();
+    $xmlStr .= '<ObservatoryID>'."\n";
+      $xml = $this->ObservatoryID->output();
       if(strlen($xml)>0){
-          $value = explode(".",RepositoryConst::SPASE_I_OBSEVATORYID);
+          $value = explode(".",RepositoryConst::SPASE_I_OBSERVATORYID);
           $xmlStr .= '<'.$value[count($value)-1].'>';
           $xmlStr .= $xml;
           $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
       }
-    $xmlStr .= '</ObsevatoryID>'."\n";
+    $xmlStr .= '</ObservatoryID>'."\n";
 
   }
 

@@ -1229,7 +1229,7 @@ class RepositoryConst
 	const SPASE_INSTRUMENT_TYPE = "Instrument.Type";
 	const SPASE_INSTRUMENT_INSTRUMENTTYPE = "Instrument.InstrumentType";
 	const SPASE_INSTRUMENT_INVESTIGATIONNAME = "Instrument.InvestigationName";
-	const SPASE_INSTRUMENT_OBSEVATORYID = "Instrument.ObsevatoryID";
+	const SPASE_INSTRUMENT_OBSERVATORYID = "Instrument.ObservatoryID";
 	//Delete Prefix
 	const SPASE_I_RESOURCEID = "ResourceID";
 	const SPASE_I_RESOURCEHEADER_RESOURCENAME = "ResourceHeader.ResourceName";
@@ -1240,7 +1240,7 @@ class RepositoryConst
 	const SPASE_I_TYPE = "Type";
 	const SPASE_I_INSTRUMENTTYPE = "InstrumentType";
 	const SPASE_I_INVESTIGATIONNAME = "InvestigationName";
-	const SPASE_I_OBSEVATORYID = "ObsevatoryID";
+	const SPASE_I_OBSERVATORYID = "ObservatoryID";
 
 	// SPASE_OBSERVATORY
 	const SPASE_OBSERVATORY = "Observatory";

@@ -57,7 +57,7 @@ def getFileList(dirpath):
 def WriteGranule(file_ar,body_ar,metadata_type="",suffix_name=''):
     f=csv.writer(file(MetadataPath,'a'),lineterminator='\n',delimiter='\t')
     todaydetail  =    datetime.datetime.today()
-    time = todaydetail.strftime("%Y/%m/%d %H:%M")
+    time = todaydetail.strftime("%Y/%m/%d")
     for i,m in enumerate(file_ar):
         writetext = []
         #print m
@@ -76,7 +76,7 @@ def WriteGranule(file_ar,body_ar,metadata_type="",suffix_name=''):
 def WriteOtherSpaseMetadata(body_ar,metadata_type="",resource_name="",suffix_name=''):
     f=csv.writer(file(MetadataPath,'a'),lineterminator='\n',delimiter='\t')
     todaydetail  =    datetime.datetime.today()
-    time = todaydetail.strftime("%Y/%m/%d %H:%M")
+    time = todaydetail.strftime("%Y/%m/%d")
     writetext = []
     for j,n in enumerate(body_ar):
         if (j==0): #item_type

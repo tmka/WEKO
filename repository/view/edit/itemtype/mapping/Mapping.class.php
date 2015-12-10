@@ -563,7 +563,7 @@ class Repository_View_Edit_Itemtype_Mapping extends RepositoryAction
     			array('displayName' => RepositoryConst::SPASE_INSTRUMENT_RESOURCEHEADER_CONTACT_ROLE, 'selectFlag' => 'true'),
     			array('displayName' => RepositoryConst::SPASE_INSTRUMENT_INSTRUMENTTYPE, 'selectFlag' => 'true'),
     			array('displayName' => RepositoryConst::SPASE_INSTRUMENT_INVESTIGATIONNAME, 'selectFlag' => 'true'),
-    			array('displayName' => RepositoryConst::SPASE_INSTRUMENT_OBSEVATORYID, 'selectFlag' => 'true'),
+    			array('displayName' => RepositoryConst::SPASE_INSTRUMENT_OBSERVATORYID, 'selectFlag' => 'true'),
     			array('displayName' => RepositoryConst::SPASE_OBSERVATORY_RESOURCEID, 'selectFlag' => 'true'),
     			array('displayName' => RepositoryConst::SPASE_OBSERVATORY_RESOURCEHEADER_RESOURCENAME, 'selectFlag' => 'true'),
     			array('displayName' => RepositoryConst::SPASE_OBSERVATORY_RESOURCEHEADER_RELEASEDATE, 'selectFlag' => 'true'),

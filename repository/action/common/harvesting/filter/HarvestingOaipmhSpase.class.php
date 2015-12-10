@@ -266,7 +266,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
     const SPASE_INSTRUMENT_TYPE = "Instrument.Type";
     const SPASE_INSTRUMENT_INSTRUMENTTYPE = "Instrument.InstrumentType";
     const SPASE_INSTRUMENT_INVESTIGATIONNAME = "Instrument.InvestigationName";
-    const SPASE_INSTRUMENT_OBSEVATORYID = "Instrument.ObsevatoryID";
+    const SPASE_INSTRUMENT_OBSERVATORYID = "Instrument.ObservatoryID";
 
     const SPASE_OBSERVATORY_RESOURCEID = "Observatory.ResourceID";
     const SPASE_OBSERVATORY_RESOURCEHEADER_RESOURCENAME = "Observatory.ResourceHeader.ResourceName";

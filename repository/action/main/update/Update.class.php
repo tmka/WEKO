@@ -5769,7 +5769,7 @@ class Repository_Action_Main_Update extends RepositoryAction
 "(20021, 7 , 7, 'Instrument.Type', 'Instrument.Type','text',0, 0, 0, 0, 0, '', '', '', '', 'Instrument.Type', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
 "(20021, 8 , 8, 'Instrument.InstrumentType', 'Instrument.InstrumentType','text',1, 1, 0, 0, 0, '', '', '', '', 'Instrument.InstrumentType', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
 "(20021, 9 , 9, 'Instrument.InvestigationName', 'Instrument.InvestigationName','text',1, 0, 0, 0, 0, '', '', '', '', 'Instrument.InvestigationName', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20021, 10 , 10, 'Instrument.ObsevatoryID', 'Instrument.ObsevatoryID','text',1, 0, 0, 0, 0, '', '', '', '', 'Instrument.ObsevatoryID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20021, 10 , 10, 'Instrument.ObservatoryID', 'Instrument.ObservatoryID','text',1, 0, 0, 0, 0, '', '', '', '', 'Instrument.ObservatoryID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
 "(20022, 1 , 1, 'Observatory.ResourceID', 'Observatory.ResourceID','text',1, 0, 0, 0, 0, '', '', '', '', 'Observatory.ResourceID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
 "(20022, 2 , 2, 'Observatory.ResourceHeader.ResourceName', 'Observatory.ResourceHeader.ResourceName','text',1, 0, 0, 0, 0, '', '', '', '', 'Observatory.ResourceHeader.ResourceName', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
 "(20022, 3 , 3, 'Observatory.ResourceHeader.ReleaseDate', 'Observatory.ResourceHeader.ReleaseDate','text',1, 0, 0, 0, 0, '', '', '', '', 'Observatory.ResourceHeader.ReleaseDate', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
@@ -5950,7 +5950,7 @@ class Repository_Action_Main_Update extends RepositoryAction
             $params[] = RepositoryConst::SPASE_INSTRUMENT_RESOURCEHEADER_CONTACT_ROLE;
             $params[] = RepositoryConst::SPASE_INSTRUMENT_INSTRUMENTTYPE;
             $params[] = RepositoryConst::SPASE_INSTRUMENT_INVESTIGATIONNAME;
-            $params[] = RepositoryConst::SPASE_INSTRUMENT_OBSEVATORYID;
+            $params[] = RepositoryConst::SPASE_INSTRUMENT_ObservatoryID;
 
             $params[] = RepositoryConst::SPASE_OBSERVATORY_RESOURCEID;
             $params[] = RepositoryConst::SPASE_OBSERVATORY_RESOURCEHEADER_RESOURCENAME;
