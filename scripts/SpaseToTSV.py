@@ -66,6 +66,8 @@ def WriteGranule(file_ar,body_ar,metadata_type="",suffix_name=''):
                 writetext.append(body_ar[j] + "."+ metadata_type)
             elif(n == "filename"):
                 writetext.append(m)
+            elif(n == "picture"):
+                writetext.append(m + ".png")
             elif(n=="time"):
                 writetext.append(time)
             else:
