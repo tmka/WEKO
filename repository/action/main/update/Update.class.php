@@ -3825,8 +3825,6 @@ class Repository_Action_Main_Update extends RepositoryAction
                     $this->updateWekoVersion222To223();
                 case 223:
                     $this->updateWekoVersionSpase();
-                case 224:
-                    $this->updateWekoVersionSpase();
                 default :
                     #$this->updateWekoVersionSpase();
                     break;
