@@ -3,7 +3,7 @@
 //
 // $Id: HarvestingOaipmhLom.class.php 36217 2014-05-26 04:22:11Z satoshi_arata $
 //
-// Copyright (c) 2007 - 2008, National Institute of Informatics, 
+// Copyright (c) 2007 - 2008, National Institute of Informatics,
 // Research and Development Center for Scientific Information Resources
 //
 // This program is licensed under a Creative Commons BSD Licence
@@ -33,7 +33,7 @@ class AttrId
     const GEN_COVERGE = 9;
     const GEN_STRUCTURE = 10;
     const GEN_AGGLEVEL = 11;
-    
+
     const LC_VERSION = 12;
     const LC_STATUS = 13;
     const LC_CON_CREATOR = 14;
@@ -53,14 +53,14 @@ class AttrId
     const LC_CON_SUBJ_MATTER_EXPERT = 28;
     const LC_CON_UNKNOWN = 29;
     const LC_CONTRIBUTE = 30;
-    
+
     const MM_IDENTIFIER = 31;
     const MM_CON_CREATOR = 32;
     const MM_CON_VALIDATOR = 33;
     const MM_CONTRIBUTE = 34;
     const MM_META_SCHEMA = 35;
     const MM_LANGUAGE = 36;
-    
+
     const TEC_FORMAT = 37;
     const TEC_SIZE = 38;
     const TEC_LOCATION = 39;
@@ -71,7 +71,7 @@ class AttrId
     const TEC_INSTALL_REMARKS = 44;
     const TEC_OTHER_PLATFORM_REQ = 45;
     const TEC_DURATION = 46;
-    
+
     const EDU_INTERACTIVITY_TYPE = 47;
     const EDU_LEARN_RESOURCE_TYPE = 48;
     const EDU_INTERACTIVITY_LEVEL = 49;
@@ -83,11 +83,11 @@ class AttrId
     const EDU_TYP_LEARN_TIME = 55;
     const EDU_DESCRIPTION = 56;
     const EDU_LANGUAGE = 57;
-    
+
     const RIT_COST = 58;
     const RIT_CPRIT_OTHRER_REST = 59;
     const RIT_DESCRIPTION = 60;
-    
+
     const REL_PMID = 61;
     const REL_DOI = 62;
     const REL_ISVERSIONOF = 63;
@@ -103,21 +103,21 @@ class AttrId
     const REL_ISBASISFOR = 73;
     const REL_ISBASEDON = 74;
     const REL_RELATION = 75;
-    
+
     const ANO_ENTITY = 76;
     const ANO_DATE = 77;
     const ANO_DESCRIPTION = 78;
-    
+
     const CLS_PURPOSE = 79;
     const CLS_TAXONPATH_SOURCE = 80;
     const CLS_TAXONPATH_TAXON = 81;
     const CLS_DESCRIPTION = 82;
     const CLS_KEYWORD = 83;
-    
+
     const REPO_ID = 84;
     const IDENTIFIER = 85;
     const DATESTAMP = 86;
-    
+
     const MIN_ID = self::GEN_ID_URI;
     const MAX_ID = self::DATESTAMP;
     const MAX_ATTR_ID = 87;
@@ -146,6 +146,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
     const SPASE_NUMERICALDATA_ACCESSINFORMATION_ACCESSURL_DESCRIPTION = "NumericalData.AccessInformation.AccessURL.Description";
     const SPASE_NUMERICALDATA_ACCESSINFORMATION_FORMAT = "NumericalData.AccessInformation.Format";
     const SPASE_NUMERICALDATA_ACCESSINFORMATION_DATAEXTENT_QUANTITY = "NumericalData.AccessInformation.DataExtent.Quantity";
+    const SPASE_NUMERICALDATA_INSTRUMENTID = "NumericalData.InstrumentID";
     const SPASE_NUMERICALDATA_PHENOMENONTYPE = "NumericalData.PhenomenonType";
     const SPASE_NUMERICALDATA_MEASUREMENTTYPE = "NumericalData.MeasurementType";
     const SPASE_NUMERICALDATA_KEYWORD = "NumericalData.Keyword";
@@ -172,7 +173,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
     const SPASE_NUMERICALDATA_PARAMETER_WAVE_WAVEQUANTITY = "NumericalData.Parameter.Wave.WaveQuantity";
     const SPASE_NUMERICALDATA_PARAMETER_MIXED_MIXEDQUANTITY = "NumericalData.Parameter.Mixed.MixedQuantity";
     const SPASE_NUMERICALDATA_PARAMETER_SUPPORT_SUPPORTQUANTITY = "NumericalData.Parameter.Support.SupportQuantity";
-    
+
     const SPASE_DISPLAYDATA_RESOURCEID = "DisplayData.ResourceID";
     const SPASE_DISPLAYDATA_RESOURCEHEADER_RESOURCENAME = "DisplayData.ResourceHeader.ResourceName";
     const SPASE_DISPLAYDATA_RESOURCEHEADER_RELEASEDATE = "DisplayData.ResourceHeader.ReleaseDate";
@@ -188,6 +189,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
     const SPASE_DISPLAYDATA_ACCESSINFORMATION_ACCESSURL_DESCRIPTION = "DisplayData.AccessInformation.AccessURL.Description";
     const SPASE_DISPLAYDATA_ACCESSINFORMATION_FORMAT = "DisplayData.AccessInformation.Format";
     const SPASE_DISPLAYDATA_ACCESSINFORMATION_DATAEXTENT_QUANTITY = "DisplayData.AccessInformation.DataExtent.Quantity";
+    const SPASE_DISPLAYDATA_INSTRUMENTID = "DisplayData.InstrumentID";
     const SPASE_DISPLAYDATA_PHENOMENONTYPE = "DisplayData.PhenomenonType";
     const SPASE_DISPLAYDATA_MEASUREMENTTYPE = "DisplayData.MeasurementType";
     const SPASE_DISPLAYDATA_KEYWORD = "DisplayData.Keyword";
@@ -230,6 +232,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
     const SPASE_CATALOG_ACCESSINFORMATION_ACCESSURL_DESCRIPTION = "Catalog.AccessInformation.AccessURL.Description";
     const SPASE_CATALOG_ACCESSINFORMATION_FORMAT = "Catalog.AccessInformation.Format";
     const SPASE_CATALOG_ACCESSINFORMATION_DATAEXTENT_QUANTITY = "Catalog.AccessInformation.DataExtent.Quantity";
+    const SPASE_CATALOG_INSTRUMENTID = "Catalog.InstrumentID";
     const SPASE_CATALOG_PHENOMENONTYPE = "Catalog.PhenomenonType";
     const SPASE_CATALOG_MEASUREMENTTYPE = "Catalog.MeasurementType";
     const SPASE_CATALOG_KEYWORD = "Catalog.Keyword";
@@ -390,7 +393,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
     const SPASE_REPOSITORY_RESOURCEHEADER_CONTACT_PERSONID = "ResourceHeader.Contact.PersonID";
     const SPASE_REPOSITORY_RESOURCEHEADER_CONTACT_ROLE = "ResourceHeader.Contact.Role";
     const SPASE_REPOSITORY_ACCESSURL_URL = "AccessURL.URL";
-    
+
     const SPASE_GRANULE_RESOURCEID = "ResourceID";
     const SPASE_GRANULE_RELEASEDATE = "ReleaseDate";
     const SPASE_GRANULE_PARENTID = "ParentID";
@@ -411,13 +414,13 @@ class HarvestingOaipmhSpase extends RepositoryAction
     const SPASE_GRANULE_SPATIALCOVERAGE_REFERENCE = "SpatialCoverage.Reference";
     */
 
-	
-	
+
+
     // ---------------------------------------------
     // Const
     // ---------------------------------------------
     // Itemtype data
-    
+
     const ITEMTYPE_ID = 20018;
     const INPUT_TYPE_LINK = RepositoryConst::ITEM_ATTR_TYPE_LINK;
     const INPUT_TYPE_TEXT = RepositoryConst::ITEM_ATTR_TYPE_TEXT;
@@ -427,7 +430,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
     const INPUT_TYPE_NAME = RepositoryConst::ITEM_ATTR_TYPE_NAME;
     const INPUT_TYPE_DATE = RepositoryConst::ITEM_ATTR_TYPE_DATE;
     const INPUT_TYPE_CHECKBOX = RepositoryConst::ITEM_ATTR_TYPE_CHECKBOX;
-    
+
     // Tags
     const TAG_GENERAL = RepositoryConst::LOM_TAG_GENERAL;
     const TAG_LIFE_CYCLE = RepositoryConst::LOM_TAG_LIFE_CYCLE;
@@ -438,7 +441,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
     const TAG_RELATION = RepositoryConst::LOM_TAG_RELATION;
     const TAG_ANNOTAION = RepositoryConst::LOM_TAG_ANNOTAION;
     const TAG_CLASSIFICATION = RepositoryConst::LOM_TAG_CLASSIFICATION;
-    
+
     const TAG_IDENTIFIER = RepositoryConst::LOM_TAG_IDENTIFIER;
     const TAG_CATALOG = RepositoryConst::LOM_TAG_CATALOG;
     const TAG_ENTRY = RepositoryConst::LOM_TAG_ENTRY;
@@ -486,7 +489,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
     const TAG_SOURCE = RepositoryConst::LOM_TAG_SOURCE;
     const TAG_TAXON = RepositoryConst::LOM_TAG_TAXON;
     const TAG_ID = RepositoryConst::LOM_TAG_ID;
-    
+
     const TAG_LANGSTR_LANG = RepositoryConst::LOM_TAG_LANGUAGE;
     const TAG_LANGSTR_STR = RepositoryConst::LOM_TAG_STRING;
     const TAG_VOCAB_SRC = RepositoryConst::LOM_TAG_SOURCE;
@@ -494,16 +497,16 @@ class HarvestingOaipmhSpase extends RepositoryAction
     const TAG_DATE_TIME = RepositoryConst::LOM_TAG_DATE_TIME;
     const TAG_DUR_DURATION = RepositoryConst::LOM_TAG_DURATION;
     const TAG_DUR_DESCRIPTION = RepositoryConst::LOM_TAG_DESCRIPTION;
-    
+
     // Error / Warning message
     const MSG_ER_GET_TITLE = "repository_harvesting_error_get_title";
     const MSG_WN_MISS_LANGAGE = "repository_harvesting_warning_miss_language";
-    
+
     // Log status
     const LOG_STATUS_OK = RepositoryConst::HARVESTING_LOG_STATUS_OK;
     const LOG_STATUS_WARNING = RepositoryConst::HARVESTING_LOG_STATUS_WARNING;
     const LOG_STATUS_ERROR = RepositoryConst::HARVESTING_LOG_STATUS_ERROR;
-    
+
     // Metadata array for ItemRegister
     const KEY_IR_BASIC = "irBasic";
     const KEY_IR_METADATA = "irMetadata";
@@ -537,7 +540,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
     const KEY_EPAGE = "end_page";
     const KEY_DATE_OF_ISSUED = "date_of_issued";
     const KEY_BIBLIO_NO = "biblio_no";
-    
+
     // For General identifier catalog
     const CATALOG_URI = RepositoryConst::LOM_URI;
     const CATALOG_ISSN = RepositoryConst::LOM_ISSN;
@@ -549,12 +552,12 @@ class HarvestingOaipmhSpase extends RepositoryAction
     const CATALOG_EPAGE = RepositoryConst::LOM_EPAGE;
     const CATALOG_DATEOFISSUED = RepositoryConst::LOM_DATE_OF_ISSUED;
     const CATALOG_TEXTVERSION = RepositoryConst::LOM_TEXTVERSION;
-    
+
     // For General identifier textversion value
     const TEXTVERSION_AUTHOR = "author";
     const TEXTVERSION_PUBLISHER = "publisher";
     const TEXTVERSION_NONE = "none";
-    
+
     // For LifeCycle role value
     const ROLE_LC_AUTHOR = "author";
     const ROLE_LC_PUBLISHER = "publisher";
@@ -571,15 +574,15 @@ class HarvestingOaipmhSpase extends RepositoryAction
     const ROLE_LC_INST_DESIGNER = "instructional designer";
     const ROLE_LC_SUBJ_MATTER_EXPERT = "subject matter expert";
     const ROLE_LC_UNKNOWN = "unknown";
-    
+
     // For Meta-Metadata role value
     const ROLE_MM_CREATOR = "creator";
     const ROLE_MM_VALIDATOR = "validator";
-    
+
     // For Technical requirement orComposite type value
     const TYPE_OPERATING_SYSTEM = "operating system";
     const TYPE_BROWSER = "browser";
-    
+
     // For Relation kind value
     const KIND_ISPARTOF = RepositoryConst::LOM_IS_PART_OF;
     const KIND_HASPART = RepositoryConst::LOM_HAS_PART;
@@ -593,11 +596,11 @@ class HarvestingOaipmhSpase extends RepositoryAction
     const KIND_ISBASISFOR = RepositoryConst::LOM_IS_BASIS_FOR;
     const KIND_REQUIRES = RepositoryConst::LOM_REQUIRES;
     const KIND_ISREQUIREDBY = RepositoryConst::LOM_IS_REQUIRESD_BY;
-    
+
     // For Relation resource identifier catalog
     const CATALOG_PMID = RepositoryConst::LOM_PMID;
     const CATALOG_DOI = RepositoryConst::LOM_DOI;
-    
+
     // Others
     const IDENTIFIER_DELIMITER = ":";
     const TAXON_DELIMITER = ":";
@@ -605,7 +608,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
     const ITEM_LANG_JA = RepositoryConst::ITEM_LANG_JA;
     const ITEM_LANG_EN = RepositoryConst::ITEM_LANG_EN;
     const DEFAULT_LANGUAGE = RepositoryConst::ITEM_LANG_OTHER;
-    
+
     // Database
     const DB_ITEM = RepositoryConst::DBTABLE_REPOSITORY_ITEM;
     const DB_ITEM_ITEM_ID = RepositoryConst::DBCOL_REPOSITORY_ITEM_ITEM_ID;
@@ -630,8 +633,8 @@ class HarvestingOaipmhSpase extends RepositoryAction
     const DB_PERSONAL_NAME_EMAIL_ADDRES = RepositoryConst::DBCOL_REPOSITORY_PERSONAL_NAME_E_MAIL_ADDRESS;
     const DB_PERSONAL_NAME_ITEM_TYPE_ID = RepositoryConst::DBCOL_REPOSITORY_PERSONAL_NAME_ITEM_TYPE_ID;
     const DB_PERSONAL_NAME_AUTHOR_ID = RepositoryConst::DBCOL_REPOSITORY_PERSONAL_NAME_AUTHOR_ID;
-    
-    
+
+
     // ---------------------------------------------
     // Private member
     // ---------------------------------------------
@@ -646,7 +649,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
     private $classificationXmlStrArray = array();
     private $cntMetadata = array();
     private $chkDuplication = array();
-    
+
     // ---------------------------------------------
     // Constructor
     // ---------------------------------------------
@@ -660,7 +663,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
         $this->Db = $Db;
         $this->initMember();
     }
-    
+
     // ---------------------------------------------
     // Private method
     // ---------------------------------------------
@@ -696,7 +699,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             AttrId::CLS_PURPOSE => array()
         );
     }
-    
+
     /**
      * Parse xml
      *
@@ -725,7 +728,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
         }
         return true;
     }
-    
+
     /**
      * Get xml tag value
      *
@@ -739,7 +742,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
         preg_match_all($pattern, $xml, $matches);
         return $matches[1];
     }
-    
+
     /**
      * Set basic metadata xml string
      *
@@ -759,7 +762,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
         $this->annotationXmlStrArray = $this->getXmlTagValue($xml, self::TAG_ANNOTAION);
         $this->classificationXmlStrArray = $this->getXmlTagValue($xml, self::TAG_CLASSIFICATION);
     }
-    
+
     /**
      * Set metadata to array
      *
@@ -775,7 +778,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
         $metadata[self::KEY_IR_BASIC][self::KEY_PUB_YEAR] = intval($tmpDate[0]);
         $metadata[self::KEY_IR_BASIC][self::KEY_PUB_MONTH] = intval($tmpDate[1]);
         $metadata[self::KEY_IR_BASIC][self::KEY_PUB_DAY] = intval($tmpDate[2]);
-        
+
         // 1. Set General
         if(!$this->setGeneralToArray($metadata))
         {
@@ -821,13 +824,13 @@ class HarvestingOaipmhSpase extends RepositoryAction
         {
             return false;
         }
-        
+
         // 10. Set require metadata
         $this->setRequireMetadataToArray($repositoryId, $metadata);
-        
+
         return true;
     }
-    
+
     /**
      * Set general metadata to array
      *
@@ -845,7 +848,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             {
                 return false;
             }
-            
+
             $openTag = "";
             $tagDataArray = array();
             foreach($vals as $val)
@@ -991,7 +994,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
                             default:
                                 break;
                         }
-                        
+
                         $openTag = "";
                         $tagDataArray = array();
                     }
@@ -1031,7 +1034,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
                 }
             }
         }
-        
+
         if(count($biblioData)>0)
         {
             $attrId = AttrId::GEN_ID_BIBINFO;
@@ -1047,7 +1050,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
         }
         return true;
     }
-    
+
     /**
      * Set General identifier metadata
      *
@@ -1059,7 +1062,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
     private function setGeneralIdentifier($catalog, $entry, &$metadata, &$biblioData)
     {
         $irMetadata = array();
-        
+
         if(RepositoryOutputFilterLOM::string($catalog)==RepositoryOutputFilterLOM::string(self::CATALOG_URI) && strlen($entry)>0)
         {
             $attrId = AttrId::GEN_ID_URI;
@@ -1162,7 +1165,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
                 }
                 if(strlen($str)>0)
                 {
-                    
+
                     $this->cntMetadata[$attrId]++;
                     $data = array(self::KEY_ATTR_VALUE => $str);
                     $irMetadata = $this->createIrMetadata($attrId, self::INPUT_TYPE_TEXT, $data);
@@ -1173,13 +1176,13 @@ class HarvestingOaipmhSpase extends RepositoryAction
         {
             $irMetadata = $this->setIdentifier(AttrId::GEN_IDENTIFIER, $catalog, $entry);
         }
-        
+
         if(count($irMetadata)>0)
         {
             array_push($metadata[self::KEY_IR_METADATA], $irMetadata);
         }
     }
-    
+
     /**
      * Set identifier metadata
      *
@@ -1203,10 +1206,10 @@ class HarvestingOaipmhSpase extends RepositoryAction
             $data = array(self::KEY_ATTR_VALUE => $str);
             $irMetadata = $this->createIrMetadata($attrId, self::INPUT_TYPE_TEXT, $data);
         }
-        
+
         return $irMetadata;
     }
-    
+
     /**
      * Set lifeCycle metadata to array
      *
@@ -1223,7 +1226,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             {
                 return false;
             }
-            
+
             $openTag = "";
             $tagDataArray = array();
             foreach($vals as $val)
@@ -1305,7 +1308,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
                                             }
                                         }
                                     }
-                                    
+
                                     if(strlen($dateTime)>0)
                                     {
                                         $attrId = AttrId::LC_CON_PUB_DATE;
@@ -1388,7 +1391,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
                             default:
                                 break;
                         }
-                        
+
                         $openTag = "";
                         $tagDataArray = array();
                     }
@@ -1399,10 +1402,10 @@ class HarvestingOaipmhSpase extends RepositoryAction
                 }
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * Set Meta-Metadata metadata to array
      *
@@ -1419,7 +1422,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             {
                 return false;
             }
-            
+
             $openTag = "";
             $tagDataArray = array();
             foreach($vals as $val)
@@ -1523,10 +1526,10 @@ class HarvestingOaipmhSpase extends RepositoryAction
                 }
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * Set Technical metadata to array
      *
@@ -1543,7 +1546,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             {
                 return false;
             }
-            
+
             $openTag = "";
             $tagDataArray = array();
             foreach($vals as $val)
@@ -1676,10 +1679,10 @@ class HarvestingOaipmhSpase extends RepositoryAction
                 }
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * Set Technical requirement
      *
@@ -1720,7 +1723,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
                             {
                                 array_push($metadata[self::KEY_IR_METADATA], $irMetadata);
                             }
-                            
+
                             // Name
                             $attrId = AttrId::TEC_REQ_ORCOMP_NAME;
                             $this->cntMetadata[$attrId]++;
@@ -1730,7 +1733,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
                             {
                                 array_push($metadata[self::KEY_IR_METADATA], $irMetadata);
                             }
-                            
+
                             // MinimumVersion
                             $attrId = AttrId::TEC_REQ_ORCOMP_MINVERSION;
                             $this->cntMetadata[$attrId]++;
@@ -1740,7 +1743,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
                             {
                                 array_push($metadata[self::KEY_IR_METADATA], $irMetadata);
                             }
-                            
+
                             // MaximumVersion
                             $attrId = AttrId::TEC_REQ_ORCOMP_MAXVERSION;
                             $this->cntMetadata[$attrId]++;
@@ -1762,7 +1765,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             }
         }
     }
-    
+
     /**
      * Set Educational metadata to array
      *
@@ -1779,7 +1782,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             {
                 return false;
             }
-            
+
             $openTag = "";
             $tagDataArray = array();
             foreach($vals as $val)
@@ -1951,10 +1954,10 @@ class HarvestingOaipmhSpase extends RepositoryAction
                 }
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * Set Rights metadata to array
      *
@@ -1971,7 +1974,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             {
                 return false;
             }
-            
+
             $openTag = "";
             $tagDataArray = array();
             foreach($vals as $val)
@@ -2013,7 +2016,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
                                     $str = RepositoryOutputFilterLOM::yesno($value);
                                     $attrId = AttrId::RIT_CPRIT_OTHRER_REST;
                                 }
-                                
+
                                 if(strlen($str)>0 && $this->cntMetadata[$attrId] < 1)
                                 {
                                     $this->cntMetadata[$attrId]++;
@@ -2053,10 +2056,10 @@ class HarvestingOaipmhSpase extends RepositoryAction
                 }
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * Set Relation metadata to array
      *
@@ -2073,7 +2076,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             {
                 return false;
             }
-            
+
             $openTag = "";
             $tagDataArray = array();
             $relationData =array();
@@ -2129,7 +2132,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
                                     $attrId = AttrId::REL_ISBASEDON;
                                 else
                                     $attrId = AttrId::REL_RELATION;
-                                    
+
                                 $relationData[self::KEY_ATTR_ID] = $attrId;
                                 break;
                             case self::TAG_RESOURCE:
@@ -2150,7 +2153,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
                     array_push($tagDataArray, $val);
                 }
             }
-            
+
             if(count($relationData)>0)
             {
                 if(isset($relationData[self::TAG_IDENTIFIER]))
@@ -2160,7 +2163,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
                     {
                         $defaultAttrId = $relationData[self::KEY_ATTR_ID];
                     }
-                    
+
                     for($ii=0; $ii<count($relationData[self::TAG_IDENTIFIER]); $ii++)
                     {
                         $catalog = $relationData[self::TAG_IDENTIFIER][$ii][self::TAG_CATALOG];
@@ -2202,7 +2205,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
         }
         return true;
     }
-    
+
     /**
      * Set Annotation metadata to array
      *
@@ -2219,7 +2222,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             {
                 return false;
             }
-            
+
             $openTag = "";
             $tagDataArray = array();
             foreach($vals as $val)
@@ -2305,10 +2308,10 @@ class HarvestingOaipmhSpase extends RepositoryAction
                 }
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * Set Classification metadata to array
      *
@@ -2325,7 +2328,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             {
                 return false;
             }
-            
+
             $openTag = "";
             $tagDataArray = array();
             foreach($vals as $val)
@@ -2421,10 +2424,10 @@ class HarvestingOaipmhSpase extends RepositoryAction
                 }
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * Set Classification taxonPath
      *
@@ -2506,7 +2509,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             }
         }
     }
-    
+
     /**
      * Get identifer
      *
@@ -2533,7 +2536,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             }
         }
     }
-    
+
     /**
      * Get contribute
      *
@@ -2603,7 +2606,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             }
         }
     }
-    
+
     /**
      * Get Technical orComposite
      *
@@ -2676,7 +2679,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
                 array_push($tagDataArray, $val);
             }
         }
-        
+
         $type[self::TAG_VOCAB_VAL] = RepositoryOutputFilterLOM::technicalRequirementOrCompositeTypeValue($type[self::TAG_VOCAB_VAL]);
         if($type[self::TAG_VOCAB_VAL] == self::TYPE_OPERATING_SYSTEM)
         {
@@ -2690,7 +2693,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
         {
             $name[self::TAG_VOCAB_VAL] = "";
         }
-        
+
         if(!RepositoryOutputFilterLOM::technicalRequirementOrCompositeCombination(
                                     $type[self::TAG_VOCAB_VAL], $name[self::TAG_VOCAB_VAL]))
         {
@@ -2700,10 +2703,10 @@ class HarvestingOaipmhSpase extends RepositoryAction
             $maxVersion = "";
             return false;
         }
-        
+
         return true;
     }
-    
+
     /**
      * Get Relation resource
      *
@@ -2761,7 +2764,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             }
         }
     }
-    
+
     /**
      * Get Classification taxon
      *
@@ -2817,7 +2820,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             }
         }
     }
-    
+
     /**
      * Get langString
      *
@@ -2844,7 +2847,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             }
         }
     }
-    
+
     /**
      * Get vocabulary
      *
@@ -2871,7 +2874,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             }
         }
     }
-    
+
     /**
      * Get dateTime
      *
@@ -2921,7 +2924,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             }
         }
     }
-    
+
     /**
      * Get duration
      *
@@ -2971,7 +2974,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             }
         }
     }
-    
+
     /**
      * Explode name string
      *
@@ -2982,21 +2985,21 @@ class HarvestingOaipmhSpase extends RepositoryAction
     {
         $family = "";
         $name = "";
-        
+
         $str = str_replace("　", " ", $str);
         $str = preg_replace("/ +/", " ", $str);
         $str = preg_replace("/ +/", " ", $str);
-        
+
         $nameArray = explode(self::NAME_DELIMITER, $str, 2);
         $family = $nameArray[0];
         if(isset($nameArray[1]))
         {
             $name = $nameArray[1];
         }
-        
+
         return array(self::KEY_FAMILY => $family, self::KEY_NAME => $name);
     }
-    
+
     /**
      * Init irBasic array
      *
@@ -3019,7 +3022,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             );
         return $irBasic;
     }
-    
+
     /**
      * Create irMetadata array
      *
@@ -3086,7 +3089,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
         }
         return $irMetadata;
     }
-    
+
     /**
      * Init irMetadata array
      *
@@ -3105,7 +3108,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             );
         return $irMetadata;
     }
-    
+
     /**
      * Init irMetadata array for name
      *
@@ -3130,7 +3133,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             );
         return $irMetadata;
     }
-    
+
     /**
      * Init irMetadata array for biblio_info
      *
@@ -3155,7 +3158,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             );
         return $irMetadata;
     }
-    
+
     /**
      * Set require metadata to array
      *
@@ -3174,7 +3177,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
         {
             array_push($metadata[self::KEY_IR_METADATA], $irMetadata);
         }
-        
+
         // identifier
         $attrId = AttrId::IDENTIFIER;
         $this->cntMetadata[$attrId]++;
@@ -3184,7 +3187,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
         {
             array_push($metadata[self::KEY_IR_METADATA], $irMetadata);
         }
-        
+
         // datestamp
         $attrId = AttrId::DATESTAMP;
         $this->cntMetadata[$attrId]++;
@@ -3195,7 +3198,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             array_push($metadata[self::KEY_IR_METADATA], $irMetadata);
         }
     }
-    
+
     // ---------------------------------------------
     // Public method
     // ---------------------------------------------
@@ -3208,7 +3211,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
     {
         $this->TransStartDate = $transStartDate;
     }
-    
+
     /**
      * Get metadata array from ListRecords(record)
      *
@@ -3222,20 +3225,20 @@ class HarvestingOaipmhSpase extends RepositoryAction
     {
         // 1. Init member
         $this->initMember();
-        
+
         // 2. Set basic metadata xml
         $this->setBasicMetadataXmlStr($metadataXml);
-        
+
         // 3. Init metadata array
         $metadata[self::KEY_IR_BASIC] = $this->initIrBasic();
         $metadata[self::KEY_IR_METADATA] = array();
-        
+
         // 4. Set metadata to array
         $ret = $this->setMetadataToArray($repositoryId, $metadata);
-        
+
         return $ret;
     }
-    
+
     /**
      * Check metadata
      *
@@ -3255,7 +3258,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             $logStatus = self::LOG_STATUS_ERROR;
             return false;
         }
-        
+
         // language
         $language = RepositoryOutputFilterLOM::language($metadata[self::KEY_IR_BASIC][self::KEY_LANGUAGE]);
         if(strlen($language)==0)
@@ -3263,10 +3266,10 @@ class HarvestingOaipmhSpase extends RepositoryAction
             array_push($logMsg, self::MSG_WN_MISS_LANGAGE);
             $logStatus = self::LOG_STATUS_WARNING;
         }
-        
+
         return true;
     }
-    
+
     /**
      * Check item exists
      *
@@ -3308,7 +3311,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
         {
             return false;
         }
-        
+
         if(count($result) == 0)
         {
             // Not exists
@@ -3318,7 +3321,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
         {
             $itemId = $result[0][self::DB_ITEM_ATTR_ITEM_ID];
             $itemNo = $result[0][self::DB_ITEM_ATTR_ITEM_NO];
-            
+
             // Exists
             $query = "SELECT ".self::DB_ITEM_ATTR_ATTR_VAL." ".
                      "FROM ".DATABASE_PREFIX.self::DB_ITEM_ATTR." ".
@@ -3335,7 +3338,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
             {
                 $datestamp = $result[0][self::DB_ITEM_ATTR_ATTR_VAL];
             }
-            
+
             // Get repository_item table's is_delete
             $query = "SELECT ".self::DB_ITEM_IS_DELETE." ".
                      "FROM ".DATABASE_PREFIX.self::DB_ITEM." ".
@@ -3349,11 +3352,11 @@ class HarvestingOaipmhSpase extends RepositoryAction
             {
                 $isDelete = intval($result[0][self::DB_ITEM_IS_DELETE]);
             }
-            
+
             return true;
         }
     }
-    
+
     /**
      * Set item_id and item_no to irBasic and irMetadata
      *
@@ -3371,7 +3374,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
         {
             return false;
         }
-        
+
         // Set item_id and item_no
         $metadata[self::KEY_IR_BASIC][self::KEY_ITEM_ID] = $itemId;
         $metadata[self::KEY_IR_BASIC][self::KEY_ITEM_NO] = $itemNo;
@@ -3379,12 +3382,12 @@ class HarvestingOaipmhSpase extends RepositoryAction
         {
             $metadata[self::KEY_IR_BASIC][self::KEY_LANGUAGE] = self::DEFAULT_LANGUAGE;
         }
-        
+
         for($ii=0; $ii<count($metadata[self::KEY_IR_METADATA]); $ii++)
         {
             $metadata[self::KEY_IR_METADATA][$ii][self::KEY_ITEM_ID] = $itemId;
             $metadata[self::KEY_IR_METADATA][$ii][self::KEY_ITEM_NO] = $itemNo;
-            
+
             if($metadata[self::KEY_IR_METADATA][$ii][self::KEY_INPUT_TYPE] == self::INPUT_TYPE_NAME)
             {
                 // Set author ID
@@ -3396,19 +3399,19 @@ class HarvestingOaipmhSpase extends RepositoryAction
                 $metadata[self::KEY_IR_METADATA][$ii][self::KEY_AUTHOR_ID] = $authorId;
             }
         }
-        
+
         $irBasic = $metadata[self::KEY_IR_BASIC];
         $irMetadataArray = $metadata[self::KEY_IR_METADATA];
-        
+
         // Set additional metadata
         $this->setAdditionalMetadata($itemId, $itemNo, $irMetadataArray);
-        
+
         return true;
     }
-    
+
     /**
      * makeNameMetadataArray
-     * 
+     *
      * @param int $itemId
      * @param int $itemNo
      * @param int $attrId
@@ -3434,20 +3437,20 @@ class HarvestingOaipmhSpase extends RepositoryAction
         {
             return 0;
         }
-        
+
         // Check author ID
         $authorId = 0;
         if($result[0][self::DB_PERSONAL_NAME_FAMILY] == $family && $result[0][self::DB_PERSONAL_NAME_NAME] == $name)
         {
             $authorId = intval($result[0][self::DB_PERSONAL_NAME_AUTHOR_ID]);
         }
-        
+
         return $authorId;
     }
-    
+
     /**
      * Set additional metadata
-     * 
+     *
      * @param int $itemId
      * @param int $itemNo
      * @param array &$metadataArray
@@ -3457,7 +3460,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
     {
         $itemTypeId = self::ITEMTYPE_ID;
         $startAddAttrId = AttrId::MAX_ATTR_ID;
-        
+
         // Get itemAttrType
         $query = "SELECT * ".
                  "FROM ".DATABASE_PREFIX.RepositoryConst::DBTABLE_REPOSITORY_ITEM_ATTR_TYPE." ".
@@ -3473,7 +3476,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
         {
             return false;
         }
-        
+
         foreach($result as $itemAttrType)
         {
             $inputType = $itemAttrType[RepositoryConst::DBCOL_REPOSITORY_ITEM_ATTR_TYPE_IMPUT_TYPE];
@@ -3502,13 +3505,13 @@ class HarvestingOaipmhSpase extends RepositoryAction
                 $this->setAdditionalAttribute($itemId, $itemNo, $attrId, $itemTypeId, $inputType, $metadataArray);
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * Set additional biblioInfo
-     * 
+     *
      * @param int $itemId
      * @param int $itemNo
      * @param int $attrId
@@ -3537,17 +3540,17 @@ class HarvestingOaipmhSpase extends RepositoryAction
         {
             return false;
         }
-        
+
         foreach($result as $biblioInfo)
         {
             $biblioInfo["input_type"] = RepositoryConst::ITEM_ATTR_TYPE_BIBLIOINFO;
             array_push($metadataArray, $biblioInfo);
         }
     }
-    
+
     /**
      * Set additional name
-     * 
+     *
      * @param int $itemId
      * @param int $itemNo
      * @param int $attrId
@@ -3577,7 +3580,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
         {
             return false;
         }
-        
+
         foreach($result as $personalName)
         {
             $personalName["language"] = $language;
@@ -3585,10 +3588,10 @@ class HarvestingOaipmhSpase extends RepositoryAction
             array_push($metadataArray, $personalName);
         }
     }
-    
+
     /**
      * Set additional attribute
-     * 
+     *
      * @param int $itemId
      * @param int $itemNo
      * @param int $attrId
@@ -3617,7 +3620,7 @@ class HarvestingOaipmhSpase extends RepositoryAction
         {
             return false;
         }
-        
+
         foreach($result as $itemAttr)
         {
             $itemAttr["input_type"] = $inputType;

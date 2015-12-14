@@ -314,6 +314,10 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
                     $this->catalog->addObservedregion($tmp);
                     break;
+                case RepositoryConst::SPASE_CATALOG_INSTRUMENTID:
+                    $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+                    $this->catalog->addInstrumentID($tmp);
+                    break;
                 case RepositoryConst::SPASE_CATALOG_PHENOMENONTYPE:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
                     $this->catalog->addPhenomenontype($tmp);
@@ -488,6 +492,10 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                 case RepositoryConst::SPASE_DISPLAYDATA_OBSERVEDREGION:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
                     $this->catalog->addObservedregion($tmp);
+                    break;
+                case RepositoryConst::SPASE_DISPLAYDATA_INSTRUMENTID:
+                    $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+                    $this->catalog->addInstrumentID($tmp);
                     break;
                 case RepositoryConst::SPASE_DISPLAYDATA_PHENOMENONTYPE:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
@@ -807,6 +815,10 @@ class Repository_Oaipmh_Spase extends Repository_Oaipmh_FormatAbstract
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
                     $this->numericaldata->addObservedregion($tmp);
                     break;
+                case RepositoryConst::SPASE_NUMERICALDATA_INSTRUMENTID:
+                    $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
+                    $this->numericaldata->addInstrumentID($tmp);
+                    break;
                 case RepositoryConst::SPASE_NUMERICALDATA_PHENOMENONTYPE:
                     $tmp = new Repository_Oaipmh_SPASE_LangString($this->RepositoryAction, $value, $language);
                     $this->numericaldata->addPhenomenontype($tmp);
@@ -1083,6 +1095,7 @@ class Repository_Oaipmh_SPASE_Catalog
   private $Parameter_Mixed_Mixedquantity = null;
   private $Parameter_Support_Supportquantity = null;
 
+  private $InstrumentID = null;
   private $Phenomenontype = null;
   private $Measurementtype = null;
   private $Keyword = null;
@@ -1293,6 +1306,12 @@ class Repository_Oaipmh_SPASE_Catalog
   public function addObservedregion(Repository_Oaipmh_SPASE_LangString $Observedregion){
     if($this->Observedregion == null){
         $this->Observedregion = $Observedregion;
+    }
+  }
+
+  public function addInstrumentID(Repository_Oaipmh_SPASE_LangString $InstrumentID){
+    if($this->InstrumentID == null){
+        $this->InstrumentID = $InstrumentID;
     }
   }
 
@@ -1781,6 +1800,17 @@ class Repository_Oaipmh_SPASE_Catalog
     }
 
 
+    if($this->InstrumentID != null)
+    {
+        $xml = $this->InstrumentID->output();
+        if(strlen($xml)>0){
+            $value = explode(".",RepositoryConst::SPASE_C_INSTRUMENTID);
+            $xmlStr .= '<'.$value[count($value)-1].'>';
+            $xmlStr .= $xml;
+            $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
+        }
+    }
+
     if($this->Phenomenontype != null)
     {
         $xml = $this->Phenomenontype->output();
@@ -2037,6 +2067,7 @@ class Repository_Oaipmh_SPASE_Displaydata
   private $Parameter_Mixed_Mixedquantity = null;
   private $Parameter_Support_Supportquantity = null;
 
+  private $InstrumentID = null;
   private $Phenomenontype = null;
   private $Measurementtype = null;
   private $Keyword = null;
@@ -2227,6 +2258,12 @@ class Repository_Oaipmh_SPASE_Displaydata
   public function addParameter_Support_Supportquantity(Repository_Oaipmh_SPASE_LangString $Parameter_Support_Supportquantity){
     if($this->Parameter_Support_Supportquantity == null){
         $this->Parameter_Support_Supportquantity = $Parameter_Support_Supportquantity;
+    }
+  }
+
+  public function addInstrumentID(Repository_Oaipmh_SPASE_LangString $InstrumentID){
+    if($this->InstrumentID == null){
+        $this->InstrumentID = $InstrumentID;
     }
   }
 
@@ -2712,6 +2749,16 @@ class Repository_Oaipmh_SPASE_Displaydata
     $xmlStr .= '</Parameter>'."\n";
   }
 
+  if($this->InstrumentID != null)
+  {
+      $xml = $this->InstrumentID->output();
+      if(strlen($xml)>0){
+          $value = explode(".",RepositoryConst::SPASE_DD_INSTRUMENTID);
+          $xmlStr .= '<'.$value[count($value)-1].'>';
+          $xmlStr .= $xml;
+          $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
+      }
+  }
 
     if($this->Phenomenontype != null)
     {
@@ -2966,6 +3013,7 @@ class Repository_Oaipmh_SPASE_NumericalData
   private $Parameter_Mixed_Mixedquantity = null;
   private $Parameter_Support_Supportquantity = null;
 
+  private $InstrumentID = null;
   private $Phenomenontype = null;
   private $Measurementtype = null;
   private $Keyword = null;
@@ -3160,6 +3208,12 @@ class Repository_Oaipmh_SPASE_NumericalData
   public function addParameter_Support_Supportquantity(Repository_Oaipmh_SPASE_LangString $Parameter_Support_Supportquantity){
     if($this->Parameter_Support_Supportquantity == null){
         $this->Parameter_Support_Supportquantity = $Parameter_Support_Supportquantity;
+    }
+  }
+
+  public function addInstrumentID(Repository_Oaipmh_SPASE_LangString $InstrumentID){
+    if($this->InstrumentID == null){
+        $this->InstrumentID = $InstrumentID;
     }
   }
 
@@ -3637,6 +3691,17 @@ class Repository_Oaipmh_SPASE_NumericalData
     if($this->Parameter_Name != null)
     {
     $xmlStr .= '</Parameter>'."\n";
+    }
+
+    if($this->InstrumentID != null)
+    {
+        $xml = $this->InstrumentID->output();
+        if(strlen($xml)>0){
+            $value = explode(".",RepositoryConst::SPASE_ND_INSTRUMENTID);
+            $xmlStr .= '<'.$value[count($value)-1].'>';
+            $xmlStr .= $xml;
+            $xmlStr .= '</'.$value[count($value)-1].'>'."\n";
+        }
     }
 
 
