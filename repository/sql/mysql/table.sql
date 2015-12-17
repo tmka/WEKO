@@ -1457,14 +1457,14 @@ INSERT INTO `repository_item_type` VALUE
     (20015, 'Others', 'Others', 'harvesting item type', 'Others', '', '', '', '', '1', '1', '0', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),
     (20016, 'Learning Object Metadata', 'Learning Object Metadata', 'harvesting item type', 'Learning Material', '', '', '', '', '1', '1', '0', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),
     (20017, 'LIDO', 'LIDO', 'harvesting item type', 'Others', '', '', '', '', '1', '1', '0', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),
-    (20018, 'SPASE.Catalog', 'SPASE.Catalog', 'harvesting item type', 'Others',  '', '', '', '', '1', '1', '0', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', '0'),
-    (20019, 'SPASE.NumericalData', 'SPASE.NumericalData', 'harvesting item type', 'Others',  '', '', '', '', '1', '1', '0', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', '0'),
-    (20020, 'SPASE.DisplayData', 'SPASE.DisplayData', 'harvesting item type', 'Others',  '', '', '', '', '1', '1', '0', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', '0'),
-    (20021, 'SPASE.Instrument', 'SPASE.Instrument', 'harvesting item type', 'Others',  '', '', '', '', '1', '1', '0', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', '0'),
-    (20022, 'SPASE.Observatory', 'SPASE.Observatory', 'harvesting item type', 'Others',  '', '', '', '', '1', '1', '0', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', '0'),
-    (20023, 'SPASE.Person', 'SPASE.Person', 'harvesting item type', 'Others',  '', '', '', '', '1', '1', '0', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', '0'),
-    (20024, 'SPASE.Repository', 'SPASE.Repository', 'harvesting item type', 'Others',  '', '', '', '', '1', '1', '0', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', '0'),
-    (20025, 'SPASE.Granule', 'SPASE.Granule', 'harvesting item type', 'Others',  '', '', '', '', '1', '1', '0', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', '0');
+    (20018, 'SPASE.Catalog', 'SPASE.Catalog', 'harvesting item type', 'Others',  '', '', '', '', '1', '1', '0', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),
+    (20019, 'SPASE.NumericalData', 'SPASE.NumericalData', 'harvesting item type', 'Others',  '', '', '', '', '1', '1', '0', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),
+    (20020, 'SPASE.DisplayData', 'SPASE.DisplayData', 'harvesting item type', 'Others',  '', '', '', '', '1', '1', '0', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),
+    (20021, 'SPASE.Instrument', 'SPASE.Instrument', 'harvesting item type', 'Others',  '', '', '', '', '1', '1', '0', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),
+    (20022, 'SPASE.Observatory', 'SPASE.Observatory', 'harvesting item type', 'Others',  '', '', '', '', '1', '1', '0', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),
+    (20023, 'SPASE.Person', 'SPASE.Person', 'harvesting item type', 'Others',  '', '', '', '', '1', '1', '0', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),
+    (20024, 'SPASE.Repository', 'SPASE.Repository', 'harvesting item type', 'Others',  '', '', '', '', '1', '1', '0', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),
+    (20025, 'SPASE.Granule', 'SPASE.Granule', 'harvesting item type', 'Others',  '', '', '', '', '1', '1', '0', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0);
 
 INSERT INTO `repository_item_attr_type` (`item_type_id`, `attribute_id`, `show_order`, `attribute_name`, `attribute_short_name`, `input_type`, `is_required`, `plural_enable`, `line_feed_enable`, `list_view_enable`, `hidden`, `junii2_mapping`, `dublin_core_mapping`, `lom_mapping`, `lido_mapping`, `spase_mapping`,`display_lang_type`, `ins_user_id`, `mod_user_id`, `del_user_id`, `ins_date`, `mod_date`, `del_date`, `is_delete`) VALUES
     (10001, 1, 1, 'その他（別言語等）のタイトル', 'その他（別言語等）のタイトル', 'text', 0, 1, 0, 0, 0, 'alternative', 'title', '', '', '', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),
