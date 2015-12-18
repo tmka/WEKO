@@ -3826,7 +3826,6 @@ class Repository_Action_Main_Update extends RepositoryAction
                 case 223:
                     $this->updateWekoVersionSpase();
                 default :
-                    #$this->updateWekoVersionSpase();
                     break;
             }
             $this->executeRecursiveProcessing();
@@ -4412,7 +4411,7 @@ class Repository_Action_Main_Update extends RepositoryAction
         $query = "INSERT INTO ". DATABASE_PREFIX. "repository_item_attr_type ".
                  "(item_type_id, attribute_id, show_order, attribute_name, attribute_short_name, ".
                  " input_type, is_required, plural_enable, line_feed_enable, list_view_enable, hidden, ".
-                 " junii2_mapping, dublin_core_mapping, lom_mapping, spase_mapping, display_lang_type, ins_user_id, ".
+                 " junii2_mapping, dublin_core_mapping, lom_mapping, display_lang_type, ins_user_id, ".
                  " mod_user_id, del_user_id, ins_date, mod_date, del_date, is_delete) ".
                  "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', ?, ?, '', 0);";
         for($nCnt = 0; $nCnt < count($params_array); $nCnt++)
@@ -4432,7 +4431,6 @@ class Repository_Action_Main_Update extends RepositoryAction
             $params[] = $params_array[$nCnt]['junii2_mapping'];   // junii2_mapping
             $params[] = $params_array[$nCnt]['dublin_core_mapping'];  // dublin_core_mapping
             $params[] = $params_array[$nCnt]['lom_mapping'];  // lom_mapping
-			$params[] = $params_array[$nCnt]['spase_mapping'];  // lom_mapping
             $params[] = $params_array[$nCnt]['display_lang_type'];  // display_lang_type
             $params[] = $params_array[$nCnt]['ins_user_id'];  // ins_user_id
             $params[] = $params_array[$nCnt]['mod_user_id'];  // mod_user_id
@@ -5483,7 +5481,7 @@ class Repository_Action_Main_Update extends RepositoryAction
     private function addSpaseMapping()
     {
         $query = "ALTER TABLE ".DATABASE_PREFIX."repository_item_attr_type ".
-                "ADD `spase_mapping` TEXT NOT NULL default '' ".
+                "ADD `spase_mapping` TEXT NOT NULL ".
                 "AFTER `lido_mapping` ;";
         $this->dbAccess->executeQuery($query);
     }
@@ -5685,6 +5683,9 @@ class Repository_Action_Main_Update extends RepositoryAction
         $params[] = $ItemNo;  // item_type_id
         $retRef = $this->dbAccess->executeQuery($query, $params);
 
+        $query = "SELECT * ".
+                "FROM ".DATABASE_PREFIX."repository_item_attr_type;";
+
         switch ($ItemNo) {
           case 20018:
             if(count($retRef) == 0)
@@ -5694,92 +5695,91 @@ class Repository_Action_Main_Update extends RepositoryAction
                 "input_type, is_required, plural_enable, line_feed_enable, list_view_enable, hidden, ".
                 "junii2_mapping, dublin_core_mapping, lom_mapping, lido_mapping, spase_mapping, display_lang_type, ".
                 "ins_user_id, mod_user_id, del_user_id, ins_date, mod_date, del_date, is_delete) VALUES ".
-                "(20018, 1 , 1, 'Catalog.ResourceID', 'Catalog.ResourceID','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.ResourceID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 2 , 2, 'Catalog.ResourceHeader.ResourceName', 'Catalog.ResourceHeader.ResourceName','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.ResourceHeader.ResourceName', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 3 , 3, 'Catalog.ResourceHeader.ReleaseDate', 'Catalog.ResourceHeader.ReleaseDate','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.ResourceHeader.ReleaseDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 4 , 4, 'Catalog.ResourceHeader.Description', 'Catalog.ResourceHeader.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.ResourceHeader.Description', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 5 , 5, 'Catalog.ResourceHeader.Acknowledgement', 'Catalog.ResourceHeader.Acknowledgement','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.ResourceHeader.Acknowledgement', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 6 , 6, 'Catalog.ResourceHeader.Contact.PersonID', 'Catalog.ResourceHeader.Contact.PersonID','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.ResourceHeader.Contact.PersonID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 7 , 7, 'Catalog.ResourceHeader.Contact.Role', 'Catalog.ResourceHeader.Contact.Role','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.ResourceHeader.Contact.Role', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 8 , 8, 'Catalog.AccessInformation.RepositoryID', 'Catalog.AccessInformation.RepositoryID','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.AccessInformation.RepositoryID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 9 , 9, 'Catalog.AccessInformation.Availability', 'Catalog.AccessInformation.Availability','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.AccessInformation.Availability', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 10 , 10, 'Catalog.AccessInformation.AccessRights', 'Catalog.AccessInformation.AccessRights','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.AccessInformation.AccessRights', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 11 , 11, 'Catalog.AccessInformation.AccessURL.Name', 'Catalog.AccessInformation.AccessURL.Name','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.AccessInformation.AccessURL.Name', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 12 , 12, 'Catalog.AccessInformation.AccessURL.URL', 'Catalog.AccessInformation.AccessURL.URL','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.AccessInformation.AccessURL.URL', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 13 , 13, 'Catalog.AccessInformation.AccessURL.Description', 'Catalog.AccessInformation.AccessURL.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.AccessInformation.AccessURL.Description', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 14 , 14, 'Catalog.AccessInformation.Format', 'Catalog.AccessInformation.Format','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.AccessInformation.Format', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 15 , 15, 'Catalog.AccessInformation.DataExtent.Quantity', 'Catalog.AccessInformation.DataExtent.Quantity','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.AccessInformation.DataExtent.Quantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 16 , 16, 'Catalog.InstrumentID', 'Catalog.InstrumentID','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.InstrumentID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 17 , 17, 'Catalog.PhenomenonType', 'Catalog.PhenomenonType','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.PhenomenonType', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 18 , 18, 'Catalog.MeasurementType', 'Catalog.MeasurementType','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.MeasurementType', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 19 , 19, 'Catalog.Keyword', 'Catalog.Keyword','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.Keyword', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 20 , 20, 'Catalog.TemporalDescription.StartDate', 'Catalog.TemporalDescription.StartDate','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.TemporalDescription.StartDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 21 , 21, 'Catalog.TemporalDescription.StopDate', 'Catalog.TemporalDescription.StopDate','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.TemporalDescription.StopDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 22 , 22, 'Catalog.TemporalDescription.RelativeStopDate', 'Catalog.TemporalDescription.RelativeStopDate','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.TemporalDescription.RelativeStopDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 23 , 23, 'Catalog.ObservedRegion', 'Catalog.ObservedRegion','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.ObservedRegion', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 24 , 24, 'Catalog.SpatialCoverage.CoordinateSystem.CoordinateSystemName', 'Catalog.SpatialCoverage.CoordinateSystem.CoordinateSystemName','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.SpatialCoverage.CoordinateSystem.CoordinateSystemName', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 25 , 25, 'Catalog.SpatialCoverage.CoordinateSystem.CoordinateRepresentation', 'Catalog.SpatialCoverage.CoordinateSystem.CoordinateRepresentation','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.SpatialCoverage.CoordinateSystem.CoordinateRepresentation', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 26 , 26, 'Catalog.SpatialCoverage.NorthernmostLatitude', 'Catalog.SpatialCoverage.NorthernmostLatitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.SpatialCoverage.NorthernmostLatitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 27 , 27, 'Catalog.SpatialCoverage.SouthernmostLatitude', 'Catalog.SpatialCoverage.SouthernmostLatitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.SpatialCoverage.SouthernmostLatitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 28 , 28, 'Catalog.SpatialCoverage.EasternmostLongitude', 'Catalog.SpatialCoverage.EasternmostLongitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.SpatialCoverage.EasternmostLongitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 29 , 29, 'Catalog.SpatialCoverage.esternmostLongitude', 'Catalog.SpatialCoverage.esternmostLongitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.SpatialCoverage.esternmostLongitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 30 , 30, 'Catalog.SpatialCoverage.Unit', 'Catalog.SpatialCoverage.Unit','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.SpatialCoverage.Unit', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 31 , 31, 'Catalog.SpatialCoverage.MinimumAltitude', 'Catalog.SpatialCoverage.MinimumAltitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.SpatialCoverage.MinimumAltitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 32 , 32, 'Catalog.SpatialCoverage.MaximumAltitude', 'Catalog.SpatialCoverage.MaximumAltitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.SpatialCoverage.MaximumAltitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 33 , 33, 'Catalog.SpatialCoverage.Reference', 'Catalog.SpatialCoverage.Reference','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.SpatialCoverage.Reference', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 34 , 34, 'Catalog.Parameter.Name', 'Catalog.Parameter.Name','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.Parameter.Name', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 35 , 35, 'Catalog.Parameter.Description', 'Catalog.Parameter.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.Parameter.Description', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 36 , 36, 'Catalog.Parameter.Field.FieldQuantity', 'Catalog.Parameter.Field.FieldQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.Parameter.Field.FieldQuantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 37 , 37, 'Catalog.Parameter.Particle.ParticleType', 'Catalog.Parameter.Particle.ParticleType','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.Parameter.Particle.ParticleType', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 38 , 38, 'Catalog.Parameter.Particle.ParticleQuantity', 'Catalog.Parameter.Particle.ParticleQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.Parameter.Particle.ParticleQuantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 39 , 39, 'Catalog.Parameter.Parameter.Wave.WaveType', 'Catalog.Parameter.Parameter.Wave.WaveType','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.Parameter.Parameter.Wave.WaveType', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 40 , 40, 'Catalog.Parameter.Wave.WaveQuantity', 'Catalog.Parameter.Wave.WaveQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.Parameter.Wave.WaveQuantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 41 , 41, 'Catalog.Parameter.Mixed.MixedQuantity', 'Catalog.Parameter.Mixed.MixedQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.Parameter.Mixed.MixedQuantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20018, 42 , 42, 'Catalog.Parameter.Support.SupportQuantity', 'Catalog.Parameter.Support.SupportQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.Parameter.Support.SupportQuantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0);";
+"(20018, 1 , 1, 'Catalog.ResourceID', 'Catalog.ResourceID','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.ResourceID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 2 , 2, 'Catalog.ResourceHeader.ResourceName', 'Catalog.ResourceHeader.ResourceName','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.ResourceHeader.ResourceName', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 3 , 3, 'Catalog.ResourceHeader.ReleaseDate', 'Catalog.ResourceHeader.ReleaseDate','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.ResourceHeader.ReleaseDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 4 , 4, 'Catalog.ResourceHeader.Description', 'Catalog.ResourceHeader.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.ResourceHeader.Description', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 5 , 5, 'Catalog.ResourceHeader.Acknowledgement', 'Catalog.ResourceHeader.Acknowledgement','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.ResourceHeader.Acknowledgement', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 6 , 6, 'Catalog.ResourceHeader.Contact.PersonID', 'Catalog.ResourceHeader.Contact.PersonID','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.ResourceHeader.Contact.PersonID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 7 , 7, 'Catalog.ResourceHeader.Contact.Role', 'Catalog.ResourceHeader.Contact.Role','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.ResourceHeader.Contact.Role', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 8 , 8, 'Catalog.AccessInformation.RepositoryID', 'Catalog.AccessInformation.RepositoryID','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.AccessInformation.RepositoryID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 9 , 9, 'Catalog.AccessInformation.Availability', 'Catalog.AccessInformation.Availability','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.AccessInformation.Availability', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 10 , 10, 'Catalog.AccessInformation.AccessRights', 'Catalog.AccessInformation.AccessRights','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.AccessInformation.AccessRights', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 11 , 11, 'Catalog.AccessInformation.AccessURL.Name', 'Catalog.AccessInformation.AccessURL.Name','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.AccessInformation.AccessURL.Name', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 12 , 12, 'Catalog.AccessInformation.AccessURL.URL', 'Catalog.AccessInformation.AccessURL.URL','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.AccessInformation.AccessURL.URL', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 13 , 13, 'Catalog.AccessInformation.AccessURL.Description', 'Catalog.AccessInformation.AccessURL.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.AccessInformation.AccessURL.Description', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 14 , 14, 'Catalog.AccessInformation.Format', 'Catalog.AccessInformation.Format','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.AccessInformation.Format', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 15 , 15, 'Catalog.AccessInformation.DataExtent.Quantity', 'Catalog.AccessInformation.DataExtent.Quantity','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.AccessInformation.DataExtent.Quantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 16 , 16, 'Catalog.InstrumentID', 'Catalog.InstrumentID','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.InstrumentID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 17 , 17, 'Catalog.PhenomenonType', 'Catalog.PhenomenonType','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.PhenomenonType', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 18 , 18, 'Catalog.MeasurementType', 'Catalog.MeasurementType','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.MeasurementType', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 19 , 19, 'Catalog.Keyword', 'Catalog.Keyword','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.Keyword', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 20 , 20, 'Catalog.TemporalDescription.StartDate', 'Catalog.TemporalDescription.StartDate','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.TemporalDescription.StartDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 21 , 21, 'Catalog.TemporalDescription.StopDate', 'Catalog.TemporalDescription.StopDate','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.TemporalDescription.StopDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 22 , 22, 'Catalog.TemporalDescription.RelativeStopDate', 'Catalog.TemporalDescription.RelativeStopDate','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.TemporalDescription.RelativeStopDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 23 , 23, 'Catalog.ObservedRegion', 'Catalog.ObservedRegion','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.ObservedRegion', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 24 , 24, 'Catalog.SpatialCoverage.CoordinateSystem.CoordinateSystemName', 'Catalog.SpatialCoverage.CoordinateSystem.CoordinateSystemName','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.SpatialCoverage.CoordinateSystem.CoordinateSystemName', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 25 , 25, 'Catalog.SpatialCoverage.CoordinateSystem.CoordinateRepresentation', 'Catalog.SpatialCoverage.CoordinateSystem.CoordinateRepresentation','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.SpatialCoverage.CoordinateSystem.CoordinateRepresentation', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 26 , 26, 'Catalog.SpatialCoverage.NorthernmostLatitude', 'Catalog.SpatialCoverage.NorthernmostLatitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.SpatialCoverage.NorthernmostLatitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 27 , 27, 'Catalog.SpatialCoverage.SouthernmostLatitude', 'Catalog.SpatialCoverage.SouthernmostLatitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.SpatialCoverage.SouthernmostLatitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 28 , 28, 'Catalog.SpatialCoverage.EasternmostLongitude', 'Catalog.SpatialCoverage.EasternmostLongitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.SpatialCoverage.EasternmostLongitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 29 , 29, 'Catalog.SpatialCoverage.esternmostLongitude', 'Catalog.SpatialCoverage.esternmostLongitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.SpatialCoverage.esternmostLongitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 30 , 30, 'Catalog.SpatialCoverage.Unit', 'Catalog.SpatialCoverage.Unit','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.SpatialCoverage.Unit', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 31 , 31, 'Catalog.SpatialCoverage.MinimumAltitude', 'Catalog.SpatialCoverage.MinimumAltitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.SpatialCoverage.MinimumAltitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 32 , 32, 'Catalog.SpatialCoverage.MaximumAltitude', 'Catalog.SpatialCoverage.MaximumAltitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.SpatialCoverage.MaximumAltitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 33 , 33, 'Catalog.SpatialCoverage.Reference', 'Catalog.SpatialCoverage.Reference','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.SpatialCoverage.Reference', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 34 , 34, 'Catalog.Parameter.Name', 'Catalog.Parameter.Name','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.Parameter.Name', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 35 , 35, 'Catalog.Parameter.Description', 'Catalog.Parameter.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.Parameter.Description', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 36 , 36, 'Catalog.Parameter.Field.FieldQuantity', 'Catalog.Parameter.Field.FieldQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.Parameter.Field.FieldQuantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 37 , 37, 'Catalog.Parameter.Particle.ParticleType', 'Catalog.Parameter.Particle.ParticleType','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.Parameter.Particle.ParticleType', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 38 , 38, 'Catalog.Parameter.Particle.ParticleQuantity', 'Catalog.Parameter.Particle.ParticleQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.Parameter.Particle.ParticleQuantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 39 , 39, 'Catalog.Parameter.Parameter.Wave.WaveType', 'Catalog.Parameter.Parameter.Wave.WaveType','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.Parameter.Parameter.Wave.WaveType', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 40 , 40, 'Catalog.Parameter.Wave.WaveQuantity', 'Catalog.Parameter.Wave.WaveQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.Parameter.Wave.WaveQuantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 41 , 41, 'Catalog.Parameter.Mixed.MixedQuantity', 'Catalog.Parameter.Mixed.MixedQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.Parameter.Mixed.MixedQuantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20018, 42 , 42, 'Catalog.Parameter.Support.SupportQuantity', 'Catalog.Parameter.Support.SupportQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'Catalog.Parameter.Support.SupportQuantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0);";
                 $params = array();
+            $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEID;
+            $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_RESOURCENAME;
+            $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_RELEASEDATE;
+            $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_DESCRIPTION;
+            $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_ACKNOWLEDGEMENT;
+            $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_CONTACT_PERSONID;
+            $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_CONTACT_ROLE;
+            $params[] = RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_REPOSITORYID;
+            $params[] = RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_AVAILABILITY;
+            $params[] = RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_ACCESSRIGHTS;
+            $params[] = RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_ACCESSURL_NAME;
+            $params[] = RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_ACCESSURL_URL;
+            $params[] = RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_ACCESSURL_DESCRIPTION;
+            $params[] = RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_FORMAT;
+            $params[] = RepositoryConst::SPASE_CATALOG_INSTRUMENTID;
+            $params[] = RepositoryConst::SPASE_CATALOG_PHENOMENONTYPE;
+            $params[] = RepositoryConst::SPASE_CATALOG_MEASUREMENTTYPE;
+            $params[] = RepositoryConst::SPASE_CATALOG_KEYWORD;
+            $params[] = RepositoryConst::SPASE_CATALOG_TEMPORALDESCRIPTION_STARTDATE;
+            $params[] = RepositoryConst::SPASE_CATALOG_TEMPORALDESCRIPTION_STOPDATE;
+            $params[] = RepositoryConst::SPASE_CATALOG_TEMPORALDESCRIPTION_RELATIVESTOPDATE;
+            $params[] = RepositoryConst::SPASE_CATALOG_OBSERVEDREGION;
+            $params[] = RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATESYSTEMNAME;
+            $params[] = RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATEREPRESENTATION;
+            $params[] = RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_SOUTHERNMOSTLATITUDE;
+            $params[] = RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_EASTERNMOSTLONGITUDE;
+            $params[] = RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_WESTERNMOSTLONGITUDE;
+            $params[] = RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_NORTHERNMOSTLATITUDE;
+            $params[] = RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_UNIT;
+            $params[] = RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_MINIMUMALTITUDE;
+            $params[] = RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_MAXIMUMALTITUDE;
+            $params[] = RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_REFERENCE;
+            $params[] = RepositoryConst::SPASE_CATALOG_PARAMETER_NAME;
+            $params[] = RepositoryConst::SPASE_CATALOG_PARAMETER_DESCRIPTION;
+            $params[] = RepositoryConst::SPASE_CATALOG_PARAMETER_FIELD_FIELDQUANTITY;
+            $params[] = RepositoryConst::SPASE_CATALOG_PARAMETER_PARTICLE_PARTICLETYPE;
+            $params[] = RepositoryConst::SPASE_CATALOG_PARAMETER_PARTICLE_PARTICLEQUANTITY;
+            $params[] = RepositoryConst::SPASE_CATALOG_PARAMETER_WAVE_WAVETYPE;
+            $params[] = RepositoryConst::SPASE_CATALOG_PARAMETER_WAVE_WAVEQUANTITY;
+            $params[] = RepositoryConst::SPASE_CATALOG_PARAMETER_MIXED_MIXEDQUANTITY;
+            $params[] = RepositoryConst::SPASE_CATALOG_PARAMETER_SUPPORT_SUPPORTQUANTITY;
 
-                $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEID;
-                $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_RESOURCENAME;
-                $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_RELEASEDATE;
-                $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_DESCRIPTION;
-                $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_ACKNOWLEDGEMENT;
-                $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_CONTACT_PERSONID;
-                $params[] = RepositoryConst::SPASE_CATALOG_RESOURCEHEADER_CONTACT_ROLE;
-                $params[] = RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_REPOSITORYID;
-                $params[] = RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_AVAILABILITY;
-                $params[] = RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_ACCESSRIGHTS;
-                $params[] = RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_ACCESSURL_NAME;
-                $params[] = RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_ACCESSURL_URL;
-                $params[] = RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_ACCESSURL_DESCRIPTION;
-                $params[] = RepositoryConst::SPASE_CATALOG_ACCESSINFORMATION_FORMAT;
-                $params[] = RepositoryConst::SPASE_CATALOG_INSTRUMENTID;
-                $params[] = RepositoryConst::SPASE_CATALOG_PHENOMENONTYPE;
-                $params[] = RepositoryConst::SPASE_CATALOG_MEASUREMENTTYPE;
-                $params[] = RepositoryConst::SPASE_CATALOG_KEYWORD;
-                $params[] = RepositoryConst::SPASE_CATALOG_TEMPORALDESCRIPTION_STARTDATE;
-                $params[] = RepositoryConst::SPASE_CATALOG_TEMPORALDESCRIPTION_STOPDATE;
-                $params[] = RepositoryConst::SPASE_CATALOG_TEMPORALDESCRIPTION_RELATIVESTOPDATE;
-                $params[] = RepositoryConst::SPASE_CATALOG_OBSERVEDREGION;
-                $params[] = RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATESYSTEMNAME;
-                $params[] = RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATEREPRESENTATION;
-                $params[] = RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_SOUTHERNMOSTLATITUDE;
-                $params[] = RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_EASTERNMOSTLONGITUDE;
-                $params[] = RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_WESTERNMOSTLONGITUDE;
-                $params[] = RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_NORTHERNMOSTLATITUDE;
-                $params[] = RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_UNIT;
-                $params[] = RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_MINIMUMALTITUDE;
-                $params[] = RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_MAXIMUMALTITUDE;
-                $params[] = RepositoryConst::SPASE_CATALOG_SPATIALCOVERAGE_REFERENCE;
-                $params[] = RepositoryConst::SPASE_CATALOG_PARAMETER_NAME;
-                $params[] = RepositoryConst::SPASE_CATALOG_PARAMETER_DESCRIPTION;
-                $params[] = RepositoryConst::SPASE_CATALOG_PARAMETER_FIELD_FIELDQUANTITY;
-                $params[] = RepositoryConst::SPASE_CATALOG_PARAMETER_PARTICLE_PARTICLETYPE;
-                $params[] = RepositoryConst::SPASE_CATALOG_PARAMETER_PARTICLE_PARTICLEQUANTITY;
-                $params[] = RepositoryConst::SPASE_CATALOG_PARAMETER_WAVE_WAVETYPE;
-                $params[] = RepositoryConst::SPASE_CATALOG_PARAMETER_WAVE_WAVEQUANTITY;
-                $params[] = RepositoryConst::SPASE_CATALOG_PARAMETER_MIXED_MIXEDQUANTITY;
-                $params[] = RepositoryConst::SPASE_CATALOG_PARAMETER_SUPPORT_SUPPORTQUANTITY;
-                
                 $retRef = $this->dbAccess->executeQuery($query, $params);
               }
             break;
@@ -5792,49 +5792,48 @@ class Repository_Action_Main_Update extends RepositoryAction
                 "input_type, is_required, plural_enable, line_feed_enable, list_view_enable, hidden, ".
                 "junii2_mapping, dublin_core_mapping, lom_mapping, lido_mapping, spase_mapping, display_lang_type, ".
                 "ins_user_id, mod_user_id, del_user_id, ins_date, mod_date, del_date, is_delete) VALUES ".
-                "(20019, 1 , 1, 'NumericalData.ResourceID', 'NumericalData.ResourceID','text',1, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 1 , 1, 'NumericalData.ResourceID', 'NumericalData.ResourceID','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 2 , 2, 'NumericalData.ResourceHeader.ResourceName', 'NumericalData.ResourceHeader.ResourceName','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceHeader.ResourceName', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 3 , 3, 'NumericalData.ResourceHeader.ReleaseDate', 'NumericalData.ResourceHeader.ReleaseDate','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceHeader.ReleaseDate', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 4 , 4, 'NumericalData.ResourceHeader.Description', 'NumericalData.ResourceHeader.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceHeader.Description', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 5 , 5, 'NumericalData.ResourceHeader.Acknowledgement', 'NumericalData.ResourceHeader.Acknowledgement','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceHeader.Acknowledgement', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 6 , 6, 'NumericalData.ResourceHeader.Contact.PersonID', 'NumericalData.ResourceHeader.Contact.PersonID','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceHeader.Contact.PersonID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 7 , 7, 'NumericalData.ResourceHeader.Contact.Role', 'NumericalData.ResourceHeader.Contact.Role','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceHeader.Contact.Role', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 8 , 8, 'NumericalData.AccessInformation.RepositoryID', 'NumericalData.AccessInformation.RepositoryID','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.RepositoryID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 9 , 9, 'NumericalData.AccessInformation.Availability', 'NumericalData.AccessInformation.Availability','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.Availability', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 10 , 10, 'NumericalData.AccessInformation.AccessRights', 'NumericalData.AccessInformation.AccessRights','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.AccessRights', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 11 , 11, 'NumericalData.AccessInformation.AccessURL.Name', 'NumericalData.AccessInformation.AccessURL.Name','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.AccessURL.Name', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 12 , 12, 'NumericalData.AccessInformation.AccessURL.URL', 'NumericalData.AccessInformation.AccessURL.URL','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.AccessURL.URL', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 13 , 13, 'NumericalData.AccessInformation.AccessURL.Description', 'NumericalData.AccessInformation.AccessURL.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.AccessURL.Description', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 14 , 14, 'NumericalData.AccessInformation.Format', 'NumericalData.AccessInformation.Format','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.Format', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 15 , 15, 'NumericalData.AccessInformation.DataExtent.Quantity', 'NumericalData.AccessInformation.DataExtent.Quantity','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.DataExtent.Quantity', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 16 , 16, 'NumericalData.InstrumentID', 'NumericalData.InstrumentID','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.InstrumentID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 17 , 17, 'NumericalData.PhenomenonType', 'NumericalData.PhenomenonType','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.PhenomenonType', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 18 , 18, 'NumericalData.MeasurementType', 'NumericalData.MeasurementType','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.MeasurementType', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 19 , 19, 'NumericalData.Keyword', 'NumericalData.Keyword','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Keyword', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 20 , 20, 'NumericalData.TemporalDescription.StartDate', 'NumericalData.TemporalDescription.StartDate','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.TemporalDescription.StartDate', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 21 , 21, 'NumericalData.TemporalDescription.StopDate', 'NumericalData.TemporalDescription.StopDate','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.TemporalDescription.StopDate', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 22 , 22, 'NumericalData.TemporalDescription.RelativeStopDate', 'NumericalData.TemporalDescription.RelativeStopDate','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.TemporalDescription.RelativeStopDate', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 23 , 23, 'NumericalData.ObservedRegion', 'NumericalData.ObservedRegion','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ObservedRegion', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 24 , 24, 'NumericalData.SpatialCoverage.CoordinateSystem.CoordinateSystemName', 'NumericalData.SpatialCoverage.CoordinateSystem.CoordinateSystemName','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.CoordinateSystem.CoordinateSystemName', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 25 , 25, 'NumericalData.SpatialCoverage.CoordinateSystem.CoordinateRepresentation', 'NumericalData.SpatialCoverage.CoordinateSystem.CoordinateRepresentation','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.CoordinateSystem.CoordinateRepresentation', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 26 , 26, 'NumericalData.SpatialCoverage.NorthernmostLatitude', 'NumericalData.SpatialCoverage.NorthernmostLatitude','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.NorthernmostLatitude', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 27 , 27, 'NumericalData.SpatialCoverage.SouthernmostLatitude', 'NumericalData.SpatialCoverage.SouthernmostLatitude','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.SouthernmostLatitude', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 28 , 28, 'NumericalData.SpatialCoverage.EasternmostLongitude', 'NumericalData.SpatialCoverage.EasternmostLongitude','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.EasternmostLongitude', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 29 , 29, 'NumericalData.SpatialCoverage.esternmostLongitude', 'NumericalData.SpatialCoverage.esternmostLongitude','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.esternmostLongitude', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 30 , 30, 'NumericalData.SpatialCoverage.Unit', 'NumericalData.SpatialCoverage.Unit','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.Unit', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 31 , 31, 'NumericalData.SpatialCoverage.MinimumAltitude', 'NumericalData.SpatialCoverage.MinimumAltitude','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.MinimumAltitude', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 32 , 32, 'NumericalData.SpatialCoverage.MaximumAltitude', 'NumericalData.SpatialCoverage.MaximumAltitude','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.MaximumAltitude', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 33 , 33, 'NumericalData.SpatialCoverage.Reference', 'NumericalData.SpatialCoverage.Reference','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.Reference', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 34 , 34, 'NumericalData.Parameter.Name', 'NumericalData.Parameter.Name','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Name', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 35 , 35, 'NumericalData.Parameter.Description', 'NumericalData.Parameter.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Description', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 36 , 36, 'NumericalData.Parameter.Field.FieldQuantity', 'NumericalData.Parameter.Field.FieldQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Field.FieldQuantity', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 37 , 37, 'NumericalData.Parameter.Particle.ParticleType', 'NumericalData.Parameter.Particle.ParticleType','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Particle.ParticleType', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 38 , 38, 'NumericalData.Parameter.Particle.ParticleQuantity', 'NumericalData.Parameter.Particle.ParticleQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Particle.ParticleQuantity', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 39 , 39, 'NumericalData.Parameter.Parameter.Wave.WaveType', 'NumericalData.Parameter.Parameter.Wave.WaveType','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Parameter.Wave.WaveType', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 40 , 40, 'NumericalData.Parameter.Wave.WaveQuantity', 'NumericalData.Parameter.Wave.WaveQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Wave.WaveQuantity', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 41 , 41, 'NumericalData.Parameter.Mixed.MixedQuantity', 'NumericalData.Parameter.Mixed.MixedQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Mixed.MixedQuantity', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 42 , 42, 'NumericalData.Parameter.Support.SupportQuantity', 'NumericalData.Parameter.Support.SupportQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Support.SupportQuantity', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0);";
+                "(20019, 1 , 1, 'NumericalData.ResourceID', 'NumericalData.ResourceID','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 2 , 2, 'NumericalData.ResourceHeader.ResourceName', 'NumericalData.ResourceHeader.ResourceName','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceHeader.ResourceName', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 3 , 3, 'NumericalData.ResourceHeader.ReleaseDate', 'NumericalData.ResourceHeader.ReleaseDate','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceHeader.ReleaseDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 4 , 4, 'NumericalData.ResourceHeader.Description', 'NumericalData.ResourceHeader.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceHeader.Description', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 5 , 5, 'NumericalData.ResourceHeader.Acknowledgement', 'NumericalData.ResourceHeader.Acknowledgement','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceHeader.Acknowledgement', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 6 , 6, 'NumericalData.ResourceHeader.Contact.PersonID', 'NumericalData.ResourceHeader.Contact.PersonID','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceHeader.Contact.PersonID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 7 , 7, 'NumericalData.ResourceHeader.Contact.Role', 'NumericalData.ResourceHeader.Contact.Role','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceHeader.Contact.Role', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 8 , 8, 'NumericalData.AccessInformation.RepositoryID', 'NumericalData.AccessInformation.RepositoryID','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.RepositoryID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 9 , 9, 'NumericalData.AccessInformation.Availability', 'NumericalData.AccessInformation.Availability','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.Availability', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 10 , 10, 'NumericalData.AccessInformation.AccessRights', 'NumericalData.AccessInformation.AccessRights','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.AccessRights', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 11 , 11, 'NumericalData.AccessInformation.AccessURL.Name', 'NumericalData.AccessInformation.AccessURL.Name','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.AccessURL.Name', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 12 , 12, 'NumericalData.AccessInformation.AccessURL.URL', 'NumericalData.AccessInformation.AccessURL.URL','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.AccessURL.URL', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 13 , 13, 'NumericalData.AccessInformation.AccessURL.Description', 'NumericalData.AccessInformation.AccessURL.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.AccessURL.Description', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 14 , 14, 'NumericalData.AccessInformation.Format', 'NumericalData.AccessInformation.Format','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.Format', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 15 , 15, 'NumericalData.AccessInformation.DataExtent.Quantity', 'NumericalData.AccessInformation.DataExtent.Quantity','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.DataExtent.Quantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 16 , 16, 'NumericalData.InstrumentID', 'NumericalData.InstrumentID','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.InstrumentID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 17 , 17, 'NumericalData.PhenomenonType', 'NumericalData.PhenomenonType','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.PhenomenonType', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 18 , 18, 'NumericalData.MeasurementType', 'NumericalData.MeasurementType','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.MeasurementType', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 19 , 19, 'NumericalData.Keyword', 'NumericalData.Keyword','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Keyword', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 20 , 20, 'NumericalData.TemporalDescription.StartDate', 'NumericalData.TemporalDescription.StartDate','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.TemporalDescription.StartDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 21 , 21, 'NumericalData.TemporalDescription.StopDate', 'NumericalData.TemporalDescription.StopDate','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.TemporalDescription.StopDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 22 , 22, 'NumericalData.TemporalDescription.RelativeStopDate', 'NumericalData.TemporalDescription.RelativeStopDate','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.TemporalDescription.RelativeStopDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 23 , 23, 'NumericalData.ObservedRegion', 'NumericalData.ObservedRegion','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ObservedRegion', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 24 , 24, 'NumericalData.SpatialCoverage.CoordinateSystem.CoordinateSystemName', 'NumericalData.SpatialCoverage.CoordinateSystem.CoordinateSystemName','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.CoordinateSystem.CoordinateSystemName', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 25 , 25, 'NumericalData.SpatialCoverage.CoordinateSystem.CoordinateRepresentation', 'NumericalData.SpatialCoverage.CoordinateSystem.CoordinateRepresentation','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.CoordinateSystem.CoordinateRepresentation', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 26 , 26, 'NumericalData.SpatialCoverage.NorthernmostLatitude', 'NumericalData.SpatialCoverage.NorthernmostLatitude','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.NorthernmostLatitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 27 , 27, 'NumericalData.SpatialCoverage.SouthernmostLatitude', 'NumericalData.SpatialCoverage.SouthernmostLatitude','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.SouthernmostLatitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 28 , 28, 'NumericalData.SpatialCoverage.EasternmostLongitude', 'NumericalData.SpatialCoverage.EasternmostLongitude','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.EasternmostLongitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 29 , 29, 'NumericalData.SpatialCoverage.esternmostLongitude', 'NumericalData.SpatialCoverage.esternmostLongitude','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.esternmostLongitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 30 , 30, 'NumericalData.SpatialCoverage.Unit', 'NumericalData.SpatialCoverage.Unit','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.Unit', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 31 , 31, 'NumericalData.SpatialCoverage.MinimumAltitude', 'NumericalData.SpatialCoverage.MinimumAltitude','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.MinimumAltitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 32 , 32, 'NumericalData.SpatialCoverage.MaximumAltitude', 'NumericalData.SpatialCoverage.MaximumAltitude','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.MaximumAltitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 33 , 33, 'NumericalData.SpatialCoverage.Reference', 'NumericalData.SpatialCoverage.Reference','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.Reference', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 34 , 34, 'NumericalData.Parameter.Name', 'NumericalData.Parameter.Name','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Name', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 35 , 35, 'NumericalData.Parameter.Description', 'NumericalData.Parameter.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Description', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 36 , 36, 'NumericalData.Parameter.Field.FieldQuantity', 'NumericalData.Parameter.Field.FieldQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Field.FieldQuantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 37 , 37, 'NumericalData.Parameter.Particle.ParticleType', 'NumericalData.Parameter.Particle.ParticleType','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Particle.ParticleType', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 38 , 38, 'NumericalData.Parameter.Particle.ParticleQuantity', 'NumericalData.Parameter.Particle.ParticleQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Particle.ParticleQuantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 39 , 39, 'NumericalData.Parameter.Parameter.Wave.WaveType', 'NumericalData.Parameter.Parameter.Wave.WaveType','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Parameter.Wave.WaveType', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 40 , 40, 'NumericalData.Parameter.Wave.WaveQuantity', 'NumericalData.Parameter.Wave.WaveQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Wave.WaveQuantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 41 , 41, 'NumericalData.Parameter.Mixed.MixedQuantity', 'NumericalData.Parameter.Mixed.MixedQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Mixed.MixedQuantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20019, 42 , 42, 'NumericalData.Parameter.Support.SupportQuantity', 'NumericalData.Parameter.Support.SupportQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Support.SupportQuantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0);";
                 $params = array();
                 $params[] = RepositoryConst::SPASE_NUMERICALDATA_RESOURCEID;
             $params[] = RepositoryConst::SPASE_NUMERICALDATA_RESOURCEHEADER_RESOURCENAME;
@@ -5877,7 +5876,7 @@ class Repository_Action_Main_Update extends RepositoryAction
             $params[] = RepositoryConst::SPASE_NUMERICALDATA_PARAMETER_WAVE_WAVEQUANTITY;
             $params[] = RepositoryConst::SPASE_NUMERICALDATA_PARAMETER_MIXED_MIXEDQUANTITY;
             $params[] = RepositoryConst::SPASE_NUMERICALDATA_PARAMETER_SUPPORT_SUPPORTQUANTITY;
-                $retRef = $this->dbAccess->executeQuery($query, $params);
+            $retRef = $this->dbAccess->executeQuery($query, $params);
               }
             break;
 
@@ -5889,91 +5888,90 @@ class Repository_Action_Main_Update extends RepositoryAction
                 "input_type, is_required, plural_enable, line_feed_enable, list_view_enable, hidden, ".
                 "junii2_mapping, dublin_core_mapping, lom_mapping, lido_mapping, spase_mapping, display_lang_type, ".
                 "ins_user_id, mod_user_id, del_user_id, ins_date, mod_date, del_date, is_delete) VALUES ".
-                "(20019, 1 , 1, 'NumericalData.ResourceID', 'NumericalData.ResourceID','text',1, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 1 , 1, 'NumericalData.ResourceID', 'NumericalData.ResourceID','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 2 , 2, 'NumericalData.ResourceHeader.ResourceName', 'NumericalData.ResourceHeader.ResourceName','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceHeader.ResourceName', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 3 , 3, 'NumericalData.ResourceHeader.ReleaseDate', 'NumericalData.ResourceHeader.ReleaseDate','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceHeader.ReleaseDate', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 4 , 4, 'NumericalData.ResourceHeader.Description', 'NumericalData.ResourceHeader.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceHeader.Description', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 5 , 5, 'NumericalData.ResourceHeader.Acknowledgement', 'NumericalData.ResourceHeader.Acknowledgement','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceHeader.Acknowledgement', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 6 , 6, 'NumericalData.ResourceHeader.Contact.PersonID', 'NumericalData.ResourceHeader.Contact.PersonID','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceHeader.Contact.PersonID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 7 , 7, 'NumericalData.ResourceHeader.Contact.Role', 'NumericalData.ResourceHeader.Contact.Role','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ResourceHeader.Contact.Role', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 8 , 8, 'NumericalData.AccessInformation.RepositoryID', 'NumericalData.AccessInformation.RepositoryID','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.RepositoryID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 9 , 9, 'NumericalData.AccessInformation.Availability', 'NumericalData.AccessInformation.Availability','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.Availability', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 10 , 10, 'NumericalData.AccessInformation.AccessRights', 'NumericalData.AccessInformation.AccessRights','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.AccessRights', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 11 , 11, 'NumericalData.AccessInformation.AccessURL.Name', 'NumericalData.AccessInformation.AccessURL.Name','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.AccessURL.Name', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 12 , 12, 'NumericalData.AccessInformation.AccessURL.URL', 'NumericalData.AccessInformation.AccessURL.URL','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.AccessURL.URL', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 13 , 13, 'NumericalData.AccessInformation.AccessURL.Description', 'NumericalData.AccessInformation.AccessURL.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.AccessURL.Description', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 14 , 14, 'NumericalData.AccessInformation.Format', 'NumericalData.AccessInformation.Format','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.Format', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 15 , 15, 'NumericalData.AccessInformation.DataExtent.Quantity', 'NumericalData.AccessInformation.DataExtent.Quantity','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.AccessInformation.DataExtent.Quantity', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 16 , 16, 'NumericalData.InstrumentID', 'NumericalData.InstrumentID','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.InstrumentID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 17 , 17, 'NumericalData.PhenomenonType', 'NumericalData.PhenomenonType','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.PhenomenonType', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 18 , 18, 'NumericalData.MeasurementType', 'NumericalData.MeasurementType','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.MeasurementType', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 19 , 19, 'NumericalData.Keyword', 'NumericalData.Keyword','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Keyword', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 20 , 20, 'NumericalData.TemporalDescription.StartDate', 'NumericalData.TemporalDescription.StartDate','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.TemporalDescription.StartDate', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 21 , 21, 'NumericalData.TemporalDescription.StopDate', 'NumericalData.TemporalDescription.StopDate','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.TemporalDescription.StopDate', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 22 , 22, 'NumericalData.TemporalDescription.RelativeStopDate', 'NumericalData.TemporalDescription.RelativeStopDate','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.TemporalDescription.RelativeStopDate', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 23 , 23, 'NumericalData.ObservedRegion', 'NumericalData.ObservedRegion','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.ObservedRegion', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 24 , 24, 'NumericalData.SpatialCoverage.CoordinateSystem.CoordinateSystemName', 'NumericalData.SpatialCoverage.CoordinateSystem.CoordinateSystemName','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.CoordinateSystem.CoordinateSystemName', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 25 , 25, 'NumericalData.SpatialCoverage.CoordinateSystem.CoordinateRepresentation', 'NumericalData.SpatialCoverage.CoordinateSystem.CoordinateRepresentation','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.CoordinateSystem.CoordinateRepresentation', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 26 , 26, 'NumericalData.SpatialCoverage.NorthernmostLatitude', 'NumericalData.SpatialCoverage.NorthernmostLatitude','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.NorthernmostLatitude', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 27 , 27, 'NumericalData.SpatialCoverage.SouthernmostLatitude', 'NumericalData.SpatialCoverage.SouthernmostLatitude','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.SouthernmostLatitude', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 28 , 28, 'NumericalData.SpatialCoverage.EasternmostLongitude', 'NumericalData.SpatialCoverage.EasternmostLongitude','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.EasternmostLongitude', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 29 , 29, 'NumericalData.SpatialCoverage.esternmostLongitude', 'NumericalData.SpatialCoverage.esternmostLongitude','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.esternmostLongitude', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 30 , 30, 'NumericalData.SpatialCoverage.Unit', 'NumericalData.SpatialCoverage.Unit','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.Unit', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 31 , 31, 'NumericalData.SpatialCoverage.MinimumAltitude', 'NumericalData.SpatialCoverage.MinimumAltitude','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.MinimumAltitude', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 32 , 32, 'NumericalData.SpatialCoverage.MaximumAltitude', 'NumericalData.SpatialCoverage.MaximumAltitude','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.MaximumAltitude', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 33 , 33, 'NumericalData.SpatialCoverage.Reference', 'NumericalData.SpatialCoverage.Reference','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.SpatialCoverage.Reference', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 34 , 34, 'NumericalData.Parameter.Name', 'NumericalData.Parameter.Name','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Name', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 35 , 35, 'NumericalData.Parameter.Description', 'NumericalData.Parameter.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Description', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 36 , 36, 'NumericalData.Parameter.Field.FieldQuantity', 'NumericalData.Parameter.Field.FieldQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Field.FieldQuantity', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 37 , 37, 'NumericalData.Parameter.Particle.ParticleType', 'NumericalData.Parameter.Particle.ParticleType','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Particle.ParticleType', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 38 , 38, 'NumericalData.Parameter.Particle.ParticleQuantity', 'NumericalData.Parameter.Particle.ParticleQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Particle.ParticleQuantity', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 39 , 39, 'NumericalData.Parameter.Parameter.Wave.WaveType', 'NumericalData.Parameter.Parameter.Wave.WaveType','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Parameter.Wave.WaveType', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 40 , 40, 'NumericalData.Parameter.Wave.WaveQuantity', 'NumericalData.Parameter.Wave.WaveQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Wave.WaveQuantity', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 41 , 41, 'NumericalData.Parameter.Mixed.MixedQuantity', 'NumericalData.Parameter.Mixed.MixedQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Mixed.MixedQuantity', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-                "(20019, 42 , 42, 'NumericalData.Parameter.Support.SupportQuantity', 'NumericalData.Parameter.Support.SupportQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'NumericalData.Parameter.Support.SupportQuantity', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0);";
+"(20020, 1 , 1, 'DisplayData.ResourceID', 'DisplayData.ResourceID','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.ResourceID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 2 , 2, 'DisplayData.ResourceHeader.ResourceName', 'DisplayData.ResourceHeader.ResourceName','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.ResourceHeader.ResourceName', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 3 , 3, 'DisplayData.ResourceHeader.ReleaseDate', 'DisplayData.ResourceHeader.ReleaseDate','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.ResourceHeader.ReleaseDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 4 , 4, 'DisplayData.ResourceHeader.Description', 'DisplayData.ResourceHeader.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.ResourceHeader.Description', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 5 , 5, 'DisplayData.ResourceHeader.Acknowledgement', 'DisplayData.ResourceHeader.Acknowledgement','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.ResourceHeader.Acknowledgement', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 6 , 6, 'DisplayData.ResourceHeader.Contact.PersonID', 'DisplayData.ResourceHeader.Contact.PersonID','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.ResourceHeader.Contact.PersonID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 7 , 7, 'DisplayData.ResourceHeader.Contact.Role', 'DisplayData.ResourceHeader.Contact.Role','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.ResourceHeader.Contact.Role', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 8 , 8, 'DisplayData.AccessInformation.RepositoryID', 'DisplayData.AccessInformation.RepositoryID','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.AccessInformation.RepositoryID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 9 , 9, 'DisplayData.AccessInformation.Availability', 'DisplayData.AccessInformation.Availability','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.AccessInformation.Availability', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 10 , 10, 'DisplayData.AccessInformation.AccessRights', 'DisplayData.AccessInformation.AccessRights','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.AccessInformation.AccessRights', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 11 , 11, 'DisplayData.AccessInformation.AccessURL.Name', 'DisplayData.AccessInformation.AccessURL.Name','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.AccessInformation.AccessURL.Name', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 12 , 12, 'DisplayData.AccessInformation.AccessURL.URL', 'DisplayData.AccessInformation.AccessURL.URL','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.AccessInformation.AccessURL.URL', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 13 , 13, 'DisplayData.AccessInformation.AccessURL.Description', 'DisplayData.AccessInformation.AccessURL.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.AccessInformation.AccessURL.Description', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 14 , 14, 'DisplayData.AccessInformation.Format', 'DisplayData.AccessInformation.Format','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.AccessInformation.Format', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 15 , 15, 'DisplayData.AccessInformation.DataExtent.Quantity', 'DisplayData.AccessInformation.DataExtent.Quantity','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.AccessInformation.DataExtent.Quantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 16 , 16, 'DisplayData.InstrumentID', 'DisplayData.InstrumentID','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.InstrumentID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 17 , 17, 'DisplayData.PhenomenonType', 'DisplayData.PhenomenonType','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.PhenomenonType', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 18 , 18, 'DisplayData.MeasurementType', 'DisplayData.MeasurementType','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.MeasurementType', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 19 , 19, 'DisplayData.Keyword', 'DisplayData.Keyword','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.Keyword', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 20 , 20, 'DisplayData.TemporalDescription.StartDate', 'DisplayData.TemporalDescription.StartDate','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.TemporalDescription.StartDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 21 , 21, 'DisplayData.TemporalDescription.StopDate', 'DisplayData.TemporalDescription.StopDate','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.TemporalDescription.StopDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 22 , 22, 'DisplayData.TemporalDescription.RelativeStopDate', 'DisplayData.TemporalDescription.RelativeStopDate','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.TemporalDescription.RelativeStopDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 23 , 23, 'DisplayData.ObservedRegion', 'DisplayData.ObservedRegion','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.ObservedRegion', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 24 , 24, 'DisplayData.SpatialCoverage.CoordinateSystem.CoordinateSystemName', 'DisplayData.SpatialCoverage.CoordinateSystem.CoordinateSystemName','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.SpatialCoverage.CoordinateSystem.CoordinateSystemName', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 25 , 25, 'DisplayData.SpatialCoverage.CoordinateSystem.CoordinateRepresentation', 'DisplayData.SpatialCoverage.CoordinateSystem.CoordinateRepresentation','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.SpatialCoverage.CoordinateSystem.CoordinateRepresentation', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 26 , 26, 'DisplayData.SpatialCoverage.NorthernmostLatitude', 'DisplayData.SpatialCoverage.NorthernmostLatitude','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.SpatialCoverage.NorthernmostLatitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 27 , 27, 'DisplayData.SpatialCoverage.SouthernmostLatitude', 'DisplayData.SpatialCoverage.SouthernmostLatitude','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.SpatialCoverage.SouthernmostLatitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 28 , 28, 'DisplayData.SpatialCoverage.EasternmostLongitude', 'DisplayData.SpatialCoverage.EasternmostLongitude','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.SpatialCoverage.EasternmostLongitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 29 , 29, 'DisplayData.SpatialCoverage.esternmostLongitude', 'DisplayData.SpatialCoverage.esternmostLongitude','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.SpatialCoverage.esternmostLongitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 30 , 30, 'DisplayData.SpatialCoverage.Unit', 'DisplayData.SpatialCoverage.Unit','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.SpatialCoverage.Unit', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 31 , 31, 'DisplayData.SpatialCoverage.MinimumAltitude', 'DisplayData.SpatialCoverage.MinimumAltitude','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.SpatialCoverage.MinimumAltitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 32 , 32, 'DisplayData.SpatialCoverage.MaximumAltitude', 'DisplayData.SpatialCoverage.MaximumAltitude','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.SpatialCoverage.MaximumAltitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 33 , 33, 'DisplayData.SpatialCoverage.Reference', 'DisplayData.SpatialCoverage.Reference','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.SpatialCoverage.Reference', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 34 , 34, 'DisplayData.Parameter.Name', 'DisplayData.Parameter.Name','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.Parameter.Name', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 35 , 35, 'DisplayData.Parameter.Description', 'DisplayData.Parameter.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.Parameter.Description', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 36 , 36, 'DisplayData.Parameter.Field.FieldQuantity', 'DisplayData.Parameter.Field.FieldQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.Parameter.Field.FieldQuantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 37 , 37, 'DisplayData.Parameter.Particle.ParticleType', 'DisplayData.Parameter.Particle.ParticleType','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.Parameter.Particle.ParticleType', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 38 , 38, 'DisplayData.Parameter.Particle.ParticleQuantity', 'DisplayData.Parameter.Particle.ParticleQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.Parameter.Particle.ParticleQuantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 39 , 39, 'DisplayData.Parameter.Parameter.Wave.WaveType', 'DisplayData.Parameter.Parameter.Wave.WaveType','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.Parameter.Parameter.Wave.WaveType', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 40 , 40, 'DisplayData.Parameter.Wave.WaveQuantity', 'DisplayData.Parameter.Wave.WaveQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.Parameter.Wave.WaveQuantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 41 , 41, 'DisplayData.Parameter.Mixed.MixedQuantity', 'DisplayData.Parameter.Mixed.MixedQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.Parameter.Mixed.MixedQuantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20020, 42 , 42, 'DisplayData.Parameter.Support.SupportQuantity', 'DisplayData.Parameter.Support.SupportQuantity','text',0, 0, 0, 0, 0, '', '', '', '', 'DisplayData.Parameter.Support.SupportQuantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0);";
                 $params = array();
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_RESOURCEID;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_RESOURCEHEADER_RESOURCENAME;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_RESOURCEHEADER_RELEASEDATE;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_RESOURCEHEADER_DESCRIPTION;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_RESOURCEHEADER_ACKNOWLEDGEMENT;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_RESOURCEHEADER_CONTACT_PERSONID;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_RESOURCEHEADER_CONTACT_ROLE;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_ACCESSINFORMATION_REPOSITORYID;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_ACCESSINFORMATION_AVAILABILITY;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_ACCESSINFORMATION_ACCESSRIGHTS;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_ACCESSINFORMATION_ACCESSURL_NAME;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_ACCESSINFORMATION_ACCESSURL_URL;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_ACCESSINFORMATION_ACCESSURL_DESCRIPTION;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_ACCESSINFORMATION_FORMAT;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_INSTRUMENTID;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_PHENOMENONTYPE;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_MEASUREMENTTYPE;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_KEYWORD;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_TEMPORALDESCRIPTION_STARTDATE;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_TEMPORALDESCRIPTION_STOPDATE;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_TEMPORALDESCRIPTION_RELATIVESTOPDATE;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_OBSERVEDREGION;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATESYSTEMNAME;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATEREPRESENTATION;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_SPATIALCOVERAGE_SOUTHERNMOSTLATITUDE;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_SPATIALCOVERAGE_EASTERNMOSTLONGITUDE;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_SPATIALCOVERAGE_WESTERNMOSTLONGITUDE;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_SPATIALCOVERAGE_NORTHERNMOSTLATITUDE;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_SPATIALCOVERAGE_UNIT;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_SPATIALCOVERAGE_MINIMUMALTITUDE;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_SPATIALCOVERAGE_MAXIMUMALTITUDE;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_SPATIALCOVERAGE_REFERENCE;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_PARAMETER_NAME;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_PARAMETER_DESCRIPTION;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_PARAMETER_FIELD_FIELDQUANTITY;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_PARAMETER_PARTICLE_PARTICLETYPE;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_PARAMETER_PARTICLE_PARTICLEQUANTITY;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_PARAMETER_WAVE_WAVETYPE;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_PARAMETER_WAVE_WAVEQUANTITY;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_PARAMETER_MIXED_MIXEDQUANTITY;
-                $params[] = RepositoryConst::SPASE_NUMERICALDATA_PARAMETER_SUPPORT_SUPPORTQUANTITY;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_RESOURCEID;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_RESOURCEHEADER_RESOURCENAME;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_RESOURCEHEADER_RELEASEDATE;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_RESOURCEHEADER_DESCRIPTION;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_RESOURCEHEADER_ACKNOWLEDGEMENT;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_RESOURCEHEADER_CONTACT_PERSONID;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_RESOURCEHEADER_CONTACT_ROLE;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_ACCESSINFORMATION_REPOSITORYID;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_ACCESSINFORMATION_AVAILABILITY;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_ACCESSINFORMATION_ACCESSRIGHTS;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_ACCESSINFORMATION_ACCESSURL_NAME;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_ACCESSINFORMATION_ACCESSURL_URL;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_ACCESSINFORMATION_ACCESSURL_DESCRIPTION;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_ACCESSINFORMATION_FORMAT;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_INSTRUMENTID;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_PHENOMENONTYPE;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_MEASUREMENTTYPE;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_KEYWORD;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_TEMPORALDESCRIPTION_STARTDATE;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_TEMPORALDESCRIPTION_STOPDATE;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_TEMPORALDESCRIPTION_RELATIVESTOPDATE;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_OBSERVEDREGION;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATESYSTEMNAME;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_SPATIALCOVERAGE_COORDINATESYSTEM_COORDINATEREPRESENTATION;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_SPATIALCOVERAGE_SOUTHERNMOSTLATITUDE;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_SPATIALCOVERAGE_EASTERNMOSTLONGITUDE;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_SPATIALCOVERAGE_WESTERNMOSTLONGITUDE;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_SPATIALCOVERAGE_NORTHERNMOSTLATITUDE;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_SPATIALCOVERAGE_UNIT;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_SPATIALCOVERAGE_MINIMUMALTITUDE;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_SPATIALCOVERAGE_MAXIMUMALTITUDE;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_SPATIALCOVERAGE_REFERENCE;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_PARAMETER_NAME;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_PARAMETER_DESCRIPTION;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_PARAMETER_FIELD_FIELDQUANTITY;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_PARAMETER_PARTICLE_PARTICLETYPE;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_PARAMETER_PARTICLE_PARTICLEQUANTITY;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_PARAMETER_WAVE_WAVETYPE;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_PARAMETER_WAVE_WAVEQUANTITY;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_PARAMETER_MIXED_MIXEDQUANTITY;
+                $params[] = RepositoryConst::SPASE_DISPLAYDATA_PARAMETER_SUPPORT_SUPPORTQUANTITY;
                 $retRef = $this->dbAccess->executeQuery($query, $params);
               }
             break;
@@ -5986,17 +5984,16 @@ class Repository_Action_Main_Update extends RepositoryAction
               "input_type, is_required, plural_enable, line_feed_enable, list_view_enable, hidden, ".
               "junii2_mapping, dublin_core_mapping, lom_mapping, lido_mapping, spase_mapping, display_lang_type, ".
               "ins_user_id, mod_user_id, del_user_id, ins_date, mod_date, del_date, is_delete) VALUES ".
-              "(20021, 1 , 1, 'Instrument.Version', 'Instrument.Version','text',0, 0, 0, 0, 0, '', '', '', '', 'Instrument.Version', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20021, 2 , 2, 'Instrument.ResourceID', 'Instrument.ResourceID','text',0, 0, 0, 0, 0, '', '', '', '', 'Instrument.ResourceID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20021, 3 , 3, 'Instrument.ResourceHeader.ResourceName', 'Instrument.ResourceHeader.ResourceName','text',0, 0, 0, 0, 0, '', '', '', '', 'Instrument.ResourceHeader.ResourceName', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20021, 4 , 4, 'Instrument.ResourceHeader.ReleaseDate', 'Instrument.ResourceHeader.ReleaseDate','text',0, 0, 0, 0, 0, '', '', '', '', 'Instrument.ResourceHeader.ReleaseDate', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20021, 5 , 5, 'Instrument.ResourceHeader.Description', 'Instrument.ResourceHeader.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'Instrument.ResourceHeader.Description', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20021, 6 , 6, 'Instrument.ResourceHeader.Contact.PersonID', 'Instrument.ResourceHeader.Contact.PersonID','text',0, 0, 0, 0, 0, '', '', '', '', 'Instrument.ResourceHeader.Contact.PersonID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20021, 7 , 7, 'Instrument.ResourceHeader.Contact.Role', 'Instrument.ResourceHeader.Contact.Role','text',0, 0, 0, 0, 0, '', '', '', '', 'Instrument.ResourceHeader.Contact.Role', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20021, 8 , 8, 'Instrument.Type', 'Instrument.Type','text',0, 0, 0, 0, 0, '', '', '', '', 'Instrument.Type', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20021, 9 , 9, 'Instrument.InstrumentType', 'Instrument.InstrumentType','text',0, 0, 0, 0, 0, '', '', '', '', 'Instrument.InstrumentType', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20021, 10 , 10, 'Instrument.InvestigationName', 'Instrument.InvestigationName','text',0, 0, 0, 0, 0, '', '', '', '', 'Instrument.InvestigationName', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20021, 11 , 11, 'Instrument.ObsevatoryID', 'Instrument.ObsevatoryID','text',0, 0, 0, 0, 0, '', '', '', '', 'Instrument.ObsevatoryID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0);";
+              "(20021, 1 , 1, 'Instrument.ResourceID', 'Instrument.ResourceID','text',0, 0, 0, 0, 0, '', '', '', '', 'Instrument.ResourceID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20021, 2 , 2, 'Instrument.ResourceHeader.ResourceName', 'Instrument.ResourceHeader.ResourceName','text',0, 0, 0, 0, 0, '', '', '', '', 'Instrument.ResourceHeader.ResourceName', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20021, 3 , 3, 'Instrument.ResourceHeader.ReleaseDate', 'Instrument.ResourceHeader.ReleaseDate','text',0, 0, 0, 0, 0, '', '', '', '', 'Instrument.ResourceHeader.ReleaseDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20021, 4 , 4, 'Instrument.ResourceHeader.Description', 'Instrument.ResourceHeader.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'Instrument.ResourceHeader.Description', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20021, 5 , 5, 'Instrument.ResourceHeader.Contact.PersonID', 'Instrument.ResourceHeader.Contact.PersonID','text',0, 0, 0, 0, 0, '', '', '', '', 'Instrument.ResourceHeader.Contact.PersonID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20021, 6 , 6, 'Instrument.ResourceHeader.Contact.Role', 'Instrument.ResourceHeader.Contact.Role','text',0, 0, 0, 0, 0, '', '', '', '', 'Instrument.ResourceHeader.Contact.Role', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20021, 7 , 7, 'Instrument.Type', 'Instrument.Type','text',0, 0, 0, 0, 0, '', '', '', '', 'Instrument.Type', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20021, 8 , 8, 'Instrument.InstrumentType', 'Instrument.InstrumentType','text',0, 0, 0, 0, 0, '', '', '', '', 'Instrument.InstrumentType', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20021, 9 , 9, 'Instrument.InvestigationName', 'Instrument.InvestigationName','text',0, 0, 0, 0, 0, '', '', '', '', 'Instrument.InvestigationName', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20021, 10 , 10, 'Instrument.ObsevatoryID', 'Instrument.ObsevatoryID','text',0, 0, 0, 0, 0, '', '', '', '', 'Instrument.ObsevatoryID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0);";
               $params = array();
               $params[] = RepositoryConst::SPASE_INSTRUMENT_RESOURCEID;
             $params[] = RepositoryConst::SPASE_INSTRUMENT_RESOURCEHEADER_RESOURCENAME;
@@ -6019,16 +6016,16 @@ class Repository_Action_Main_Update extends RepositoryAction
               "input_type, is_required, plural_enable, line_feed_enable, list_view_enable, hidden, ".
               "junii2_mapping, dublin_core_mapping, lom_mapping, lido_mapping, spase_mapping, display_lang_type, ".
               "ins_user_id, mod_user_id, del_user_id, ins_date, mod_date, del_date, is_delete) VALUES ".
-              "(20022, 1 , 1, 'Observatory.ResourceID', 'Observatory.ResourceID','text',0, 0, 0, 0, 0, '', '', '', '', 'Observatory.ResourceID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20022, 2 , 2, 'Observatory.ResourceHeader.ResourceName', 'Observatory.ResourceHeader.ResourceName','text',0, 0, 0, 0, 0, '', '', '', '', 'Observatory.ResourceHeader.ResourceName', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20022, 3 , 3, 'Observatory.ResourceHeader.ReleaseDate', 'Observatory.ResourceHeader.ReleaseDate','text',0, 0, 0, 0, 0, '', '', '', '', 'Observatory.ResourceHeader.ReleaseDate', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20022, 4 , 4, 'Observatory.ResourceHeader.Description', 'Observatory.ResourceHeader.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'Observatory.ResourceHeader.Description', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20022, 5 , 5, 'Observatory.ResourceHeader.Contact.PersonID', 'Observatory.ResourceHeader.Contact.PersonID','text',0, 0, 0, 0, 0, '', '', '', '', 'Observatory.ResourceHeader.Contact.PersonID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20022, 6 , 6, 'Observatory.ResourceHeader.Contact.Role', 'Observatory.ResourceHeader.Contact.Role','text',0, 0, 0, 0, 0, '', '', '', '', 'Observatory.ResourceHeader.Contact.Role', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20022, 7 , 7, 'Observatory.Location.ObservatoryRegion', 'Observatory.Location.ObservatoryRegion','text',0, 0, 0, 0, 0, '', '', '', '', 'Observatory.Location.ObservatoryRegion', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20022, 8 , 8, 'Observatory.Location.CoordinateSystemname.Latitude', 'Observatory.Location.CoordinateSystemname.Latitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Observatory.Location.CoordinateSystemname.Latitude', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20022, 9 , 9, 'Observatory.Location.CoordinateSystemname.Longitude', 'Observatory.Location.CoordinateSystemname.Longitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Observatory.Location.CoordinateSystemname.Longitude', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20022, 10 , 10, 'Observatory.OperatingSpan.StartDate', 'Observatory.OperatingSpan.StartDate','text',0, 0, 0, 0, 0, '', '', '', '', 'Observatory.OperatingSpan.StartDate', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0);";
+              "(20022, 1 , 1, 'Observatory.ResourceID', 'Observatory.ResourceID','text',0, 0, 0, 0, 0, '', '', '', '', 'Observatory.ResourceID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20022, 2 , 2, 'Observatory.ResourceHeader.ResourceName', 'Observatory.ResourceHeader.ResourceName','text',0, 0, 0, 0, 0, '', '', '', '', 'Observatory.ResourceHeader.ResourceName', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20022, 3 , 3, 'Observatory.ResourceHeader.ReleaseDate', 'Observatory.ResourceHeader.ReleaseDate','text',0, 0, 0, 0, 0, '', '', '', '', 'Observatory.ResourceHeader.ReleaseDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20022, 4 , 4, 'Observatory.ResourceHeader.Description', 'Observatory.ResourceHeader.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'Observatory.ResourceHeader.Description', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20022, 5 , 5, 'Observatory.ResourceHeader.Contact.PersonID', 'Observatory.ResourceHeader.Contact.PersonID','text',0, 0, 0, 0, 0, '', '', '', '', 'Observatory.ResourceHeader.Contact.PersonID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20022, 6 , 6, 'Observatory.ResourceHeader.Contact.Role', 'Observatory.ResourceHeader.Contact.Role','text',0, 0, 0, 0, 0, '', '', '', '', 'Observatory.ResourceHeader.Contact.Role', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20022, 7 , 7, 'Observatory.Location.ObservatoryRegion', 'Observatory.Location.ObservatoryRegion','text',0, 0, 0, 0, 0, '', '', '', '', 'Observatory.Location.ObservatoryRegion', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20022, 8 , 8, 'Observatory.Location.CoordinateSystemname.Latitude', 'Observatory.Location.CoordinateSystemname.Latitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Observatory.Location.CoordinateSystemname.Latitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20022, 9 , 9, 'Observatory.Location.CoordinateSystemname.Longitude', 'Observatory.Location.CoordinateSystemname.Longitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Observatory.Location.CoordinateSystemname.Longitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20022, 10 , 10, 'Observatory.OperatingSpan.StartDate', 'Observatory.OperatingSpan.StartDate','text',0, 0, 0, 0, 0, '', '', '', '', 'Observatory.OperatingSpan.StartDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0);";
               $params = array();
               $params[] = RepositoryConst::SPASE_OBSERVATORY_RESOURCEID;
 $params[] = RepositoryConst::SPASE_OBSERVATORY_RESOURCEHEADER_RESOURCENAME;
@@ -6053,11 +6050,11 @@ $params[] = RepositoryConst::SPASE_OBSERVATORY_OPERATINGSPAN_STARTDATE;
               "input_type, is_required, plural_enable, line_feed_enable, list_view_enable, hidden, ".
               "junii2_mapping, dublin_core_mapping, lom_mapping, lido_mapping, spase_mapping, display_lang_type, ".
               "ins_user_id, mod_user_id, del_user_id, ins_date, mod_date, del_date, is_delete) VALUES ".
-              "(20023, 1 , 1, 'Person.ResourceID', 'Person.ResourceID','text',0, 0, 0, 0, 0, '', '', '', '', 'Person.ResourceID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20023, 2 , 2, 'Person.ReleaseDate', 'Person.ReleaseDate','text',0, 0, 0, 0, 0, '', '', '', '', 'Person.ReleaseDate', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20023, 3 , 3, 'Person.PersonName', 'Person.PersonName','text',0, 0, 0, 0, 0, '', '', '', '', 'Person.PersonName', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20023, 4 , 4, 'Person.OrganizationName', 'Person.OrganizationName','text',0, 0, 0, 0, 0, '', '', '', '', 'Person.OrganizationName', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20023, 5 , 5, 'Person.Email', 'Person.Email','text',0, 0, 0, 0, 0, '', '', '', '', 'Person.Email', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0);";
+              "(20023, 1 , 1, 'Person.ResourceID', 'Person.ResourceID','text',0, 0, 0, 0, 0, '', '', '', '', 'Person.ResourceID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20023, 2 , 2, 'Person.ReleaseDate', 'Person.ReleaseDate','text',0, 0, 0, 0, 0, '', '', '', '', 'Person.ReleaseDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20023, 3 , 3, 'Person.PersonName', 'Person.PersonName','text',0, 0, 0, 0, 0, '', '', '', '', 'Person.PersonName', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20023, 4 , 4, 'Person.OrganizationName', 'Person.OrganizationName','text',0, 0, 0, 0, 0, '', '', '', '', 'Person.OrganizationName', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20023, 5 , 5, 'Person.Email', 'Person.Email','text',0, 0, 0, 0, 0, '', '', '', '', 'Person.Email', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0);";
               $params = array();
               $params[] = RepositoryConst::SPASE_PERSON_RESOURCEID;
 $params[] = RepositoryConst::SPASE_PERSON_RELEASEDATE;
@@ -6076,13 +6073,13 @@ $params[] = RepositoryConst::SPASE_PERSON_EMAIL;
               "input_type, is_required, plural_enable, line_feed_enable, list_view_enable, hidden, ".
               "junii2_mapping, dublin_core_mapping, lom_mapping, lido_mapping, spase_mapping, display_lang_type, ".
               "ins_user_id, mod_user_id, del_user_id, ins_date, mod_date, del_date, is_delete) VALUES ".
-              "(20024, 1 , 1, 'Repository.ResourceID', 'Repository.ResourceID','text',0, 0, 0, 0, 0, '', '', '', '', 'Repository.ResourceID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20024, 2 , 2, 'Repository.ResourceHeader.ResourceName', 'Repository.ResourceHeader.ResourceName','text',0, 0, 0, 0, 0, '', '', '', '', 'Repository.ResourceHeader.ResourceName', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20024, 3 , 3, 'Repository.ResourceHeader.ReleaseDate', 'Repository.ResourceHeader.ReleaseDate','text',0, 0, 0, 0, 0, '', '', '', '', 'Repository.ResourceHeader.ReleaseDate', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20024, 4 , 4, 'Repository.ResourceHeader.Description', 'Repository.ResourceHeader.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'Repository.ResourceHeader.Description', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20024, 5 , 5, 'Repository.ResourceHeader.Contact.PersonID', 'Repository.ResourceHeader.Contact.PersonID','text',0, 0, 0, 0, 0, '', '', '', '', 'Repository.ResourceHeader.Contact.PersonID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20024, 6 , 6, 'Repository.ResourceHeader.Contact.Role', 'Repository.ResourceHeader.Contact.Role','text',0, 0, 0, 0, 0, '', '', '', '', 'Repository.ResourceHeader.Contact.Role', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20024, 7 , 7, 'Repository.AccessURL.URL', 'Repository.AccessURL.URL','text',0, 0, 0, 0, 0, '', '', '', '', 'Repository.AccessURL.URL', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0);";
+              "(20024, 1 , 1, 'Repository.ResourceID', 'Repository.ResourceID','text',0, 0, 0, 0, 0, '', '', '', '', 'Repository.ResourceID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20024, 2 , 2, 'Repository.ResourceHeader.ResourceName', 'Repository.ResourceHeader.ResourceName','text',0, 0, 0, 0, 0, '', '', '', '', 'Repository.ResourceHeader.ResourceName', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20024, 3 , 3, 'Repository.ResourceHeader.ReleaseDate', 'Repository.ResourceHeader.ReleaseDate','text',0, 0, 0, 0, 0, '', '', '', '', 'Repository.ResourceHeader.ReleaseDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20024, 4 , 4, 'Repository.ResourceHeader.Description', 'Repository.ResourceHeader.Description','text',0, 0, 0, 0, 0, '', '', '', '', 'Repository.ResourceHeader.Description', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20024, 5 , 5, 'Repository.ResourceHeader.Contact.PersonID', 'Repository.ResourceHeader.Contact.PersonID','text',0, 0, 0, 0, 0, '', '', '', '', 'Repository.ResourceHeader.Contact.PersonID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20024, 6 , 6, 'Repository.ResourceHeader.Contact.Role', 'Repository.ResourceHeader.Contact.Role','text',0, 0, 0, 0, 0, '', '', '', '', 'Repository.ResourceHeader.Contact.Role', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20024, 7 , 7, 'Repository.AccessURL.URL', 'Repository.AccessURL.URL','text',0, 0, 0, 0, 0, '', '', '', '', 'Repository.AccessURL.URL', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0);";
               $params = array();
               $params[] = RepositoryConst::SPASE_REPOSITORY_RESOURCEID;
             $params[] = RepositoryConst::SPASE_REPOSITORY_RESOURCEHEADER_RESOURCENAME;
@@ -6105,24 +6102,24 @@ $params[] = RepositoryConst::SPASE_PERSON_EMAIL;
               "ins_user_id, mod_user_id, del_user_id, ins_date, mod_date, del_date, is_delete) VALUES ".
               "(20025, 1 , 1, 'File', 'File', 'file', 1, 1, 0, 0, 0, '', '', '', '', 'File', '','1','1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
 "(20025, 2 , 2, 'Thumbnail', 'Thumbnail', 'thumbnail', 0, 1, 0, 0, 0, '', '', '', '', 'Thumbnail', '', '1','1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20025, 3 , 3, 'Granule.ResourceID', 'Granule.ResourceID','text',1, 0, 0, 0, 0, '', '', '', '', 'Granule.ResourceID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20025, 4 , 4, 'Granule.ReleaseDate', 'Granule.ReleaseDate','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.ReleaseDate', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20025, 5 , 5, 'Granule.ParentID', 'Granule.ParentID','text',1, 0, 0, 0, 0, '', '', '', '', 'Granule.ParentID', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20025, 6 , 6, 'Granule.StartDate', 'Granule.StartDate','text',1, 0, 0, 0, 0, '', '', '', '', 'Granule.StartDate', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20025, 7 , 7, 'Granule.StopDate', 'Granule.StopDate','text',1, 0, 0, 0, 0, '', '', '', '', 'Granule.StopDate', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20025, 8 , 8, 'Granule.Source.SourceType', 'Granule.Source.SourceType','text',1, 1, 0, 0, 0, '', '', '', '', 'Granule.Source.SourceType', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20025, 9 , 9, 'Granule.Source.URL', 'Granule.Source.URL','text',1, 1, 0, 0, 0, '', '', '', '', 'Granule.Source.URL', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20025, 10 , 10, 'Granule.Source.DataExtent.Quantity', 'Granule.Source.DataExtent.Quantity','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.Source.DataExtent.Quantity', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20025, 11 , 11, 'Granule.SpatialCoverage.CoordinateSystem.CoordinateSystemName', 'Granule.SpatialCoverage.CoordinateSystem.CoordinateSystemName','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.SpatialCoverage.CoordinateSystem.CoordinateSystemName', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20025, 12 , 12, 'Granule.SpatialCoverage.CoordinateSystem.CoordinateRepresentation', 'Granule.SpatialCoverage.CoordinateSystem.CoordinateRepresentation','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.SpatialCoverage.CoordinateSystem.CoordinateRepresentation', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20025, 13 , 13, 'Granule.SpatialCoverage.NorthernmostLatitude', 'Granule.SpatialCoverage.NorthernmostLatitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.SpatialCoverage.NorthernmostLatitude', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20025, 14 , 14, 'Granule.SpatialCoverage.SouthernmostLatitude', 'Granule.SpatialCoverage.SouthernmostLatitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.SpatialCoverage.SouthernmostLatitude', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20025, 15 , 15, 'Granule.SpatialCoverage.EasternmostLongitude', 'Granule.SpatialCoverage.EasternmostLongitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.SpatialCoverage.EasternmostLongitude', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20025, 16 , 16, 'Granule.SpatialCoverage.WesternmostLongitude', 'Granule.SpatialCoverage.WesternmostLongitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.SpatialCoverage.WesternmostLongitude', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20025, 17 , 17, 'Granule.SpatialCoverage.Unit', 'Granule.SpatialCoverage.Unit','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.SpatialCoverage.Unit', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20025, 18 , 18, 'Granule.SpatialCoverage.MinimumAltitude', 'Granule.SpatialCoverage.MinimumAltitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.SpatialCoverage.MinimumAltitude', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20025, 19 , 19, 'Granule.SpatialCoverage.MaximumAltitude', 'Granule.SpatialCoverage.MaximumAltitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.SpatialCoverage.MaximumAltitude', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
-"(20025, 20 , 20, 'Granule.SpatialCoverage.Reference', 'Granule.SpatialCoverage.Reference','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.SpatialCoverage.Reference', '', '1', '1', '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0);";
+"(20025, 3 , 3, 'Granule.ResourceID', 'Granule.ResourceID','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.ResourceID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20025, 4 , 4, 'Granule.ReleaseDate', 'Granule.ReleaseDate','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.ReleaseDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20025, 5 , 5, 'Granule.ParentID', 'Granule.ParentID','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.ParentID', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20025, 6 , 6, 'Granule.StartDate', 'Granule.StartDate','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.StartDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20025, 7 , 7, 'Granule.StopDate', 'Granule.StopDate','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.StopDate', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20025, 8 , 8, 'Granule.Source.SourceType', 'Granule.Source.SourceType','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.Source.SourceType', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20025, 9 , 9, 'Granule.Source.URL', 'Granule.Source.URL','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.Source.URL', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20025, 10 , 10, 'Granule.Source.DataExtent.Quantity', 'Granule.Source.DataExtent.Quantity','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.Source.DataExtent.Quantity', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20025, 11 , 11, 'Granule.SpatialCoverage.CoordinateSystem.CoordinateSystemName', 'Granule.SpatialCoverage.CoordinateSystem.CoordinateSystemName','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.SpatialCoverage.CoordinateSystem.CoordinateSystemName', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20025, 12 , 12, 'Granule.SpatialCoverage.CoordinateSystem.CoordinateRepresentation', 'Granule.SpatialCoverage.CoordinateSystem.CoordinateRepresentation','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.SpatialCoverage.CoordinateSystem.CoordinateRepresentation', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20025, 13 , 13, 'Granule.SpatialCoverage.NorthernmostLatitude', 'Granule.SpatialCoverage.NorthernmostLatitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.SpatialCoverage.NorthernmostLatitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20025, 14 , 14, 'Granule.SpatialCoverage.SouthernmostLatitude', 'Granule.SpatialCoverage.SouthernmostLatitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.SpatialCoverage.SouthernmostLatitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20025, 15 , 15, 'Granule.SpatialCoverage.EasternmostLongitude', 'Granule.SpatialCoverage.EasternmostLongitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.SpatialCoverage.EasternmostLongitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20025, 16 , 16, 'Granule.SpatialCoverage.WesternmostLongitude', 'Granule.SpatialCoverage.WesternmostLongitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.SpatialCoverage.WesternmostLongitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20025, 17 , 17, 'Granule.SpatialCoverage.Unit', 'Granule.SpatialCoverage.Unit','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.SpatialCoverage.Unit', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20025, 18 , 18, 'Granule.SpatialCoverage.MinimumAltitude', 'Granule.SpatialCoverage.MinimumAltitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.SpatialCoverage.MinimumAltitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20025, 19 , 19, 'Granule.SpatialCoverage.MaximumAltitude', 'Granule.SpatialCoverage.MaximumAltitude','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.SpatialCoverage.MaximumAltitude', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0),".
+"(20025, 20 , 20, 'Granule.SpatialCoverage.Reference', 'Granule.SpatialCoverage.Reference','text',0, 0, 0, 0, 0, '', '', '', '', 'Granule.SpatialCoverage.Reference', '', 1, 1, '', '2008-03-18 00:00:00.000', '2008-03-18 00:00:00.000', '', 0);";
               $params = array();
               $params[] = "File";
 $params[] = "Thumbnail";
