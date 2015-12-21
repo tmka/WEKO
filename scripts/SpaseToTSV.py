@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*- 
 
 from xml.dom import minidom
+from datetime import datetime
 import xml.etree.ElementTree as ET
 import ConfigParser
 import csv
 import sys
 import os
+import re
 import datetime
 
 ##global definition
@@ -278,36 +280,84 @@ def main():
     if (Metadata_type == 'Granule'):
     #####Extract metadata from Granule file########
         ##get file list from target directory
-        #print "Please input CDF target directory(full path)"
-        #target_dir = raw_input()
+        
+        
+        target_dir = os.getcwdu() + os.sep + "file"
+        
+        '''
+        print "This is Granule file, StartDate? format:YYYYMM(ex.200012)"
+        input_date = raw_input()
+        StartYear = int(input_date[0:4])
+        StartMonth = int(input_date[4:6])
+        print "EndDate? format:YYYYMM(ex.200001)"
+        input_date = raw_input()
+        LastYear = int(input_date[0:4])
+        EndMonth = int(input_date[4:6])
+
+        ElapsedYear = LastYear - StartYear
+        '''
 
 
+        
+
+        ##get WEKO basic attributes from weko.ini
         ##WEKO attributes
         getSettingAttribute('weko.ini', header_ar, body_ar)
         ##Spase attributes
         extractAllSpaseMetadata(argvs[1],header_ar,body_ar)
 
-        for i,val in enumerate(header_ar):
-            if (header_ar[i].find('Version') != -1):
-                del header_ar[i]
-                del body_ar[i]
-            if (header_ar[i].find('ResourceName') != -1): #get resourcename as a title(WEKO title)
-                resourcename = body_ar[i]
+        ##get FileList(only CDF)
+        FileList = getFileList(target_dir)
+        ##extract date from FileList name using by re.search
+        FileList2 = [(re.search("\d{4}\d{1,2}\d{1,2}", x).group(), x) for x in FileList]
+        ##日付順にソート
+        FileList2.sort(cmp = lambda x, y: cmp(int(x[0]), int(y[0])))
+        ##開始日付(全体,年,日)を定義
+        StartDate = int(FileList2[0][0]) #[0][1]= file name
+        LastDate = int(FileList2[len(FileList2)-1][0])
+        StartYear = int(FileList2[0][0][0:4]) 
+        LastYear = int(FileList2[len(FileList2)-1][0][0:4])
+        StartMonth = int(FileList2[0][0][4:6])
+        LastMonth = int(FileList2[len(FileList2)-1][0][4:6])
 
+        ElapsedYear = LastYear - StartYear
+
+        print "Separete Month? (y or n(=Enter))"
+        SepareteMonth = raw_input()
+         
+
+        if(SepareteMonth =="y" or SepareteMonth == "Y"):
+            for year in range(StartYear,LastYear):
+                for month in range(StartMonth, EndMonth):
+                    quit()
+        else: #月でフォルダ分けしない
+            for year in range(StartYear,LastYear+1):
+                result_dir = os.getcwdu() + os.sep + "result" + os.sep + str(year)
+                if(os.path.exists(result_dir) != True):
+                    os.makedirs(result_dir)
+                ##make header
+                for i,val in enumerate(header_ar):
+                    if (header_ar[i].find('Version') != -1):
+                        del header_ar[i]
+                        del body_ar[i]
+                    if (header_ar[i].find('ResourceName') != -1): #get resourcename as a title(WEKO title)
+                        resourcename = body_ar[i]
+                
+                MetadataPath = result_dir + os.sep + argvs[1].replace(".xml",".tsv")
+                WriteHeader(header_ar)
+                WriteGranule(FileList,body_ar,Metadata_type)
+                print "Extracted metadata:" + MetadataPath
+        
+        
+        '''
         ##get file list from target directory
-        target_dir = os.getcwd() + '\\file\\'
+        target_dir = argvs[2]
+        #target_dir = os.getcwdu() + '\\file\\'
         FileList = getFileList(target_dir)
         if (len(FileList) == 0):
             print "There are no files!"
             quit()
-
-        MetadataPath = os.getcwd() + "\\" + argvs[1].replace(".xml",".tsv")
-
-        WriteHeader(header_ar)
-        WriteGranule(FileList,body_ar,Metadata_type)
-
-        print "Outputted Metadata to " + MetadataPath
-
+        '''
         print "Granule Finished"
         quit()
 
@@ -336,7 +386,7 @@ def main():
             if (header_ar[i].find('PersonName') != -1): #get Personame (for Person.xml)
                 resourcename = body_ar[i]  
 
-        MetadataPath = os.getcwd() + "\\" + argvs[1].replace(".xml",".tsv")
+        MetadataPath = os.getcwdu() + os.sep + argvs[1].replace(".xml",".tsv")
         WriteHeader(header_ar)
         WriteOtherSpaseMetadata(body_ar,Metadata_type,resourcename)
 
