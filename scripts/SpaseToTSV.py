@@ -7,11 +7,13 @@ import ConfigParser
 import csv
 import sys
 import os
+import shutil
 import re
 import datetime
 
 ##global definition
 settinfFile = "weko.ini"
+base_url = "https://akebono-vlf.db.kanazawa-u.ac.jp/permalink.php?keyword="
 resourcename = ""
 header_ar = []
 body_ar = []
@@ -56,8 +58,9 @@ def getFileList(dirpath):
 
 #Granule版Attribute
 #file_ar ファイル一覧 body_ar 本文
-def WriteGranule(file_ar,body_ar,metadata_type="",suffix_name=''):
-    f=csv.writer(file(MetadataPath,'a'),lineterminator='\n',delimiter='\t')
+def WriteGranule(file_ar,header_ar,body_ar,metadata_type="",suffix_name=''):
+    global base_url
+    f=csv.writer(file(MetadataPath,'a'),lineterminator='\n',delimiter=',')
     todaydetail  =    datetime.datetime.today()
     time = todaydetail.strftime("%Y/%m/%d")
     for i,m in enumerate(file_ar):
@@ -66,6 +69,30 @@ def WriteGranule(file_ar,body_ar,metadata_type="",suffix_name=''):
         for j,n in enumerate(body_ar):
             if (j==0):
                 writetext.append(body_ar[j] + "."+ metadata_type)
+            ##ファイルに応じて変わる項目郡
+            elif(header_ar[j]== "Granule.ResourceID"):
+                r = re.compile(r"\d{4}\d{1,2}\d{1,2}")
+                match = r.search(m)
+                date = match.group(0)
+                text = re.sub(r'\d{4}\d{1,2}\d{1,2}',date,n)
+                writetext.append(text)
+            elif(header_ar[j]== "Granule.StartDate"):
+                r = re.compile(r"\d{4}\d{1,2}\d{1,2}")
+                match = r.search(m)
+                date = match.group(0)
+                date = date[0:4] + "-" + date[4:6] + "-" + date[6:8]
+                text = re.sub(r'\d{4}-\d{1,2}-\d{1,2}',date,n)
+                writetext.append(text)
+            elif(header_ar[j]== "Granule.StopDate"):
+                r = re.compile(r"\d{4}\d{1,2}\d{1,2}")
+                match = r.search(m)
+                date = match.group(0)
+                date = date[0:4] + "-" + date[4:6] + "-" + date[6:8]
+                text = re.sub(r'\d{4}-\d{1,2}-\d{1,2}',date,n)
+                writetext.append(text)
+            elif(header_ar[j]== "Granule.Source.URL"):
+                download_url = base_url + m
+                writetext.append(download_url)
             elif(n == "filename"):
                 writetext.append(m)
             elif(n == "picture"):
@@ -78,7 +105,7 @@ def WriteGranule(file_ar,body_ar,metadata_type="",suffix_name=''):
     return None
 
 def WriteOtherSpaseMetadata(body_ar,metadata_type="",resource_name="",suffix_name=''):
-    f=csv.writer(file(MetadataPath,'a'),lineterminator='\n',delimiter='\t')
+    f=csv.writer(file(MetadataPath,'a'),lineterminator='\n',delimiter=',')
     todaydetail  =    datetime.datetime.today()
     time = todaydetail.strftime("%Y/%m/%d")
     writetext = []
@@ -96,7 +123,7 @@ def WriteOtherSpaseMetadata(body_ar,metadata_type="",resource_name="",suffix_nam
 
 ##HeaderをTSVに書き出す
 def WriteHeader(ar,suffix_name=''):
-    f=csv.writer(file(MetadataPath,'w'),lineterminator='\n',delimiter='\t')
+    f=csv.writer(file(MetadataPath,'w'),lineterminator='\n',delimiter=',')
     f.writerow(ar)
 
 
@@ -281,25 +308,8 @@ def main():
     #####Extract metadata from Granule file########
         ##get file list from target directory
         
+        target_dir = os.getcwdu() + os.sep + "MCADB"
         
-        target_dir = os.getcwdu() + os.sep + "file"
-        
-        '''
-        print "This is Granule file, StartDate? format:YYYYMM(ex.200012)"
-        input_date = raw_input()
-        StartYear = int(input_date[0:4])
-        StartMonth = int(input_date[4:6])
-        print "EndDate? format:YYYYMM(ex.200001)"
-        input_date = raw_input()
-        LastYear = int(input_date[0:4])
-        EndMonth = int(input_date[4:6])
-
-        ElapsedYear = LastYear - StartYear
-        '''
-
-
-        
-
         ##get WEKO basic attributes from weko.ini
         ##WEKO attributes
         getSettingAttribute('weko.ini', header_ar, body_ar)
@@ -312,26 +322,33 @@ def main():
         FileList2 = [(re.search("\d{4}\d{1,2}\d{1,2}", x).group(), x) for x in FileList]
         ##日付順にソート
         FileList2.sort(cmp = lambda x, y: cmp(int(x[0]), int(y[0])))
-        ##開始日付(全体,年,日)を定義
+        ##開始日付(全体,年,日)を保存
         StartDate = int(FileList2[0][0]) #[0][1]= file name
         LastDate = int(FileList2[len(FileList2)-1][0])
         StartYear = int(FileList2[0][0][0:4]) 
         LastYear = int(FileList2[len(FileList2)-1][0][0:4])
         StartMonth = int(FileList2[0][0][4:6])
         LastMonth = int(FileList2[len(FileList2)-1][0][4:6])
-
+        ##経過日付(月,日)
         ElapsedYear = LastYear - StartYear
+        ElapsedMonth = LastMonth - StartMonth
+        if(ElapsedYear <= 0):
+            ElapsedYear = 1
+        if(ElapsedMonth <= 0):
+            ElapsedMonth = 1
 
         print "Separete Month? (y or n(=Enter))"
         SepareteMonth = raw_input()
          
 
         if(SepareteMonth =="y" or SepareteMonth == "Y"):
-            for year in range(StartYear,LastYear):
+        #月でフォルダ分けする
+            for year in range(StartYear,StartYear+ElapsedYear+1):
                 for month in range(StartMonth, EndMonth):
-                    quit()
-        else: #月でフォルダ分けしない
-            for year in range(StartYear,LastYear+1):
+                    quit() #未実装
+        else:
+        #月でフォルダ分けしない
+            for year in range(StartYear,StartYear+ElapsedYear+1):
                 result_dir = os.getcwdu() + os.sep + "result" + os.sep + str(year)
                 if(os.path.exists(result_dir) != True):
                     os.makedirs(result_dir)
@@ -343,26 +360,34 @@ def main():
                     if (header_ar[i].find('ResourceName') != -1): #get resourcename as a title(WEKO title)
                         resourcename = body_ar[i]
                 
-                MetadataPath = result_dir + os.sep + argvs[1].replace(".xml",".tsv")
+                MetadataPath = result_dir + os.sep + argvs[1].replace(".xml",".csv")
                 WriteHeader(header_ar)
-                WriteGranule(FileList,body_ar,Metadata_type)
+                #特定の年月のファイルだけを抽出する
+                target_FileList = []
+                for i,val in enumerate(FileList2):
+                    file_name = FileList2[i][0]
+                    if(str(file_name[0:4]).find(str(year)) != -1):
+                        target_FileList.append(FileList2[i][1])
+                WriteGranule(target_FileList,header_ar,body_ar,Metadata_type)
+
+                #ターゲットディレクトリの存在を確認
+                if(os.path.exists(result_dir) == True):
+                    for val in target_FileList:
+                        #CDF + png
+                        copy_file = target_dir + os.sep + val
+                        copy_file_ping = target_dir + os.sep + val + ".png"
+                        #存在しないファイルのみコピー
+                        if(os.path.exists(result_dir + os.sep + val) == False):
+                            shutil.copy(copy_file,result_dir)
+                        if(os.path.exists(result_dir + os.sep + val + ".png") == False):
+                            shutil.copy(copy_file_ping,result_dir)
+
                 print "Extracted metadata:" + MetadataPath
-        
-        
-        '''
-        ##get file list from target directory
-        target_dir = argvs[2]
-        #target_dir = os.getcwdu() + '\\file\\'
-        FileList = getFileList(target_dir)
-        if (len(FileList) == 0):
-            print "There are no files!"
-            quit()
-        '''
         print "Granule Finished"
         quit()
 
     else:
-    #####Others ######
+    #####Others(not Granule)######
         
         ##Personの場合、全てPerson.tsvになるので分けたほうが良い
         ##WEKO attributes
@@ -386,7 +411,7 @@ def main():
             if (header_ar[i].find('PersonName') != -1): #get Personame (for Person.xml)
                 resourcename = body_ar[i]  
 
-        MetadataPath = os.getcwdu() + os.sep + argvs[1].replace(".xml",".tsv")
+        MetadataPath = os.getcwdu() + os.sep + argvs[1].replace(".xml",".csv")
         WriteHeader(header_ar)
         WriteOtherSpaseMetadata(body_ar,Metadata_type,resourcename)
 
@@ -397,4 +422,3 @@ def main():
 if __name__=='__main__':
     main()
 
-    
