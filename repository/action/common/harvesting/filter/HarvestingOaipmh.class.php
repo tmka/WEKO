@@ -147,7 +147,7 @@ class HarvestingOaipmh extends RepositoryAction
     const METADATAPREFIX_JUNII2 = RepositoryConst::OAIPMH_METADATA_PREFIX_JUNII2;
     const METADATAPREFIX_OAILOM = RepositoryConst::OAIPMH_METADATA_PREFIX_LOM;
     const METADATAPREFIX_LIDO = RepositoryConst::OAIPMH_METADATA_PREFIX_LIDO;
-    const METADATAPREFIX_LIDO = RepositoryConst::OAIPMH_METADATA_PREFIX_SPASE;
+    const METADATAPREFIX_SPASE = RepositoryConst::OAIPMH_METADATA_PREFIX_SPASE;
 
     // tag
     const OAIPMH_TAG_IDENTIFIER = RepositoryConst::OAIPMH_TAG_IDENTIFIER;
@@ -325,12 +325,12 @@ class HarvestingOaipmh extends RepositoryAction
             require_once WEBAPP_DIR.'/modules/repository/action/common/harvesting/filter/HarvestingOaipmhLom.class.php';
             $this->filter = new HarvestingOaipmhLom($this->Session, $this->Db);
         }
-        else if($this->metadataPrefix == self::METADATAPREFIX_SPASE)
+        else if($this->metadataPrefix == self::METADATAPREFIX_LIDO)
         {
             require_once WEBAPP_DIR.'/modules/repository/action/common/harvesting/filter/HarvestingOaipmhLido.class.php';
             $this->filter = new HarvestingOaipmhLido($this->Session, $this->Db);
         }
-        else if($this->metadataPrefix == self::METADATAPREFIX_LIDO)
+        else if($this->metadataPrefix == self::METADATAPREFIX_SPASE)
         {
         	require_once WEBAPP_DIR.'/modules/repository/action/common/harvesting/filter/HarvestingOaipmhSpase.class.php';
         	$this->filter = new HarvestingOaipmhSpase($this->Session, $this->Db);
@@ -739,7 +739,7 @@ class HarvestingOaipmh extends RepositoryAction
                     $metadataXml = "";
                     $metadata = array();
                     $this->TransStartDate = $this->getNowDate();
-                    if(($this->metadataPrefix == self::METADATAPREFIX_OAILOM || $this->metadataPrefix == self::METADATAPREFIX_LIDO) && $this->filter != null)
+                    if(($this->metadataPrefix == self::METADATAPREFIX_OAILOM || $this->metadataPrefix == self::METADATAPREFIX_LIDO || $this->metadataPrefix == self::METADATAPREFIX_SPASE) && $this->filter != null)
                     {
                         $this->filter->setTransStartDate($this->TransStartDate);
                     }
@@ -1191,7 +1191,7 @@ class HarvestingOaipmh extends RepositoryAction
      */
     private function getMetadataFromListRecords($metadataXml, &$metadata)
     {
-        if($this->metadataPrefix == self::METADATAPREFIX_OAILOM || $this->metadataPrefix == self::METADATAPREFIX_LIDO)
+        if($this->metadataPrefix == self::METADATAPREFIX_OAILOM || $this->metadataPrefix == self::METADATAPREFIX_LIDO || $this->metadataPrefix == self::METADATAPREFIX_SPASE)
         {
             if(!$this->filter->setMetadataFromListRecords($metadataXml, $this->repositoryId, $metadata))
             {
@@ -1305,7 +1305,7 @@ class HarvestingOaipmh extends RepositoryAction
         $datestamp = $metadata[RepositoryConst::HARVESTING_COL_DATESTAMP][0]["value"];
         $setSpecStr = $this->getSetSpecStr($metadata[RepositoryConst::HARVESTING_COL_SETSPEC]);
 
-        if($this->metadataPrefix == self::METADATAPREFIX_OAILOM || $this->metadataPrefix == self::METADATAPREFIX_LIDO)
+        if($this->metadataPrefix == self::METADATAPREFIX_OAILOM || $this->metadataPrefix == self::METADATAPREFIX_LIDO || $this->metadataPrefix == self::METADATAPREFIX_SPASE)
         {
             $logStatus = $this->harvestingLogStatus;
             $logMsg = $this->logMsg;
