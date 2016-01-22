@@ -360,7 +360,7 @@ def main():
                     if (header_ar[i].find('ResourceName') != -1): #get resourcename as a title(WEKO title)
                         resourcename = body_ar[i]
                 
-                MetadataPath = result_dir + os.sep + argvs[1].replace(".xml",".csv")
+                MetadataPath = result_dir + os.sep + argvs[1].replace(".xml",".tsv")
                 WriteHeader(header_ar)
                 #特定の年月のファイルだけを抽出する
                 target_FileList = []
@@ -411,7 +411,7 @@ def main():
             if (header_ar[i].find('PersonName') != -1): #get Personame (for Person.xml)
                 resourcename = body_ar[i]  
 
-        MetadataPath = os.getcwdu() + os.sep + argvs[1].replace(".xml",".csv")
+        MetadataPath = os.getcwdu() + os.sep + argvs[1].replace(".xml",".tsv")
         WriteHeader(header_ar)
         WriteOtherSpaseMetadata(body_ar,Metadata_type,resourcename)
 
